@@ -19,7 +19,6 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            ./gradlew SDKAndroid:testDebugUnitTest
             ./gradlew koverXmlReport
       - store_artifacts:
           path: SDKAndroid/build/reports/kover/project-xml/report.xml
