@@ -20,19 +20,17 @@ jobs:
       - run:
           name: Download Dependencies
           command: |
-            cd sdk-android
             ./gradlew SDKAndroid:androidDependencies
       - run:
           name: Run Tests
           command: |
-            cd sdk-android
             ./gradlew SDKAndroid:testDebugUnitTest
             ./gradlew koverXmlReport
       - store_artifacts:
-          path: sdk-android/SDKAndroid/build/reports/kover/project-xml/report.xml
+          path: SDKAndroid/build/reports/kover/project-xml/report.xml
           destination: reports
       - codecov/upload:
-          file: 'sdk-android/SDKAndroid/build/reports/kover/project-xml/report.xml'
+          file: 'SDKAndroid/build/reports/kover/project-xml/report.xml'
       - when:
           condition:
             and:
@@ -41,7 +39,6 @@ jobs:
             - run:
                 name: Publish Library
                 command: |
-                  cd sdk-android
                   ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
 
 workflows:
