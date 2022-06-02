@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Cybrid Android Demo App</string>
+    <string name="auth_title">Authenticate with Cybrid Services</string>
+    <string name="auth_toast_error">Are you sure you configure your id and client?</string>
+
+    <string name="activity_list_components_title">List of Components</string>
+
+    <string name="activity_list_prices_assets_component_title">Crypto List Component</string>
+    <string name="activity_list_prices_assets_component_sub_title">Crypto List Component - Custom Styles</string>
+
+</resources>

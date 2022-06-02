@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ListPricesView">
+        <attr name="searchBar" format="boolean" />
+        <attr name="headerTextSize" format="float" />
+        <attr name="headerTextColor" format="color" />
+        <attr name="itemsTextSize" format="float" />
+        <attr name="itemsTextColor" format="color" />
+        <attr name="itemsTextPriceSize" format="float" />
+        <attr name="itemsCodeTextSize" format="float" />
+        <attr name="itemsCodeTextColor" format="color" />
+    </declare-styleable>
+</resources>
