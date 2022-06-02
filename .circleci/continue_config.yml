@@ -1,0 +1,58 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@5.0.2
+  browser-tools: circleci/browser-tools@1.3.0
+  cypress: cypress-io/cypress@1.29.0
+  codecov: codecov/codecov@3.2.2
+  android: circleci/android@2.0.3
+  jq: circleci/jq@2.2.0
+
+parameters:
+  android-test:
+    type: boolean
+    default: false
+
+jobs:
+  android-test:
+    docker:
+      - image: cimg/android:2021.10.2
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - run:
+          name: Download Dependencies
+          command: |
+            cd sdk-android
+            ./gradlew SDKAndroid:androidDependencies
+      - run:
+          name: Run Tests
+          command: |
+            cd sdk-android
+            ./gradlew SDKAndroid:testDebugUnitTest
+            ./gradlew koverXmlReport
+      - store_artifacts:
+          path: sdk-android/SDKAndroid/build/reports/kover/project-xml/report.xml
+          destination: reports
+      - codecov/upload:
+          file: 'sdk-android/SDKAndroid/build/reports/kover/project-xml/report.xml'
+      - when:
+          condition:
+            and:
+              - equal: [ main, << pipeline.git.branch >> ]
+          steps:
+            - run:
+                name: Publish Library
+                command: |
+                  cd sdk-android
+                  ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+
+workflows:
+  android-test:
+    when:
+      or:
+        - equal: [ main, << pipeline.git.branch >> ]
+        - or: [ << pipeline.parameters.android-test >> ]
+    jobs:
+      - android-test

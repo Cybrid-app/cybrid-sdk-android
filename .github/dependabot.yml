@@ -1,0 +1,10 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/sdk-ui-web"
+    schedule:
+      interval: "daily"
+    assignees:
+      - "dcocking"
+    reviewers:
+      - "dcocking"
