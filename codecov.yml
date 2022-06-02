@@ -12,10 +12,10 @@ coverage:
         threshold: 0%
 
 ignore:
-  - sdk-android/SDKAndroid/src/main/java/app/cybrid/sdkandroid/components
-  - sdk-android/SDKAndroid/src/main/java/app/cybrid/sdkandroid/util/DataAccessStrategy.kt
-  - sdk-android/SDKAndroid/src/main/java/app/cybrid/sdkandroid/core/Constants.kt
-  - sdk-android/SDKAndroid/src/main/java/app/cybrid/sdkandroid/ui/Theme
+  - SDKAndroid/src/main/java/app/cybrid/sdkandroid/components
+  - SDKAndroid/src/main/java/app/cybrid/sdkandroid/util/DataAccessStrategy.kt
+  - SDKAndroid/src/main/java/app/cybrid/sdkandroid/core/Constants.kt
+  - SDKAndroid/src/main/java/app/cybrid/sdkandroid/ui/Theme
 
 parsers:
   gcov:
