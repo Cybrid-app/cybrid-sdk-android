@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: app.cybrid:cybrid-api-bank-kotlin:0.18.15">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/app.cybrid/cybrid-api-bank-kotlin/0.18.15/22a0cb171496c010c3d8344410ee299b5cd13d36/cybrid-api-bank-kotlin-0.18.15.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/app.cybrid/cybrid-api-bank-kotlin/0.18.15/5c42531ae96c0e090253271084c7c501fd1d2d72/cybrid-api-bank-kotlin-0.18.15-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/app.cybrid/cybrid-api-bank-kotlin/0.18.15/195752ae51195c173cc192f2c52f81b1bc041157/cybrid-api-bank-kotlin-0.18.15-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

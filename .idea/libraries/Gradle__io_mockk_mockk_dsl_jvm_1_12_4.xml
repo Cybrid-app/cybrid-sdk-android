@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: io.mockk:mockk-dsl-jvm:1.12.4">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.mockk/mockk-dsl-jvm/1.12.4/1351232d73d3d0f9fe864cfc5ad4f62f7de8060c/mockk-dsl-jvm-1.12.4.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.mockk/mockk-dsl-jvm/1.12.4/1f0b71240e4d9b866084d0099a0c7ecf77940aaf/mockk-dsl-jvm-1.12.4-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.mockk/mockk-dsl-jvm/1.12.4/cec2f6f1ee92389e0676636a8ce54e72ff32cdc8/mockk-dsl-jvm-1.12.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

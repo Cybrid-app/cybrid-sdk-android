@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/DemoApp.iml" filepath="$PROJECT_DIR$/.idea/modules/DemoApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SDKAndroid/DemoApp.SDKAndroid.iml" filepath="$PROJECT_DIR$/.idea/modules/SDKAndroid/DemoApp.SDKAndroid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SDKAndroid/DemoApp.SDKAndroid.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/SDKAndroid/DemoApp.SDKAndroid.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SDKAndroid/DemoApp.SDKAndroid.main.iml" filepath="$PROJECT_DIR$/.idea/modules/SDKAndroid/DemoApp.SDKAndroid.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/SDKAndroid/DemoApp.SDKAndroid.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/SDKAndroid/DemoApp.SDKAndroid.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/DemoApp.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/DemoApp.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/DemoApp.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/DemoApp.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/DemoApp.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/DemoApp.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/DemoApp.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/DemoApp.app.unitTest.iml" />
+    </modules>
+  </component>
+</project>
