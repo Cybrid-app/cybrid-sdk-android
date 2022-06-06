@@ -48,7 +48,6 @@ import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
 
-
 open class ListPricesView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -337,64 +336,74 @@ fun CryptoAssetItem(crypto: SymbolPriceBankModel,
                     onClick: (Int) -> Unit) {
 
     val backgroundColor = if (index == selectedIndex) MaterialTheme.colors.primary else Color.Transparent
-    val asset = vm.findAsset(vm.getSymbol(crypto.symbol!!))
-    val pairAsset = vm.findAsset(vm.getPair(crypto.symbol!!))
-    val imageName = vm.getSymbol(crypto.symbol!!).lowercase()
-    val imageID = getImage(context!!, "ic_${imageName}")
-    val name = asset?.name ?: ""
-    val valueString = BigDecimalPipe.transform(crypto.buyPrice!!, pairAsset!!) ?: ""
-    val value = buildAnnotatedString {
-        append(valueString)
-        withStyle(style = SpanStyle(color = customStyles.itemsCodeTextColor)) {
-            append(" (${pairAsset.code})")
+    if (crypto.symbol != null) {
+
+        val loadingErrorVal = "-1"
+        val asset = vm.findAsset(vm.getSymbol(crypto.symbol!!))
+        val pairAsset = vm.findAsset(vm.getPair(crypto.symbol!!))
+        val imageName = vm.getSymbol(crypto.symbol!!).lowercase()
+        val imageID = getImage(context!!, "ic_${imageName}")
+
+        val name = asset?.name ?: ""
+        val valueString = crypto.buyPrice?.let {
+            if (pairAsset != null) {
+                BigDecimalPipe.transform(it, pairAsset)
+            } else { loadingErrorVal }
+        } ?: loadingErrorVal
+        val value = buildAnnotatedString {
+            append(valueString)
+            withStyle(style = SpanStyle(color = customStyles.itemsCodeTextColor)) {
+                append(" (${pairAsset?.code ?: ""})")
+            }
         }
-    }
+        if (valueString != loadingErrorVal) {
+            Surface(color = backgroundColor) {
 
-    Surface(color = backgroundColor) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(vertical = 0.dp)
+                        .height(56.dp)
+                ) {
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(vertical = 0.dp)
-                .height(56.dp)
-        ) {
-
-            Image(
-                painter = painterResource(id = imageID),
-                contentDescription = "{$name}",
-                modifier = Modifier
-                    .padding(horizontal = 0.dp)
-                    .padding(0.dp)
-                    .size(25.dp),
-                contentScale = ContentScale.Fit
-            )
-            Text(
-                text = name,
-                modifier = Modifier.padding(start = 16.dp),
-                fontFamily = robotoFont,
-                fontWeight = FontWeight.Normal,
-                fontSize = customStyles.itemsTextSize,
-                color = customStyles.itemsTextColor
-            )
-            Text(
-                text = asset?.code ?: "",
-                modifier = Modifier.padding(start = 5.5.dp),
-                fontFamily = robotoFont,
-                fontWeight = FontWeight.Normal,
-                fontSize = customStyles.itemsCodeTextSize,
-                color = customStyles.itemsCodeTextColor
-            )
-            Text(
-                text = value,
-                modifier = Modifier
-                    .padding(end = 0.dp)
-                    .weight(1f),
-                textAlign = TextAlign.End,
-                fontFamily = robotoFont,
-                fontWeight = FontWeight.Normal,
-                fontSize = customStyles.itemsTextPriceSize,
-                color = customStyles.itemsTextColor
-            )
+                    Image(
+                        painter = painterResource(id = imageID),
+                        contentDescription = "{$name}",
+                        modifier = Modifier
+                            .padding(horizontal = 0.dp)
+                            .padding(0.dp)
+                            .size(25.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                    Text(
+                        text = name,
+                        modifier = Modifier.padding(start = 16.dp),
+                        fontFamily = robotoFont,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = customStyles.itemsTextSize,
+                        color = customStyles.itemsTextColor
+                    )
+                    Text(
+                        text = asset?.code ?: "",
+                        modifier = Modifier.padding(start = 5.5.dp),
+                        fontFamily = robotoFont,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = customStyles.itemsCodeTextSize,
+                        color = customStyles.itemsCodeTextColor
+                    )
+                    Text(
+                        text = value,
+                        modifier = Modifier
+                            .padding(end = 0.dp)
+                            .weight(1f),
+                        textAlign = TextAlign.End,
+                        fontFamily = robotoFont,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = customStyles.itemsTextPriceSize,
+                        color = customStyles.itemsTextColor
+                    )
+                }
+            }
         }
     }
 }
