@@ -29,6 +29,7 @@ class App : Application(), CybridSDKEvents {
     override fun onCreate() {
 
         super.onCreate()
+        setupCybridSDK()
     }
 
     fun setupCybridSDK() {
