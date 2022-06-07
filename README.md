@@ -1,3 +1,6 @@
+![CircleCI](https://circleci.com/gh/Cybrid-app/cybrid-sdk-web.svg?style=svg)
+[![codecov](https://codecov.io/gh/Cybrid-app/cybrid-sdk-android/branch/main/graph/badge.svg?token=LTJJFQJWEA)](https://codecov.io/gh/Cybrid-app/cybrid-sdk-android)
+
 # cybrid-android-sdk
 
 This project contains the SDK of Android components that interface with Cybrid's api and a Demo Application.
