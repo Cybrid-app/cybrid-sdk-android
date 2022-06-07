@@ -116,4 +116,6 @@ export CybridAPI_ID = 'OYZBGymNLMcdsjECQkDfHI1lgwSDQ8eZ9N5K592FzM0'
 export CybridAPI_Secret='Au5WnNc8T3w48yhKErdcQoTwj8dknrW2tTx8YiF60Io'
 ```
 
-Then just need to run the demo app inside the emulator or physical device.
+Then `Clean Project` and then `Rebuild Project`.
+
+After this just need to run the demo app inside the emulator or physical device.
