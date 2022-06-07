@@ -1,4 +1,4 @@
-![CircleCI](https://circleci.com/gh/Cybrid-app/cybrid-sdk-web.svg?style=svg)
+![CircleCI](https://circleci.com/gh/Cybrid-app/cybrid-sdk-android.svg?style=svg)
 [![codecov](https://codecov.io/gh/Cybrid-app/cybrid-sdk-android/branch/main/graph/badge.svg?token=LTJJFQJWEA)](https://codecov.io/gh/Cybrid-app/cybrid-sdk-android)
 
 # cybrid-android-sdk
@@ -106,3 +106,14 @@ val cryptoList = findViewById<ListPricesView>(R.id.listPricesView)
 cryptoList.setViewModel(viewModel)
 cryptoList.updateInterval = 2000L
 ```
+
+## Demo App
+
+To run the demo app it's necessary add to enviroment vars into the system
+
+```
+export CybridAPI_ID = 'OYZBGymNLMcdsjECQkDfHI1lgwSDQ8eZ9N5K592FzM0'
+export CybridAPI_Secret='Au5WnNc8T3w48yhKErdcQoTwj8dknrW2tTx8YiF60Io'
+```
+
+Then just need to run the demo app inside the emulator or physical device.
