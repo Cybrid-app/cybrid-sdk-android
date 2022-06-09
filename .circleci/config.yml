@@ -41,7 +41,7 @@ jobs:
           file: 'SDKAndroid/build/reports/kover/project-xml/report.xml'
       - when:
           condition:
-            and:
+            - and:
               - equal: [ main, << pipeline.git.branch >> ]
               - equal: [ "release", << pipeline.parameters.GHA_Event >> ]
           steps:
