@@ -13,8 +13,10 @@ def filesExcluded = [
         'app.cybrid.sdkandroid.core.Constants',
 ]
 
+apply from: '../version.gradle'
+
 group 'app.cybrid'
-version '0.0.3'
+version sdk_version
 
 android {
     compileSdk 32
@@ -145,6 +147,7 @@ publishing {
 
 signing {
 
+    System.out.println("Publish version ${version}")
     def signingPassword = System.getenv('gradle_sonatype_PASSPHRASE')
     def signingKey = null
     if(System.getenv('gradle_sonatype_SECRET')!= null) {

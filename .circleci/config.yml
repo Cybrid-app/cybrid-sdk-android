@@ -4,6 +4,20 @@ orbs:
   codecov: codecov/codecov@3.2.3
   android: circleci/android@2.0.3
 
+parameters:
+  GHA_Event:
+    type: string
+    default: ""
+  GHA_Actor:
+    type: string
+    default: ""
+  GHA_Action:
+    type: string
+    default: ""
+  GHA_Meta:
+    type: string
+    default: ""
+
 jobs:
   android-test:
     docker:
@@ -29,7 +43,13 @@ jobs:
           condition:
             and:
               - equal: [ main, << pipeline.git.branch >> ]
+              - equal: [ "release", << pipeline.parameters.GHA_Event >> ]
           steps:
+            - run:
+                name: Update version tag
+                command: |
+                  export TAG=$(git describe --tags --abbrev=0)
+                  sed -i "s/0.0.0/$(TAG)/" version.gradle
             - run:
                 name: Publish Library
                 command: |
