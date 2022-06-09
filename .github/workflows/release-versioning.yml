@@ -13,11 +13,3 @@ jobs:
       - uses: rymndhng/release-on-push-action@master
         with:
           bump_version_scheme: patch
-  trigger-circleci:
-    needs: release-on-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger circleci
-        uses: CircleCI-Public/trigger-circleci-pipeline-action@v1.0.4
-        env:
-          CCI_TOKEN: ${{ secrets.CCI_TOKEN }}

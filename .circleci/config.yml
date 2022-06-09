@@ -43,13 +43,12 @@ jobs:
           condition:
             and:
               - equal: [ main, << pipeline.git.branch >> ]
-              - equal: [ "release", << pipeline.parameters.GHA_Event >> ]
           steps:
             - run:
                 name: Update version tag
                 command: |
                   export TAG=$(git describe --tags --abbrev=0)
-                  sed -i "s/0.0.0/$(TAG)/" version.gradle
+                  sed -i "s/0.0.0/$TAG/" version.gradle
             - run:
                 name: Publish Library
                 command: |
