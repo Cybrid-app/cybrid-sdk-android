@@ -112,8 +112,8 @@ cryptoList.updateInterval = 2000L
 To run the demo app it's necessary add to enviroment vars into the system
 
 ```
-export CybridAPI_ID = 'OYZBGymNLMcdsjECQkDfHI1lgwSDQ8eZ9N5K592FzM0'
-export CybridAPI_Secret='Au5WnNc8T3w48yhKErdcQoTwj8dknrW2tTx8YiF60Io'
+export CybridAPI_ID = 'XXXX'
+export CybridAPI_Secret = 'XXXX'
 ```
 
 Then `Clean Project` and then `Rebuild Project`.
