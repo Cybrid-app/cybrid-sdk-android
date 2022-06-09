@@ -43,7 +43,7 @@ jobs:
           condition:
             - and:
               - equal: [ main, << pipeline.git.branch >> ]
-              - equal: [ "release", << pipeline.parameters.GHA_Event >> ]
+              - equal: [ release, << pipeline.parameters.GHA_Event >> ]
           steps:
             - run:
               name: Update version tag
