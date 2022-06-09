@@ -41,16 +41,15 @@ jobs:
           file: 'SDKAndroid/build/reports/kover/project-xml/report.xml'
       - when:
           condition:
-            - and:
+            and:
               - equal: [ main, << pipeline.git.branch >> ]
-              - equal: [ release, << pipeline.parameters.GHA_Event >> ]
+              - equal: [ "release", << pipeline.parameters.GHA_Event >> ]
           steps:
             - run:
-              name: Update version tag
-              command: |
-                cd dist/library
-                export TAG=$(git describe --tags --abbrev=0)
-                sed -i "s/0.0.0/$(TAG)/" version.gradle
+                name: Update version tag
+                command: |
+                  export TAG=$(git describe --tags --abbrev=0)
+                  sed -i "s/0.0.0/$(TAG)/" version.gradle
             - run:
                 name: Publish Library
                 command: |
