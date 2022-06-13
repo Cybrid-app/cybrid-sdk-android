@@ -47,6 +47,7 @@ jobs:
             - run:
                 name: Update version tag
                 command: |
+                  git fetch
                   export TAG=$(git describe --tags --abbrev=0)
                   sed -i "s/0.0.0/$TAG/" version.gradle
             - run:
