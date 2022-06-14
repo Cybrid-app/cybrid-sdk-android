@@ -10,4 +10,6 @@
     <string name="activity_list_prices_assets_component_title">Crypto List Component</string>
     <string name="activity_list_prices_assets_component_sub_title">Crypto List Component - Custom Styles</string>
 
+    <string name="activity_trade_flow_title">Buy Bitcoin</string>
+
 </resources>

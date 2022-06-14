@@ -59,6 +59,7 @@ open class ListPricesView @JvmOverloads constructor(
      * **/
     var updateInterval = 5000L
     var type:ListPricesViewType = ListPricesViewType.Normal
+    var onClick:(Int) -> Unit = {}
 
     private var _viewModel: ListPricesViewModel? = null
     private var _handler:Handler? = null
@@ -124,7 +125,8 @@ open class ListPricesView @JvmOverloads constructor(
                 type = type,
                 viewModel = _viewModel,
                 context = context,
-                customStyles = customStyles
+                customStyles = customStyles,
+                onClick = this.onClick
             ).apply {
                 setViewCompositionStrategy(
                     ViewCompositionStrategy.DisposeOnLifecycleDestroyed(LocalLifecycleOwner.current)
@@ -163,7 +165,8 @@ fun CryptoList(
     type: ListPricesViewType,
     viewModel: ListPricesViewModel? = null,
     context: Context? = null,
-    customStyles: ListPricesViewCustomStyles) {
+    customStyles: ListPricesViewCustomStyles,
+    onClick: (Int) -> Unit) {
 
     var selectedIndex by remember { mutableStateOf(-1) }
     val textState = remember { mutableStateOf(TextFieldValue("")) }
@@ -198,10 +201,9 @@ fun CryptoList(
                         index = index,
                         selectedIndex = selectedIndex,
                         context = context,
-                        customStyles = customStyles
-                    ) {
-                        selectedIndex = it
-                    }
+                        customStyles = customStyles,
+                        onClick = onClick
+                    )
                 } else {
                     CryptoItem(
                         crypto = item,
@@ -364,6 +366,7 @@ fun CryptoAssetItem(crypto: SymbolPriceBankModel,
                     modifier = Modifier
                         .padding(vertical = 0.dp)
                         .height(56.dp)
+                        .clickable { onClick(index) },
                 ) {
 
                     Image(
@@ -464,7 +467,8 @@ fun cryptoListPreview() {
     CryptoList(
         cryptoList = listOf(),
         type = ListPricesViewType.Assets,
-        customStyles = ListPricesViewCustomStyles())
+        customStyles = ListPricesViewCustomStyles(),
+        onClick = {})
 }
 
 /**
