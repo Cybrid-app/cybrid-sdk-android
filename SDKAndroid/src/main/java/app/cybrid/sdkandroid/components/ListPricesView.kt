@@ -167,7 +167,7 @@ fun CryptoList(
     viewModel: ListPricesViewModel? = null,
     context: Context? = null,
     customStyles: ListPricesViewCustomStyles,
-    onClick: (AssetBankModel, AssetBankModel) -> Unit) {
+    onClick: (asset:AssetBankModel, pairAsset:AssetBankModel) -> Unit) {
 
     var selectedIndex by remember { mutableStateOf(-1) }
     val textState = remember { mutableStateOf(TextFieldValue("")) }
@@ -336,7 +336,8 @@ fun CryptoAssetItem(crypto: SymbolPriceBankModel,
                     index:Int, selectedIndex:Int,
                     context: Context? = null,
                     customStyles: ListPricesViewCustomStyles,
-                    onClick: (AssetBankModel, AssetBankModel) -> Unit) {
+                    onClick: (asset:AssetBankModel,
+                              pairAsset:AssetBankModel) -> Unit) {
 
     val backgroundColor = if (index == selectedIndex) MaterialTheme.colors.primary else Color.Transparent
     if (crypto.symbol != null) {
