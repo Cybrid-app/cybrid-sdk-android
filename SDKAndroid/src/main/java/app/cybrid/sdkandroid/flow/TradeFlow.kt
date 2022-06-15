@@ -2,10 +2,9 @@ package app.cybrid.sdkandroid.flow
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.KeyEvent.ACTION_DOWN
 import android.view.LayoutInflater
-import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -20,14 +19,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
@@ -42,7 +38,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -60,7 +55,6 @@ import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 
-@ExperimentalComposeUiApi
 class TradeFlow @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -110,20 +104,26 @@ class TradeFlow @JvmOverloads constructor(
             it?.setContent {
                 Column {
 
+                    // -- Crypto List
+                    val cryptoList = listPricesViewModel?.getCryptoListAsset() ?: listOf()
+
                     // -- Focus
                     val focusManager = LocalFocusManager.current
 
-                    val cryptoList = listPricesViewModel?.getCryptoListAsset() ?: listOf()
-                    val state = remember { mutableStateOf("") }
+                    // -- Value Input Type
+                    var currentValueInput = remember { mutableStateOf(AssetBankModel.Type.fiat) }
+                    val valueInput = remember { mutableStateOf("") }
+                    val valueLabelHintAsset = if (currentValueInput.value == AssetBankModel.Type.fiat) pairAsset else asset
                     val amountHint = buildAnnotatedString {
                         append(stringResource(id = R.string.trade_flow_text_field_amount_placeholder))
-                        withStyle(style = SpanStyle(color = colorResource(id = R.color.list_prices_asset_component_code_color))) {
-                            append(" ${pairAsset.code}")
+                        withStyle(style = SpanStyle(
+                            color = colorResource(id = R.color.list_prices_asset_component_code_color))) {
+                            append(" ${valueLabelHintAsset.code}")
                         }
                     }
                     val amountLabel = buildAnnotatedString {
                         append(stringResource(id = R.string.trade_flow_text_field_amount_placeholder))
-                        append(" ${pairAsset.code}")
+                        append(" ${valueLabelHintAsset.code}")
                     }
 
                     // -- DropDown
@@ -140,9 +140,9 @@ class TradeFlow @JvmOverloads constructor(
                         fontSize = 23.sp
                     )
                     OutlinedTextField(
-                        value = state.value,
+                        value = valueInput.value,
                         onValueChange = { value ->
-                            state.value = value
+                            valueInput.value = value
                         },
                         label = {
                             Text(
@@ -166,15 +166,7 @@ class TradeFlow @JvmOverloads constructor(
                             .padding(top = 30.dp)
                             .padding(horizontal = 2.dp)
                             .height(58.dp)
-                            .fillMaxWidth()
-                            .onPreviewKeyEvent { it ->
-                                if (it.key == Key.Tab && it.nativeKeyEvent.action == ACTION_DOWN) {
-                                    focusManager.moveFocus(FocusDirection.Down)
-                                    true
-                                } else {
-                                    false
-                                }
-                            },
+                            .fillMaxWidth(),
                         shape = RoundedCornerShape(4.dp),
                         textStyle = TextStyle(
                             fontFamily = robotoFont,
@@ -203,9 +195,11 @@ class TradeFlow @JvmOverloads constructor(
                             .height(21.dp)
                             .align(Alignment.End)
                             .clickable {
-                                Toast
-                                    .makeText(context, "Swap clicked", Toast.LENGTH_LONG)
-                                    .show()
+                                if (currentValueInput.value == AssetBankModel.Type.fiat) {
+                                    currentValueInput.value = AssetBankModel.Type.crypto
+                                } else {
+                                    currentValueInput.value = AssetBankModel.Type.fiat
+                                }
                             }
                     )
 
@@ -239,7 +233,6 @@ class TradeFlow @JvmOverloads constructor(
                                 textFieldSize.value = coordinates.size.toSize()
                             },
                         trailingIcon = {
-
                             Icon(
                                 icon,
                                 contentDescription = "",
@@ -274,8 +267,7 @@ class TradeFlow @JvmOverloads constructor(
                     ) {
                         cryptoList.forEach { crypto ->
 
-                            val imageName = crypto.code.lowercase()
-                            val imageID = getImage(context, "ic_${imageName}")
+                            val imageID = getImageID(crypto.code.lowercase())
                             DropdownMenuItem(
                                 onClick = {
 
@@ -291,7 +283,7 @@ class TradeFlow @JvmOverloads constructor(
 
                                     Image(
                                         painter = painterResource(id = imageID),
-                                        contentDescription = "{$imageName}",
+                                        contentDescription = "{$imageID}",
                                         modifier = Modifier
                                             .padding(horizontal = 0.dp)
                                             .padding(0.dp)
@@ -320,38 +312,83 @@ class TradeFlow @JvmOverloads constructor(
                     }
 
                     // --
-                    if (!expanded.value && state.value != "") {
+                    if (!expanded.value && valueInput.value != "") {
 
                         // -- Get latest price
                         listPricesViewModel?.getListPrices()
                         val symbol = "${currencyState.value.code}-${pairAsset.code}"
 
-                        val stateInt = state.value.toInt()
+                        val stateInt = valueInput.value.toInt()
                         val buyPrice = listPricesViewModel?.getBuyPrice(symbol)
                         val buyPriceDecimal = BigDecimal(buyPrice?.buyPrice ?: 0)
+                        var amount = "0"
+                        var codeAssetToUse:AssetBankModel? = null
 
-                        val baseValue = AssetPipe.transform(
-                            stateInt,
-                            pairAsset,
-                            "base"
-                        )
-                        val amount = baseValue.divL(buyPriceDecimal).toPlainString()
-                        val amountStyled = buildAnnotatedString {
-                            append(amount)
-                            withStyle(style = SpanStyle(color = colorResource(id = R.color.list_prices_asset_component_code_color))) {
-                                append(" ${currencyState.value.code}")
+                        when(currentValueInput.value) {
+
+                            AssetBankModel.Type.crypto -> {
+
+                                codeAssetToUse = pairAsset
+                                val value = BigDecimal(stateInt).times(buyPriceDecimal)
+                                amount =  BigDecimalPipe.transform(value, pairAsset)!!
                             }
+
+                            AssetBankModel.Type.fiat -> {
+
+                                codeAssetToUse = currencyState.value
+                                val baseValue = AssetPipe.transform(
+                                    stateInt,
+                                    pairAsset,
+                                    "base"
+                                )
+                                val value = baseValue.divL(buyPriceDecimal)
+                                amount = value.toPlainString()
+                            }
+
+                            else -> {}
                         }
 
+                        val amountStyled = buildAnnotatedString {
+                            append(amount)
+                            withStyle(style = SpanStyle(
+                                color = colorResource(id = R.color.list_prices_asset_component_code_color))) {
+                                append(" ${codeAssetToUse?.code}")
+                            }
+                        }
                         Text(
                             text = amountStyled,
                             modifier = Modifier
                                 .padding(top = 31.dp)
                                 .padding(horizontal = 2.dp)
                         )
+                        // -- Buy/Sell Button
+                        Button(
+                            onClick = {},
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(top = 11.dp, end = 11.dp)
+                                .width(60.dp)
+                                .height(44.dp),
+                            shape = RoundedCornerShape(4.dp),
+                            elevation = ButtonDefaults.elevation(
+                                defaultElevation = 4.dp,
+                                pressedElevation = 4.dp,
+                                disabledElevation = 0.dp
+                            ),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = colorResource(id = R.color.primary_color),
+                                contentColor = Color.White
+                            )
+                        ) {
+                            Text(text = "Buy")
+                        }
                     }
                 }
             }
         }
+    }
+
+    private fun getImageID(name:String) : Int {
+        return getImage(context, "ic_${name}")
     }
 }
