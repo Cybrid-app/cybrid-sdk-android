@@ -135,6 +135,21 @@ class BigDecimalTest {
     }
 
     @Test
+    fun divLTest() {
+
+        // -- Given
+        val bigDecimal1 = BigDecimal(10)
+        val bigDecimal2 = BigDecimal(2)
+        val expected = BigDecimal(5)
+
+        // -- When
+        val minusValue = bigDecimal1.divL(bigDecimal2)
+
+        // -- Then
+        Assert.assertEquals(minusValue, expected)
+    }
+
+    @Test
     fun powTest() {
 
         // -- Given

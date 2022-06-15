@@ -32,6 +32,9 @@ class BigDecimalPipeTest {
     fun transformTest() {
 
         // -- Given
+        val zeroBigDecimal = BigDecimal.ZERO
+
+        // -- When
         val transformBTC1 = BigDecimalPipe.transform(0, TestConstants.BTC_ASSET)
         val transformETH1 = BigDecimalPipe.transform(0, TestConstants.ETH_ASSET)
         val transformCAD1 = BigDecimalPipe.transform(0, TestConstants.CAD_ASSET)
@@ -39,8 +42,7 @@ class BigDecimalPipeTest {
         val transformETH2 = BigDecimalPipe.transform(1, TestConstants.ETH_ASSET)
         val transformCAD2 = BigDecimalPipe.transform(1, TestConstants.CAD_ASSET)
         val transformBTC3 = BigDecimalPipe.transform("0", TestConstants.BTC_ASSET)
-
-        // -- When
+        val transformBTC4 = BigDecimalPipe.transform(zeroBigDecimal, TestConstants.BTC_ASSET)
 
         // -- Then
         Assert.assertEquals(transformBTC1, "₿0.00")
@@ -50,6 +52,7 @@ class BigDecimalPipeTest {
         Assert.assertEquals(transformETH2, "Ξ0.000000000000000001")
         Assert.assertEquals(transformCAD2, "$0.01")
         Assert.assertEquals(transformBTC3, "₿0.00")
+        Assert.assertEquals(transformBTC4, "₿0.00")
     }
 
     @Test

@@ -6,11 +6,11 @@ class AssetPipe {
 
     companion object {
 
-        fun transform(value:String, asset: AssetBankModel, unit: String = "formatted") : BigDecimal {
+        fun transform(value:String, asset: AssetBankModel, unit: String = "base") : BigDecimal {
             return transformAny(value.toInt(), asset, unit)
         }
 
-        fun transform(value:Int, asset: AssetBankModel, unit: String = "formatted") : BigDecimal {
+        fun transform(value:Int, asset: AssetBankModel, unit: String = "base") : BigDecimal {
             return transformAny(value, asset, unit)
         }
 
@@ -20,12 +20,12 @@ class AssetPipe {
             val tradeUnit = BigDecimal(value).div(divisor)
             val baseUnit = BigDecimal(value).times(divisor)
 
-            when(unit) {
+            return when(unit) {
 
-                "trade" -> return tradeUnit
-                "base" -> return baseUnit
+                "trade" -> tradeUnit
+                "base" -> baseUnit
+                else -> BigDecimal.ZERO
             }
-            return BigDecimal.ZERO
         }
     }
 }
