@@ -33,26 +33,57 @@ class BigDecimalPipeTest {
 
         // -- Given
         val zeroBigDecimal = BigDecimal.ZERO
+        val oneBigDecimal = BigDecimal(1)
 
         // -- When
         val transformBTC1 = BigDecimalPipe.transform(0, TestConstants.BTC_ASSET)
         val transformETH1 = BigDecimalPipe.transform(0, TestConstants.ETH_ASSET)
         val transformCAD1 = BigDecimalPipe.transform(0, TestConstants.CAD_ASSET)
+
         val transformBTC2 = BigDecimalPipe.transform(1, TestConstants.BTC_ASSET)
         val transformETH2 = BigDecimalPipe.transform(1, TestConstants.ETH_ASSET)
         val transformCAD2 = BigDecimalPipe.transform(1, TestConstants.CAD_ASSET)
-        val transformBTC3 = BigDecimalPipe.transform("0", TestConstants.BTC_ASSET)
-        val transformBTC4 = BigDecimalPipe.transform(zeroBigDecimal, TestConstants.BTC_ASSET)
+
+        val transformBTCStr1 = BigDecimalPipe.transform("0", TestConstants.BTC_ASSET)
+        val transformETHStr1 = BigDecimalPipe.transform("0", TestConstants.ETH_ASSET)
+        val transformCADStr1 = BigDecimalPipe.transform("0", TestConstants.CAD_ASSET)
+
+        val transformBTCStr2 = BigDecimalPipe.transform("1", TestConstants.BTC_ASSET)
+        val transformETHStr2 = BigDecimalPipe.transform("1", TestConstants.ETH_ASSET)
+        val transformCADStr2 = BigDecimalPipe.transform("1", TestConstants.CAD_ASSET)
+
+        val transformBTCBD1 = BigDecimalPipe.transform(zeroBigDecimal, TestConstants.BTC_ASSET)
+        val transformETHBD1 = BigDecimalPipe.transform(zeroBigDecimal, TestConstants.ETH_ASSET)
+        val transformCADBD1 = BigDecimalPipe.transform(zeroBigDecimal, TestConstants.CAD_ASSET)
+
+        val transformBTCBD2 = BigDecimalPipe.transform(oneBigDecimal, TestConstants.BTC_ASSET)
+        val transformETHBD2 = BigDecimalPipe.transform(oneBigDecimal, TestConstants.ETH_ASSET)
+        val transformCADBD2 = BigDecimalPipe.transform(oneBigDecimal, TestConstants.CAD_ASSET)
 
         // -- Then
         Assert.assertEquals(transformBTC1, "₿0.00")
         Assert.assertEquals(transformETH1, "Ξ0.00")
         Assert.assertEquals(transformCAD1, "$0.00")
+
         Assert.assertEquals(transformBTC2, "₿0.00000001")
         Assert.assertEquals(transformETH2, "Ξ0.000000000000000001")
         Assert.assertEquals(transformCAD2, "$0.01")
-        Assert.assertEquals(transformBTC3, "₿0.00")
-        Assert.assertEquals(transformBTC4, "₿0.00")
+
+        Assert.assertEquals(transformBTCStr1, "₿0.00")
+        Assert.assertEquals(transformETHStr1, "Ξ0.00")
+        Assert.assertEquals(transformCADStr1, "$0.00")
+
+        Assert.assertEquals(transformBTCStr2, "₿0.00000001")
+        Assert.assertEquals(transformETHStr2, "Ξ0.000000000000000001")
+        Assert.assertEquals(transformCADStr2, "$0.01")
+
+        Assert.assertEquals(transformBTCBD1, "₿0.00")
+        Assert.assertEquals(transformETHBD1, "Ξ0.00")
+        Assert.assertEquals(transformCADBD1, "$0.00")
+
+        Assert.assertEquals(transformBTCBD2, "₿0.00000001")
+        Assert.assertEquals(transformETHBD2, "Ξ0.000000000000000001")
+        Assert.assertEquals(transformCADBD2, "$0.01")
     }
 
     @Test

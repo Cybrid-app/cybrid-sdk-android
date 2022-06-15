@@ -111,9 +111,10 @@ class TradeFlow @JvmOverloads constructor(
                     val focusManager = LocalFocusManager.current
 
                     // -- Value Input Type
+                    val currencyState = remember { mutableStateOf(asset) }
                     var currentValueInput = remember { mutableStateOf(AssetBankModel.Type.fiat) }
                     val valueInput = remember { mutableStateOf("") }
-                    val valueLabelHintAsset = if (currentValueInput.value == AssetBankModel.Type.fiat) pairAsset else asset
+                    val valueLabelHintAsset = if (currentValueInput.value == AssetBankModel.Type.fiat) pairAsset else currencyState.value
                     val amountHint = buildAnnotatedString {
                         append(stringResource(id = R.string.trade_flow_text_field_amount_placeholder))
                         withStyle(style = SpanStyle(
@@ -127,13 +128,12 @@ class TradeFlow @JvmOverloads constructor(
                     }
 
                     // -- DropDown
-                    val currencyState = remember { mutableStateOf(asset) }
                     val expanded = remember { mutableStateOf(false) }
                     val textFieldSize = remember { mutableStateOf(Size.Zero) }
                     val icon = Icons.Filled.ArrowDropDown
 
                     Text(
-                        text = "Buy ${asset.name}",
+                        text = "Buy ${currencyState.value.name}",
                         textAlign = TextAlign.Left,
                         fontFamily = robotoFont,
                         fontWeight = FontWeight.Medium,
@@ -299,7 +299,7 @@ class TradeFlow @JvmOverloads constructor(
                                         color = Color.Black
                                     )
                                     Text(
-                                        text = asset.code,
+                                        text = crypto.code,
                                         modifier = Modifier.padding(start = 5.5.dp),
                                         fontFamily = robotoFont,
                                         fontWeight = FontWeight.Normal,

@@ -6,11 +6,11 @@ class AssetPipe {
 
     companion object {
 
-        fun transform(value:String, asset: AssetBankModel, unit: String = "base") : BigDecimal {
+        fun transform(value:String, asset: AssetBankModel, unit: String) : BigDecimal {
             return transformAny(value.toInt(), asset, unit)
         }
 
-        fun transform(value:Int, asset: AssetBankModel, unit: String = "base") : BigDecimal {
+        fun transform(value:Int, asset: AssetBankModel, unit: String) : BigDecimal {
             return transformAny(value, asset, unit)
         }
 

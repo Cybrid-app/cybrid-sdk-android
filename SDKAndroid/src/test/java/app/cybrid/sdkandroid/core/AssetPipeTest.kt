@@ -38,17 +38,20 @@ class AssetPipeTest {
 
         val result1 = BigDecimal(500)
         val result2 = BigDecimal(0.05).setScale(2)
+        val result3 = BigDecimal.ZERO
 
         // -- When
         val transformCAD1String = AssetPipe.transform(valueString, asset, "base")
         val transformCAD2String = AssetPipe.transform(valueString, asset, "trade")
         val transformCAD1Int = AssetPipe.transform(valueInt, asset, "base")
         val transformCAD2Int = AssetPipe.transform(valueInt, asset, "trade")
+        val transformZero = AssetPipe.transform(valueInt, asset, "")
 
         // -- Then
         Assert.assertEquals(transformCAD1String, result1)
         Assert.assertEquals(transformCAD2String, result2)
         Assert.assertEquals(transformCAD1Int, result1)
         Assert.assertEquals(transformCAD2Int, result2)
+        Assert.assertEquals(transformZero, result3)
     }
 }
