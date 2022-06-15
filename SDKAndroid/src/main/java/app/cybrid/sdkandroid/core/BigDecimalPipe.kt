@@ -8,6 +8,14 @@ class BigDecimalPipe {
 
     companion object {
 
+        fun transform(value: BigDecimal, asset:AssetBankModel): String? {
+
+            val divisor = BigDecimal(10).pow(asset.decimals)
+            val baseUnit = value.div(divisor)
+            val prefix = if (value == BigDecimal.ZERO) "${asset.symbol}0" else asset.symbol
+            return transformAny(baseUnit, asset, prefix)
+        }
+
         fun transform(value: Int, asset:AssetBankModel): String? {
 
             val divisor = BigDecimal(10).pow(asset.decimals)

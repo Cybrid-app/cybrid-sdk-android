@@ -31,6 +31,10 @@ class BigDecimal(internal val value:JavaBigDecimal) : Comparable<BigDecimal> {
         return BigDecimal(value.divide(divisor.value, MathContext.UNLIMITED))
     }
 
+    fun divL(divisor: BigDecimal): BigDecimal {
+        return BigDecimal(value.divide(divisor.value, MathContext.DECIMAL64))
+    }
+
     fun pow(n: BigDecimal): BigDecimal {
         return BigDecimal(value.pow(n.value.toInt()))
     }
