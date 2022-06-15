@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
@@ -59,6 +60,7 @@ open class ListPricesView @JvmOverloads constructor(
      * **/
     var updateInterval = 5000L
     var type:ListPricesViewType = ListPricesViewType.Normal
+    var onClick:(AssetBankModel, AssetBankModel) -> Unit = { asset, pairAsset -> }
 
     private var _viewModel: ListPricesViewModel? = null
     private var _handler:Handler? = null
@@ -124,7 +126,8 @@ open class ListPricesView @JvmOverloads constructor(
                 type = type,
                 viewModel = _viewModel,
                 context = context,
-                customStyles = customStyles
+                customStyles = customStyles,
+                onClick = this.onClick
             ).apply {
                 setViewCompositionStrategy(
                     ViewCompositionStrategy.DisposeOnLifecycleDestroyed(LocalLifecycleOwner.current)
@@ -163,7 +166,8 @@ fun CryptoList(
     type: ListPricesViewType,
     viewModel: ListPricesViewModel? = null,
     context: Context? = null,
-    customStyles: ListPricesViewCustomStyles) {
+    customStyles: ListPricesViewCustomStyles,
+    onClick: (AssetBankModel, AssetBankModel) -> Unit) {
 
     var selectedIndex by remember { mutableStateOf(-1) }
     val textState = remember { mutableStateOf(TextFieldValue("")) }
@@ -198,10 +202,9 @@ fun CryptoList(
                         index = index,
                         selectedIndex = selectedIndex,
                         context = context,
-                        customStyles = customStyles
-                    ) {
-                        selectedIndex = it
-                    }
+                        customStyles = customStyles,
+                        onClick = onClick
+                    )
                 } else {
                     CryptoItem(
                         crypto = item,
@@ -333,7 +336,7 @@ fun CryptoAssetItem(crypto: SymbolPriceBankModel,
                     index:Int, selectedIndex:Int,
                     context: Context? = null,
                     customStyles: ListPricesViewCustomStyles,
-                    onClick: (Int) -> Unit) {
+                    onClick: (AssetBankModel, AssetBankModel) -> Unit) {
 
     val backgroundColor = if (index == selectedIndex) MaterialTheme.colors.primary else Color.Transparent
     if (crypto.symbol != null) {
@@ -364,6 +367,7 @@ fun CryptoAssetItem(crypto: SymbolPriceBankModel,
                     modifier = Modifier
                         .padding(vertical = 0.dp)
                         .height(56.dp)
+                        .clickable { onClick(asset!!, pairAsset!!) },
                 ) {
 
                     Image(
@@ -464,7 +468,8 @@ fun cryptoListPreview() {
     CryptoList(
         cryptoList = listOf(),
         type = ListPricesViewType.Assets,
-        customStyles = ListPricesViewCustomStyles())
+        customStyles = ListPricesViewCustomStyles(),
+        onClick = {it, it2 ->})
 }
 
 /**

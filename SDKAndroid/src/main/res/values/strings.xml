@@ -5,4 +5,6 @@
     <string name="list_prices_asset_component_header_currency">Currency</string>
     <string name="list_prices_asset_component_header_price">Price</string>
 
+    <string name="trade_flow_text_field_amount_placeholder">Amount </string>
+
 </resources>

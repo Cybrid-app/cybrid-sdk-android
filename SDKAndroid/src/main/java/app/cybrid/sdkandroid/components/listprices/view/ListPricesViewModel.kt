@@ -22,7 +22,7 @@ class ListPricesViewModel : ViewModel() {
 
     var prices:List<SymbolPriceBankModel> by mutableStateOf(listOf())
     private var assetsResponse:AssetListBankModel? = null
-    var assets:List<AssetBankModel> = mutableListOf()
+    var assets:List<AssetBankModel> by mutableStateOf(listOf())
 
     fun getListPrices(symbol: String? = null) {
 
@@ -70,6 +70,13 @@ class ListPricesViewModel : ViewModel() {
         }
     }
 
+    fun getCryptoListAsset() : List<AssetBankModel> {
+
+        return ArrayList(this.assets.filter {
+            it.type == AssetBankModel.Type.crypto
+        })
+    }
+
     fun getSymbol(symbol: String): String {
 
         val symbolParts = symbol.split("-")
@@ -85,5 +92,18 @@ class ListPricesViewModel : ViewModel() {
     fun findAsset(symbol: String): AssetBankModel? {
         val a = assets.find { it.code == symbol }
         return a
+    }
+
+    fun getBuyPrice(symbol: String): SymbolPriceBankModel {
+
+        var ret = SymbolPriceBankModel()
+        this.prices.let {
+            this.prices.forEach { item ->
+                if (item.symbol == symbol) {
+                    ret = item
+                }
+            }
+        }
+        return ret
     }
 }

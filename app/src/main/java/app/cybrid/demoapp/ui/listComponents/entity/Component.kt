@@ -24,6 +24,10 @@ class Component() {
             val pricesAssetsComponents = Component(2, "ListPrices + Assets Component")
             components.add(pricesAssetsComponents)
 
+            // -- Trade Flow
+            val tradeFlow = Component(3, "TradeFlow")
+            components.add(tradeFlow)
+
             // --
             return components
         }
