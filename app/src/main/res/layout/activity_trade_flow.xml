@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.tradeFlow.TradeFlowActivity">
+    tools:context=".ui.tradeFlow.TradeFlowActivity"
+    android:background="@color/white">
 
     <app.cybrid.sdkandroid.flow.TradeFlow
         android:id="@+id/tradeFlow"

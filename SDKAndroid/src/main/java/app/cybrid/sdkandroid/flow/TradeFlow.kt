@@ -5,6 +5,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -13,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.LaunchedEffect
@@ -61,7 +63,7 @@ class TradeFlow @JvmOverloads constructor(
     defStyle: Int = 0,
 ) : ConstraintLayout(context, attrs, defStyle) {
 
-    var listPricesView:ListPricesView? = null
+    private var listPricesView:ListPricesView? = null
     private var listPricesViewModel:ListPricesViewModel? = null
     private var composeContent:ComposeView? = null
 
@@ -93,10 +95,10 @@ class TradeFlow @JvmOverloads constructor(
         this.listPricesView?.visibility = GONE
         this.composeContent = this.findViewById(R.id.composeContent)
         this.composeContent?.visibility = VISIBLE
-        this.setComposeContent(asset, pairAsset)
+        this.setComposePreQuoteContent(asset, pairAsset)
     }
 
-    private fun setComposeContent(
+    private fun setComposePreQuoteContent(
         asset:AssetBankModel, pairAsset:AssetBankModel
     ) {
 
@@ -110,9 +112,12 @@ class TradeFlow @JvmOverloads constructor(
                     // -- Focus
                     val focusManager = LocalFocusManager.current
 
+                    // -- Tabs
+                    val tabs = listOf("BUY", "SELL")
+
                     // -- Value Input Type
                     val currencyState = remember { mutableStateOf(asset) }
-                    var currentValueInput = remember { mutableStateOf(AssetBankModel.Type.fiat) }
+                    val currentValueInput = remember { mutableStateOf(AssetBankModel.Type.fiat) }
                     val valueInput = remember { mutableStateOf("") }
                     val valueLabelHintAsset = if (currentValueInput.value == AssetBankModel.Type.fiat) pairAsset else currencyState.value
                     val amountHint = buildAnnotatedString {
@@ -130,15 +135,40 @@ class TradeFlow @JvmOverloads constructor(
                     // -- DropDown
                     val expanded = remember { mutableStateOf(false) }
                     val textFieldSize = remember { mutableStateOf(Size.Zero) }
+                    val selectedTabIndex = remember { mutableStateOf(0) }
                     val icon = Icons.Filled.ArrowDropDown
 
-                    Text(
-                        text = "Buy ${currencyState.value.name}",
-                        textAlign = TextAlign.Left,
-                        fontFamily = robotoFont,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 23.sp
-                    )
+                    TabRow(
+                        selectedTabIndex = selectedTabIndex.value,
+                        backgroundColor = Color.Transparent,
+                        indicator = { tabs ->
+                            Box(
+                                Modifier
+                                    .tabIndicatorOffset(tabs[selectedTabIndex.value])
+                                    .height(2.dp)
+                                    .border(3.5.dp, colorResource(id = R.color.primary_color))
+                            )
+                        }
+                    ) {
+                        tabs.forEachIndexed { index, tabItem ->
+                            Tab(
+                                selected = selectedTabIndex.value == index,
+                                onClick = {
+                                    selectedTabIndex.value = index
+                                },
+                                selectedContentColor = colorResource(id = R.color.primary_color),
+                                unselectedContentColor = colorResource(id = R.color.list_prices_asset_component_code_color),
+                                text = {
+                                    Text(
+                                        text = tabItem,
+                                        fontFamily = robotoFont,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp
+                                    )
+                                }
+                            )
+                        }
+                    }
                     OutlinedTextField(
                         value = valueInput.value,
                         onValueChange = { value ->
@@ -176,7 +206,6 @@ class TradeFlow @JvmOverloads constructor(
                         singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
                             textColor = Color.Black,
-
                             cursorColor = colorResource(id = R.color.primary_color),
                             backgroundColor = Color.Transparent,
                             focusedIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color),
@@ -357,6 +386,9 @@ class TradeFlow @JvmOverloads constructor(
                         }
                         Text(
                             text = amountStyled,
+                            fontFamily = robotoFont,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
                             modifier = Modifier
                                 .padding(top = 31.dp)
                                 .padding(horizontal = 2.dp)
@@ -380,7 +412,7 @@ class TradeFlow @JvmOverloads constructor(
                                 contentColor = Color.White
                             )
                         ) {
-                            Text(text = "Buy")
+                            Text(text = "BUY")
                         }
                     }
                 }
