@@ -75,7 +75,7 @@ class TradeFlow @JvmOverloads constructor(
         this.listPricesView = findViewById(R.id.list)
     }
 
-    fun setListPricesVideModel(viewModel: ListPricesViewModel) {
+    fun setListPricesViewModel(viewModel: ListPricesViewModel) {
 
         this.listPricesViewModel = viewModel
         this.listPricesView.let {

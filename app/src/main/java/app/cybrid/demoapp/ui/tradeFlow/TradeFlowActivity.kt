@@ -8,6 +8,7 @@ import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.flow.TradeFlow
 
 class TradeFlowActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -18,6 +19,6 @@ class TradeFlowActivity : AppCompatActivity() {
 
         // --
         val tradeFlow:TradeFlow = findViewById(R.id.tradeFlow)
-        tradeFlow.setListPricesVideModel(viewModel)
+        tradeFlow.setListPricesViewModel(viewModel)
     }
 }
