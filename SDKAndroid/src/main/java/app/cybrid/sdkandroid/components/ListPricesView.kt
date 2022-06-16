@@ -36,7 +36,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -55,20 +54,15 @@ open class ListPricesView @JvmOverloads constructor(
     defStyle: Int = 0,
 ) : AbstractComposeView(context, attrs, defStyle) {
 
-    /**
-     * Public values for time interval refresh and list type
-     * **/
     var updateInterval = 5000L
     var type:ListPricesViewType = ListPricesViewType.Normal
-    var onClick:(AssetBankModel, AssetBankModel) -> Unit = { asset, pairAsset -> }
+    var customStyles = ListPricesViewCustomStyles()
+    var onClick:(AssetBankModel, AssetBankModel) -> Unit = { _, _ -> }
 
     private var _viewModel: ListPricesViewModel? = null
     private var _handler:Handler? = null
     private var _runnable:Runnable? = null
-
-    // -- Custom Styles and values
-    var customStyles = ListPricesViewCustomStyles()
-
+    
     init {
 
         Logger.log(LoggerEvents.COMPONENT_INIT, "ListPricesView Component")
@@ -167,7 +161,7 @@ fun CryptoList(
     viewModel: ListPricesViewModel? = null,
     context: Context? = null,
     customStyles: ListPricesViewCustomStyles,
-    onClick: (asset:AssetBankModel, pairAsset:AssetBankModel) -> Unit) {
+    onClick: (asset: AssetBankModel, pairAsset: AssetBankModel) -> Unit) {
 
     var selectedIndex by remember { mutableStateOf(-1) }
     val textState = remember { mutableStateOf(TextFieldValue("")) }
@@ -283,7 +277,7 @@ fun SearchView(state: MutableState<TextFieldValue>) {
 
 @Composable
 fun CryptoItem(crypto: SymbolPriceBankModel,
-               index:Int, selectedIndex:Int,
+               index: Int, selectedIndex: Int,
                onClick: (Int) -> Unit) {
 
     val backgroundColor = if (index == selectedIndex) MaterialTheme.colors.primary else MaterialTheme.colors.background
@@ -333,11 +327,11 @@ fun CryptoItem(crypto: SymbolPriceBankModel,
 @Composable
 fun CryptoAssetItem(crypto: SymbolPriceBankModel,
                     vm:ListPricesViewModel,
-                    index:Int, selectedIndex:Int,
+                    index: Int, selectedIndex: Int,
                     context: Context? = null,
                     customStyles: ListPricesViewCustomStyles,
-                    onClick: (asset:AssetBankModel,
-                              pairAsset:AssetBankModel) -> Unit) {
+                    onClick: (asset: AssetBankModel,
+                              pairAsset: AssetBankModel) -> Unit) {
 
     val backgroundColor = if (index == selectedIndex) MaterialTheme.colors.primary else Color.Transparent
     if (crypto.symbol != null) {
