@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_prices_asset_component_search">Chercher</string>
+    <string name="list_prices_asset_component_header_currency">Devise</string>
+    <string name="list_prices_asset_component_header_price">Le prix</string>
+
+    <string name="trade_flow_text_field_amount_placeholder">Montant </string>
+    <string name="trade_flow_buy_action_button">ACHETER</string>
+    <string name="trade_flow_sell_action_button">VENDRE</string>
+    <string-array name="trade_flow_tabs">
+        <item>ACHETER</item>
+        <item>VENDRE</item>
+    </string-array>
+</resources>

@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
+import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.runtime.LaunchedEffect
@@ -20,7 +21,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -38,7 +39,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,9 +61,10 @@ class TradeFlow @JvmOverloads constructor(
     defStyle: Int = 0,
 ) : ConstraintLayout(context, attrs, defStyle) {
 
-    var listPricesView:ListPricesView? = null
-    private var listPricesViewModel:ListPricesViewModel? = null
-    private var composeContent:ComposeView? = null
+    var listPricesView: ListPricesView? = null
+
+    private var listPricesViewModel: ListPricesViewModel? = null
+    private var composeContent: ComposeView? = null
 
     init {
 
@@ -74,7 +75,7 @@ class TradeFlow @JvmOverloads constructor(
         this.listPricesView = findViewById(R.id.list)
     }
 
-    fun setListPricesVideModel(viewModel:ListPricesViewModel) {
+    fun setListPricesViewModel(viewModel: ListPricesViewModel) {
 
         this.listPricesViewModel = viewModel
         this.listPricesView.let {
@@ -88,16 +89,16 @@ class TradeFlow @JvmOverloads constructor(
 
     // -- PreQuote
     private fun initComposePreQuoteComponent(
-        asset:AssetBankModel, pairAsset:AssetBankModel
+        asset: AssetBankModel, pairAsset: AssetBankModel
     ) {
         this.listPricesView?.visibility = GONE
         this.composeContent = this.findViewById(R.id.composeContent)
         this.composeContent?.visibility = VISIBLE
-        this.setComposeContent(asset, pairAsset)
+        this.setComposePreQuoteContent(asset, pairAsset)
     }
 
-    private fun setComposeContent(
-        asset:AssetBankModel, pairAsset:AssetBankModel
+    private fun setComposePreQuoteContent(
+        asset: AssetBankModel, pairAsset: AssetBankModel
     ) {
 
         this.composeContent.let {
@@ -110,9 +111,12 @@ class TradeFlow @JvmOverloads constructor(
                     // -- Focus
                     val focusManager = LocalFocusManager.current
 
+                    // -- Tabs
+                    val tabs = stringArrayResource(id = R.array.trade_flow_tabs)
+
                     // -- Value Input Type
                     val currencyState = remember { mutableStateOf(asset) }
-                    var currentValueInput = remember { mutableStateOf(AssetBankModel.Type.fiat) }
+                    val currentValueInput = remember { mutableStateOf(AssetBankModel.Type.fiat) }
                     val valueInput = remember { mutableStateOf("") }
                     val valueLabelHintAsset = if (currentValueInput.value == AssetBankModel.Type.fiat) pairAsset else currencyState.value
                     val amountHint = buildAnnotatedString {
@@ -130,15 +134,40 @@ class TradeFlow @JvmOverloads constructor(
                     // -- DropDown
                     val expanded = remember { mutableStateOf(false) }
                     val textFieldSize = remember { mutableStateOf(Size.Zero) }
+                    val selectedTabIndex = remember { mutableStateOf(0) }
                     val icon = Icons.Filled.ArrowDropDown
 
-                    Text(
-                        text = "Buy ${currencyState.value.name}",
-                        textAlign = TextAlign.Left,
-                        fontFamily = robotoFont,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 23.sp
-                    )
+                    TabRow(
+                        selectedTabIndex = selectedTabIndex.value,
+                        backgroundColor = Color.Transparent,
+                        indicator = { tabsIndicators ->
+                            Box(
+                                Modifier
+                                    .tabIndicatorOffset(tabsIndicators[selectedTabIndex.value])
+                                    .height(2.dp)
+                                    .border(3.5.dp, colorResource(id = R.color.primary_color))
+                            )
+                        }
+                    ) {
+                        tabs.forEachIndexed { index, tabItem ->
+                            Tab(
+                                selected = selectedTabIndex.value == index,
+                                onClick = {
+                                    selectedTabIndex.value = index
+                                },
+                                selectedContentColor = colorResource(id = R.color.primary_color),
+                                unselectedContentColor = colorResource(id = R.color.list_prices_asset_component_code_color),
+                                text = {
+                                    Text(
+                                        text = tabItem,
+                                        fontFamily = robotoFont,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp
+                                    )
+                                }
+                            )
+                        }
+                    }
                     OutlinedTextField(
                         value = valueInput.value,
                         onValueChange = { value ->
@@ -176,7 +205,6 @@ class TradeFlow @JvmOverloads constructor(
                         singleLine = true,
                         colors = TextFieldDefaults.textFieldColors(
                             textColor = Color.Black,
-
                             cursorColor = colorResource(id = R.color.primary_color),
                             backgroundColor = Color.Transparent,
                             focusedIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color),
@@ -206,14 +234,12 @@ class TradeFlow @JvmOverloads constructor(
                     // -- Spinner
                     OutlinedTextField(
                         value = currencyState.value.name,
-                        onValueChange = { value ->
-                            //currencyState.value = value
-                        },
+                        onValueChange = {},
                         interactionSource = remember { MutableInteractionSource() }
                             .also { interactionSource ->
                                 LaunchedEffect(interactionSource) {
-                                    interactionSource.interactions.collect {
-                                        if (it is PressInteraction.Release) {
+                                    interactionSource.interactions.collect { iteration ->
+                                        if (iteration is PressInteraction.Release) {
                                             expanded.value = !expanded.value
                                         }
                                     }
@@ -357,6 +383,9 @@ class TradeFlow @JvmOverloads constructor(
                         }
                         Text(
                             text = amountStyled,
+                            fontFamily = robotoFont,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
                             modifier = Modifier
                                 .padding(top = 31.dp)
                                 .padding(horizontal = 2.dp)
@@ -367,7 +396,7 @@ class TradeFlow @JvmOverloads constructor(
                             modifier = Modifier
                                 .align(Alignment.End)
                                 .padding(top = 11.dp, end = 11.dp)
-                                .width(60.dp)
+                                .width(75.dp)
                                 .height(44.dp),
                             shape = RoundedCornerShape(4.dp),
                             elevation = ButtonDefaults.elevation(
@@ -380,7 +409,13 @@ class TradeFlow @JvmOverloads constructor(
                                 contentColor = Color.White
                             )
                         ) {
-                            Text(text = "Buy")
+                            Text(
+                                text = stringResource(id = R.string.trade_flow_buy_action_button),
+                                color = Color.White,
+                                fontFamily = robotoFont,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp,
+                            )
                         }
                     }
                 }
@@ -388,7 +423,7 @@ class TradeFlow @JvmOverloads constructor(
         }
     }
 
-    private fun getImageID(name:String) : Int {
+    private fun getImageID(name: String) : Int {
         return getImage(context, "ic_${name}")
     }
 }

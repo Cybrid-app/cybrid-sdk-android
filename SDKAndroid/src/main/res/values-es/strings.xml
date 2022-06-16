@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="list_prices_asset_component_search">Busqueda</string>
+    <string name="list_prices_asset_component_header_currency">Divisa</string>
+    <string name="list_prices_asset_component_header_price">Precio</string>
+
+    <string name="trade_flow_text_field_amount_placeholder">Cantidad </string>
+    <string name="trade_flow_buy_action_button">COMPRAR</string>
+    <string name="trade_flow_sell_action_button">VENDER</string>
+    <string-array name="trade_flow_tabs">
+        <item>COMPRAR</item>
+        <item>VENDER</item>
+    </string-array>
+</resources>
