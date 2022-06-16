@@ -55,14 +55,14 @@ open class ListPricesView @JvmOverloads constructor(
 ) : AbstractComposeView(context, attrs, defStyle) {
 
     var updateInterval = 5000L
-    var type:ListPricesViewType = ListPricesViewType.Normal
+    var type: ListPricesViewType = ListPricesViewType.Normal
     var customStyles = ListPricesViewCustomStyles()
-    var onClick:(AssetBankModel, AssetBankModel) -> Unit = { _, _ -> }
+    var onClick: (AssetBankModel, AssetBankModel) -> Unit = { _, _ -> }
 
     private var _viewModel: ListPricesViewModel? = null
-    private var _handler:Handler? = null
-    private var _runnable:Runnable? = null
-    
+    private var _handler: Handler? = null
+    private var _runnable: Runnable? = null
+
     init {
 
         Logger.log(LoggerEvents.COMPONENT_INIT, "ListPricesView Component")

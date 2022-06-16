@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -22,7 +21,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -41,7 +39,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,9 +61,10 @@ class TradeFlow @JvmOverloads constructor(
     defStyle: Int = 0,
 ) : ConstraintLayout(context, attrs, defStyle) {
 
-    private var listPricesView:ListPricesView? = null
-    private var listPricesViewModel:ListPricesViewModel? = null
-    private var composeContent:ComposeView? = null
+    var listPricesView: ListPricesView? = null
+
+    private var listPricesViewModel: ListPricesViewModel? = null
+    private var composeContent: ComposeView? = null
 
     init {
 
@@ -77,7 +75,7 @@ class TradeFlow @JvmOverloads constructor(
         this.listPricesView = findViewById(R.id.list)
     }
 
-    fun setListPricesVideModel(viewModel:ListPricesViewModel) {
+    fun setListPricesVideModel(viewModel: ListPricesViewModel) {
 
         this.listPricesViewModel = viewModel
         this.listPricesView.let {
@@ -91,7 +89,7 @@ class TradeFlow @JvmOverloads constructor(
 
     // -- PreQuote
     private fun initComposePreQuoteComponent(
-        asset:AssetBankModel, pairAsset:AssetBankModel
+        asset: AssetBankModel, pairAsset: AssetBankModel
     ) {
         this.listPricesView?.visibility = GONE
         this.composeContent = this.findViewById(R.id.composeContent)
@@ -100,7 +98,7 @@ class TradeFlow @JvmOverloads constructor(
     }
 
     private fun setComposePreQuoteContent(
-        asset:AssetBankModel, pairAsset:AssetBankModel
+        asset: AssetBankModel, pairAsset: AssetBankModel
     ) {
 
         this.composeContent.let {
@@ -236,14 +234,12 @@ class TradeFlow @JvmOverloads constructor(
                     // -- Spinner
                     OutlinedTextField(
                         value = currencyState.value.name,
-                        onValueChange = { value ->
-                            //currencyState.value = value
-                        },
+                        onValueChange = {},
                         interactionSource = remember { MutableInteractionSource() }
                             .also { interactionSource ->
                                 LaunchedEffect(interactionSource) {
-                                    interactionSource.interactions.collect {
-                                        if (it is PressInteraction.Release) {
+                                    interactionSource.interactions.collect { iteration ->
+                                        if (iteration is PressInteraction.Release) {
                                             expanded.value = !expanded.value
                                         }
                                     }
@@ -427,7 +423,7 @@ class TradeFlow @JvmOverloads constructor(
         }
     }
 
-    private fun getImageID(name:String) : Int {
+    private fun getImageID(name: String) : Int {
         return getImage(context, "ic_${name}")
     }
 }
