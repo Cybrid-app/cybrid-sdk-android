@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -113,7 +114,7 @@ class TradeFlow @JvmOverloads constructor(
                     val focusManager = LocalFocusManager.current
 
                     // -- Tabs
-                    val tabs = listOf("BUY", "SELL")
+                    val tabs = stringArrayResource(id = R.array.trade_flow_tabs)
 
                     // -- Value Input Type
                     val currencyState = remember { mutableStateOf(asset) }
@@ -141,10 +142,10 @@ class TradeFlow @JvmOverloads constructor(
                     TabRow(
                         selectedTabIndex = selectedTabIndex.value,
                         backgroundColor = Color.Transparent,
-                        indicator = { tabs ->
+                        indicator = { tabsIndicators ->
                             Box(
                                 Modifier
-                                    .tabIndicatorOffset(tabs[selectedTabIndex.value])
+                                    .tabIndicatorOffset(tabsIndicators[selectedTabIndex.value])
                                     .height(2.dp)
                                     .border(3.5.dp, colorResource(id = R.color.primary_color))
                             )
@@ -399,7 +400,7 @@ class TradeFlow @JvmOverloads constructor(
                             modifier = Modifier
                                 .align(Alignment.End)
                                 .padding(top = 11.dp, end = 11.dp)
-                                .width(60.dp)
+                                .width(75.dp)
                                 .height(44.dp),
                             shape = RoundedCornerShape(4.dp),
                             elevation = ButtonDefaults.elevation(
@@ -412,7 +413,13 @@ class TradeFlow @JvmOverloads constructor(
                                 contentColor = Color.White
                             )
                         ) {
-                            Text(text = "BUY")
+                            Text(
+                                text = stringResource(id = R.string.trade_flow_buy_action_button),
+                                color = Color.White,
+                                fontFamily = robotoFont,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp,
+                            )
                         }
                     }
                 }
