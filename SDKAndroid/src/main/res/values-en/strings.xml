@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="list_prices_asset_component_search">Search</string>
     <string name="list_prices_asset_component_header_currency">Currency</string>
     <string name="list_prices_asset_component_header_price">Price</string>
@@ -12,5 +11,4 @@
         <item>BUY</item>
         <item>SELL</item>
     </string-array>
-
 </resources>
