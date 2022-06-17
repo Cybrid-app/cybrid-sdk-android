@@ -12,6 +12,8 @@ import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -213,6 +215,13 @@ class TradeFlow @JvmOverloads constructor(
         expandedCurrencyInput: MutableState<Boolean>,
         currencyInputWidth: MutableState<Size>) {
 
+        val icon = if (expandedCurrencyInput.value) {
+            Icons.Filled.ArrowDropUp
+        } else {
+            Icons.Filled.ArrowDropDown
+        }
+
+        // -- Content
         Text(
             modifier = Modifier
                 .padding(top = 27.dp)
@@ -224,6 +233,7 @@ class TradeFlow @JvmOverloads constructor(
             fontSize = 13.sp
         )
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(top = 8.dp)
                 .padding(horizontal = 2.dp)
@@ -246,14 +256,14 @@ class TradeFlow @JvmOverloads constructor(
                 painter = painterResource(id = getImageID(currencyState.value.code.lowercase())),
                 contentDescription = currencyState.value.name,
                 modifier = Modifier
-                    .padding(top = 12.dp, start = 16.dp)
+                    .padding(start = 16.dp)
                     .size(32.dp),
                 contentScale = ContentScale.Fit
             )
             Text(
                 text = currencyState.value.name,
                 modifier = Modifier
-                    .padding(start = 10.dp, top = 18.dp),
+                    .padding(start = 10.dp),
                 fontFamily = robotoFont,
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.5.sp,
@@ -262,21 +272,19 @@ class TradeFlow @JvmOverloads constructor(
             Text(
                 text = currencyState.value.code,
                 modifier = Modifier
-                    .padding(start = 5.5.dp, top = 18.dp),
+                    .padding(start = 5.5.dp),
                 fontFamily = robotoFont,
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.5.sp,
                 color = colorResource(id = R.color.list_prices_asset_component_code_color)
             )
-            Spacer(modifier = Modifier.weight(0.5f))
+            Spacer(modifier = Modifier.weight(1f))
             Icon(
-                Icons.Filled.ArrowDropDown,
+                icon,
                 contentDescription = "",
                 modifier = Modifier
-                    .width(45.dp)
-                    .height(45.dp)
                     .size(30.dp)
-                    .padding(top = 19.dp, end = 3.dp)
+                    .padding(end = 5.dp, top = 5.dp)
                     .clickable { expandedCurrencyInput.value = !expandedCurrencyInput.value }
             )
         }
@@ -354,16 +362,12 @@ class TradeFlow @JvmOverloads constructor(
         val focusManager = LocalFocusManager.current
 
         // -- Labels and placeholders
-        val amountHint = buildAnnotatedString {
+        val valueHint = buildAnnotatedString {
             append(stringResource(id = R.string.trade_flow_text_field_amount_placeholder))
             withStyle(style = SpanStyle(
                 color = colorResource(id = R.color.list_prices_asset_component_code_color))) {
-                append(" ${valueAsset.value.code}")
+                append(" (${valueAsset.value.code})")
             }
-        }
-        val amountLabel = buildAnnotatedString {
-            append(stringResource(id = R.string.trade_flow_text_field_amount_placeholder))
-            append(" ${valueAsset.value.code}")
         }
 
         // -- Content
@@ -371,7 +375,7 @@ class TradeFlow @JvmOverloads constructor(
             modifier = Modifier
                 .padding(top = 29.dp)
                 .padding(horizontal = 1.dp),
-            text = amountLabel,
+            text = valueHint,
             fontFamily = robotoFont,
             fontWeight = FontWeight.Normal,
             fontSize = 13.sp
@@ -383,7 +387,7 @@ class TradeFlow @JvmOverloads constructor(
             },
             placeholder = {
                 Text(
-                    text = amountHint,
+                    text = valueHint,
                     color = colorResource(id = R.color.black)
                 )
             },
@@ -481,14 +485,14 @@ class TradeFlow @JvmOverloads constructor(
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp
             )
-            Image(
-                painter = painterResource(id = R.drawable.ic_change),
-                contentDescription = "Change icon to crypto-fiat",
-                contentScale = ContentScale.Crop,
+            Icon(
+                Icons.Filled.SwapVert,
+                contentDescription = "",
+                tint = colorResource(id = R.color.primary_color),
                 modifier = Modifier
-                    .padding(start = 9.dp)
-                    .width(15.dp)
-                    .height(20.dp)
+                    .padding(start = 6.dp)
+                    .width(17.dp)
+                    .height(23.dp)
                     .clickable {
                         if (typeOfValueState.value == AssetBankModel.Type.fiat) {
                             typeOfValueState.value = AssetBankModel.Type.crypto
