@@ -3,9 +3,7 @@ package app.cybrid.sdkandroid.flow
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
@@ -16,6 +14,7 @@ import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -168,6 +167,10 @@ class TradeFlow @JvmOverloads constructor(
                             )
                         }
                     }
+
+                    CryptoCurrencyInput()
+
+
                     OutlinedTextField(
                         value = valueInput.value,
                         onValueChange = { value ->
@@ -420,6 +423,35 @@ class TradeFlow @JvmOverloads constructor(
                     }
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun CryptoCurrencyInput() {
+
+        Text(
+            modifier = Modifier
+                .padding(top = 27.dp)
+                .padding(horizontal = 1.dp),
+            text = "Crypto Currency",
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal,
+            fontSize = 13.sp
+        )
+        Row(
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .padding(horizontal = 2.dp)
+                .height(56.dp)
+                .fillMaxWidth()
+                .background(Color.White)
+                .border(
+                    border = BorderStroke(1.15.dp,
+                        colorResource(id = R.color.custom_input_color_border)),
+                    shape = RoundedCornerShape(4.dp)
+                )
+        ) {
+            Text(text = "Hola mundo")
         }
     }
 
