@@ -115,7 +115,7 @@ class TradeFlow @JvmOverloads constructor(
 
                     // -- Currency Input --> DropDown
                     val expandedCurrencyInput = remember { mutableStateOf(false) }
-                    val textFieldSize = remember { mutableStateOf(Size.Zero) }
+                    val currencyInputWidth = remember { mutableStateOf(Size.Zero) }
                     val selectedTabIndex = remember { mutableStateOf(0) }
                     val icon = Icons.Filled.ArrowDropDown
 
@@ -135,88 +135,24 @@ class TradeFlow @JvmOverloads constructor(
                         append(" ${valueLabelHintAsset.code}")
                     }
 
-                    TabRow(
-                        selectedTabIndex = selectedTabIndex.value,
-                        backgroundColor = Color.Transparent,
-                        indicator = { tabsIndicators ->
-                            Box(
-                                Modifier
-                                    .tabIndicatorOffset(tabsIndicators[selectedTabIndex.value])
-                                    .height(2.dp)
-                                    .border(3.5.dp, colorResource(id = R.color.primary_color))
-                            )
-                        }
-                    ) {
-                        tabs.forEachIndexed { index, tabItem ->
-                            Tab(
-                                selected = selectedTabIndex.value == index,
-                                onClick = {
-                                    selectedTabIndex.value = index
-                                },
-                                selectedContentColor = colorResource(id = R.color.primary_color),
-                                unselectedContentColor = colorResource(id = R.color.list_prices_asset_component_code_color),
-                                text = {
-                                    Text(
-                                        text = tabItem,
-                                        fontFamily = robotoFont,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp
-                                    )
-                                }
-                            )
-                        }
-                    }
+                    CryptoHeaderTabs(
+                        selectedTabIndex = selectedTabIndex,
+                        tabs = tabs
+                    )
 
                     CryptoCurrencyInput(
-                        asset = currencyState,
-                        expandedCurrencyInput = expandedCurrencyInput
+                        currencyState = currencyState,
+                        expandedCurrencyInput = expandedCurrencyInput,
+                        currencyInputWidth = currencyInputWidth
                     )
 
-
-                    OutlinedTextField(
-                        value = valueInput.value,
-                        onValueChange = { value ->
-                            valueInput.value = value
-                        },
-                        label = {
-                            Text(
-                                text = amountLabel
-                            )
-                        },
-                        placeholder = {
-                            Text(
-                                text = amountHint,
-                                color = colorResource(id = R.color.black)
-                            )
-                        },
-                        keyboardActions = KeyboardActions(
-                            onNext = { focusManager.moveFocus(FocusDirection.Next) }
-                        ),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number,
-                            imeAction = ImeAction.Next
-                        ),
-                        modifier = Modifier
-                            .padding(top = 30.dp)
-                            .padding(horizontal = 2.dp)
-                            .height(58.dp)
-                            .fillMaxWidth(),
-                        shape = RoundedCornerShape(4.dp),
-                        textStyle = TextStyle(
-                            fontFamily = robotoFont,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        singleLine = true,
-                        colors = TextFieldDefaults.textFieldColors(
-                            textColor = Color.Black,
-                            cursorColor = colorResource(id = R.color.primary_color),
-                            backgroundColor = Color.Transparent,
-                            focusedIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color),
-                            unfocusedIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color),
-                            disabledIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color)
-                        )
+                    CryptoCurrencyDropDown(
+                        currencyState = currencyState,
+                        expandedCurrencyInput = expandedCurrencyInput,
+                        currencyInputWidth = currencyInputWidth,
+                        cryptoList = cryptoList
                     )
+
                     Image(
                         painter = painterResource(id = R.drawable.ic_change),
                         contentDescription = "Change icon to crypto-fiat",
@@ -235,112 +171,6 @@ class TradeFlow @JvmOverloads constructor(
                                 }
                             }
                     )
-
-                    // -- Spinner
-                    OutlinedTextField(
-                        value = currencyState.value.name,
-                        onValueChange = {},
-                        interactionSource = remember { MutableInteractionSource() }
-                            .also { interactionSource ->
-                                LaunchedEffect(interactionSource) {
-                                    interactionSource.interactions.collect { iteration ->
-                                        if (iteration is PressInteraction.Release) {
-                                            expandedCurrencyInput.value = !expandedCurrencyInput.value
-                                        }
-                                    }
-                                }
-                            },
-                        label = {
-                            Text(
-                                text = "Currency"
-                            )
-                        },
-                        modifier = Modifier
-                            .padding(top = 14.dp)
-                            .padding(horizontal = 2.dp)
-                            .height(58.dp)
-                            .fillMaxWidth()
-                            .onGloballyPositioned { coordinates ->
-                                textFieldSize.value = coordinates.size.toSize()
-                            },
-                        trailingIcon =  {
-                            Icon(
-                                icon,
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .size(25.dp)
-                                    .clickable { expandedCurrencyInput.value = !expandedCurrencyInput.value }
-                            )
-                        },
-                        shape = RoundedCornerShape(4.dp),
-                        textStyle = TextStyle(
-                            fontFamily = robotoFont,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        singleLine = true,
-                        colors = TextFieldDefaults.textFieldColors(
-                            textColor = Color.Black,
-                            cursorColor = colorResource(id = R.color.primary_color),
-                            backgroundColor = Color.Transparent,
-                            trailingIconColor = colorResource(id = R.color.list_prices_asset_component_code_color),
-                            focusedIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color),
-                            unfocusedIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color),
-                            disabledIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color)
-                        )
-                    )
-                    DropdownMenu(
-                        expanded = expandedCurrencyInput.value,
-                        onDismissRequest = { expandedCurrencyInput.value = false },
-                        modifier = Modifier
-                            .width(with(LocalDensity.current) { textFieldSize.value.width.toDp() })
-                            .padding(horizontal = 2.dp)
-                    ) {
-                        cryptoList.forEach { crypto ->
-
-                            val imageID = getImageID(crypto.code.lowercase())
-                            DropdownMenuItem(
-                                onClick = {
-
-                                    currencyState.value = crypto
-                                    expandedCurrencyInput.value = false
-                                }
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .padding(vertical = 0.dp)
-                                ) {
-
-                                    Image(
-                                        painter = painterResource(id = imageID),
-                                        contentDescription = "{$imageID}",
-                                        modifier = Modifier
-                                            .padding(horizontal = 0.dp)
-                                            .padding(0.dp)
-                                            .size(25.dp),
-                                        contentScale = ContentScale.Fit
-                                    )
-                                    Text(
-                                        text = crypto.name,
-                                        modifier = Modifier.padding(start = 16.dp),
-                                        fontFamily = robotoFont,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 16.sp,
-                                        color = Color.Black
-                                    )
-                                    Text(
-                                        text = crypto.code,
-                                        modifier = Modifier.padding(start = 5.5.dp),
-                                        fontFamily = robotoFont,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 16.sp,
-                                        color = colorResource(id = R.color.list_prices_asset_component_code_color)
-                                    )
-                                }
-                            }
-                        }
-                    }
 
                     // --
                     if (!expandedCurrencyInput.value && valueInput.value != "") {
@@ -429,9 +259,48 @@ class TradeFlow @JvmOverloads constructor(
     }
 
     @Composable
+    private fun CryptoHeaderTabs(
+        selectedTabIndex: MutableState<Int>,
+        tabs: Array<String>) {
+
+        TabRow(
+            selectedTabIndex = selectedTabIndex.value,
+            backgroundColor = Color.Transparent,
+            indicator = { tabsIndicators ->
+                Box(
+                    Modifier
+                        .tabIndicatorOffset(tabsIndicators[selectedTabIndex.value])
+                        .height(2.dp)
+                        .border(3.5.dp, colorResource(id = R.color.primary_color))
+                )
+            }
+        ) {
+            tabs.forEachIndexed { index, tabItem ->
+                Tab(
+                    selected = selectedTabIndex.value == index,
+                    onClick = {
+                        selectedTabIndex.value = index
+                    },
+                    selectedContentColor = colorResource(id = R.color.primary_color),
+                    unselectedContentColor = colorResource(id = R.color.list_prices_asset_component_code_color),
+                    text = {
+                        Text(
+                            text = tabItem,
+                            fontFamily = robotoFont,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                    }
+                )
+            }
+        }
+    }
+
+    @Composable
     private fun CryptoCurrencyInput(
-        asset: MutableState<AssetBankModel>,
-        expandedCurrencyInput: MutableState<Boolean>) {
+        currencyState: MutableState<AssetBankModel>,
+        expandedCurrencyInput: MutableState<Boolean>,
+        currencyInputWidth: MutableState<Size>) {
 
         Text(
             modifier = Modifier
@@ -448,6 +317,9 @@ class TradeFlow @JvmOverloads constructor(
                 .padding(horizontal = 2.dp)
                 .height(56.dp)
                 .fillMaxWidth()
+                .onGloballyPositioned { coordinates ->
+                    currencyInputWidth.value = coordinates.size.toSize()
+                }
                 .background(Color.White)
                 .border(
                     border = BorderStroke(
@@ -459,15 +331,15 @@ class TradeFlow @JvmOverloads constructor(
                 .clickable { expandedCurrencyInput.value = !expandedCurrencyInput.value }
         ) {
             Image(
-                painter = painterResource(id = getImageID(asset.value.code.lowercase())),
-                contentDescription = asset.value.name,
+                painter = painterResource(id = getImageID(currencyState.value.code.lowercase())),
+                contentDescription = currencyState.value.name,
                 modifier = Modifier
                     .padding(top = 12.dp, start = 16.dp)
                     .size(32.dp),
                 contentScale = ContentScale.Fit
             )
             Text(
-                text = asset.value.name,
+                text = currencyState.value.name,
                 modifier = Modifier
                     .padding(start = 10.dp, top = 18.dp),
                 fontFamily = robotoFont,
@@ -476,7 +348,7 @@ class TradeFlow @JvmOverloads constructor(
                 color = Color.Black
             )
             Text(
-                text = asset.value.code,
+                text = currencyState.value.code,
                 modifier = Modifier
                     .padding(start = 5.5.dp, top = 18.dp),
                 fontFamily = robotoFont,
@@ -495,6 +367,68 @@ class TradeFlow @JvmOverloads constructor(
                     .padding(top = 19.dp, end = 3.dp)
                     .clickable { /*expanded.value = !expanded.value*/ }
             )
+        }
+    }
+
+    @Composable
+    private fun CryptoCurrencyDropDown(
+        currencyState: MutableState<AssetBankModel>,
+        expandedCurrencyInput: MutableState<Boolean>,
+        currencyInputWidth: MutableState<Size>,
+        cryptoList: List<AssetBankModel>
+    ) {
+
+        DropdownMenu(
+            expanded = expandedCurrencyInput.value,
+            onDismissRequest = { expandedCurrencyInput.value = false },
+            modifier = Modifier
+                .width(with(LocalDensity.current) { currencyInputWidth.value.width.toDp() })
+                .padding(horizontal = 2.dp)
+        ) {
+            cryptoList.forEach { crypto ->
+
+                val imageID = getImageID(crypto.code.lowercase())
+                DropdownMenuItem(
+                    onClick = {
+
+                        currencyState.value = crypto
+                        expandedCurrencyInput.value = false
+                    }
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(vertical = 0.dp)
+                    ) {
+
+                        Image(
+                            painter = painterResource(id = imageID),
+                            contentDescription = "{$imageID}",
+                            modifier = Modifier
+                                .padding(horizontal = 0.dp)
+                                .padding(0.dp)
+                                .size(25.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                        Text(
+                            text = crypto.name,
+                            modifier = Modifier.padding(start = 16.dp),
+                            fontFamily = robotoFont,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
+                            color = Color.Black
+                        )
+                        Text(
+                            text = crypto.code,
+                            modifier = Modifier.padding(start = 5.5.dp),
+                            fontFamily = robotoFont,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
+                            color = colorResource(id = R.color.list_prices_asset_component_code_color)
+                        )
+                    }
+                }
+            }
         }
     }
 
