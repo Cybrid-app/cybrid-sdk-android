@@ -4,8 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -106,6 +104,7 @@ class TradeFlow @JvmOverloads constructor(
 
                     // -- Tabs
                     val tabs = stringArrayResource(id = R.array.trade_flow_tabs)
+                    val selectedTabIndex = remember { mutableStateOf(0) }
 
                     // -- Currency input
                     val currencyState = remember { mutableStateOf(asset) }
@@ -113,7 +112,6 @@ class TradeFlow @JvmOverloads constructor(
                     // -- Currency Input --> DropDown
                     val expandedCurrencyInput = remember { mutableStateOf(false) }
                     val currencyInputWidth = remember { mutableStateOf(Size.Zero) }
-                    val selectedTabIndex = remember { mutableStateOf(0) }
 
                     // -- Value Input
                     val typeOfValueState = remember { mutableStateOf(AssetBankModel.Type.fiat) }
@@ -141,10 +139,28 @@ class TradeFlow @JvmOverloads constructor(
                         cryptoList = cryptoList
                     )
 
-                    CryptoValueInput(
-                        valueState = valueState,
-                        valueAsset = valueAsset
-                    )
+                    if (!expandedCurrencyInput.value) {
+
+                        CryptoValueInput(
+                            valueState = valueState,
+                            valueAsset = valueAsset
+                        )
+
+                        if (valueState.value != "") {
+
+                            CryptoCurrencyValueResult(
+                                currencyState = currencyState,
+                                valueState = valueState,
+                                valueAsset = valueAsset,
+                                pairAsset = pairAsset,
+                                typeOfValueState = typeOfValueState
+                            )
+
+                            CryptoActionButton(
+                                selectedTabIndex = selectedTabIndex
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -257,7 +273,7 @@ class TradeFlow @JvmOverloads constructor(
                     .height(45.dp)
                     .size(30.dp)
                     .padding(top = 19.dp, end = 3.dp)
-                    .clickable { /*expanded.value = !expanded.value*/ }
+                    .clickable { expandedCurrencyInput.value = !expandedCurrencyInput.value }
             )
         }
     }
@@ -368,11 +384,12 @@ class TradeFlow @JvmOverloads constructor(
                 )
             },
             keyboardActions = KeyboardActions(
-                onNext = { focusManager.moveFocus(FocusDirection.Next) }
+                onNext = { focusManager.moveFocus(FocusDirection.Next) },
+                onDone = { focusManager.clearFocus(true) }
             ),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
+                imeAction = ImeAction.Done
             ),
             modifier = Modifier
                 .padding(top = 8.dp)
@@ -395,6 +412,134 @@ class TradeFlow @JvmOverloads constructor(
                 disabledIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color)
             )
         )
+    }
+
+    @Composable
+    private fun CryptoCurrencyValueResult(
+        currencyState: MutableState<AssetBankModel>,
+        valueState: MutableState<String>,
+        valueAsset: MutableState<AssetBankModel>,
+        pairAsset: AssetBankModel,
+        typeOfValueState: MutableState<AssetBankModel.Type>
+    ) {
+
+        val symbol = "${currencyState.value.code}-${pairAsset.code}"
+        val stateInt = valueState.value.toInt()
+        val buyPrice = listPricesViewModel?.getBuyPrice(symbol)
+        val buyPriceDecimal = BigDecimal(buyPrice?.buyPrice ?: 0)
+        var amount = "0"
+        var codeAssetToUse:AssetBankModel? = null
+
+        when(typeOfValueState.value) {
+
+            AssetBankModel.Type.crypto -> {
+
+                valueAsset.value = currencyState.value
+                codeAssetToUse = pairAsset
+                val value = BigDecimal(stateInt).times(buyPriceDecimal)
+                amount =  BigDecimalPipe.transform(value, pairAsset)!!
+            }
+
+            AssetBankModel.Type.fiat -> {
+
+                valueAsset.value = pairAsset
+                codeAssetToUse = currencyState.value
+                val baseValue = AssetPipe.transform(
+                    stateInt,
+                    pairAsset,
+                    "base"
+                )
+                val value = baseValue.divL(buyPriceDecimal)
+                amount = value.toPlainString()
+            }
+
+            else -> {}
+        }
+
+        val amountStyled = buildAnnotatedString {
+            append(amount)
+            withStyle(style = SpanStyle(
+                color = colorResource(id = R.color.list_prices_asset_component_code_color))) {
+                append(" ${codeAssetToUse?.code}")
+            }
+        }
+
+        // -- Content
+        Row(
+            modifier = Modifier
+                .padding(top = 11.dp)
+                .padding(horizontal = 2.dp)
+        ) {
+
+            Text(
+                text = amountStyled,
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp
+            )
+            Image(
+                painter = painterResource(id = R.drawable.ic_change),
+                contentDescription = "Change icon to crypto-fiat",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .padding(start = 9.dp)
+                    .width(15.dp)
+                    .height(20.dp)
+                    .clickable {
+                        if (typeOfValueState.value == AssetBankModel.Type.fiat) {
+                            typeOfValueState.value = AssetBankModel.Type.crypto
+                        } else {
+                            typeOfValueState.value = AssetBankModel.Type.fiat
+                        }
+                    }
+            )
+        }
+    }
+
+    @Composable
+    private fun CryptoActionButton(
+        selectedTabIndex: MutableState<Int>
+    ) {
+
+        val textButton = when(selectedTabIndex.value) {
+
+            0 -> stringResource(id = R.string.trade_flow_buy_action_button)
+            1 -> stringResource(id = R.string.trade_flow_sell_action_button)
+            else -> ""
+        }
+
+        // -- Content
+        Row(
+            modifier = Modifier
+                .padding(top = 30.dp, end = 2.dp)
+        ) {
+
+            Spacer(modifier = Modifier.weight(1f))
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .width(120.dp)
+                    .height(44.dp),
+                shape = RoundedCornerShape(4.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 4.dp,
+                    disabledElevation = 0.dp
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = colorResource(id = R.color.primary_color),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = textButton,
+                    color = Color.White,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                )
+            }
+        }
     }
 
     private fun getImageID(name: String) : Int {
