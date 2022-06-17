@@ -14,10 +14,7 @@ import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -113,8 +110,16 @@ class TradeFlow @JvmOverloads constructor(
                     // -- Tabs
                     val tabs = stringArrayResource(id = R.array.trade_flow_tabs)
 
-                    // -- Value Input Type
+                    // -- Currency input
                     val currencyState = remember { mutableStateOf(asset) }
+
+                    // -- Currency Input --> DropDown
+                    val expandedCurrencyInput = remember { mutableStateOf(false) }
+                    val textFieldSize = remember { mutableStateOf(Size.Zero) }
+                    val selectedTabIndex = remember { mutableStateOf(0) }
+                    val icon = Icons.Filled.ArrowDropDown
+
+                    // -- Value Input Type
                     val currentValueInput = remember { mutableStateOf(AssetBankModel.Type.fiat) }
                     val valueInput = remember { mutableStateOf("") }
                     val valueLabelHintAsset = if (currentValueInput.value == AssetBankModel.Type.fiat) pairAsset else currencyState.value
@@ -129,12 +134,6 @@ class TradeFlow @JvmOverloads constructor(
                         append(stringResource(id = R.string.trade_flow_text_field_amount_placeholder))
                         append(" ${valueLabelHintAsset.code}")
                     }
-
-                    // -- DropDown
-                    val expanded = remember { mutableStateOf(false) }
-                    val textFieldSize = remember { mutableStateOf(Size.Zero) }
-                    val selectedTabIndex = remember { mutableStateOf(0) }
-                    val icon = Icons.Filled.ArrowDropDown
 
                     TabRow(
                         selectedTabIndex = selectedTabIndex.value,
@@ -168,7 +167,10 @@ class TradeFlow @JvmOverloads constructor(
                         }
                     }
 
-                    CryptoCurrencyInput()
+                    CryptoCurrencyInput(
+                        asset = currencyState,
+                        expandedCurrencyInput = expandedCurrencyInput
+                    )
 
 
                     OutlinedTextField(
@@ -243,7 +245,7 @@ class TradeFlow @JvmOverloads constructor(
                                 LaunchedEffect(interactionSource) {
                                     interactionSource.interactions.collect { iteration ->
                                         if (iteration is PressInteraction.Release) {
-                                            expanded.value = !expanded.value
+                                            expandedCurrencyInput.value = !expandedCurrencyInput.value
                                         }
                                     }
                                 }
@@ -261,13 +263,13 @@ class TradeFlow @JvmOverloads constructor(
                             .onGloballyPositioned { coordinates ->
                                 textFieldSize.value = coordinates.size.toSize()
                             },
-                        trailingIcon = {
+                        trailingIcon =  {
                             Icon(
                                 icon,
                                 contentDescription = "",
                                 modifier = Modifier
                                     .size(25.dp)
-                                    .clickable { expanded.value = !expanded.value }
+                                    .clickable { expandedCurrencyInput.value = !expandedCurrencyInput.value }
                             )
                         },
                         shape = RoundedCornerShape(4.dp),
@@ -288,8 +290,8 @@ class TradeFlow @JvmOverloads constructor(
                         )
                     )
                     DropdownMenu(
-                        expanded = expanded.value,
-                        onDismissRequest = { expanded.value = false },
+                        expanded = expandedCurrencyInput.value,
+                        onDismissRequest = { expandedCurrencyInput.value = false },
                         modifier = Modifier
                             .width(with(LocalDensity.current) { textFieldSize.value.width.toDp() })
                             .padding(horizontal = 2.dp)
@@ -301,7 +303,7 @@ class TradeFlow @JvmOverloads constructor(
                                 onClick = {
 
                                     currencyState.value = crypto
-                                    expanded.value = false
+                                    expandedCurrencyInput.value = false
                                 }
                             ) {
                                 Row(
@@ -341,7 +343,7 @@ class TradeFlow @JvmOverloads constructor(
                     }
 
                     // --
-                    if (!expanded.value && valueInput.value != "") {
+                    if (!expandedCurrencyInput.value && valueInput.value != "") {
 
                         // -- Get latest price
                         listPricesViewModel?.getListPrices()
@@ -427,7 +429,9 @@ class TradeFlow @JvmOverloads constructor(
     }
 
     @Composable
-    private fun CryptoCurrencyInput() {
+    private fun CryptoCurrencyInput(
+        asset: MutableState<AssetBankModel>,
+        expandedCurrencyInput: MutableState<Boolean>) {
 
         Text(
             modifier = Modifier
@@ -446,12 +450,51 @@ class TradeFlow @JvmOverloads constructor(
                 .fillMaxWidth()
                 .background(Color.White)
                 .border(
-                    border = BorderStroke(1.15.dp,
-                        colorResource(id = R.color.custom_input_color_border)),
+                    border = BorderStroke(
+                        1.15.dp,
+                        colorResource(id = R.color.custom_input_color_border)
+                    ),
                     shape = RoundedCornerShape(4.dp)
                 )
+                .clickable { expandedCurrencyInput.value = !expandedCurrencyInput.value }
         ) {
-            Text(text = "Hola mundo")
+            Image(
+                painter = painterResource(id = getImageID(asset.value.code.lowercase())),
+                contentDescription = asset.value.name,
+                modifier = Modifier
+                    .padding(top = 12.dp, start = 16.dp)
+                    .size(32.dp),
+                contentScale = ContentScale.Fit
+            )
+            Text(
+                text = asset.value.name,
+                modifier = Modifier
+                    .padding(start = 10.dp, top = 18.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.5.sp,
+                color = Color.Black
+            )
+            Text(
+                text = asset.value.code,
+                modifier = Modifier
+                    .padding(start = 5.5.dp, top = 18.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.5.sp,
+                color = colorResource(id = R.color.list_prices_asset_component_code_color)
+            )
+            Spacer(modifier = Modifier.weight(0.5f))
+            Icon(
+                Icons.Filled.ArrowDropDown,
+                contentDescription = "",
+                modifier = Modifier
+                    .width(45.dp)
+                    .height(45.dp)
+                    .size(30.dp)
+                    .padding(top = 19.dp, end = 3.dp)
+                    .clickable { /*expanded.value = !expanded.value*/ }
+            )
         }
     }
 
