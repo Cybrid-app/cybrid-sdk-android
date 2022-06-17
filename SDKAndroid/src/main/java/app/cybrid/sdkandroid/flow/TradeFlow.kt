@@ -12,7 +12,10 @@ import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -121,18 +124,18 @@ class TradeFlow @JvmOverloads constructor(
                             pairAsset else currencyState.value
                     )}
 
-                    CryptoHeaderTabs(
+                    PreQuoteHeaderTabs(
                         selectedTabIndex = selectedTabIndex,
                         tabs = tabs
                     )
 
-                    CryptoCurrencyInput(
+                    PreQuoteCurrencyInput(
                         currencyState = currencyState,
                         expandedCurrencyInput = expandedCurrencyInput,
                         currencyInputWidth = currencyInputWidth
                     )
 
-                    CryptoCurrencyDropDown(
+                    PreQuoteCurrencyDropDown(
                         currencyState = currencyState,
                         expandedCurrencyInput = expandedCurrencyInput,
                         currencyInputWidth = currencyInputWidth,
@@ -141,14 +144,14 @@ class TradeFlow @JvmOverloads constructor(
 
                     if (!expandedCurrencyInput.value) {
 
-                        CryptoValueInput(
+                        PreQuoteValueInput(
                             valueState = valueState,
                             valueAsset = valueAsset
                         )
 
                         if (valueState.value != "") {
 
-                            CryptoCurrencyValueResult(
+                            PreQuoteCurrencyValueResult(
                                 currencyState = currencyState,
                                 valueState = valueState,
                                 valueAsset = valueAsset,
@@ -156,7 +159,7 @@ class TradeFlow @JvmOverloads constructor(
                                 typeOfValueState = typeOfValueState
                             )
 
-                            CryptoActionButton(
+                            PreQuoteActionButton(
                                 selectedTabIndex = selectedTabIndex
                             )
                         }
@@ -167,7 +170,7 @@ class TradeFlow @JvmOverloads constructor(
     }
 
     @Composable
-    private fun CryptoHeaderTabs(
+    private fun PreQuoteHeaderTabs(
         selectedTabIndex: MutableState<Int>,
         tabs: Array<String>) {
 
@@ -205,7 +208,7 @@ class TradeFlow @JvmOverloads constructor(
     }
 
     @Composable
-    private fun CryptoCurrencyInput(
+    private fun PreQuoteCurrencyInput(
         currencyState: MutableState<AssetBankModel>,
         expandedCurrencyInput: MutableState<Boolean>,
         currencyInputWidth: MutableState<Size>) {
@@ -214,7 +217,8 @@ class TradeFlow @JvmOverloads constructor(
             modifier = Modifier
                 .padding(top = 27.dp)
                 .padding(horizontal = 1.dp),
-            text = "Crypto Currency",
+            text = stringResource(
+                id = R.string.trade_flow_pre_quote_currency_input_label),
             fontFamily = robotoFont,
             fontWeight = FontWeight.Normal,
             fontSize = 13.sp
@@ -279,7 +283,7 @@ class TradeFlow @JvmOverloads constructor(
     }
 
     @Composable
-    private fun CryptoCurrencyDropDown(
+    private fun PreQuoteCurrencyDropDown(
         currencyState: MutableState<AssetBankModel>,
         expandedCurrencyInput: MutableState<Boolean>,
         currencyInputWidth: MutableState<Size>,
@@ -341,7 +345,7 @@ class TradeFlow @JvmOverloads constructor(
     }
 
     @Composable
-    private fun CryptoValueInput(
+    private fun PreQuoteValueInput(
         valueState: MutableState<String>,
         valueAsset: MutableState<AssetBankModel>
     ) {
@@ -415,7 +419,7 @@ class TradeFlow @JvmOverloads constructor(
     }
 
     @Composable
-    private fun CryptoCurrencyValueResult(
+    private fun PreQuoteCurrencyValueResult(
         currencyState: MutableState<AssetBankModel>,
         valueState: MutableState<String>,
         valueAsset: MutableState<AssetBankModel>,
@@ -497,7 +501,7 @@ class TradeFlow @JvmOverloads constructor(
     }
 
     @Composable
-    private fun CryptoActionButton(
+    private fun PreQuoteActionButton(
         selectedTabIndex: MutableState<Int>
     ) {
 
