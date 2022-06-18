@@ -361,65 +361,91 @@ class TradeFlow @JvmOverloads constructor(
         // -- Focus Manger
         val focusManager = LocalFocusManager.current
 
-        // -- Labels and placeholders
-        val valueHint = buildAnnotatedString {
-            append(stringResource(id = R.string.trade_flow_text_field_amount_placeholder))
-            withStyle(style = SpanStyle(
-                color = colorResource(id = R.color.list_prices_asset_component_code_color))) {
-                append(" (${valueAsset.value.code})")
-            }
-        }
-
         // -- Content
         Text(
             modifier = Modifier
                 .padding(top = 29.dp)
                 .padding(horizontal = 1.dp),
-            text = valueHint,
+            text = stringResource(id = R.string.trade_flow_text_field_amount_placeholder),
             fontFamily = robotoFont,
             fontWeight = FontWeight.Normal,
-            fontSize = 13.sp
+            fontSize = 13.sp,
+            color = colorResource(id = R.color.pre_quote_input_label)
         )
-        OutlinedTextField(
-            value = valueState.value,
-            onValueChange = { value ->
-                valueState.value = value
-            },
-            placeholder = {
-                Text(
-                    text = valueHint,
-                    color = colorResource(id = R.color.black)
-                )
-            },
-            keyboardActions = KeyboardActions(
-                onNext = { focusManager.moveFocus(FocusDirection.Next) },
-                onDone = { focusManager.clearFocus(true) }
-            ),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(top = 8.dp)
                 .padding(horizontal = 2.dp)
                 .height(56.dp)
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(4.dp),
-            textStyle = TextStyle(
+                .fillMaxWidth()
+                .background(Color.White)
+                .border(
+                    border = BorderStroke(
+                        1.15.dp,
+                        colorResource(id = R.color.custom_input_color_border)
+                    ),
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .clickable {}
+        ) {
+
+            Text(
+                modifier = Modifier
+                    .padding(start = 18.dp),
+                text = valueAsset.value.code,
                 fontFamily = robotoFont,
                 fontWeight = FontWeight.Normal,
-                fontSize = 16.sp
-            ),
-            singleLine = true,
-            colors = TextFieldDefaults.textFieldColors(
-                textColor = Color.Black,
-                cursorColor = colorResource(id = R.color.primary_color),
-                backgroundColor = Color.Transparent,
-                focusedIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color),
-                unfocusedIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color),
-                disabledIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color)
+                fontSize = 16.sp,
+                color = colorResource(id = R.color.list_prices_asset_component_code_color)
             )
-        )
+            Box(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .width(1.dp)
+                    .height(22.dp)
+                    .background(
+                        color = colorResource(id = R.color.pre_quote_value_input_separator)
+                    )
+            )
+            TextField(
+                value = valueState.value,
+                onValueChange = { value ->
+                    valueState.value = value
+                },
+                placeholder = {
+                    Text(
+                        text = stringResource(id = R.string.trade_flow_text_field_amount_placeholder),
+                        color = colorResource(id = R.color.black)
+                    )
+                },
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Next) },
+                    onDone = { focusManager.clearFocus(true) }
+                ),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                modifier = Modifier
+                    .padding(start = 0.dp, end = 4.dp)
+                    .fillMaxWidth(),
+                textStyle = TextStyle(
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp
+                ),
+                singleLine = true,
+                colors = TextFieldDefaults.textFieldColors(
+                    textColor = Color.Black,
+                    cursorColor = colorResource(id = R.color.primary_color),
+                    backgroundColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                )
+            )
+        }
     }
 
     @Composable
