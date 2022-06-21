@@ -12,5 +12,6 @@
         <item>BUY</item>
         <item>SELL</item>
     </string-array>
+    <string name="trade_flow_pre_quote_currency_input_label">Crypto Currency</string>
 
 </resources>

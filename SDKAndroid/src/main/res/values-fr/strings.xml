@@ -11,4 +11,5 @@
         <item>ACHETER</item>
         <item>VENDRE</item>
     </string-array>
+    <string name="trade_flow_pre_quote_currency_input_label">Crypto Devise</string>
 </resources>

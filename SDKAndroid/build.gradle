@@ -55,6 +55,9 @@ android {
     }
     testOptions {
         unitTests.returnDefaultValues = true
+        unitTests {
+            includeAndroidResources = true
+        }
     }
     namespace 'app.cybrid.sdkandroid'
     buildToolsVersion '31.0.0'
@@ -187,8 +190,10 @@ dependencies {
     implementation 'androidx.compose.ui:ui-test-manifest:1.1.1'
     implementation 'androidx.activity:activity-compose:1.4.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0-rc01'
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+    implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
+    implementation 'androidx.compose.material:material-icons-extended:1.1.1'
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
+    testImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
     debugImplementation 'androidx.compose.ui:ui-test-manifest:1.1.1'
 
     //Lifecycle
@@ -202,6 +207,7 @@ dependencies {
     // -- SDK Test
     testImplementation 'com.android.support.test:runner:1.0.2'
     testImplementation "io.mockk:mockk:1.12.4"
+    testImplementation 'org.robolectric:robolectric:4.8'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }

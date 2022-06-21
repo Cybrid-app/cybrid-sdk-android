@@ -6,7 +6,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="custom_input_color_border">#79747E</color>
+
     <color name="list_prices_asset_component_header_color">#616161</color>
     <color name="list_prices_asset_component_code_color">#757575</color>
+
+    <color name="pre_quote_input_label">#49454F</color>
+    <color name="pre_quote_value_input_separator">#BDBDBD</color>
 
 </resources>

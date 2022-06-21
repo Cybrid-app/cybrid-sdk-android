@@ -3,11 +3,7 @@ package app.cybrid.sdkandroid.flow
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -16,7 +12,10 @@ import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.SwapVert
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -68,8 +67,7 @@ class TradeFlow @JvmOverloads constructor(
 
     init {
 
-        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        inflater.inflate(R.layout.trade_flow, this, true)
+        LayoutInflater.from(context).inflate(R.layout.trade_flow, this, true)
 
         // -- List
         this.listPricesView = findViewById(R.id.list)
@@ -108,317 +106,471 @@ class TradeFlow @JvmOverloads constructor(
                     // -- Crypto List
                     val cryptoList = listPricesViewModel?.getCryptoListAsset() ?: listOf()
 
-                    // -- Focus
-                    val focusManager = LocalFocusManager.current
-
                     // -- Tabs
                     val tabs = stringArrayResource(id = R.array.trade_flow_tabs)
-
-                    // -- Value Input Type
-                    val currencyState = remember { mutableStateOf(asset) }
-                    val currentValueInput = remember { mutableStateOf(AssetBankModel.Type.fiat) }
-                    val valueInput = remember { mutableStateOf("") }
-                    val valueLabelHintAsset = if (currentValueInput.value == AssetBankModel.Type.fiat) pairAsset else currencyState.value
-                    val amountHint = buildAnnotatedString {
-                        append(stringResource(id = R.string.trade_flow_text_field_amount_placeholder))
-                        withStyle(style = SpanStyle(
-                            color = colorResource(id = R.color.list_prices_asset_component_code_color))) {
-                            append(" ${valueLabelHintAsset.code}")
-                        }
-                    }
-                    val amountLabel = buildAnnotatedString {
-                        append(stringResource(id = R.string.trade_flow_text_field_amount_placeholder))
-                        append(" ${valueLabelHintAsset.code}")
-                    }
-
-                    // -- DropDown
-                    val expanded = remember { mutableStateOf(false) }
-                    val textFieldSize = remember { mutableStateOf(Size.Zero) }
                     val selectedTabIndex = remember { mutableStateOf(0) }
-                    val icon = Icons.Filled.ArrowDropDown
 
-                    TabRow(
-                        selectedTabIndex = selectedTabIndex.value,
-                        backgroundColor = Color.Transparent,
-                        indicator = { tabsIndicators ->
-                            Box(
-                                Modifier
-                                    .tabIndicatorOffset(tabsIndicators[selectedTabIndex.value])
-                                    .height(2.dp)
-                                    .border(3.5.dp, colorResource(id = R.color.primary_color))
-                            )
-                        }
-                    ) {
-                        tabs.forEachIndexed { index, tabItem ->
-                            Tab(
-                                selected = selectedTabIndex.value == index,
-                                onClick = {
-                                    selectedTabIndex.value = index
-                                },
-                                selectedContentColor = colorResource(id = R.color.primary_color),
-                                unselectedContentColor = colorResource(id = R.color.list_prices_asset_component_code_color),
-                                text = {
-                                    Text(
-                                        text = tabItem,
-                                        fontFamily = robotoFont,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 16.sp
-                                    )
-                                }
-                            )
-                        }
-                    }
-                    OutlinedTextField(
-                        value = valueInput.value,
-                        onValueChange = { value ->
-                            valueInput.value = value
-                        },
-                        label = {
-                            Text(
-                                text = amountLabel
-                            )
-                        },
-                        placeholder = {
-                            Text(
-                                text = amountHint,
-                                color = colorResource(id = R.color.black)
-                            )
-                        },
-                        keyboardActions = KeyboardActions(
-                            onNext = { focusManager.moveFocus(FocusDirection.Next) }
-                        ),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number,
-                            imeAction = ImeAction.Next
-                        ),
-                        modifier = Modifier
-                            .padding(top = 30.dp)
-                            .padding(horizontal = 2.dp)
-                            .height(58.dp)
-                            .fillMaxWidth(),
-                        shape = RoundedCornerShape(4.dp),
-                        textStyle = TextStyle(
-                            fontFamily = robotoFont,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        singleLine = true,
-                        colors = TextFieldDefaults.textFieldColors(
-                            textColor = Color.Black,
-                            cursorColor = colorResource(id = R.color.primary_color),
-                            backgroundColor = Color.Transparent,
-                            focusedIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color),
-                            unfocusedIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color),
-                            disabledIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color)
-                        )
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_change),
-                        contentDescription = "Change icon to crypto-fiat",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .padding(top = 18.dp)
-                            .padding(horizontal = 16.dp)
-                            .width(16.dp)
-                            .height(21.dp)
-                            .align(Alignment.End)
-                            .clickable {
-                                if (currentValueInput.value == AssetBankModel.Type.fiat) {
-                                    currentValueInput.value = AssetBankModel.Type.crypto
-                                } else {
-                                    currentValueInput.value = AssetBankModel.Type.fiat
-                                }
-                            }
+                    // -- Currency input
+                    val currencyState = remember { mutableStateOf(asset) }
+
+                    // -- Currency Input --> DropDown
+                    val expandedCurrencyInput = remember { mutableStateOf(false) }
+                    val currencyInputWidth = remember { mutableStateOf(Size.Zero) }
+
+                    // -- Amount Input
+                    val typeOfAmountState = remember { mutableStateOf(AssetBankModel.Type.fiat) }
+                    val amountState = remember { mutableStateOf("") }
+                    val amountAsset = remember { mutableStateOf(
+                        if (typeOfAmountState.value == AssetBankModel.Type.fiat)
+                            pairAsset else currencyState.value
+                    )}
+
+                    PreQuoteHeaderTabs(
+                        selectedTabIndex = selectedTabIndex,
+                        tabs = tabs
                     )
 
-                    // -- Spinner
-                    OutlinedTextField(
-                        value = currencyState.value.name,
-                        onValueChange = {},
-                        interactionSource = remember { MutableInteractionSource() }
-                            .also { interactionSource ->
-                                LaunchedEffect(interactionSource) {
-                                    interactionSource.interactions.collect { iteration ->
-                                        if (iteration is PressInteraction.Release) {
-                                            expanded.value = !expanded.value
-                                        }
-                                    }
-                                }
-                            },
-                        label = {
-                            Text(
-                                text = "Currency"
-                            )
-                        },
-                        modifier = Modifier
-                            .padding(top = 14.dp)
-                            .padding(horizontal = 2.dp)
-                            .height(58.dp)
-                            .fillMaxWidth()
-                            .onGloballyPositioned { coordinates ->
-                                textFieldSize.value = coordinates.size.toSize()
-                            },
-                        trailingIcon = {
-                            Icon(
-                                icon,
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .size(25.dp)
-                                    .clickable { expanded.value = !expanded.value }
-                            )
-                        },
-                        shape = RoundedCornerShape(4.dp),
-                        textStyle = TextStyle(
-                            fontFamily = robotoFont,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp
-                        ),
-                        singleLine = true,
-                        colors = TextFieldDefaults.textFieldColors(
-                            textColor = Color.Black,
-                            cursorColor = colorResource(id = R.color.primary_color),
-                            backgroundColor = Color.Transparent,
-                            trailingIconColor = colorResource(id = R.color.list_prices_asset_component_code_color),
-                            focusedIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color),
-                            unfocusedIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color),
-                            disabledIndicatorColor = colorResource(id = R.color.list_prices_asset_component_code_color)
-                        )
+                    PreQuoteCurrencyInput(
+                        currencyState = currencyState,
+                        expandedCurrencyInput = expandedCurrencyInput,
+                        currencyInputWidth = currencyInputWidth
                     )
-                    DropdownMenu(
-                        expanded = expanded.value,
-                        onDismissRequest = { expanded.value = false },
-                        modifier = Modifier
-                            .width(with(LocalDensity.current) { textFieldSize.value.width.toDp() })
-                            .padding(horizontal = 2.dp)
-                    ) {
-                        cryptoList.forEach { crypto ->
 
-                            val imageID = getImageID(crypto.code.lowercase())
-                            DropdownMenuItem(
-                                onClick = {
+                    PreQuoteCurrencyDropDown(
+                        currencyState = currencyState,
+                        expandedCurrencyInput = expandedCurrencyInput,
+                        currencyInputWidth = currencyInputWidth,
+                        cryptoList = cryptoList
+                    )
 
-                                    currencyState.value = crypto
-                                    expanded.value = false
-                                }
-                            ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .padding(vertical = 0.dp)
-                                ) {
+                    if (!expandedCurrencyInput.value) {
 
-                                    Image(
-                                        painter = painterResource(id = imageID),
-                                        contentDescription = "{$imageID}",
-                                        modifier = Modifier
-                                            .padding(horizontal = 0.dp)
-                                            .padding(0.dp)
-                                            .size(25.dp),
-                                        contentScale = ContentScale.Fit
-                                    )
-                                    Text(
-                                        text = crypto.name,
-                                        modifier = Modifier.padding(start = 16.dp),
-                                        fontFamily = robotoFont,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 16.sp,
-                                        color = Color.Black
-                                    )
-                                    Text(
-                                        text = crypto.code,
-                                        modifier = Modifier.padding(start = 5.5.dp),
-                                        fontFamily = robotoFont,
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 16.sp,
-                                        color = colorResource(id = R.color.list_prices_asset_component_code_color)
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    // --
-                    if (!expanded.value && valueInput.value != "") {
-
-                        // -- Get latest price
-                        listPricesViewModel?.getListPrices()
-                        val symbol = "${currencyState.value.code}-${pairAsset.code}"
-
-                        val stateInt = valueInput.value.toInt()
-                        val buyPrice = listPricesViewModel?.getBuyPrice(symbol)
-                        val buyPriceDecimal = BigDecimal(buyPrice?.buyPrice ?: 0)
-                        var amount = "0"
-                        var codeAssetToUse:AssetBankModel? = null
-
-                        when(currentValueInput.value) {
-
-                            AssetBankModel.Type.crypto -> {
-
-                                codeAssetToUse = pairAsset
-                                val value = BigDecimal(stateInt).times(buyPriceDecimal)
-                                amount =  BigDecimalPipe.transform(value, pairAsset)!!
-                            }
-
-                            AssetBankModel.Type.fiat -> {
-
-                                codeAssetToUse = currencyState.value
-                                val baseValue = AssetPipe.transform(
-                                    stateInt,
-                                    pairAsset,
-                                    "base"
-                                )
-                                val value = baseValue.divL(buyPriceDecimal)
-                                amount = value.toPlainString()
-                            }
-
-                            else -> {}
-                        }
-
-                        val amountStyled = buildAnnotatedString {
-                            append(amount)
-                            withStyle(style = SpanStyle(
-                                color = colorResource(id = R.color.list_prices_asset_component_code_color))) {
-                                append(" ${codeAssetToUse?.code}")
-                            }
-                        }
-                        Text(
-                            text = amountStyled,
-                            fontFamily = robotoFont,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp,
-                            modifier = Modifier
-                                .padding(top = 31.dp)
-                                .padding(horizontal = 2.dp)
+                        PreQuoteAmountInput(
+                            amountState = amountState,
+                            amountAsset = amountAsset
                         )
-                        // -- Buy/Sell Button
-                        Button(
-                            onClick = {},
-                            modifier = Modifier
-                                .align(Alignment.End)
-                                .padding(top = 11.dp, end = 11.dp)
-                                .width(75.dp)
-                                .height(44.dp),
-                            shape = RoundedCornerShape(4.dp),
-                            elevation = ButtonDefaults.elevation(
-                                defaultElevation = 4.dp,
-                                pressedElevation = 4.dp,
-                                disabledElevation = 0.dp
-                            ),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = colorResource(id = R.color.primary_color),
-                                contentColor = Color.White
+
+                        if (amountState.value != "") {
+
+                            PreQuoteCurrencyValueResult(
+                                currencyState = currencyState,
+                                amountState = amountState,
+                                amountAsset = amountAsset,
+                                pairAsset = pairAsset,
+                                typeOfAmountState = typeOfAmountState
                             )
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.trade_flow_buy_action_button),
-                                color = Color.White,
-                                fontFamily = robotoFont,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 14.sp,
+
+                            PreQuoteActionButton(
+                                selectedTabIndex = selectedTabIndex
                             )
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @Composable
+    private fun PreQuoteHeaderTabs(
+        selectedTabIndex: MutableState<Int>,
+        tabs: Array<String>) {
+
+        TabRow(
+            selectedTabIndex = selectedTabIndex.value,
+            backgroundColor = Color.Transparent,
+            indicator = { tabsIndicators ->
+                Box(
+                    Modifier
+                        .tabIndicatorOffset(tabsIndicators[selectedTabIndex.value])
+                        .height(2.dp)
+                        .border(3.5.dp, colorResource(id = R.color.primary_color))
+                )
+            }
+        ) {
+            tabs.forEachIndexed { index, tabItem ->
+                Tab(
+                    selected = selectedTabIndex.value == index,
+                    onClick = {
+                        selectedTabIndex.value = index
+                    },
+                    selectedContentColor = colorResource(id = R.color.primary_color),
+                    unselectedContentColor = colorResource(id = R.color.list_prices_asset_component_code_color),
+                    text = {
+                        Text(
+                            text = tabItem,
+                            fontFamily = robotoFont,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+                    }
+                )
+            }
+        }
+    }
+
+    @Composable
+    private fun PreQuoteCurrencyInput(
+        currencyState: MutableState<AssetBankModel>,
+        expandedCurrencyInput: MutableState<Boolean>,
+        currencyInputWidth: MutableState<Size>) {
+
+        val icon = if (expandedCurrencyInput.value) {
+            Icons.Filled.ArrowDropUp
+        } else {
+            Icons.Filled.ArrowDropDown
+        }
+
+        // -- Content
+        Text(
+            modifier = Modifier
+                .padding(top = 27.dp)
+                .padding(horizontal = 1.dp),
+            text = stringResource(
+                id = R.string.trade_flow_pre_quote_currency_input_label),
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal,
+            fontSize = 13.sp
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .padding(horizontal = 2.dp)
+                .height(56.dp)
+                .fillMaxWidth()
+                .onGloballyPositioned { coordinates ->
+                    currencyInputWidth.value = coordinates.size.toSize()
+                }
+                .background(Color.White)
+                .border(
+                    border = BorderStroke(
+                        1.15.dp,
+                        colorResource(id = R.color.custom_input_color_border)
+                    ),
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .clickable { expandedCurrencyInput.value = !expandedCurrencyInput.value }
+        ) {
+            Image(
+                painter = painterResource(id = getImageID(currencyState.value.code.lowercase())),
+                contentDescription = currencyState.value.name,
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .size(32.dp),
+                contentScale = ContentScale.Fit
+            )
+            Text(
+                text = currencyState.value.name,
+                modifier = Modifier
+                    .padding(start = 10.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.5.sp,
+                color = Color.Black
+            )
+            Text(
+                text = currencyState.value.code,
+                modifier = Modifier
+                    .padding(start = 5.5.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.5.sp,
+                color = colorResource(id = R.color.list_prices_asset_component_code_color)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                icon,
+                contentDescription = "",
+                modifier = Modifier
+                    .size(30.dp)
+                    .padding(end = 5.dp, top = 5.dp)
+                    .clickable { expandedCurrencyInput.value = !expandedCurrencyInput.value }
+            )
+        }
+    }
+
+    @Composable
+    private fun PreQuoteCurrencyDropDown(
+        currencyState: MutableState<AssetBankModel>,
+        expandedCurrencyInput: MutableState<Boolean>,
+        currencyInputWidth: MutableState<Size>,
+        cryptoList: List<AssetBankModel>
+    ) {
+
+        DropdownMenu(
+            expanded = expandedCurrencyInput.value,
+            onDismissRequest = { expandedCurrencyInput.value = false },
+            modifier = Modifier
+                .width(with(LocalDensity.current) { currencyInputWidth.value.width.toDp() })
+                .padding(horizontal = 2.dp)
+        ) {
+            cryptoList.forEach { crypto ->
+
+                val imageID = getImageID(crypto.code.lowercase())
+                DropdownMenuItem(
+                    onClick = {
+
+                        currencyState.value = crypto
+                        expandedCurrencyInput.value = false
+                    }
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .padding(vertical = 0.dp)
+                    ) {
+
+                        Image(
+                            painter = painterResource(id = imageID),
+                            contentDescription = "{$imageID}",
+                            modifier = Modifier
+                                .padding(horizontal = 0.dp)
+                                .padding(0.dp)
+                                .size(25.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                        Text(
+                            text = crypto.name,
+                            modifier = Modifier.padding(start = 16.dp),
+                            fontFamily = robotoFont,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
+                            color = Color.Black
+                        )
+                        Text(
+                            text = crypto.code,
+                            modifier = Modifier.padding(start = 5.5.dp),
+                            fontFamily = robotoFont,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 16.sp,
+                            color = colorResource(id = R.color.list_prices_asset_component_code_color)
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun PreQuoteAmountInput(
+        amountState: MutableState<String>,
+        amountAsset: MutableState<AssetBankModel>
+    ) {
+
+        // -- Focus Manger
+        val focusManager = LocalFocusManager.current
+
+        // -- Content
+        Text(
+            modifier = Modifier
+                .padding(top = 29.dp)
+                .padding(horizontal = 1.dp),
+            text = stringResource(id = R.string.trade_flow_text_field_amount_placeholder),
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal,
+            fontSize = 13.sp,
+            color = colorResource(id = R.color.pre_quote_input_label)
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .padding(horizontal = 2.dp)
+                .height(56.dp)
+                .fillMaxWidth()
+                .background(Color.White)
+                .border(
+                    border = BorderStroke(
+                        1.15.dp,
+                        colorResource(id = R.color.custom_input_color_border)
+                    ),
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .clickable {}
+        ) {
+
+            Text(
+                modifier = Modifier
+                    .padding(start = 18.dp),
+                text = amountAsset.value.code,
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp,
+                color = colorResource(id = R.color.list_prices_asset_component_code_color)
+            )
+            Box(
+                modifier = Modifier
+                    .padding(start = 15.dp)
+                    .width(1.dp)
+                    .height(22.dp)
+                    .background(
+                        color = colorResource(id = R.color.pre_quote_value_input_separator)
+                    )
+            )
+            TextField(
+                value = amountState.value,
+                onValueChange = { value ->
+                    amountState.value = value
+                },
+                placeholder = {
+                    Text(
+                        text = stringResource(id = R.string.trade_flow_text_field_amount_placeholder),
+                        color = colorResource(id = R.color.black)
+                    )
+                },
+                keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Next) },
+                    onDone = { focusManager.clearFocus(true) }
+                ),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                modifier = Modifier
+                    .padding(start = 0.dp, end = 4.dp)
+                    .fillMaxWidth(),
+                textStyle = TextStyle(
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp
+                ),
+                singleLine = true,
+                colors = TextFieldDefaults.textFieldColors(
+                    textColor = Color.Black,
+                    cursorColor = colorResource(id = R.color.primary_color),
+                    backgroundColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                )
+            )
+        }
+    }
+
+    @Composable
+    private fun PreQuoteCurrencyValueResult(
+        currencyState: MutableState<AssetBankModel>,
+        amountState: MutableState<String>,
+        amountAsset: MutableState<AssetBankModel>,
+        pairAsset: AssetBankModel,
+        typeOfAmountState: MutableState<AssetBankModel.Type>
+    ) {
+
+        val symbol = "${currencyState.value.code}-${pairAsset.code}"
+        val stateInt = amountState.value.toInt()
+        val buyPrice = listPricesViewModel?.getBuyPrice(symbol)
+        val buyPriceDecimal = BigDecimal(buyPrice?.buyPrice ?: 0)
+        var amount = "0"
+        var codeAssetToUse:AssetBankModel? = null
+
+        when(typeOfAmountState.value) {
+
+            AssetBankModel.Type.crypto -> {
+
+                amountAsset.value = currencyState.value
+                codeAssetToUse = pairAsset
+                val value = BigDecimal(stateInt).times(buyPriceDecimal)
+                amount =  BigDecimalPipe.transform(value, pairAsset)!!
+            }
+
+            AssetBankModel.Type.fiat -> {
+
+                amountAsset.value = pairAsset
+                codeAssetToUse = currencyState.value
+                val baseValue = AssetPipe.transform(
+                    stateInt,
+                    pairAsset,
+                    "base"
+                )
+                val value = baseValue.divL(buyPriceDecimal)
+                amount = value.toPlainString()
+            }
+
+            else -> {}
+        }
+
+        val amountStyled = buildAnnotatedString {
+            append(amount)
+            withStyle(style = SpanStyle(
+                color = colorResource(id = R.color.list_prices_asset_component_code_color))) {
+                append(" ${codeAssetToUse?.code}")
+            }
+        }
+
+        // -- Content
+        Row(
+            modifier = Modifier
+                .padding(top = 11.dp)
+                .padding(horizontal = 2.dp)
+        ) {
+
+            Text(
+                text = amountStyled,
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Normal,
+                fontSize = 16.sp
+            )
+            Icon(
+                Icons.Filled.SwapVert,
+                contentDescription = "",
+                tint = colorResource(id = R.color.primary_color),
+                modifier = Modifier
+                    .padding(start = 6.dp)
+                    .width(17.dp)
+                    .height(23.dp)
+                    .clickable {
+                        if (typeOfAmountState.value == AssetBankModel.Type.fiat) {
+                            typeOfAmountState.value = AssetBankModel.Type.crypto
+                        } else {
+                            typeOfAmountState.value = AssetBankModel.Type.fiat
+                        }
+                    }
+            )
+        }
+    }
+
+    @Composable
+    private fun PreQuoteActionButton(
+        selectedTabIndex: MutableState<Int>
+    ) {
+
+        val textButton = when(selectedTabIndex.value) {
+
+            0 -> stringResource(id = R.string.trade_flow_buy_action_button)
+            1 -> stringResource(id = R.string.trade_flow_sell_action_button)
+            else -> ""
+        }
+
+        // -- Content
+        Row(
+            modifier = Modifier
+                .padding(top = 30.dp, end = 2.dp)
+        ) {
+
+            Spacer(modifier = Modifier.weight(1f))
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .width(120.dp)
+                    .height(44.dp),
+                shape = RoundedCornerShape(4.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 4.dp,
+                    disabledElevation = 0.dp
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = colorResource(id = R.color.primary_color),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = textButton,
+                    color = Color.White,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                )
             }
         }
     }
