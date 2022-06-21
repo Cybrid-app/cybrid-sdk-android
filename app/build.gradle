@@ -37,6 +37,11 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
     namespace 'app.cybrid.demoapp'
     buildToolsVersion '31.0.0'
 }
@@ -52,6 +57,9 @@ dependencies {
     implementation project(path: ':SDKAndroid')
     implementation 'androidx.compose.ui:ui:1.1.1'
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.robolectric:robolectric:4.8'
+    testImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest:1.1.1'
 
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

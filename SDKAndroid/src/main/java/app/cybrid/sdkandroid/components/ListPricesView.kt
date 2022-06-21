@@ -24,6 +24,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -172,6 +173,7 @@ fun CryptoList(
         if (customStyles.searchBar) { SearchView(state = textState) }
         LazyColumn(modifier =
         Modifier
+            .testTag("ListPricesView")
             .padding(top = topPadding)
             .padding(horizontal = 3.5.dp)) {
 

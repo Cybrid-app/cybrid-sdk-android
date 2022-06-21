@@ -1,9 +1,7 @@
 package app.cybrid.sdkandroid.flow
 
 import android.content.Context
-import android.opengl.Visibility
 import android.view.LayoutInflater
-import android.view.View
 import app.cybrid.sdkandroid.components.ListPricesView
 import app.cybrid.sdkandroid.components.ListPricesViewType
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
@@ -11,10 +9,7 @@ import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.*
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 
-//@RunWith(RobolectricTestRunner::class)
 class TradeFlowTest {
 
     @MockK private lateinit var context: Context
@@ -48,11 +43,6 @@ class TradeFlowTest {
         tradeFlow.setListPricesViewModel(listPricesVM)
         Assert.assertEquals(tradeFlow.listPricesView?.type, ListPricesViewType.Normal)
         Assert.assertNotNull(tradeFlow.listPricesView?.onClick)
-
-
-        // --
-        //tradeFlow.listPricesView?.clickOption(0)
-        Assert.assertEquals(tradeFlow.listPricesView?.visibility, View.GONE)
     }
 
     companion object {
