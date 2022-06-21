@@ -67,8 +67,8 @@ class TradeFlow @JvmOverloads constructor(
 
     init {
 
-        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        inflater.inflate(R.layout.trade_flow, this, true)
+        //val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        LayoutInflater.from(context).inflate(R.layout.trade_flow, this, true)
 
         // -- List
         this.listPricesView = findViewById(R.id.list)
@@ -118,11 +118,11 @@ class TradeFlow @JvmOverloads constructor(
                     val expandedCurrencyInput = remember { mutableStateOf(false) }
                     val currencyInputWidth = remember { mutableStateOf(Size.Zero) }
 
-                    // -- Value Input
-                    val typeOfValueState = remember { mutableStateOf(AssetBankModel.Type.fiat) }
-                    val valueState = remember { mutableStateOf("") }
-                    val valueAsset = remember { mutableStateOf(
-                        if (typeOfValueState.value == AssetBankModel.Type.fiat)
+                    // -- Amount Input
+                    val typeOfAmountState = remember { mutableStateOf(AssetBankModel.Type.fiat) }
+                    val amountState = remember { mutableStateOf("") }
+                    val amountAsset = remember { mutableStateOf(
+                        if (typeOfAmountState.value == AssetBankModel.Type.fiat)
                             pairAsset else currencyState.value
                     )}
 
@@ -146,19 +146,19 @@ class TradeFlow @JvmOverloads constructor(
 
                     if (!expandedCurrencyInput.value) {
 
-                        PreQuoteValueInput(
-                            valueState = valueState,
-                            valueAsset = valueAsset
+                        PreQuoteAmountInput(
+                            amountState = amountState,
+                            amountAsset = amountAsset
                         )
 
-                        if (valueState.value != "") {
+                        if (amountState.value != "") {
 
                             PreQuoteCurrencyValueResult(
                                 currencyState = currencyState,
-                                valueState = valueState,
-                                valueAsset = valueAsset,
+                                amountState = amountState,
+                                amountAsset = amountAsset,
                                 pairAsset = pairAsset,
-                                typeOfValueState = typeOfValueState
+                                typeOfAmountState = typeOfAmountState
                             )
 
                             PreQuoteActionButton(
@@ -353,9 +353,9 @@ class TradeFlow @JvmOverloads constructor(
     }
 
     @Composable
-    private fun PreQuoteValueInput(
-        valueState: MutableState<String>,
-        valueAsset: MutableState<AssetBankModel>
+    private fun PreQuoteAmountInput(
+        amountState: MutableState<String>,
+        amountAsset: MutableState<AssetBankModel>
     ) {
 
         // -- Focus Manger
@@ -393,7 +393,7 @@ class TradeFlow @JvmOverloads constructor(
             Text(
                 modifier = Modifier
                     .padding(start = 18.dp),
-                text = valueAsset.value.code,
+                text = amountAsset.value.code,
                 fontFamily = robotoFont,
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp,
@@ -401,7 +401,7 @@ class TradeFlow @JvmOverloads constructor(
             )
             Box(
                 modifier = Modifier
-                    .padding(start = 8.dp)
+                    .padding(start = 15.dp)
                     .width(1.dp)
                     .height(22.dp)
                     .background(
@@ -409,9 +409,9 @@ class TradeFlow @JvmOverloads constructor(
                     )
             )
             TextField(
-                value = valueState.value,
+                value = amountState.value,
                 onValueChange = { value ->
-                    valueState.value = value
+                    amountState.value = value
                 },
                 placeholder = {
                     Text(
@@ -451,24 +451,24 @@ class TradeFlow @JvmOverloads constructor(
     @Composable
     private fun PreQuoteCurrencyValueResult(
         currencyState: MutableState<AssetBankModel>,
-        valueState: MutableState<String>,
-        valueAsset: MutableState<AssetBankModel>,
+        amountState: MutableState<String>,
+        amountAsset: MutableState<AssetBankModel>,
         pairAsset: AssetBankModel,
-        typeOfValueState: MutableState<AssetBankModel.Type>
+        typeOfAmountState: MutableState<AssetBankModel.Type>
     ) {
 
         val symbol = "${currencyState.value.code}-${pairAsset.code}"
-        val stateInt = valueState.value.toInt()
+        val stateInt = amountState.value.toInt()
         val buyPrice = listPricesViewModel?.getBuyPrice(symbol)
         val buyPriceDecimal = BigDecimal(buyPrice?.buyPrice ?: 0)
         var amount = "0"
         var codeAssetToUse:AssetBankModel? = null
 
-        when(typeOfValueState.value) {
+        when(typeOfAmountState.value) {
 
             AssetBankModel.Type.crypto -> {
 
-                valueAsset.value = currencyState.value
+                amountAsset.value = currencyState.value
                 codeAssetToUse = pairAsset
                 val value = BigDecimal(stateInt).times(buyPriceDecimal)
                 amount =  BigDecimalPipe.transform(value, pairAsset)!!
@@ -476,7 +476,7 @@ class TradeFlow @JvmOverloads constructor(
 
             AssetBankModel.Type.fiat -> {
 
-                valueAsset.value = pairAsset
+                amountAsset.value = pairAsset
                 codeAssetToUse = currencyState.value
                 val baseValue = AssetPipe.transform(
                     stateInt,
@@ -520,10 +520,10 @@ class TradeFlow @JvmOverloads constructor(
                     .width(17.dp)
                     .height(23.dp)
                     .clickable {
-                        if (typeOfValueState.value == AssetBankModel.Type.fiat) {
-                            typeOfValueState.value = AssetBankModel.Type.crypto
+                        if (typeOfAmountState.value == AssetBankModel.Type.fiat) {
+                            typeOfAmountState.value = AssetBankModel.Type.crypto
                         } else {
-                            typeOfValueState.value = AssetBankModel.Type.fiat
+                            typeOfAmountState.value = AssetBankModel.Type.fiat
                         }
                     }
             )
