@@ -67,7 +67,6 @@ class TradeFlow @JvmOverloads constructor(
 
     init {
 
-        //val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         LayoutInflater.from(context).inflate(R.layout.trade_flow, this, true)
 
         // -- List
