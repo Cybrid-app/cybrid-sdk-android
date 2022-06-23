@@ -22,12 +22,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "String", "CLIENT_ID", "\"" + System.getenv('CybridAPI_ID') + "\""
             buildConfigField "String", "CLIENT_SECRET", "\"" + System.getenv('CybridAPI_Secret') + "\""
+            buildConfigField "String", "CUSTOMER_GUID", "\"" + System.getenv('CybridAPI_Customer_GUID') + "\""
         }
         debug {
 
             debuggable true
             buildConfigField "String", "CLIENT_ID", "\"" + System.getenv('CybridAPI_ID') + "\""
             buildConfigField "String", "CLIENT_SECRET", "\"" + System.getenv('CybridAPI_Secret') + "\""
+            buildConfigField "String", "CUSTOMER_GUID", "\"" + System.getenv('CybridAPI_Customer_GUID') + "\""
         }
     }
     compileOptions {

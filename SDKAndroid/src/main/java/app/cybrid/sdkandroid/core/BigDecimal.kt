@@ -43,6 +43,10 @@ class BigDecimal(internal val value:JavaBigDecimal) : Comparable<BigDecimal> {
         return BigDecimal(value.pow(n))
     }
 
+    fun toInt(): Int {
+        return value.toInt()
+    }
+
     fun toDouble(): Double {
         return value.toDouble()
     }
