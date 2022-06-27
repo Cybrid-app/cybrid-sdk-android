@@ -103,7 +103,6 @@ open class ListPricesView @JvmOverloads constructor(
     private fun refreshPrices() {
 
         Logger.log(LoggerEvents.DATA_REFRESHED, "ListPricesView Component data")
-        _viewModel?.getListPrices()
         _viewModel.let { it?.getListPrices() }
         _handler.let {
             _runnable.let { _it ->

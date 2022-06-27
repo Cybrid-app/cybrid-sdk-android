@@ -12,4 +12,9 @@
         <item>VENDER</item>
     </string-array>
     <string name="trade_flow_pre_quote_currency_input_label">Crypto Divisa</string>
+
+    <string name="trade_flow_pre_quote_confirmation_modal_title">Presupuesto</string>
+    <string name="trade_flow_pre_quote_confirmation_modal_sub_title_1">Los precios de mercado se actualizan cada</string>
+    <string name="trade_flow_pre_quote_confirmation_modal_sub_title_2">segundos.</string>
+
 </resources>

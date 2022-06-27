@@ -12,4 +12,9 @@
         <item>SELL</item>
     </string-array>
     <string name="trade_flow_pre_quote_currency_input_label">Crypto Currency</string>
+
+    <string name="trade_flow_pre_quote_confirmation_modal_title">Order Quote</string>
+    <string name="trade_flow_pre_quote_confirmation_modal_sub_title_1">Market rates will automatically refresh every</string>
+    <string name="trade_flow_pre_quote_confirmation_modal_sub_title_2">seconds.</string>
+
 </resources>

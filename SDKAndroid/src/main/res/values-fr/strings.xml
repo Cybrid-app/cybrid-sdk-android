@@ -12,4 +12,9 @@
         <item>VENDRE</item>
     </string-array>
     <string name="trade_flow_pre_quote_currency_input_label">Crypto Devise</string>
+
+    <string name="trade_flow_pre_quote_confirmation_modal_title">Devis de Commande</string>
+    <string name="trade_flow_pre_quote_confirmation_modal_sub_title_1">Les taux du marché seront automatiquement actualisés toutes les</string>
+    <string name="trade_flow_pre_quote_confirmation_modal_sub_title_2">secondes.</string>
+
 </resources>
