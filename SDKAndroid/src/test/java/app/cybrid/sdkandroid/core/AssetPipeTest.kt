@@ -34,6 +34,7 @@ class AssetPipeTest {
         // -- Given
         val valueString = "5"
         val valueInt = 5
+        val valueBigDecimal = BigDecimal(5)
         val asset = TestConstants.CAD_ASSET
 
         val result1 = BigDecimal(500)
@@ -41,17 +42,27 @@ class AssetPipeTest {
         val result3 = BigDecimal.ZERO
 
         // -- When
+        val transformCAD1BD = AssetPipe.transform(valueBigDecimal, asset, "base")
+        val transformCAD2BD = AssetPipe.transform(valueBigDecimal, asset, "trade")
+
         val transformCAD1String = AssetPipe.transform(valueString, asset, "base")
         val transformCAD2String = AssetPipe.transform(valueString, asset, "trade")
+
         val transformCAD1Int = AssetPipe.transform(valueInt, asset, "base")
         val transformCAD2Int = AssetPipe.transform(valueInt, asset, "trade")
+
         val transformZero = AssetPipe.transform(valueInt, asset, "")
 
         // -- Then
+        Assert.assertEquals(transformCAD1BD, result1)
+        Assert.assertEquals(transformCAD2BD, result2)
+
         Assert.assertEquals(transformCAD1String, result1)
         Assert.assertEquals(transformCAD2String, result2)
+
         Assert.assertEquals(transformCAD1Int, result1)
         Assert.assertEquals(transformCAD2Int, result2)
+
         Assert.assertEquals(transformZero, result3)
     }
 }

@@ -193,6 +193,34 @@ class BigDecimalTest {
     }
 
     @Test
+    fun toIntTest() {
+
+        // -- Given
+        val bigDecimal1 = BigDecimal(5)
+        val expected:Int = 5
+
+        // -- When
+        val value = bigDecimal1.toInt()
+
+        // -- Then
+        Assert.assertEquals(expected, value)
+    }
+
+    @Test
+    fun toJavaBigDecimalTest() {
+
+        // -- Given
+        val bigDecimal1 = BigDecimal(5)
+        val expected:JavaBigDecimal = JavaBigDecimal(5)
+
+        // -- When
+        val value = bigDecimal1.toJavaBigDecimal()
+
+        // -- Then
+        Assert.assertEquals(expected, value)
+    }
+
+    @Test
     fun compareToEqualTest() {
 
         // -- Given
