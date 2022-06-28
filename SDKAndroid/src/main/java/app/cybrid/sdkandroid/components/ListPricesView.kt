@@ -45,6 +45,7 @@ import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.core.BigDecimalPipe
+import app.cybrid.sdkandroid.core.toBigDecimal
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
@@ -346,7 +347,7 @@ fun CryptoAssetItem(crypto: SymbolPriceBankModel,
         val name = asset?.name ?: ""
         val valueString = crypto.buyPrice?.let {
             if (pairAsset != null) {
-                BigDecimalPipe.transform(it, pairAsset)
+                BigDecimalPipe.transform(it.toBigDecimal(), pairAsset)
             } else { loadingErrorVal }
         } ?: loadingErrorVal
         val value = buildAnnotatedString {

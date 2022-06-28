@@ -20,7 +20,7 @@ class AssetPipe {
 
         private fun transformAny(value:BigDecimal, asset: AssetBankModel, unit: String) : BigDecimal {
 
-            val divisor = BigDecimal(10).pow(asset.decimals)
+            val divisor = BigDecimal(10).pow(asset.decimals.toBigDecimal())
             val tradeUnit = value.div(divisor)
             val baseUnit = value.times(divisor)
 

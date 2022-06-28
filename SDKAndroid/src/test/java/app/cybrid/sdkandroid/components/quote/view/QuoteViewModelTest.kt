@@ -1,8 +1,6 @@
 package app.cybrid.sdkandroid.components.quote.view
 
 import app.cybrid.cybrid_api_bank.client.models.*
-import app.cybrid.sdkandroid.components.quote.view.test.PostQuoteBankModelTest
-import app.cybrid.sdkandroid.components.quote.view.test.QuoteBankModelTest
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.tools.TestConstants
@@ -23,7 +21,7 @@ class QuoteViewModelTest {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertEquals(viewModel.canUpdateQuote, true)
-        Assert.assertEquals(viewModel.quoteBankModel, QuoteBankModelTest())
+        Assert.assertEquals(viewModel.quoteBankModel, QuoteBankModel())
         Assert.assertEquals(viewModel.tradeBankModel, TradeBankModel())
     }
 
@@ -43,7 +41,7 @@ class QuoteViewModelTest {
             pairAsset = fiatAsset)
 
         // -- When
-        val postQuoteBankModel = PostQuoteBankModelTest(
+        val postQuoteBankModel = PostQuoteBankModel(
             customerGuid = "",
             symbol = "BTC-CAD",
             side = PostQuoteBankModel.Side.buy,

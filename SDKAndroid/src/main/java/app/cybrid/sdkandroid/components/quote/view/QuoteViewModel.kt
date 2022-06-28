@@ -10,9 +10,6 @@ import app.cybrid.cybrid_api_bank.client.apis.TradesApi
 import app.cybrid.cybrid_api_bank.client.models.*
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
-import app.cybrid.sdkandroid.components.quote.view.test.PostQuoteBankModelTest
-import app.cybrid.sdkandroid.components.quote.view.test.QuoteBankModelTest
-import app.cybrid.sdkandroid.components.quote.view.test.QuotesApiTest
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.util.Logger
@@ -28,11 +25,11 @@ class QuoteViewModel: ViewModel() {
 
     // -- Public quoteBankModel
     var canUpdateQuote:Boolean = true
-    var quoteBankModel:QuoteBankModelTest by mutableStateOf(QuoteBankModelTest())
+    var quoteBankModel:QuoteBankModel by mutableStateOf(QuoteBankModel())
     var tradeBankModel:TradeBankModel by mutableStateOf(TradeBankModel())
 
     // -- Basic postQuoteBankModel object
-    private var postQuoteBankModel = PostQuoteBankModelTest(
+    private var postQuoteBankModel = PostQuoteBankModel(
         customerGuid = customerGuid,
         symbol = "",
         side = PostQuoteBankModel.Side.buy
@@ -44,7 +41,7 @@ class QuoteViewModel: ViewModel() {
         side: PostQuoteBankModel.Side,
         asset: AssetBankModel,
         pairAsset: AssetBankModel
-    ): PostQuoteBankModelTest  {
+    ): PostQuoteBankModel  {
 
         // -- Symbol
         val symbol = "${asset.code}-${pairAsset.code}"
@@ -55,7 +52,7 @@ class QuoteViewModel: ViewModel() {
             PostQuoteBankModel.Side.buy -> {
 
                 if (input == AssetBankModel.Type.crypto) {
-                    postQuoteBankModel = PostQuoteBankModelTest(
+                    postQuoteBankModel = PostQuoteBankModel(
                         customerGuid = customerGuid,
                         symbol = symbol,
                         side = side,
@@ -66,7 +63,7 @@ class QuoteViewModel: ViewModel() {
                         ).toJavaBigDecimal()
                     )
                 } else {
-                    postQuoteBankModel = PostQuoteBankModelTest(
+                    postQuoteBankModel = PostQuoteBankModel(
                         customerGuid = customerGuid,
                         symbol = symbol,
                         side = side,
@@ -82,7 +79,7 @@ class QuoteViewModel: ViewModel() {
             PostQuoteBankModel.Side.sell -> {
 
                 if (input == AssetBankModel.Type.fiat) {
-                    postQuoteBankModel = PostQuoteBankModelTest(
+                    postQuoteBankModel = PostQuoteBankModel(
                         customerGuid = customerGuid,
                         symbol = symbol,
                         side = side,
@@ -93,7 +90,7 @@ class QuoteViewModel: ViewModel() {
                         ).toJavaBigDecimal()
                     )
                 } else {
-                    postQuoteBankModel = PostQuoteBankModelTest(
+                    postQuoteBankModel = PostQuoteBankModel(
                         customerGuid = customerGuid,
                         symbol = symbol,
                         side = side,
@@ -111,11 +108,11 @@ class QuoteViewModel: ViewModel() {
         return postQuoteBankModel
     }
 
-    fun getQuote(quoteObject: PostQuoteBankModelTest) {
+    fun getQuote(quoteObject: PostQuoteBankModel) {
 
         if (canUpdateQuote) {
 
-            val quoteService = AppModule.getClient().createService(QuotesApiTest::class.java)
+            val quoteService = AppModule.getClient().createService(QuotesApi::class.java)
             viewModelScope.launch {
 
                 val quoteResult = getResult { quoteService.createQuote(quoteObject) }
@@ -128,7 +125,7 @@ class QuoteViewModel: ViewModel() {
                             LoggerEvents.DATA_ERROR,
                             "Quote Confirmation Component - Data :: {${it.message}}"
                         )
-                        QuoteBankModelTest()
+                        QuoteBankModel()
                     }
                 }
             }

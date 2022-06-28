@@ -33,6 +33,7 @@ import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
+import app.cybrid.sdkandroid.core.toBigDecimal
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 
 private enum class QuoteConfirmationState {
@@ -193,7 +194,7 @@ private fun QuoteConfirmationContent(
     }
 
     // -- Transaction fee
-    val transactionFeeBD = BigDecimal(viewModel.quoteBankModel.fee ?: 0)
+    val transactionFeeBD = BigDecimal(viewModel.quoteBankModel.fee ?: java.math.BigDecimal(0))
     val transactionFeeValue = buildAnnotatedString {
         append(BigDecimalPipe.transform(transactionFeeBD, pairAsset)!!)
         withStyle(style = SpanStyle(
@@ -404,7 +405,7 @@ private fun QuoteConfirmationContentDone(
     }
 
     // -- Transaction fee
-    val transactionFeeBD = BigDecimal(viewModel.quoteBankModel.fee ?: 0)
+    val transactionFeeBD = BigDecimal(viewModel.quoteBankModel.fee ?: java.math.BigDecimal(0))
     val transactionFeeValue = buildAnnotatedString {
         append(BigDecimalPipe.transform(transactionFeeBD, pairAsset)!!)
         withStyle(style = SpanStyle(

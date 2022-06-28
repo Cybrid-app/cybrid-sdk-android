@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.constraintlayout.widget.ConstraintLayout
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.PostQuoteBankModel
-import app.cybrid.cybrid_api_bank.client.models.QuoteBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.ListPricesView
 import app.cybrid.sdkandroid.components.ListPricesViewType
@@ -52,7 +51,6 @@ import app.cybrid.sdkandroid.components.getImage
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.components.quote.view.QuoteConfirmationModal
 import app.cybrid.sdkandroid.components.quote.view.QuoteViewModel
-import app.cybrid.sdkandroid.components.quote.view.test.PostQuoteBankModelTest
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
@@ -75,7 +73,7 @@ class TradeFlow @JvmOverloads constructor(
 
     private var listPricesViewModel: ListPricesViewModel? = null
     private var composeContent: ComposeView? = null
-    private var postQuoteBankModel: PostQuoteBankModelTest? = null
+    private var postQuoteBankModel: PostQuoteBankModel? = null
 
     init {
 
@@ -489,7 +487,7 @@ class TradeFlow @JvmOverloads constructor(
         val symbol = "${currencyState.value.code}-${pairAsset.code}"
         val stateInt = amountState.value.toInt()
         val buyPrice = listPricesViewModel?.getBuyPrice(symbol)
-        val buyPriceDecimal = BigDecimal(buyPrice?.buyPrice ?: 0)
+        val buyPriceDecimal = BigDecimal(buyPrice?.buyPrice ?: java.math.BigDecimal(0))
         var amount = "0"
         var codeAssetToUse:AssetBankModel? = null
 

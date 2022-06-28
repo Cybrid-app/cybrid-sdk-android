@@ -1,6 +1,7 @@
 package app.cybrid.sdkandroid.tools
 
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
+import java.math.BigDecimal
 
 object TestConstants {
 
@@ -8,7 +9,7 @@ object TestConstants {
 
     val BTC_ASSET: AssetBankModel = AssetBankModel(
         code = "BTC",
-        decimals = 8,
+        decimals = BigDecimal(8),
         name = "Bitcoin",
         symbol = "₿",
         type= AssetBankModel.Type.crypto,
@@ -16,7 +17,7 @@ object TestConstants {
 
     val ETH_ASSET: AssetBankModel = AssetBankModel(
         code = "ETH",
-        decimals = 18,
+        decimals = BigDecimal(18),
         name = "Ethereum",
         symbol = "Ξ",
         type= AssetBankModel.Type.crypto,
@@ -24,7 +25,7 @@ object TestConstants {
 
     val CAD_ASSET: AssetBankModel = AssetBankModel(
         code = "CAD",
-        decimals = 2,
+        decimals = BigDecimal(2),
         name = "Canadian Dollar",
         symbol = "$",
         type= AssetBankModel.Type.fiat,
