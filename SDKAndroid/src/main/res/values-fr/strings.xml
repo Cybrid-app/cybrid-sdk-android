@@ -23,5 +23,10 @@
     <string name="trade_flow_quote_confirmation_modal_transaction_fee_title">Frais de transaction</string>
     <string name="trade_flow_quote_confirmation_modal_cancel">Annuler</string>
     <string name="trade_flow_quote_confirmation_modal_confirm">CONFIRMER</string>
+    <string name="trade_flow_confirmation_modal_title">Commande réussie</string>
+    <string name="trade_flow_confirmation_modal_sub_title">Votre achat de %s a réussi!</string>
+    <string name="trade_flow_confirmation_modal_transaction_id">ID de transaction:</string>
+    <string name="trade_flow_confirmation_modal_date">Date:</string>
+    <string name="trade_flow_confirmation_modal_button">Acheter plus de crypto</string>
 
 </resources>

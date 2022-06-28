@@ -51,6 +51,10 @@ class BigDecimal(internal val value:JavaBigDecimal) : Comparable<BigDecimal> {
         return value.toDouble()
     }
 
+    fun toJavaBigDecimal() : JavaBigDecimal {
+        return value
+    }
+
     override fun compareTo(other: BigDecimal): Int {
         return value.compareTo(other.value)
     }

@@ -52,6 +52,7 @@ import app.cybrid.sdkandroid.components.getImage
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.components.quote.view.QuoteConfirmationModal
 import app.cybrid.sdkandroid.components.quote.view.QuoteViewModel
+import app.cybrid.sdkandroid.components.quote.view.test.PostQuoteBankModelTest
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
@@ -74,7 +75,7 @@ class TradeFlow @JvmOverloads constructor(
 
     private var listPricesViewModel: ListPricesViewModel? = null
     private var composeContent: ComposeView? = null
-    private var postQuoteBankModel: PostQuoteBankModel? = null
+    private var postQuoteBankModel: PostQuoteBankModelTest? = null
 
     init {
 

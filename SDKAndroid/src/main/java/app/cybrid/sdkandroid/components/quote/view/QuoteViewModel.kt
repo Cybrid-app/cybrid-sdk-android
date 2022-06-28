@@ -6,11 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.apis.QuotesApi
-import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
-import app.cybrid.cybrid_api_bank.client.models.PostQuoteBankModel
-import app.cybrid.cybrid_api_bank.client.models.QuoteBankModel
+import app.cybrid.cybrid_api_bank.client.apis.TradesApi
+import app.cybrid.cybrid_api_bank.client.models.*
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
+import app.cybrid.sdkandroid.components.quote.view.test.PostQuoteBankModelTest
 import app.cybrid.sdkandroid.components.quote.view.test.QuoteBankModelTest
 import app.cybrid.sdkandroid.components.quote.view.test.QuotesApiTest
 import app.cybrid.sdkandroid.core.AssetPipe
@@ -27,10 +27,12 @@ class QuoteViewModel: ViewModel() {
     private val customerGuid = Cybrid.instance.customerGuid
 
     // -- Public quoteBankModel
+    var canUpdateQuote:Boolean = true
     var quoteBankModel:QuoteBankModelTest by mutableStateOf(QuoteBankModelTest())
+    var tradeBankModel:TradeBankModel by mutableStateOf(TradeBankModel())
 
     // -- Basic postQuoteBankModel object
-    private var postQuoteBankModel = PostQuoteBankModel(
+    private var postQuoteBankModel = PostQuoteBankModelTest(
         customerGuid = customerGuid,
         symbol = "",
         side = PostQuoteBankModel.Side.buy
@@ -42,7 +44,7 @@ class QuoteViewModel: ViewModel() {
         side: PostQuoteBankModel.Side,
         asset: AssetBankModel,
         pairAsset: AssetBankModel
-    ): PostQuoteBankModel  {
+    ): PostQuoteBankModelTest  {
 
         // -- Symbol
         val symbol = "${asset.code}-${pairAsset.code}"
@@ -53,7 +55,7 @@ class QuoteViewModel: ViewModel() {
             PostQuoteBankModel.Side.buy -> {
 
                 if (input == AssetBankModel.Type.crypto) {
-                    postQuoteBankModel = PostQuoteBankModel(
+                    postQuoteBankModel = PostQuoteBankModelTest(
                         customerGuid = customerGuid,
                         symbol = symbol,
                         side = side,
@@ -61,10 +63,10 @@ class QuoteViewModel: ViewModel() {
                             value = amount,
                             asset = asset,
                             unit = "base"
-                        ).toInt()
+                        ).toJavaBigDecimal()
                     )
                 } else {
-                    postQuoteBankModel = PostQuoteBankModel(
+                    postQuoteBankModel = PostQuoteBankModelTest(
                         customerGuid = customerGuid,
                         symbol = symbol,
                         side = side,
@@ -72,7 +74,7 @@ class QuoteViewModel: ViewModel() {
                             value = amount,
                             asset = pairAsset,
                             unit = "base"
-                        ).toInt()
+                        ).toJavaBigDecimal()
                     )
                 }
             }
@@ -80,7 +82,7 @@ class QuoteViewModel: ViewModel() {
             PostQuoteBankModel.Side.sell -> {
 
                 if (input == AssetBankModel.Type.fiat) {
-                    postQuoteBankModel = PostQuoteBankModel(
+                    postQuoteBankModel = PostQuoteBankModelTest(
                         customerGuid = customerGuid,
                         symbol = symbol,
                         side = side,
@@ -88,10 +90,10 @@ class QuoteViewModel: ViewModel() {
                             value = amount,
                             asset = pairAsset,
                             unit = "base"
-                        ).toInt()
+                        ).toJavaBigDecimal()
                     )
                 } else {
-                    postQuoteBankModel = PostQuoteBankModel(
+                    postQuoteBankModel = PostQuoteBankModelTest(
                         customerGuid = customerGuid,
                         symbol = symbol,
                         side = side,
@@ -99,7 +101,7 @@ class QuoteViewModel: ViewModel() {
                             value = amount,
                             asset = asset,
                             unit = "base"
-                        ).toInt()
+                        ).toJavaBigDecimal()
                     )
                 }
             }
@@ -109,22 +111,49 @@ class QuoteViewModel: ViewModel() {
         return postQuoteBankModel
     }
 
-    fun getQuote(quoteObject: PostQuoteBankModel) {
+    fun getQuote(quoteObject: PostQuoteBankModelTest) {
 
-        val quoteService = AppModule.getClient().createService(QuotesApiTest::class.java)
-        viewModelScope.launch {
+        if (canUpdateQuote) {
 
-            val quoteResult = getResult { quoteService.createQuote(quoteObject) }
-            quoteResult.let {
+            val quoteService = AppModule.getClient().createService(QuotesApiTest::class.java)
+            viewModelScope.launch {
 
-                quoteBankModel = if (isSuccessful(it.code ?: 500)) {
-                    it.data!!
-                } else {
-                    Logger.log(LoggerEvents.DATA_ERROR, "Quote Confirmation Component - Data :: {${it.message}}")
-                    QuoteBankModelTest()
+                val quoteResult = getResult { quoteService.createQuote(quoteObject) }
+                quoteResult.let {
+
+                    quoteBankModel = if (isSuccessful(it.code ?: 500)) {
+                        it.data!!
+                    } else {
+                        Logger.log(
+                            LoggerEvents.DATA_ERROR,
+                            "Quote Confirmation Component - Data :: {${it.message}}"
+                        )
+                        QuoteBankModelTest()
+                    }
                 }
             }
         }
     }
 
+    fun createTrade(postTradeBankModel: PostTradeBankModel) {
+
+        val tradeService = AppModule.getClient().createService(TradesApi::class.java)
+        viewModelScope.launch {
+
+            val quoteResult = getResult { tradeService.createTrade(postTradeBankModel) }
+            quoteResult.let {
+
+                tradeBankModel = if (isSuccessful(it.code ?: 500)) {
+                    it.data!!
+                } else {
+                    Logger.log(
+                        LoggerEvents.DATA_ERROR,
+                        "Create Trade Component - Data :: {${it.message}}"
+                    )
+                    TradeBankModel()
+                }
+            }
+        }
+
+    }
 }

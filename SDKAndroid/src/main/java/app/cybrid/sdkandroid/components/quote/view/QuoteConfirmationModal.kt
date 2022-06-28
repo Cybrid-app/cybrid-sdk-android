@@ -3,6 +3,7 @@
 package app.cybrid.sdkandroid.components.quote.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -26,6 +27,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
+import app.cybrid.cybrid_api_bank.client.models.PostTradeBankModel
+import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.BigDecimal
@@ -45,13 +48,27 @@ fun QuoteConfirmationModal(
     updateInterval: Long = 5000
 ) {
 
+    // -- Modal State
     val modalState:MutableState<QuoteConfirmationState> = remember { mutableStateOf(QuoteConfirmationState.PENDING) }
+
+    // -- Check state Pending -> Content
     if (viewModel.quoteBankModel.guid != null) {
         modalState.value = QuoteConfirmationState.CONTENT
     }
 
+    // -- Check state Submitted -> Done
+    if (viewModel.tradeBankModel.guid != null) {
+        modalState.value = QuoteConfirmationState.DONE
+    }
+
+    // -- Content
     Dialog(
-        onDismissRequest = { showDialog.value = false },
+        onDismissRequest = {
+
+            viewModel.canUpdateQuote = true
+            showDialog.value = false
+            dismissModal(modalState, viewModel)
+        },
         properties = DialogProperties(
             usePlatformDefaultWidth = false
         ),
@@ -84,6 +101,16 @@ fun QuoteConfirmationModal(
                 QuoteConfirmationState.SUBMITTED -> {
                     QuoteConfirmationLoading(
                         textID = R.string.trade_flow_quote_confirmation_modal_submitted_title)
+                }
+
+                QuoteConfirmationState.DONE -> {
+                    QuoteConfirmationContentDone(
+                        viewModel = viewModel,
+                        asset = asset,
+                        pairAsset = pairAsset,
+                        showDialog = showDialog,
+                        modalState = modalState
+                    )
                 }
             }
         }
@@ -218,6 +245,7 @@ private fun QuoteConfirmationContent(
             )
             // -- Buttons
             QuoteConfirmationButtons(
+                viewModel = viewModel,
                 showDialog = showDialog,
                 modalState = modalState
             )
@@ -265,6 +293,7 @@ private fun QuoteConfirmationContentItem(
 
 @Composable
 private fun QuoteConfirmationButtons(
+    viewModel: QuoteViewModel,
     showDialog: MutableState<Boolean>,
     modalState:MutableState<QuoteConfirmationState>
 ) {
@@ -277,7 +306,12 @@ private fun QuoteConfirmationButtons(
         Spacer(modifier = Modifier.weight(1f))
         // -- Cancel Button
         Button(
-            onClick = { showDialog.value = false },
+            onClick = {
+
+                showDialog.value = false
+                viewModel.canUpdateQuote = true
+                modalState.value = QuoteConfirmationState.PENDING
+            },
             modifier = Modifier
                 .padding(end = 18.dp),
             elevation = null,
@@ -294,9 +328,18 @@ private fun QuoteConfirmationButtons(
                 fontSize = 14.sp,
             )
         }
+        // -- Continue Button
         Button(
             onClick = {
-              modalState.value = QuoteConfirmationState.SUBMITTED
+
+                viewModel.canUpdateQuote = false
+                modalState.value = QuoteConfirmationState.SUBMITTED
+
+                // --
+                val postTradeBankModel = PostTradeBankModel(
+                    quoteGuid = viewModel.quoteBankModel.guid ?: ""
+                )
+                viewModel.createTrade(postTradeBankModel)
             },
             modifier = Modifier
                 .width(120.dp)
@@ -320,5 +363,170 @@ private fun QuoteConfirmationButtons(
                 fontSize = 14.sp,
             )
         }
+    }
+}
+
+@Composable
+private fun QuoteConfirmationContentDone(
+    viewModel: QuoteViewModel,
+    asset: MutableState<AssetBankModel>,
+    pairAsset: AssetBankModel,
+    showDialog: MutableState<Boolean>,
+    modalState:MutableState<QuoteConfirmationState>
+) {
+
+    // -- Subtitle
+    val subTitle = String.format(stringResource(
+        id = R.string.trade_flow_confirmation_modal_sub_title), asset.value.name)
+
+    // -- Purchase amount
+    val deliverAmountBD = BigDecimal(viewModel.quoteBankModel.deliverAmount ?: java.math.BigDecimal(0))
+    val purchaseValue = buildAnnotatedString {
+        append(BigDecimalPipe.transform(deliverAmountBD, pairAsset)!!)
+        withStyle(style = SpanStyle(
+            color = colorResource(id = R.color.list_prices_asset_component_code_color),
+            fontFamily = robotoFont)
+        ) {
+            append(" ${pairAsset.code}")
+        }
+    }
+
+    // -- Purchase quantity
+    val receiveAmountBD = BigDecimal(viewModel.quoteBankModel.receiveAmount ?: java.math.BigDecimal(0))
+    val receiveValue = buildAnnotatedString {
+        append(AssetPipe.transform(receiveAmountBD, asset.value, "trade").toPlainString())
+        withStyle(style = SpanStyle(
+            color = colorResource(id = R.color.list_prices_asset_component_code_color),
+            fontFamily = robotoFont)
+        ) {
+            append(" ${asset.value.code}")
+        }
+    }
+
+    // -- Transaction fee
+    val transactionFeeBD = BigDecimal(viewModel.quoteBankModel.fee ?: 0)
+    val transactionFeeValue = buildAnnotatedString {
+        append(BigDecimalPipe.transform(transactionFeeBD, pairAsset)!!)
+        withStyle(style = SpanStyle(
+            color = colorResource(id = R.color.list_prices_asset_component_code_color),
+            fontFamily = robotoFont)
+        ) {
+            append(" ${pairAsset.code}")
+        }
+    }
+
+    // -- Content
+    Box() {
+        Column() {
+            Text(
+                text = stringResource(id = R.string.trade_flow_confirmation_modal_title),
+                modifier = Modifier
+                    .padding(start = 24.dp, top = 24.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Normal,
+                fontSize = 24.sp,
+                color = colorResource(id = R.color.modal_title_color)
+            )
+            Text(
+                text = subTitle,
+                modifier = Modifier
+                    .padding(start = 24.dp, top = 16.dp, end = 24.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                color = colorResource(id = R.color.modal_sub_title_color)
+            )
+            // -- Header items
+            QuoteConfirmationContentDoneItems(
+                viewModel = viewModel
+            )
+            // -- Purchase amount
+            QuoteConfirmationContentItem(
+                titleLabel = stringResource(
+                    id = R.string.trade_flow_quote_confirmation_modal_purchase_amount_title),
+                subTitleLabel = purchaseValue
+            )
+            // -- Purchase quantity
+            QuoteConfirmationContentItem(
+                titleLabel = stringResource(
+                    id = R.string.trade_flow_quote_confirmation_modal_purchase_quantity_title),
+                subTitleLabel = receiveValue
+            )
+            // -- Transaction Fee
+            QuoteConfirmationContentItem(
+                titleLabel = stringResource(
+                    id = R.string.trade_flow_quote_confirmation_modal_transaction_fee_title),
+                subTitleLabel = transactionFeeValue
+            )
+            // -- Buy Button
+            Row(
+                modifier = Modifier
+                    .padding(top = 24.dp, end = 24.dp, bottom = 24.dp)
+            ) {
+
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = stringResource(id = R.string.trade_flow_confirmation_modal_button),
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .clickable {
+
+                            showDialog.value = false
+                            viewModel.canUpdateQuote = true
+                            dismissModal(modalState, viewModel)
+                        },
+                    lineHeight = 20.sp,
+                    color = colorResource(id = R.color.primary_color),
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun QuoteConfirmationContentDoneItems(
+    viewModel: QuoteViewModel
+) {
+
+    Row(
+        modifier = Modifier
+            .padding(top = 24.dp, start = 24.dp)
+    ) {
+        Column() {
+            Text(
+                text = stringResource(id = R.string.trade_flow_confirmation_modal_transaction_id),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Bold,
+                fontSize = 17.sp,
+                color = colorResource(id = R.color.modal_title_color)
+            )
+            Text(
+                text = "#${viewModel.tradeBankModel.guid}",
+                modifier = Modifier
+                    .padding(top = 5.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                color = colorResource(id = R.color.modal_sub_title_color)
+            )
+        }
+    }
+}
+
+private fun dismissModal(
+    modalState:MutableState<QuoteConfirmationState>,
+    viewModel: QuoteViewModel
+) {
+
+    if (modalState.value == QuoteConfirmationState.SUBMITTED ||
+        modalState.value == QuoteConfirmationState.DONE ||
+        modalState.value == QuoteConfirmationState.CONTENT) {
+        modalState.value = QuoteConfirmationState.PENDING
+    }
+    if (viewModel.tradeBankModel.guid != null) {
+        viewModel.tradeBankModel = TradeBankModel()
     }
 }

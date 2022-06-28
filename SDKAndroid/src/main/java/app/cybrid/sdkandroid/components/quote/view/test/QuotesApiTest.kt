@@ -11,7 +11,7 @@ import retrofit2.http.POST
 interface QuotesApiTest {
 
     @POST("api/quotes")
-    suspend fun createQuote(@Body postQuoteBankModel: PostQuoteBankModel): Response<QuoteBankModelTest>
+    suspend fun createQuote(@Body postQuoteBankModel: PostQuoteBankModelTest): Response<QuoteBankModelTest>
 }
 
 data class QuoteBankModelTest (
@@ -51,5 +51,29 @@ data class QuoteBankModelTest (
     /* ISO8601 datetime the quote is expiring at. */
     @SerializedName("expires_at")
     val expiresAt: java.time.OffsetDateTime? = null
+
+)
+
+data class PostQuoteBankModelTest (
+
+    /* The unique identifier for the customer. */
+    @SerializedName("customer_guid")
+    val customerGuid: kotlin.String,
+
+    /* Symbol the quote is being requested for. Format is \"asset-counter_asset\" in uppercase. See the Symbols API for a complete list of cryptocurrencies supported. */
+    @SerializedName("symbol")
+    val symbol: kotlin.String,
+
+    /* The direction of the quote: either 'buy' or 'sell'. */
+    @SerializedName("side")
+    val side: PostQuoteBankModel.Side,
+
+    /* The amount to be received in base units of the currency: currency is \"asset\" for buy and \"counter_asset\" for sell. */
+    @SerializedName("receive_amount")
+    val receiveAmount: java.math.BigDecimal? = null,
+
+    /* The amount to be delivered in base units of the currency: currency is \"counter_asset\" for buy and \"asset\" for sell. */
+    @SerializedName("deliver_amount")
+    val deliverAmount: java.math.BigDecimal? = null
 
 )
