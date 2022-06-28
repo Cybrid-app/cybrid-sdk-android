@@ -188,9 +188,9 @@ class TradeFlow @JvmOverloads constructor(
     private fun refreshQuoteModel() {
 
         Logger.log(LoggerEvents.DATA_REFRESHED, "TradeFlow: Quote Component Data")
-        if (quoteViewModel != null && postQuoteBankModel != null) {
+        if (this.quoteViewModel != null && this.postQuoteBankModel != null) {
 
-            quoteViewModel?.getQuote(postQuoteBankModel!!)
+            quoteViewModel?.getQuote(this.postQuoteBankModel!!)
             _handler.let {
                 _runnable.let { _it ->
                     it?.postDelayed(_it!!, updateInterval)
@@ -582,36 +582,15 @@ class TradeFlow @JvmOverloads constructor(
             }
         }
 
-        // -- PostQuoteBankModel
-        this.postQuoteBankModel = quoteViewModel?.getQuoteObject(
-            amount = BigDecimal(amountState.value),
-            input = typeOfAmountState.value,
-            side = side.value,
-            asset = currencyState.value,
-            pairAsset = pairAsset
-        )
-
-        // -- QuoteBankModel
-        quoteViewModel?.getQuote(this.postQuoteBankModel!!)
-        val quoteBankModel:MutableState<QuoteBankModel> = remember {
-            mutableStateOf(
-                this.quoteViewModel?.quoteBankModel ?: QuoteBankModel())
-        }
-
         // -- Show Dialog
         val showDialog = remember { mutableStateOf(false) }
         if (showDialog.value) {
-
-            // -- Set runnable for Quote Model
-            _handler = Handler(Looper.getMainLooper())
-            _runnable = Runnable { this.refreshQuoteModel() }
-            _handler?.postDelayed(_runnable!!, updateInterval)
-
-            // --
             QuoteConfirmationModal(
-                model = quoteBankModel,
+                viewModel = this.quoteViewModel!!,
                 asset = currencyState,
-                pairAsset = pairAsset
+                pairAsset = pairAsset,
+                showDialog = showDialog,
+                updateInterval = updateInterval
             )
         }
 
@@ -624,7 +603,14 @@ class TradeFlow @JvmOverloads constructor(
             Spacer(modifier = Modifier.weight(1f))
             Button(
                 onClick = {
-                    showDialog.value = true
+                    getQuote(
+                        showDialog = showDialog,
+                        side = side,
+                        currencyState = currencyState,
+                        amountState = amountState,
+                        pairAsset = pairAsset,
+                        typeOfAmountState = typeOfAmountState
+                    )
                 },
                 modifier = Modifier
                     .width(120.dp)
@@ -649,6 +635,33 @@ class TradeFlow @JvmOverloads constructor(
                 )
             }
         }
+    }
+
+    private fun getQuote(
+        showDialog: MutableState<Boolean>,
+        side: MutableState<PostQuoteBankModel.Side>,
+        currencyState: MutableState<AssetBankModel>,
+        amountState: MutableState<String>,
+        pairAsset: AssetBankModel,
+        typeOfAmountState: MutableState<AssetBankModel.Type>,
+    ) {
+
+        showDialog.value = true
+
+        // -- Set runnable for Quote Model
+        _handler = Handler(Looper.getMainLooper())
+        _runnable = Runnable { this.refreshQuoteModel() }
+        _handler?.postDelayed(_runnable!!, updateInterval)
+
+        // -- PostQuoteBankModel
+        this.postQuoteBankModel = quoteViewModel?.getQuoteObject(
+            amount = BigDecimal(amountState.value),
+            input = typeOfAmountState.value,
+            side = side.value,
+            asset = currencyState.value,
+            pairAsset = pairAsset
+        )
+        quoteViewModel?.getQuote(this.postQuoteBankModel!!)
     }
 
     private fun getImageID(name: String) : Int {

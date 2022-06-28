@@ -13,8 +13,15 @@
     </string-array>
     <string name="trade_flow_pre_quote_currency_input_label">Crypto Divisa</string>
 
-    <string name="trade_flow_pre_quote_confirmation_modal_title">Presupuesto</string>
-    <string name="trade_flow_pre_quote_confirmation_modal_sub_title_1">Los precios de mercado se actualizan cada</string>
-    <string name="trade_flow_pre_quote_confirmation_modal_sub_title_2">segundos.</string>
+    <string name="trade_flow_quote_confirmation_modal_title">Presupuesto</string>
+    <string name="trade_flow_quote_confirmation_modal_sub_title">Los precios de mercado se actualizan cada</string>
+    <string name="trade_flow_quote_confirmation_modal_sub_title_unit">segundos.</string>
+    <string name="trade_flow_quote_confirmation_modal_pending_title">Cotización pendiente</string>
+    <string name="trade_flow_quote_confirmation_modal_submitted_title">Enviando orden</string>
+    <string name="trade_flow_quote_confirmation_modal_purchase_amount_title">Monto de la compra</string>
+    <string name="trade_flow_quote_confirmation_modal_purchase_quantity_title">Cantidad de la compra</string>
+    <string name="trade_flow_quote_confirmation_modal_transaction_fee_title">Comisión</string>
+    <string name="trade_flow_quote_confirmation_modal_cancel">Cancelar</string>
+    <string name="trade_flow_quote_confirmation_modal_confirm">CONFIRMAR</string>
 
 </resources>

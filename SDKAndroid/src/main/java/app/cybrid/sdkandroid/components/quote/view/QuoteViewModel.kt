@@ -11,11 +11,14 @@ import app.cybrid.cybrid_api_bank.client.models.PostQuoteBankModel
 import app.cybrid.cybrid_api_bank.client.models.QuoteBankModel
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
+import app.cybrid.sdkandroid.components.quote.view.test.QuoteBankModelTest
+import app.cybrid.sdkandroid.components.quote.view.test.QuotesApiTest
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
 import app.cybrid.sdkandroid.util.getResult
+import app.cybrid.sdkandroid.util.isSuccessful
 import kotlinx.coroutines.launch
 
 class QuoteViewModel: ViewModel() {
@@ -24,7 +27,7 @@ class QuoteViewModel: ViewModel() {
     private val customerGuid = Cybrid.instance.customerGuid
 
     // -- Public quoteBankModel
-    var quoteBankModel by mutableStateOf(QuoteBankModel())
+    var quoteBankModel:QuoteBankModelTest by mutableStateOf(QuoteBankModelTest())
 
     // -- Basic postQuoteBankModel object
     private var postQuoteBankModel = PostQuoteBankModel(
@@ -103,22 +106,22 @@ class QuoteViewModel: ViewModel() {
         }
 
         // -- Return PostQuoteBankModel
-        return this.postQuoteBankModel
+        return postQuoteBankModel
     }
 
     fun getQuote(quoteObject: PostQuoteBankModel) {
 
-        val quoteService = AppModule.getClient().createService(QuotesApi::class.java)
+        val quoteService = AppModule.getClient().createService(QuotesApiTest::class.java)
         viewModelScope.launch {
 
             val quoteResult = getResult { quoteService.createQuote(quoteObject) }
             quoteResult.let {
 
-                quoteBankModel = if (it.code == 200) {
+                quoteBankModel = if (isSuccessful(it.code ?: 500)) {
                     it.data!!
                 } else {
                     Logger.log(LoggerEvents.DATA_ERROR, "Quote Confirmation Component - Data :: {${it.message}}")
-                    QuoteBankModel()
+                    QuoteBankModelTest()
                 }
             }
         }

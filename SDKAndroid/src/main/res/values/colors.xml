@@ -18,5 +18,6 @@
     <color name="modal_title_color">#1C1B1F</color>
     <color name="modal_sub_title_color">#49454F</color>
     <color name="modal_sub_title_refresh_color">#FF5252</color>
+    <color name="modal_divider">#79747E</color>
 
 </resources>
