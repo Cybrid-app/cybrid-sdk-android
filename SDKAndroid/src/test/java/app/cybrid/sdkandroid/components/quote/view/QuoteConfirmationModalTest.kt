@@ -1,14 +1,14 @@
 package app.cybrid.sdkandroid.components.quote.view
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.tools.TestConstants
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -51,5 +51,21 @@ class QuoteConfirmationModalTest {
 
         // -- Then
         composeTestRule.onNodeWithText("Quote Pending").assertIsDisplayed()
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `Setup QuoteConfirmationLoading`() = runTest {
+
+        // -- Given
+
+        // -- When
+        composeTestRule.setContent {
+            QuoteConfirmationLoading(R.string.trade_flow_quote_confirmation_modal_title)
+        }
+
+        // -- Then
+        composeTestRule.onNodeWithText("Order Quote").assertIsDisplayed()
+        composeTestRule.onNodeWithTag(Constants.QuoteConfirmation.LoadingIndicator.id).assertIsDisplayed()
     }
 }

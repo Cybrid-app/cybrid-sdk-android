@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -30,10 +31,7 @@ import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.PostTradeBankModel
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.core.AssetPipe
-import app.cybrid.sdkandroid.core.BigDecimal
-import app.cybrid.sdkandroid.core.BigDecimalPipe
-import app.cybrid.sdkandroid.core.toBigDecimal
+import app.cybrid.sdkandroid.core.*
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 
 private enum class QuoteConfirmationState {
@@ -119,7 +117,7 @@ fun QuoteConfirmationModal(
 }
 
 @Composable
-private fun QuoteConfirmationLoading(textID:Int) {
+fun QuoteConfirmationLoading(textID:Int) {
 
     Box(
         modifier = Modifier
@@ -139,7 +137,8 @@ private fun QuoteConfirmationLoading(textID:Int) {
             )
             CircularProgressIndicator(
                 modifier = Modifier
-                    .padding(top = 16.dp),
+                    .padding(top = 16.dp)
+                    .testTag(Constants.QuoteConfirmation.LoadingIndicator.id),
                 color = colorResource(id = R.color.primary_color)
             )
         }

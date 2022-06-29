@@ -193,6 +193,19 @@ class BigDecimalTest {
     }
 
     @Test
+    fun toDoubleFailureTest() {
+
+        // -- Given
+        val bigDecimal1 = BigDecimal(1234567891234567891)
+
+        // -- When
+        val value = bigDecimal1.toDouble()
+
+        // -- Then
+        Assert.assertEquals(value, 1.23456789123456794E18, 0.0)
+    }
+
+    @Test
     fun toIntTest() {
 
         // -- Given
@@ -204,6 +217,19 @@ class BigDecimalTest {
 
         // -- Then
         Assert.assertEquals(expected, value)
+    }
+
+    @Test
+    fun toIntFailureTest() {
+
+        // -- Given
+        val bigDecimal1 = BigDecimal(1234567891234567891)
+
+        // -- When
+        val value = bigDecimal1.toInt()
+
+        // -- Then
+        Assert.assertEquals(value, -1071401261)
     }
 
     @Test
