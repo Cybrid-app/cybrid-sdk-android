@@ -46,7 +46,7 @@ class BigDecimal(internal val value:JavaBigDecimal) : Comparable<BigDecimal> {
     fun toInt(): Int {
 
         val intValue = value.toInt()
-        if (intValue < 0) {
+        if (intValue != value.intValueExact()) {
             throw ArithmeticException("Overflow")
         }
         return intValue
@@ -55,7 +55,7 @@ class BigDecimal(internal val value:JavaBigDecimal) : Comparable<BigDecimal> {
     fun toDouble(): Double {
 
         val doubleValue = value.toDouble()
-        if (doubleValue.toString().split("").contains("E")) {
+        if (doubleValue != value.intValueExact().toDouble()) {
             throw ArithmeticException("Lost Precision")
         }
         return doubleValue

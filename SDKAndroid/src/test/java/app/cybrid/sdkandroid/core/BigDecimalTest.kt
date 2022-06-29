@@ -1,10 +1,7 @@
 package app.cybrid.sdkandroid.core
 
-import app.cybrid.sdkandroid.tools.TestConstants
 import org.junit.Assert
 import org.junit.Test
-import java.text.NumberFormat
-import java.util.*
 import java.math.BigDecimal as JavaBigDecimal
 
 class BigDecimalTest {
@@ -231,7 +228,7 @@ class BigDecimalTest {
         val value = bigDecimal1.toInt()
 
         // -- Then
-        Assert.assertEquals(value, -1071401261)
+        Assert.assertEquals(value, -10714012610)
     }
 
     @Test
