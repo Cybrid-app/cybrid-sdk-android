@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.core
 
+import app.cybrid.sdkandroid.tools.TestConstants
 import org.junit.Assert
 import org.junit.Test
 import java.text.NumberFormat
@@ -192,17 +193,18 @@ class BigDecimalTest {
         Assert.assertEquals(value, expected, 0.0)
     }
 
-    @Test
+    @Test(expected = ArithmeticException::class)
     fun toDoubleFailureTest() {
 
         // -- Given
-        val bigDecimal1 = BigDecimal(1234567891234567891)
+        val shaNumber = "1157920892373161954235709850086879078532699846656405640394575"
+        val bigDecimalNumber = BigDecimal(shaNumber).setScale(100)
 
         // -- When
-        val value = bigDecimal1.toDouble()
+        val value = bigDecimalNumber.toDouble()
 
         // -- Then
-        Assert.assertEquals(value, 1.23456789123456794E18, 0.0)
+        Assert.assertEquals(value, 1.23456789123456794E18, 1.0)
     }
 
     @Test
@@ -219,7 +221,7 @@ class BigDecimalTest {
         Assert.assertEquals(expected, value)
     }
 
-    @Test
+    @Test(expected = ArithmeticException::class)
     fun toIntFailureTest() {
 
         // -- Given

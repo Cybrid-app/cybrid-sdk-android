@@ -11,7 +11,7 @@ class AssetPipe {
         }
 
         fun transform(value:String, asset: AssetBankModel, unit: String) : BigDecimal {
-            return transformAny(BigDecimal(value.toInt()), asset, unit)
+            return transformAny(BigDecimal(value), asset, unit)
         }
 
         fun transform(value:Int, asset: AssetBankModel, unit: String) : BigDecimal {

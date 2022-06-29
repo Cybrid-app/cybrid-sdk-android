@@ -44,11 +44,21 @@ class BigDecimal(internal val value:JavaBigDecimal) : Comparable<BigDecimal> {
     }
 
     fun toInt(): Int {
-        return value.toInt()
+
+        val intValue = value.toInt()
+        if (intValue < 0) {
+            throw ArithmeticException("Overflow")
+        }
+        return intValue
     }
 
     fun toDouble(): Double {
-        return value.toDouble()
+
+        val doubleValue = value.toDouble()
+        if (doubleValue.toString().split("").contains("E")) {
+            throw ArithmeticException("Lost Precision")
+        }
+        return doubleValue
     }
 
     fun toJavaBigDecimal() : JavaBigDecimal {
