@@ -10,7 +10,7 @@ class BigDecimalPipe {
 
         fun transform(value: BigDecimal, asset:AssetBankModel): String? {
 
-            val divisor = BigDecimal(10).pow(asset.decimals)
+            val divisor = BigDecimal(10).pow(asset.decimals.toBigDecimal())
             val baseUnit = value.div(divisor)
             val prefix = if (value == BigDecimal.ZERO) "${asset.symbol}0" else asset.symbol
             return transformAny(baseUnit, asset, prefix)
@@ -18,7 +18,7 @@ class BigDecimalPipe {
 
         fun transform(value: Int, asset:AssetBankModel): String? {
 
-            val divisor = BigDecimal(10).pow(asset.decimals)
+            val divisor = BigDecimal(10).pow(asset.decimals.toBigDecimal())
             val baseUnit = BigDecimal(value).div(divisor)
             val prefix = if (value == 0) "${asset.symbol}0" else asset.symbol
             return transformAny(baseUnit, asset, prefix)
@@ -26,7 +26,7 @@ class BigDecimalPipe {
 
         fun transform(value: String, asset:AssetBankModel): String? {
 
-            val divisor = BigDecimal(10).pow(asset.decimals)
+            val divisor = BigDecimal(10).pow(asset.decimals.toBigDecimal())
             val baseUnit = BigDecimal(value).div(divisor)
             val prefix = if (value == "0") "${asset.symbol}0" else asset.symbol
             return transformAny(baseUnit, asset, prefix)

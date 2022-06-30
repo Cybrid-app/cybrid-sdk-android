@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import app.cybrid.demoapp.R
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
+import app.cybrid.sdkandroid.components.quote.view.QuoteViewModel
 import app.cybrid.sdkandroid.flow.TradeFlow
 
 class TradeFlowActivity : AppCompatActivity() {
@@ -16,9 +17,11 @@ class TradeFlowActivity : AppCompatActivity() {
 
         // --
         val viewModel: ListPricesViewModel by viewModels()
+        val quoteViewModel: QuoteViewModel by viewModels()
 
         // --
         val tradeFlow:TradeFlow = findViewById(R.id.tradeFlow)
         tradeFlow.setListPricesViewModel(viewModel)
+        tradeFlow.quoteViewModel = quoteViewModel
     }
 }

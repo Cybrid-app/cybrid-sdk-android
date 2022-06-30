@@ -12,4 +12,21 @@
         <item>SELL</item>
     </string-array>
     <string name="trade_flow_pre_quote_currency_input_label">Crypto Currency</string>
+
+    <string name="trade_flow_quote_confirmation_modal_title">Order Quote</string>
+    <string name="trade_flow_quote_confirmation_modal_sub_title">Market rates will automatically refresh every</string>
+    <string name="trade_flow_quote_confirmation_modal_sub_title_unit">seconds.</string>
+    <string name="trade_flow_quote_confirmation_modal_pending_title">Quote Pending</string>
+    <string name="trade_flow_quote_confirmation_modal_submitted_title">Submitting Crypto Order</string>
+    <string name="trade_flow_quote_confirmation_modal_purchase_amount_title">Purchase amount</string>
+    <string name="trade_flow_quote_confirmation_modal_purchase_quantity_title">Purchase quantity</string>
+    <string name="trade_flow_quote_confirmation_modal_transaction_fee_title">Transaction Fee</string>
+    <string name="trade_flow_quote_confirmation_modal_cancel">Cancel</string>
+    <string name="trade_flow_quote_confirmation_modal_confirm">CONFIRM</string>
+    <string name="trade_flow_confirmation_modal_title">Order Succeeded</string>
+    <string name="trade_flow_confirmation_modal_sub_title">Your %s purchase was successful!</string>
+    <string name="trade_flow_confirmation_modal_transaction_id">Transaction ID:</string>
+    <string name="trade_flow_confirmation_modal_date">Date:</string>
+    <string name="trade_flow_confirmation_modal_button">Buy more crypto</string>
+
 </resources>

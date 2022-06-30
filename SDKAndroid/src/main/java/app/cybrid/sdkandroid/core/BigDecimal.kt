@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.core
 
+import java.lang.NullPointerException
 import java.math.MathContext
 import java.math.RoundingMode
 import java.text.NumberFormat
@@ -43,8 +44,16 @@ class BigDecimal(internal val value:JavaBigDecimal) : Comparable<BigDecimal> {
         return BigDecimal(value.pow(n))
     }
 
+    fun toInt(): Int {
+        return value.toInt()
+    }
+
     fun toDouble(): Double {
         return value.toDouble()
+    }
+
+    fun toJavaBigDecimal() : JavaBigDecimal {
+        return value
     }
 
     override fun compareTo(other: BigDecimal): Int {
@@ -68,6 +77,7 @@ class BigDecimal(internal val value:JavaBigDecimal) : Comparable<BigDecimal> {
     }
 
     companion object {
+
         val ZERO: BigDecimal = BigDecimal(0)
     }
 
@@ -78,4 +88,8 @@ class BigDecimal(internal val value:JavaBigDecimal) : Comparable<BigDecimal> {
     fun format(numberFormat: NumberFormat): String? {
         return numberFormat.format(value)
     }
+}
+
+fun JavaBigDecimal.toBigDecimal(): BigDecimal {
+    return BigDecimal(this)
 }

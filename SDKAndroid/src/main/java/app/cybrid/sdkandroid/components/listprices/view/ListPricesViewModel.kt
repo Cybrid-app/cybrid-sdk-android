@@ -1,6 +1,5 @@
 package app.cybrid.sdkandroid.components.listprices.view
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,6 +15,7 @@ import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
 import app.cybrid.sdkandroid.util.getResult
+import app.cybrid.sdkandroid.util.isSuccessful
 import kotlinx.coroutines.launch
 
 class ListPricesViewModel : ViewModel() {
@@ -37,7 +37,7 @@ class ListPricesViewModel : ViewModel() {
                     // -- Getting prices
                     val pricesResult = getResult { pricesService.listPrices(symbol) }
                     pricesResult.let {
-                        prices = if (it.code == 200) {
+                        prices = if (isSuccessful(it.code ?: 500)) {
                             it.data!!
                         } else {
                             Logger.log(LoggerEvents.DATA_ERROR, "ListPricesView Component - Prices Data :: ${it.message}")

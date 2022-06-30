@@ -1,6 +1,8 @@
 package app.cybrid.sdkandroid.flow
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.compose.foundation.*
@@ -14,10 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.SwapVert
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -44,15 +43,20 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.constraintlayout.widget.ConstraintLayout
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
+import app.cybrid.cybrid_api_bank.client.models.PostQuoteBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.ListPricesView
 import app.cybrid.sdkandroid.components.ListPricesViewType
 import app.cybrid.sdkandroid.components.getImage
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
+import app.cybrid.sdkandroid.components.quote.view.QuoteConfirmationModal
+import app.cybrid.sdkandroid.components.quote.view.QuoteViewModel
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
+import app.cybrid.sdkandroid.util.Logger
+import app.cybrid.sdkandroid.util.LoggerEvents
 
 class TradeFlow @JvmOverloads constructor(
     context: Context,
@@ -60,10 +64,16 @@ class TradeFlow @JvmOverloads constructor(
     defStyle: Int = 0,
 ) : ConstraintLayout(context, attrs, defStyle) {
 
+    var updateInterval = 5000L
     var listPricesView: ListPricesView? = null
+    var quoteViewModel: QuoteViewModel? = null
+
+    private var _handler: Handler? = null
+    private var _runnable: Runnable? = null
 
     private var listPricesViewModel: ListPricesViewModel? = null
     private var composeContent: ComposeView? = null
+    private var postQuoteBankModel: PostQuoteBankModel? = null
 
     init {
 
@@ -161,10 +171,28 @@ class TradeFlow @JvmOverloads constructor(
                             )
 
                             PreQuoteActionButton(
+                                currencyState = currencyState,
+                                amountState = amountState,
+                                pairAsset = pairAsset,
+                                typeOfAmountState = typeOfAmountState,
                                 selectedTabIndex = selectedTabIndex
                             )
                         }
                     }
+                }
+            }
+        }
+    }
+
+    private fun refreshQuoteModel() {
+
+        Logger.log(LoggerEvents.DATA_REFRESHED, "TradeFlow: Quote Component Data")
+        if (this.quoteViewModel != null && this.postQuoteBankModel != null) {
+
+            quoteViewModel?.getQuote(this.postQuoteBankModel!!)
+            _handler.let {
+                _runnable.let { _it ->
+                    it?.postDelayed(_it!!, updateInterval)
                 }
             }
         }
@@ -459,7 +487,7 @@ class TradeFlow @JvmOverloads constructor(
         val symbol = "${currencyState.value.code}-${pairAsset.code}"
         val stateInt = amountState.value.toInt()
         val buyPrice = listPricesViewModel?.getBuyPrice(symbol)
-        val buyPriceDecimal = BigDecimal(buyPrice?.buyPrice ?: 0)
+        val buyPriceDecimal = BigDecimal(buyPrice?.buyPrice ?: java.math.BigDecimal(0))
         var amount = "0"
         var codeAssetToUse:AssetBankModel? = null
 
@@ -531,14 +559,38 @@ class TradeFlow @JvmOverloads constructor(
 
     @Composable
     private fun PreQuoteActionButton(
+        currencyState: MutableState<AssetBankModel>,
+        amountState: MutableState<String>,
+        pairAsset: AssetBankModel,
+        typeOfAmountState: MutableState<AssetBankModel.Type>,
         selectedTabIndex: MutableState<Int>
     ) {
 
-        val textButton = when(selectedTabIndex.value) {
+        // -- Side logic
+        val side = remember { mutableStateOf(PostQuoteBankModel.Side.buy) }
+        var textButton = ""
+        when(selectedTabIndex.value) {
 
-            0 -> stringResource(id = R.string.trade_flow_buy_action_button)
-            1 -> stringResource(id = R.string.trade_flow_sell_action_button)
-            else -> ""
+            0 ->  {
+                side.value = PostQuoteBankModel.Side.buy
+                textButton = stringResource(id = R.string.trade_flow_buy_action_button)
+            }
+            1 -> {
+                PostQuoteBankModel.Side.sell
+                textButton = stringResource(id = R.string.trade_flow_sell_action_button)
+            }
+        }
+
+        // -- Show Dialog
+        val showDialog = remember { mutableStateOf(false) }
+        if (showDialog.value) {
+            QuoteConfirmationModal(
+                viewModel = this.quoteViewModel!!,
+                asset = currencyState,
+                pairAsset = pairAsset,
+                showDialog = showDialog,
+                updateInterval = updateInterval
+            )
         }
 
         // -- Content
@@ -549,7 +601,16 @@ class TradeFlow @JvmOverloads constructor(
 
             Spacer(modifier = Modifier.weight(1f))
             Button(
-                onClick = {},
+                onClick = {
+                    getQuote(
+                        showDialog = showDialog,
+                        side = side,
+                        currencyState = currencyState,
+                        amountState = amountState,
+                        pairAsset = pairAsset,
+                        typeOfAmountState = typeOfAmountState
+                    )
+                },
                 modifier = Modifier
                     .width(120.dp)
                     .height(44.dp),
@@ -573,6 +634,33 @@ class TradeFlow @JvmOverloads constructor(
                 )
             }
         }
+    }
+
+    private fun getQuote(
+        showDialog: MutableState<Boolean>,
+        side: MutableState<PostQuoteBankModel.Side>,
+        currencyState: MutableState<AssetBankModel>,
+        amountState: MutableState<String>,
+        pairAsset: AssetBankModel,
+        typeOfAmountState: MutableState<AssetBankModel.Type>,
+    ) {
+
+        showDialog.value = true
+
+        // -- Set runnable for Quote Model
+        _handler = Handler(Looper.getMainLooper())
+        _runnable = Runnable { this.refreshQuoteModel() }
+        _handler?.postDelayed(_runnable!!, updateInterval)
+
+        // -- PostQuoteBankModel
+        this.postQuoteBankModel = quoteViewModel?.getQuoteObject(
+            amount = BigDecimal(amountState.value),
+            input = typeOfAmountState.value,
+            side = side.value,
+            asset = currencyState.value,
+            pairAsset = pairAsset
+        )
+        quoteViewModel?.getQuote(this.postQuoteBankModel!!)
     }
 
     private fun getImageID(name: String) : Int {
