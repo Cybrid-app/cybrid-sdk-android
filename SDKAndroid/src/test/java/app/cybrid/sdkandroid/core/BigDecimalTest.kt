@@ -218,28 +218,23 @@ class BigDecimalTest {
         val value = bigDecimalNumber.toDouble()
 
         // -- Then
-        Assert.assertEquals(value, 1.23456789123456794E18, 1.0)
+        Assert.assertTrue(false)
     }
 
     @Test
     fun toDoubleFailureCatchTest() {
 
-        // -- Given
-        val shaNumber = "1157920892373161954235709850086879078532699846656405640394575"
-        val bigDecimalNumber = BigDecimal(shaNumber).setScale(100)
-        var value = 0.0
-        var error: Throwable? = null
+        var error: Exception? = null
 
         // -- When
         try {
-            value = bigDecimalNumber.toDouble()
-        } catch (e: Throwable) {
+            classUnderTest.toDouble()
+        } catch (e: Exception) {
             error = e
         }
 
         // -- Then
-        Assert.assertNull(error?.cause)
-        Assert.assertNull(error?.message)
+        Assert.assertNotNull(error)
     }
 
     @Test
@@ -287,27 +282,24 @@ class BigDecimalTest {
         val value = bigDecimal1.toInt()
 
         // -- Then
-        Assert.assertEquals(value, -10714012610)
+        Assert.assertTrue(false)
     }
 
     @Test
     fun toIntFailureCatchTest() {
 
         // -- Given
-        val bigDecimal1 = BigDecimal(1234567891234567891)
-        var value = 0
-        var error: Throwable? = null
+        var error: Exception? = null
 
         // -- When
         try {
-            value = bigDecimal1.toInt()
-        } catch (e: Throwable) {
+            classUnderTest.toInt()
+        } catch (e: Exception) {
             error = e
         }
 
         // -- Then
-        Assert.assertNull(error?.cause)
-        Assert.assertNull(error?.message)
+        Assert.assertNotNull(error)
     }
 
     @Test
