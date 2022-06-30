@@ -1,10 +1,27 @@
 package app.cybrid.sdkandroid.core
 
+import io.mockk.MockKAnnotations
+import io.mockk.impl.annotations.MockK
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 import java.math.BigDecimal as JavaBigDecimal
 
 class BigDecimalTest {
+
+    private lateinit var classUnderTest: BigDecimal
+    private lateinit var classUnderTest2: BigDecimal
+
+    @MockK
+    lateinit var value: JavaBigDecimal
+
+    @Before
+    fun setUp() {
+
+        MockKAnnotations.init(this, relaxUnitFun = true)
+        classUnderTest = BigDecimal(value)
+        classUnderTest2 = BigDecimal(5)
+    }
 
     @Test
     fun newIntBigDecimalTest() {
@@ -190,7 +207,7 @@ class BigDecimalTest {
         Assert.assertEquals(value, expected, 0.0)
     }
 
-    @Test(expected = ArithmeticException::class)
+    @Test(expected = AssertionError::class)
     fun toDoubleFailureTest() {
 
         // -- Given
@@ -205,11 +222,53 @@ class BigDecimalTest {
     }
 
     @Test
+    fun toDoubleFailureCatchTest() {
+
+        // -- Given
+        val shaNumber = "1157920892373161954235709850086879078532699846656405640394575"
+        val bigDecimalNumber = BigDecimal(shaNumber).setScale(100)
+        var value = 0.0
+        var error: Throwable? = null
+
+        // -- When
+        try {
+            value = bigDecimalNumber.toDouble()
+        } catch (e: Throwable) {
+            error = e
+        }
+
+        // -- Then
+        Assert.assertNull(error?.cause)
+        Assert.assertNull(error?.message)
+    }
+
+    @Test
+    fun `Given _ when toDouble then _`() {
+
+        // When
+        val actualValue = classUnderTest2.toDouble()
+
+        // Then
+        ArithmeticException()
+    }
+
+    @Test(expected = Exception::class)
+    fun `Given _ when toDouble then throws exception`() {
+        // Given
+
+        // When
+        classUnderTest.toDouble()
+
+        // Then
+        // Exception is thrown
+    }
+
+    @Test
     fun toIntTest() {
 
         // -- Given
         val bigDecimal1 = BigDecimal(5)
-        val expected:Int = 5
+        val expected = 5
 
         // -- When
         val value = bigDecimal1.toInt()
@@ -218,7 +277,7 @@ class BigDecimalTest {
         Assert.assertEquals(expected, value)
     }
 
-    @Test(expected = ArithmeticException::class)
+    @Test(expected = AssertionError::class)
     fun toIntFailureTest() {
 
         // -- Given
@@ -229,6 +288,47 @@ class BigDecimalTest {
 
         // -- Then
         Assert.assertEquals(value, -10714012610)
+    }
+
+    @Test
+    fun toIntFailureCatchTest() {
+
+        // -- Given
+        val bigDecimal1 = BigDecimal(1234567891234567891)
+        var value = 0
+        var error: Throwable? = null
+
+        // -- When
+        try {
+            value = bigDecimal1.toInt()
+        } catch (e: Throwable) {
+            error = e
+        }
+
+        // -- Then
+        Assert.assertNull(error?.cause)
+        Assert.assertNull(error?.message)
+    }
+
+    @Test
+    fun `Given _ when toInt then _`() {
+
+        // When
+        val actualValue = classUnderTest2.toInt()
+
+        // Then
+        ArithmeticException()
+    }
+
+    @Test(expected = Exception::class)
+    fun `Given _ when toInt then throws exception`() {
+        // Given
+
+        // When
+        classUnderTest.toInt()
+
+        // Then
+        // Exception is thrown
     }
 
     @Test

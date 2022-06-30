@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.core
 
+import java.lang.NullPointerException
 import java.math.MathContext
 import java.math.RoundingMode
 import java.text.NumberFormat
@@ -44,21 +45,11 @@ class BigDecimal(internal val value:JavaBigDecimal) : Comparable<BigDecimal> {
     }
 
     fun toInt(): Int {
-
-        val intValue = value.toInt()
-        if (intValue != value.intValueExact()) {
-            throw ArithmeticException("Overflow")
-        }
-        return intValue
+        return value.toInt()
     }
 
     fun toDouble(): Double {
-
-        val doubleValue = value.toDouble()
-        if (doubleValue != value.intValueExact().toDouble()) {
-            throw ArithmeticException("Lost Precision")
-        }
-        return doubleValue
+        return value.toDouble()
     }
 
     fun toJavaBigDecimal() : JavaBigDecimal {
