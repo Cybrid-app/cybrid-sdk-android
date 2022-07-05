@@ -157,7 +157,8 @@ class TradeFlow @JvmOverloads constructor(
 
                         PreQuoteAmountInput(
                             amountState = amountState,
-                            amountAsset = amountAsset
+                            amountAsset = amountAsset,
+                            typeOfAmountState = typeOfAmountState
                         )
 
                         if (amountState.value != "") {
@@ -382,7 +383,8 @@ class TradeFlow @JvmOverloads constructor(
     @Composable
     private fun PreQuoteAmountInput(
         amountState: MutableState<String>,
-        amountAsset: MutableState<AssetBankModel>
+        amountAsset: MutableState<AssetBankModel>,
+        typeOfAmountState: MutableState<AssetBankModel.Type>
     ) {
 
         // -- Focus Manger
@@ -455,8 +457,9 @@ class TradeFlow @JvmOverloads constructor(
                     imeAction = ImeAction.Done
                 ),
                 modifier = Modifier
-                    .padding(start = 0.dp, end = 4.dp)
-                    .fillMaxWidth(),
+                    .padding(start = 0.dp, end = 0.dp)
+                    .weight(0.88f),
+                    //.fillMaxWidth(),
                 textStyle = TextStyle(
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Normal,
@@ -472,6 +475,23 @@ class TradeFlow @JvmOverloads constructor(
                     disabledIndicatorColor = Color.Transparent
                 )
             )
+            Icon(
+                Icons.Filled.SwapVert,
+                contentDescription = "",
+                tint = colorResource(id = R.color.primary_color),
+                modifier = Modifier
+
+                    .size(24.dp)
+                    .padding(end = 14.dp)
+                    .weight(0.12f)
+                    .clickable {
+                        if (typeOfAmountState.value == AssetBankModel.Type.fiat) {
+                            typeOfAmountState.value = AssetBankModel.Type.crypto
+                        } else {
+                            typeOfAmountState.value = AssetBankModel.Type.fiat
+                        }
+                    }
+            )
         }
     }
 
@@ -485,7 +505,7 @@ class TradeFlow @JvmOverloads constructor(
     ) {
 
         val symbol = "${currencyState.value.code}-${pairAsset.code}"
-        val stateInt = amountState.value.toInt()
+        val stateInt = amountState.value
         val buyPrice = listPricesViewModel?.getBuyPrice(symbol)
         val buyPriceDecimal = BigDecimal(buyPrice?.buyPrice ?: java.math.BigDecimal(0))
         var amount = "0"
@@ -537,22 +557,6 @@ class TradeFlow @JvmOverloads constructor(
                 fontFamily = robotoFont,
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp
-            )
-            Icon(
-                Icons.Filled.SwapVert,
-                contentDescription = "",
-                tint = colorResource(id = R.color.primary_color),
-                modifier = Modifier
-                    .padding(start = 6.dp)
-                    .width(17.dp)
-                    .height(23.dp)
-                    .clickable {
-                        if (typeOfAmountState.value == AssetBankModel.Type.fiat) {
-                            typeOfAmountState.value = AssetBankModel.Type.crypto
-                        } else {
-                            typeOfAmountState.value = AssetBankModel.Type.fiat
-                        }
-                    }
             )
         }
     }
