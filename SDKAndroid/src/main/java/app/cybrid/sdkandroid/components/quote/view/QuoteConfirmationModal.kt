@@ -44,11 +44,13 @@ fun QuoteConfirmationModal(
     asset: MutableState<AssetBankModel>,
     pairAsset: AssetBankModel,
     showDialog: MutableState<Boolean>,
+    selectedTabIndex: MutableState<Int>,
     updateInterval: Long = 5000
 ) {
 
     // -- Modal State
-    val modalState:MutableState<QuoteConfirmationState> = remember { mutableStateOf(QuoteConfirmationState.PENDING) }
+    val modalState:MutableState<QuoteConfirmationState> =
+        remember { mutableStateOf(QuoteConfirmationState.PENDING) }
 
     // -- Check state Pending -> Content
     if (viewModel.quoteBankModel.guid != null) {
@@ -94,6 +96,7 @@ fun QuoteConfirmationModal(
                         pairAsset = pairAsset,
                         showDialog = showDialog,
                         modalState = modalState,
+                        selectedTabIndex = selectedTabIndex,
                         refreshTime = updateInterval)
                 }
 
@@ -152,6 +155,7 @@ private fun QuoteConfirmationContent(
     pairAsset: AssetBankModel,
     showDialog: MutableState<Boolean>,
     modalState:MutableState<QuoteConfirmationState>,
+    selectedTabIndex: MutableState<Int>,
     refreshTime: Long = 5000
 ) {
 
@@ -222,19 +226,29 @@ private fun QuoteConfirmationContent(
                     .padding(start = 24.dp, top = 16.dp, end = 24.dp),
                 fontFamily = robotoFont,
                 fontWeight = FontWeight.Normal,
-                fontSize = 14.sp,
+                fontSize = 15.sp,
+                lineHeight = 20.sp,
                 color = colorResource(id = R.color.modal_sub_title_color)
             )
             // -- Purchase amount
             QuoteConfirmationContentItem(
                 titleLabel = stringResource(
-                    id = R.string.trade_flow_quote_confirmation_modal_purchase_amount_title),
+                    id = if (selectedTabIndex.value == 0) {
+                        R.string.trade_flow_quote_confirmation_modal_purchase_amount_title
+                    } else {
+                        R.string.trade_flow_quote_confirmation_modal_sell_amount_title
+
+                    }),
                 subTitleLabel = purchaseValue
             )
             // -- Purchase quantity
             QuoteConfirmationContentItem(
                 titleLabel = stringResource(
-                    id = R.string.trade_flow_quote_confirmation_modal_purchase_quantity_title),
+                    id = if (selectedTabIndex.value == 0) {
+                        R.string.trade_flow_quote_confirmation_modal_purchase_quantity_title
+                    } else {
+                        R.string.trade_flow_quote_confirmation_modal_sell_quantity_title
+                    }),
                 subTitleLabel = receiveValue
             )
             // -- Transaction Fee
@@ -268,22 +282,24 @@ private fun QuoteConfirmationContentItem(
         Text(
             text = titleLabel,
             fontFamily = robotoFont,
-            fontWeight = FontWeight.Normal,
-            fontSize = 17.sp,
+            fontWeight = FontWeight.Medium,
+            fontSize = 14.5.sp,
+            lineHeight = 14.sp,
             color = colorResource(id = R.color.modal_title_color)
         )
         Text(
             text = subTitleLabel,
             modifier = Modifier
-                .padding(top = 5.dp),
+                .padding(top = 7.dp),
             fontFamily = robotoFont,
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
+            lineHeight = 16.sp,
             color = colorResource(id = R.color.modal_sub_title_color)
         )
         Box(
             modifier = Modifier
-                .padding(top = 11.dp)
+                .padding(top = 12.dp)
                 .fillMaxWidth()
                 .height(1.dp)
                 .background(color = colorResource(id = R.color.modal_divider))

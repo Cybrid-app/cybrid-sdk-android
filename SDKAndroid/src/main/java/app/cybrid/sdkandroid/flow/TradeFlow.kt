@@ -593,6 +593,7 @@ class TradeFlow @JvmOverloads constructor(
                 asset = currencyState,
                 pairAsset = pairAsset,
                 showDialog = showDialog,
+                selectedTabIndex = selectedTabIndex,
                 updateInterval = updateInterval
             )
         }
