@@ -33,6 +33,7 @@ import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.core.*
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
+import java.math.BigDecimal as JavaBigDecimal
 
 private enum class QuoteConfirmationState {
     PENDING, CONTENT, SUBMITTED, DONE
@@ -174,7 +175,7 @@ private fun QuoteConfirmationContent(
     }
 
     // -- Purchase amount
-    val deliverAmountBD = BigDecimal(viewModel.quoteBankModel.deliverAmount ?: java.math.BigDecimal(0))
+    val deliverAmountBD = BigDecimal(viewModel.quoteBankModel.deliverAmount ?: JavaBigDecimal(0))
     val purchaseValue = buildAnnotatedString {
         append(BigDecimalPipe.transform(deliverAmountBD, pairAsset)!!)
         withStyle(style = SpanStyle(
@@ -186,7 +187,7 @@ private fun QuoteConfirmationContent(
     }
 
     // -- Purchase quantity
-    val receiveAmountBD = BigDecimal(viewModel.quoteBankModel.receiveAmount ?: java.math.BigDecimal(0))
+    val receiveAmountBD = BigDecimal(viewModel.quoteBankModel.receiveAmount ?: JavaBigDecimal(0))
     val receiveValue = buildAnnotatedString {
         append(AssetPipe.transform(receiveAmountBD, asset.value, "trade").toPlainString())
         withStyle(style = SpanStyle(
@@ -198,7 +199,7 @@ private fun QuoteConfirmationContent(
     }
 
     // -- Transaction fee
-    val transactionFeeBD = BigDecimal(viewModel.quoteBankModel.fee ?: java.math.BigDecimal(0))
+    val transactionFeeBD = BigDecimal(viewModel.quoteBankModel.fee ?: JavaBigDecimal(0))
     val transactionFeeValue = buildAnnotatedString {
         append(BigDecimalPipe.transform(transactionFeeBD, pairAsset)!!)
         withStyle(style = SpanStyle(
@@ -398,7 +399,7 @@ private fun QuoteConfirmationContentDone(
         id = R.string.trade_flow_confirmation_modal_sub_title), asset.value.name)
 
     // -- Purchase amount
-    val deliverAmountBD = BigDecimal(viewModel.tradeBankModel.deliverAmount ?: java.math.BigDecimal(0))
+    val deliverAmountBD = BigDecimal(viewModel.tradeBankModel.deliverAmount ?: JavaBigDecimal(0))
     val purchaseValue = buildAnnotatedString {
         append(BigDecimalPipe.transform(deliverAmountBD, pairAsset)!!)
         withStyle(style = SpanStyle(
@@ -410,7 +411,7 @@ private fun QuoteConfirmationContentDone(
     }
 
     // -- Purchase quantity
-    val receiveAmountBD = BigDecimal(viewModel.tradeBankModel.receiveAmount ?: java.math.BigDecimal(0))
+    val receiveAmountBD = BigDecimal(viewModel.tradeBankModel.receiveAmount ?: JavaBigDecimal(0))
     val receiveValue = buildAnnotatedString {
         append(AssetPipe.transform(receiveAmountBD, asset.value, "trade").toPlainString())
         withStyle(style = SpanStyle(
@@ -422,7 +423,7 @@ private fun QuoteConfirmationContentDone(
     }
 
     // -- Transaction fee
-    val transactionFeeBD = BigDecimal(viewModel.tradeBankModel.fee ?: java.math.BigDecimal(0))
+    val transactionFeeBD = BigDecimal(viewModel.tradeBankModel.fee ?: JavaBigDecimal(0))
     val transactionFeeValue = buildAnnotatedString {
         append(BigDecimalPipe.transform(transactionFeeBD, pairAsset)!!)
         withStyle(style = SpanStyle(
