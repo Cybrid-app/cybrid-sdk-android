@@ -39,6 +39,7 @@ class QuoteConfirmationModalTest {
         val viewModel = QuoteViewModel()
         val cryptoAsset = mutableStateOf(TestConstants.BTC_ASSET)
         val fiatAsset = TestConstants.CAD_ASSET
+        val selectedTabIndex = mutableStateOf(0)
 
         // -- When
         composeTestRule.setContent {
@@ -46,6 +47,7 @@ class QuoteConfirmationModalTest {
                 viewModel = viewModel,
                 asset = cryptoAsset,
                 pairAsset = fiatAsset,
+                selectedTabIndex = selectedTabIndex,
                 showDialog = mutableStateOf(true))
         }
 
@@ -56,8 +58,6 @@ class QuoteConfirmationModalTest {
     @ExperimentalCoroutinesApi
     @Test
     fun `Setup QuoteConfirmationLoading`() = runTest {
-
-        // -- Given
 
         // -- When
         composeTestRule.setContent {

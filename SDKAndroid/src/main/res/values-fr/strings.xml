@@ -8,8 +8,8 @@
     <string name="trade_flow_buy_action_button">ACHETER</string>
     <string name="trade_flow_sell_action_button">VENDRE</string>
     <string-array name="trade_flow_tabs">
-        <item>ACHETER</item>
-        <item>VENDRE</item>
+        <item>Acheter</item>
+        <item>Vendre</item>
     </string-array>
     <string name="trade_flow_pre_quote_currency_input_label">Crypto Devise</string>
 
@@ -24,9 +24,9 @@
     <string name="trade_flow_quote_confirmation_modal_sell_quantity_title">Quantité de vente</string>
     <string name="trade_flow_quote_confirmation_modal_transaction_fee_title">Frais de transaction</string>
     <string name="trade_flow_quote_confirmation_modal_cancel">Annuler</string>
-    <string name="trade_flow_quote_confirmation_modal_confirm">CONFIRMER</string>
-    <string name="trade_flow_confirmation_modal_title">Commande réussie</string>
-    <string name="trade_flow_confirmation_modal_sub_title">Votre achat de %s a réussi!</string>
+    <string name="trade_flow_quote_confirmation_modal_confirm">Confirmer</string>
+    <string name="trade_flow_confirmation_modal_title">Commande passée</string>
+    <string name="trade_flow_confirmation_modal_sub_title">Votre commande a été enregistrée</string>
     <string name="trade_flow_confirmation_modal_transaction_id">ID de transaction:</string>
     <string name="trade_flow_confirmation_modal_date">Date:</string>
     <string name="trade_flow_confirmation_modal_button">Acheter plus de crypto</string>

@@ -394,10 +394,6 @@ private fun QuoteConfirmationContentDone(
     modalState:MutableState<QuoteConfirmationState>
 ) {
 
-    // -- Subtitle
-    val subTitle = String.format(stringResource(
-        id = R.string.trade_flow_confirmation_modal_sub_title), asset.value.name)
-
     // -- Purchase amount
     val deliverAmountBD = BigDecimal(viewModel.tradeBankModel.deliverAmount ?: JavaBigDecimal(0))
     val purchaseValue = buildAnnotatedString {
@@ -447,7 +443,7 @@ private fun QuoteConfirmationContentDone(
                 color = colorResource(id = R.color.modal_title_color)
             )
             Text(
-                text = subTitle,
+                text = stringResource(id = R.string.trade_flow_confirmation_modal_sub_title),
                 modifier = Modifier
                     .padding(start = 24.dp, top = 16.dp, end = 24.dp),
                 fontFamily = robotoFont,
