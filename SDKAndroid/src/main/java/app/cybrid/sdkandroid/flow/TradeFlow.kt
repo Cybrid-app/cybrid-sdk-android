@@ -549,9 +549,19 @@ class TradeFlow @JvmOverloads constructor(
         Row(
             modifier = Modifier
                 .padding(top = 11.dp)
-                .padding(horizontal = 2.dp)
+                .padding(horizontal = 3.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-
+            if (typeOfAmountState.value == AssetBankModel.Type.crypto) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_usd),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .padding(top = 0.dp, end = 8.dp)
+                        .width(28.dp)
+                        .height(16.34.dp)
+                )
+            }
             Text(
                 text = amountStyled,
                 fontFamily = robotoFont,

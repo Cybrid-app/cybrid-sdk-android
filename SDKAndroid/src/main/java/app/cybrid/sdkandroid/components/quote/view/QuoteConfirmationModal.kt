@@ -111,6 +111,7 @@ fun QuoteConfirmationModal(
                         asset = asset,
                         pairAsset = pairAsset,
                         showDialog = showDialog,
+                        selectedTabIndex = selectedTabIndex,
                         modalState = modalState
                     )
                 }
@@ -388,6 +389,7 @@ private fun QuoteConfirmationContentDone(
     asset: MutableState<AssetBankModel>,
     pairAsset: AssetBankModel,
     showDialog: MutableState<Boolean>,
+    selectedTabIndex: MutableState<Int>,
     modalState:MutableState<QuoteConfirmationState>
 ) {
 
@@ -396,7 +398,7 @@ private fun QuoteConfirmationContentDone(
         id = R.string.trade_flow_confirmation_modal_sub_title), asset.value.name)
 
     // -- Purchase amount
-    val deliverAmountBD = BigDecimal(viewModel.quoteBankModel.deliverAmount ?: java.math.BigDecimal(0))
+    val deliverAmountBD = BigDecimal(viewModel.tradeBankModel.deliverAmount ?: java.math.BigDecimal(0))
     val purchaseValue = buildAnnotatedString {
         append(BigDecimalPipe.transform(deliverAmountBD, pairAsset)!!)
         withStyle(style = SpanStyle(
@@ -408,7 +410,7 @@ private fun QuoteConfirmationContentDone(
     }
 
     // -- Purchase quantity
-    val receiveAmountBD = BigDecimal(viewModel.quoteBankModel.receiveAmount ?: java.math.BigDecimal(0))
+    val receiveAmountBD = BigDecimal(viewModel.tradeBankModel.receiveAmount ?: java.math.BigDecimal(0))
     val receiveValue = buildAnnotatedString {
         append(AssetPipe.transform(receiveAmountBD, asset.value, "trade").toPlainString())
         withStyle(style = SpanStyle(
@@ -420,7 +422,7 @@ private fun QuoteConfirmationContentDone(
     }
 
     // -- Transaction fee
-    val transactionFeeBD = BigDecimal(viewModel.quoteBankModel.fee ?: java.math.BigDecimal(0))
+    val transactionFeeBD = BigDecimal(viewModel.tradeBankModel.fee ?: java.math.BigDecimal(0))
     val transactionFeeValue = buildAnnotatedString {
         append(BigDecimalPipe.transform(transactionFeeBD, pairAsset)!!)
         withStyle(style = SpanStyle(
@@ -459,13 +461,22 @@ private fun QuoteConfirmationContentDone(
             // -- Purchase amount
             QuoteConfirmationContentItem(
                 titleLabel = stringResource(
-                    id = R.string.trade_flow_quote_confirmation_modal_purchase_amount_title),
+                    id = if (selectedTabIndex.value == 0) {
+                        R.string.trade_flow_quote_confirmation_modal_purchase_amount_title
+                    } else {
+                        R.string.trade_flow_quote_confirmation_modal_sell_amount_title
+
+                    }),
                 subTitleLabel = purchaseValue
             )
             // -- Purchase quantity
             QuoteConfirmationContentItem(
                 titleLabel = stringResource(
-                    id = R.string.trade_flow_quote_confirmation_modal_purchase_quantity_title),
+                    id = if (selectedTabIndex.value == 0) {
+                        R.string.trade_flow_quote_confirmation_modal_purchase_quantity_title
+                    } else {
+                        R.string.trade_flow_quote_confirmation_modal_sell_quantity_title
+                    }),
                 subTitleLabel = receiveValue
             )
             // -- Transaction Fee
