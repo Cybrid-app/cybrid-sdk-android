@@ -8,23 +8,25 @@
     <string name="trade_flow_buy_action_button">COMPRAR</string>
     <string name="trade_flow_sell_action_button">VENDER</string>
     <string-array name="trade_flow_tabs">
-        <item>COMPRAR</item>
-        <item>VENDER</item>
+        <item>Comprar</item>
+        <item>Vender</item>
     </string-array>
     <string name="trade_flow_pre_quote_currency_input_label">Crypto Divisa</string>
 
     <string name="trade_flow_quote_confirmation_modal_title">Presupuesto</string>
-    <string name="trade_flow_quote_confirmation_modal_sub_title">Los precios de mercado se actualizan cada</string>
+    <string name="trade_flow_quote_confirmation_modal_sub_title">Los precios de mercado se actualizan \ncada</string>
     <string name="trade_flow_quote_confirmation_modal_sub_title_unit">segundos.</string>
     <string name="trade_flow_quote_confirmation_modal_pending_title">Cotización pendiente</string>
     <string name="trade_flow_quote_confirmation_modal_submitted_title">Enviando orden</string>
     <string name="trade_flow_quote_confirmation_modal_purchase_amount_title">Monto de la compra</string>
+    <string name="trade_flow_quote_confirmation_modal_sell_amount_title">Monto de la venta</string>
     <string name="trade_flow_quote_confirmation_modal_purchase_quantity_title">Cantidad de la compra</string>
+    <string name="trade_flow_quote_confirmation_modal_sell_quantity_title">Cantidad de la venta</string>
     <string name="trade_flow_quote_confirmation_modal_transaction_fee_title">Comisión</string>
     <string name="trade_flow_quote_confirmation_modal_cancel">Cancelar</string>
-    <string name="trade_flow_quote_confirmation_modal_confirm">CONFIRMAR</string>
-    <string name="trade_flow_confirmation_modal_title">Orden completada</string>
-    <string name="trade_flow_confirmation_modal_sub_title">Tu compra de %s fue completada!</string>
+    <string name="trade_flow_quote_confirmation_modal_confirm">Confirmar</string>
+    <string name="trade_flow_confirmation_modal_title">Orden enviada</string>
+    <string name="trade_flow_confirmation_modal_sub_title">Tu orden ha sido colocada.</string>
     <string name="trade_flow_confirmation_modal_transaction_id">ID Transacción:</string>
     <string name="trade_flow_confirmation_modal_date">Fecha:</string>
     <string name="trade_flow_confirmation_modal_button">Comprar mas crypto</string>
