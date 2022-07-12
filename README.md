@@ -111,7 +111,8 @@ cryptoList.updateInterval = 2000L
 
 #### TradeFlow
 
-The TradeFlow it's the simplest way to buy/sell crypto to integrate you need to add into your view the component:
+The TradeFlow it's the simplest way to buy/sell crypto.
+To integrate you need to add into your view the component:
 
 ```
 <app.cybrid.sdkandroid.flow.TradeFlow
