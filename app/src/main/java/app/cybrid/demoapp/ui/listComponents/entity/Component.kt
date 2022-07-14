@@ -18,11 +18,11 @@ class Component() {
 
             // -- ListPrices Component
             val pricesComponents = Component(1, "ListPrices Component")
-            components.add(pricesComponents)
+            //components.add(pricesComponents)
 
             // -- ListPrices Assets Component
             val pricesAssetsComponents = Component(2, "ListPrices + Assets Component")
-            components.add(pricesAssetsComponents)
+            //components.add(pricesAssetsComponents)
 
             // -- Trade Flow
             val tradeFlow = Component(3, "TradeFlow")
