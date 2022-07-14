@@ -4,7 +4,9 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -57,6 +60,7 @@ import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
+import app.cybrid.sdkandroid.util.isNumeric
 import java.math.BigDecimal as JavaBigDecimal
 
 class TradeFlow @JvmOverloads constructor(
@@ -441,7 +445,7 @@ class TradeFlow @JvmOverloads constructor(
             TextField(
                 value = amountState.value,
                 onValueChange = { value ->
-                    amountState.value = value
+                    amountState.value = value.filter { it.isDigit() || it == '.' }
                 },
                 placeholder = {
                     Text(
