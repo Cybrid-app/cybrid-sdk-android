@@ -60,7 +60,6 @@ import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
-import app.cybrid.sdkandroid.util.isNumeric
 import java.math.BigDecimal as JavaBigDecimal
 
 class TradeFlow @JvmOverloads constructor(
@@ -510,7 +509,11 @@ class TradeFlow @JvmOverloads constructor(
     ) {
 
         val symbol = "${currencyState.value.code}-${pairAsset.code}"
-        val stateInt = amountState.value
+        var stateInt = amountState.value
+        if (stateInt.isNotEmpty() && stateInt[0] == '.') {
+            stateInt = "0$stateInt"
+        }
+
         val buyPrice = listPricesViewModel?.getBuyPrice(symbol)
         val buyPriceDecimal = BigDecimal(buyPrice?.buyPrice ?: JavaBigDecimal(0))
         var amount = "0"
