@@ -4,7 +4,9 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import android.util.Log
 import android.view.LayoutInflater
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,9 +26,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
@@ -382,7 +382,7 @@ class TradeFlow @JvmOverloads constructor(
     }
 
     @Composable
-    private fun PreQuoteAmountInput(
+    fun PreQuoteAmountInput(
         amountState: MutableState<String>,
         amountAsset: MutableState<AssetBankModel>,
         typeOfAmountState: MutableState<AssetBankModel.Type>
@@ -439,9 +439,9 @@ class TradeFlow @JvmOverloads constructor(
                     )
             )
             TextField(
-                value = amountState.value,
+                value = amountState.value.filter { it.isDigit() || it == '.' },
                 onValueChange = { value ->
-                    amountState.value = value
+                    amountState.value = value.filter { it.isDigit() || it == '.' }
                 },
                 placeholder = {
                     Text(
@@ -450,7 +450,6 @@ class TradeFlow @JvmOverloads constructor(
                     )
                 },
                 keyboardActions = KeyboardActions(
-                    onNext = { focusManager.moveFocus(FocusDirection.Next) },
                     onDone = { focusManager.clearFocus(true) }
                 ),
                 keyboardOptions = KeyboardOptions(
@@ -459,7 +458,8 @@ class TradeFlow @JvmOverloads constructor(
                 ),
                 modifier = Modifier
                     .padding(start = 0.dp, end = 0.dp)
-                    .weight(0.88f),
+                    .weight(0.88f)
+                    .testTag("PreQuoteAmountInputTextFieldTag"),
                     //.fillMaxWidth(),
                 textStyle = TextStyle(
                     fontFamily = robotoFont,
@@ -506,7 +506,11 @@ class TradeFlow @JvmOverloads constructor(
     ) {
 
         val symbol = "${currencyState.value.code}-${pairAsset.code}"
-        val stateInt = amountState.value
+        var stateInt = amountState.value
+        if (stateInt.isNotEmpty() && stateInt[0] == '.') {
+            stateInt = "0$stateInt"
+        }
+
         val buyPrice = listPricesViewModel?.getBuyPrice(symbol)
         val buyPriceDecimal = BigDecimal(buyPrice?.buyPrice ?: JavaBigDecimal(0))
         var amount = "0"
