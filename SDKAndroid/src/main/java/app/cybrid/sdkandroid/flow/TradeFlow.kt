@@ -26,10 +26,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
@@ -385,7 +382,7 @@ class TradeFlow @JvmOverloads constructor(
     }
 
     @Composable
-    private fun PreQuoteAmountInput(
+    fun PreQuoteAmountInput(
         amountState: MutableState<String>,
         amountAsset: MutableState<AssetBankModel>,
         typeOfAmountState: MutableState<AssetBankModel.Type>
@@ -442,7 +439,7 @@ class TradeFlow @JvmOverloads constructor(
                     )
             )
             TextField(
-                value = amountState.value,
+                value = amountState.value.filter { it.isDigit() || it == '.' },
                 onValueChange = { value ->
                     amountState.value = value.filter { it.isDigit() || it == '.' }
                 },
@@ -453,7 +450,6 @@ class TradeFlow @JvmOverloads constructor(
                     )
                 },
                 keyboardActions = KeyboardActions(
-                    onNext = { focusManager.moveFocus(FocusDirection.Next) },
                     onDone = { focusManager.clearFocus(true) }
                 ),
                 keyboardOptions = KeyboardOptions(
@@ -462,7 +458,8 @@ class TradeFlow @JvmOverloads constructor(
                 ),
                 modifier = Modifier
                     .padding(start = 0.dp, end = 0.dp)
-                    .weight(0.88f),
+                    .weight(0.88f)
+                    .testTag("PreQuoteAmountInputTextFieldTag"),
                     //.fillMaxWidth(),
                 textStyle = TextStyle(
                     fontFamily = robotoFont,
