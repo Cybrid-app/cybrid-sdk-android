@@ -38,19 +38,16 @@ jobs:
           avd-name: myavd
           no-window: true
           restore-gradle-cache-prefix: v1a
-      - android/run-tests
+      - run:
+          name: Run UI Test
+          command: |
+            ./gradlew app:connectedDebugAndroidTest
       - run:
           name: Run Unit Test
           command: |
             ./gradlew app:testDebugUnitTest
-      - android/save-gradle-cache:
-          cache-prefix: v1a
 
   android-test:
-    docker:
-      - image: cimg/android:2022.06.1
-    environment:
-      JVM_OPTS: -Xmx3200m
     steps:
       - checkout
       - run:
