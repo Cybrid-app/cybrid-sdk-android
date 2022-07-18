@@ -75,10 +75,7 @@ jobs:
                   ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
 
 workflows:
-  android-test:
+  android-test-publish:
     jobs:
-      - android-e2e:
-        name: e2e
-      - android-test:
-        requires:
-          - e2e
+      - android-e2e
+      - android-test
