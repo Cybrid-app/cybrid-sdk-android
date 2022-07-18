@@ -20,24 +20,31 @@ parameters:
 
 jobs:
   android-e2e:
-    docker:
-      - image: cimg/android:2022.06.1
-    environment:
-      JVM_OPTS: -Xmx3200m
+    executor:
+      name: android/android-machine
+      resource-class: large
+      tag: 2021.10.1
     steps:
       - checkout
       - run:
           name: Download Dependencies
           command: |
             ./gradlew SDKAndroid:androidDependencies
-      - run:
-          name: Run UI Test
-          command: |
-            ./gradlew app:connectedDebugAndroidTest
+      - android/create-avd:
+          avd-name: myavd
+          install: true
+          system-image: system-images;android-29;default;x86
+      - android/start-emulator:
+          avd-name: myavd
+          no-window: true
+          restore-gradle-cache-prefix: v1a
+      - android/run-tests
       - run:
           name: Run Unit Test
           command: |
             ./gradlew app:testDebugUnitTest
+      - android/save-gradle-cache:
+          cache-prefix: v1a
 
   android-test:
     docker:
