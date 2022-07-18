@@ -19,6 +19,26 @@ parameters:
     default: ""
 
 jobs:
+  android-e2e:
+    docker:
+      - image: cimg/android:2022.06.1
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - run:
+          name: Download Dependencies
+          command: |
+            ./gradlew SDKAndroid:androidDependencies
+      - run:
+          name: Run UI Test
+          command: |
+            ./gradlew app:connectedDebugAndroidTest
+      - run:
+          name: Run Unit Test
+          command: |
+            ./gradlew app:testDebugUnitTest
+
   android-test:
     docker:
       - image: cimg/android:2022.06.1
@@ -31,7 +51,7 @@ jobs:
           command: |
             ./gradlew SDKAndroid:androidDependencies
       - run:
-          name: Run Tests
+          name: Run SDK Unit Test
           command: |
             ./gradlew koverXmlReport
       - store_artifacts:
@@ -57,4 +77,8 @@ jobs:
 workflows:
   android-test:
     jobs:
-      - android-test
+      - android-e2e:
+        name: e2e
+      - android-test:
+        requires:
+          - e2e
