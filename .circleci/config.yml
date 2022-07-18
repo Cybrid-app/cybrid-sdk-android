@@ -47,13 +47,23 @@ jobs:
           command: |
             ./gradlew app:testDebugUnitTest
 
-  android-test:
+  android-sdk-test:
+    docker:
+      - image: cimg/android:2022.06.1
+    environment:
+      JVM_OPTS: -Xmx3200m
     steps:
       - checkout
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
           name: Download Dependencies
           command: |
             ./gradlew SDKAndroid:androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
           name: Run SDK Unit Test
           command: |
@@ -81,5 +91,8 @@ jobs:
 workflows:
   android-test-publish:
     jobs:
-      - android-e2e
-      - android-test
+      - android-sdk-test
+      - android-e2e:
+          requires:
+            - android-sdk-test
+      
