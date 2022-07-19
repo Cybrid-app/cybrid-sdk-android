@@ -159,4 +159,8 @@ workflows:
             branches:
               only:
                 - main
-      - firebase-robo
+      - firebase-robo:
+          filters:
+            branches:
+              only:
+                - main
