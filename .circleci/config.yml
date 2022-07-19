@@ -19,6 +19,39 @@ parameters:
     default: ""
 
 jobs:
+
+  android-sdk-publish:
+    docker:
+      - image: cimg/android:2022.06.1
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - when:
+          condition:
+            and:
+              - equal: [ main, << pipeline.git.branch >> ]
+          steps:
+            - restore_cache:
+                key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+            - run:
+                name: Download Dependencies
+                command: |
+                  ./gradlew SDKAndroid:androidDependencies
+            - save_cache:
+                paths:
+                  - ~/.gradle
+                key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+            - run:
+                name: Update version tag
+                command: |
+                  export TAG=$(git describe --tags --abbrev=0)
+                  sed -i "s/0.0.0/$TAG/" version.gradle
+            - run:
+                name: Publish Library
+                command: |
+                  ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+
   android-e2e:
     executor:
       name: android/android-machine
@@ -26,10 +59,6 @@ jobs:
       tag: 2021.10.1
     steps:
       - checkout
-      - run:
-          name: Download Dependencies
-          command: |
-            ./gradlew SDKAndroid:androidDependencies
       - android/create-avd:
           avd-name: myavd
           install: true
@@ -46,6 +75,8 @@ jobs:
           name: Run Unit Test
           command: |
             ./gradlew app:testDebugUnitTest
+      - android/save-gradle-cache:
+          cache-prefix: v1a
 
   android-sdk-test:
     docker:
@@ -92,7 +123,8 @@ workflows:
   android-test-publish:
     jobs:
       - android-sdk-test
-      - android-e2e:
+      - android-e2e
+      - android-sdk-publish:
           requires:
             - android-sdk-test
-      
+            - android-e2e
