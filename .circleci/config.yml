@@ -86,7 +86,14 @@ jobs:
               sudo gcloud --quiet config set project ${FIREBASE_PROJECT_ID}
       - run:
           name: Test with Firebase Test Lab
-          command: sudo gcloud firebase test android run --app = app/build/output/apk/debug/app-debug.apk --type robo
+          command: |
+              sudo gcloud firebase test android run \
+               --type robo \
+               --app app/build/output/apk/debug/app-debug.apk \
+               --test app/build/output/apk/androidTest/debug/app-debug-androidTest.apk \
+               --device model=Nexus6,version=21,locale=en,orientation=portrait \
+               --timeout 10m
+
   android-e2e:
     executor:
       name: android/android-machine
