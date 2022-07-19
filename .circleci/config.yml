@@ -104,20 +104,6 @@ jobs:
           destination: reports
       - codecov/upload:
           file: 'SDKAndroid/build/reports/kover/project-xml/report.xml'
-      - when:
-          condition:
-            and:
-              - equal: [ main, << pipeline.git.branch >> ]
-          steps:
-            - run:
-                name: Update version tag
-                command: |
-                  export TAG=$(git describe --tags --abbrev=0)
-                  sed -i "s/0.0.0/$TAG/" version.gradle
-            - run:
-                name: Publish Library
-                command: |
-                  ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
 
 workflows:
   android-test-publish:
@@ -128,3 +114,7 @@ workflows:
           requires:
             - android-sdk-test
             - android-e2e
+          filters:
+            branches:
+              only:
+                - main
