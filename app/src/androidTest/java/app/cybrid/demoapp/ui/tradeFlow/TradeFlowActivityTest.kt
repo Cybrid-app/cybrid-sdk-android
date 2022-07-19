@@ -62,14 +62,6 @@ class TradeFlowActivityTest {
         compose.onNodeWithText("Ethereum").assertIsDisplayed()
         compose.onNodeWithText("Bitcoin").performClick()
 
-        //compose. onNodeWithText("Bitcoin").assertIsDisplayed()
         Thread.sleep(3000)
-        //compose2.onNodeWithTag("QuoteComponent").assertIsDisplayed()
-
-        //compose.onNodeWithTag("QuoteComponent").assertIsDisplayed()
-        //compose.waitForIdle()
-        //compose.onNodeWithText("Bitcoin").assertIsDisplayed()
-        //compose.onNodeWithText("BTC").assertIsDisplayed()
-        //.sleep(3000)
     }
 }
