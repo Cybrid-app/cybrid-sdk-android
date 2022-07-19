@@ -86,12 +86,7 @@ jobs:
               sudo gcloud --quiet config set project ${FIREBASE_PROJECT_ID}
       - run:
           name: Test with Firebase Test Lab
-          command: |
-              sudo gcloud firebase test android run \
-                --type=robo \
-                --app=app/build/output/apk/debug/app-debug.apk \
-                --results-bucket cloud-test
-
+          command: sudo gcloud firebase test android run --app = app/build/output/apk/debug/app-debug.apk --type robo
   android-e2e:
     executor:
       name: android/android-machine
