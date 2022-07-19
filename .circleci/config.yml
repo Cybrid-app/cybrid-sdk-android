@@ -74,7 +74,7 @@ jobs:
           command: |
               ./gradlew app:assembleDebug
       - store_artifacts:
-          path: app/build/output/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
           destination: debugAPK
       - run:
           name: Set Firabse FIREBASE_SERVICE_ACCOUNT_KEY
@@ -89,7 +89,7 @@ jobs:
           command: |
               sudo gcloud firebase test android run \
                --type robo \
-               --app app/build/output/apk/debug/app-debug.apk \
+               --app app/build/outputs/apk/debug/app-debug.apk \
                --device model=Nexus6,version=21,locale=en,orientation=portrait \
                --timeout 10m
 
