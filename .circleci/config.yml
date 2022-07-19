@@ -77,13 +77,11 @@ jobs:
           path: app/build/output/apk/debug/app-debug.apk
           destination: debugAPK
       - run:
-          name: Store Google Service Account
-          command: echo ${FIREBASE_SERVICE_ACCOUNT_KEY} | base64 --decode --ignore-garbage > ${HOME}/gcloud-service-key.json
+          name: Set Google Cloud Target Project
+          command: gcloud config set project ${FIREBASE_PROJECT_ID}
       - run:
-          name: Authorize gcloud and set config defaults
-          command: |
-              sudo gcloud auth activate-service-account --key-file=${HOME}/gcloud-service-key.json
-              sudo gcloud --quiet config set project ${FIREBASE_PROJECT_ID}
+          name: Authenticate with Google Cloud
+          command: gcloud auth activate-service-account ${FIREBASE_PROJECT_ACCOUNT} --key-file ${HOME}/client-secret.json
       - run:
           name: Test with Firebase Test Lab
           command: |
