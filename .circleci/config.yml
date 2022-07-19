@@ -78,7 +78,9 @@ jobs:
           destination: debugAPK
       - run:
           name: Set Google Cloud Target Project
-          command: gcloud config set project ${FIREBASE_PROJECT_ID}
+          command: |
+              echo ${FIREBASE_SERVICE_ACCOUNT_KEY} | base64 -di > ${HOME}/client-secret.json
+              gcloud config set project ${FIREBASE_PROJECT_ID}
       - run:
           name: Authenticate with Google Cloud
           command: gcloud auth activate-service-account ${FIREBASE_PROJECT_ACCOUNT} --key-file ${HOME}/client-secret.json
