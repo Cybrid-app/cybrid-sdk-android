@@ -147,7 +147,7 @@ jobs:
           file: 'SDKAndroid/build/reports/kover/project-xml/report.xml'
 
 workflows:
-  android-test-publish:
+  android-test:
     jobs:
       - android-sdk-test
       - android-e2e
