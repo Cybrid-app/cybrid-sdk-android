@@ -64,6 +64,10 @@ jobs:
           name: Download Dependencies
           command: |
               ./gradlew SDKAndroid:androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
           name: Compile Debug App
           command: |
@@ -86,16 +90,6 @@ jobs:
                 --type=robo \
                 --app=app/build/output/apk/debug/app-debug.apk \
                 --results-bucket cloud-test
-      - run:
-          name: Install gsutil dependency and copy test results data
-          when: always
-          command: |
-              mkdir -p ~/gsutil/
-              sudo gsutil -m cp -r -U `sudo gsutil ls gs://cloud-test-${FIREBASE_PROJECT_ID} | tail -1` ~/gsutil/ | true
-      - store_artifacts:
-          path: ~/gsutil/
-      - store_test_results:
-          path: ~/gsutil/
 
   android-e2e:
     executor:
