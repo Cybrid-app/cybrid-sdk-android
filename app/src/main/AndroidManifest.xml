@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DemoApp">
         <activity
-            android:name=".AccountsComponent"
+            android:name=".ui.components.accounts.AccountsComponentActivity"
             android:exported="false" />
         <activity
             android:name=".ui.tradeFlow.TradeFlowActivity"
