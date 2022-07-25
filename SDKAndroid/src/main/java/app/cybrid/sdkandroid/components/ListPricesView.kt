@@ -164,27 +164,30 @@ fun CryptoList(
     customStyles: ListPricesViewCustomStyles,
     onClick: (asset: AssetBankModel, pairAsset: AssetBankModel) -> Unit) {
 
+    // -- Vars
     var selectedIndex by remember { mutableStateOf(-1) }
     val textState = remember { mutableStateOf(TextFieldValue("")) }
     val topPadding = if (!customStyles.searchBar) { 0.dp } else { 20.dp }
 
+    val filtered = if (textState.value.text.isNotEmpty()) {
+        ArrayList(cryptoList.filter {
+
+            val asset = viewModel?.findAsset(viewModel.getSymbol(it.symbol!!))
+            asset?.name?.lowercase()?.contains(textState.value.text.lowercase())
+                ?: it.symbol?.lowercase()!!.contains(textState.value.text.lowercase())
+        })
+    } else { cryptoList }
+
+    // -- Content
     Column {
 
-        if (customStyles.searchBar) { SearchView(state = textState) }
-        LazyColumn(modifier =
-        Modifier
+        if (customStyles.searchBar) {
+            SearchView(state = textState)
+        }
+        LazyColumn(modifier = Modifier
             .testTag("ListPricesView")
             .padding(top = topPadding)
             .padding(horizontal = 3.5.dp)) {
-
-            val filtered = if (textState.value.text.isNotEmpty()) {
-                ArrayList(cryptoList.filter {
-
-                    val asset = viewModel?.findAsset(viewModel.getSymbol(it.symbol!!))
-                    asset?.name?.lowercase()?.contains(textState.value.text.lowercase())
-                        ?: it.symbol?.lowercase()!!.contains(textState.value.text.lowercase())
-                })
-            } else { cryptoList }
 
             stickyHeader {
                 CryptoAssetHeaderItem(customStyles)

@@ -4,21 +4,22 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -29,11 +30,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.core.BigDecimalPipe
@@ -52,7 +55,7 @@ class AccountsView @JvmOverloads constructor(
     private var _listPricesViewModel:ListPricesViewModel? = null
     private var _accountsViewModel:AccountsViewModel? = null
 
-    var currentState = mutableStateOf(AccountsView.AccountsViewState.LOADING)
+    var currentState = mutableStateOf(AccountsViewState.LOADING)
 
     init {
 
@@ -89,6 +92,24 @@ class AccountsView @JvmOverloads constructor(
     }
 }
 
+/**
+ * ListPricesView Custom Styles
+ * **/
+data class AccountsViewStyles(
+
+    var searchBar: Boolean = true,
+    var headerTextSize: TextUnit = 16.5.sp,
+    var headerTextColor: Color = Color(R.color.list_prices_asset_component_header_color),
+    var itemsTextSize: TextUnit = 16.sp,
+    var itemsTextColor: Color = Color.Black,
+    var itemsTextPriceSize: TextUnit = 15.sp,
+    var itemsCodeTextSize: TextUnit = 14.sp,
+    var itemsCodeTextColor: Color = Color(R.color.list_prices_asset_component_header_color)
+)
+
+/**
+ * Composable Static Functions
+ * **/
 @Composable
 fun AccountsView(
     currentState: MutableState<AccountsView.AccountsViewState>,
@@ -98,7 +119,7 @@ fun AccountsView(
 
     // -- Vars
     val currentRememberState: MutableState<AccountsView.AccountsViewState> = remember { currentState }
-    if (accountsViewModel?.accounts?.isNotEmpty()!!
+    if (accountsViewModel?.accountsResponse?.isNotEmpty()!!
         && listPricesViewModel?.prices?.isNotEmpty()!!
         && listPricesViewModel.assets.isNotEmpty()) {
         currentRememberState.value = AccountsView.AccountsViewState.CONTENT
@@ -114,6 +135,13 @@ fun AccountsView(
 
             AccountsView.AccountsViewState.LOADING -> {
                 AccountsViewLoading()
+            }
+
+            AccountsView.AccountsViewState.CONTENT -> {
+                AccountsViewList(
+                    listPricesViewModel = listPricesViewModel,
+                    accountsViewModel = accountsViewModel
+                )
             }
         }
     }
@@ -149,95 +177,49 @@ fun AccountsViewLoading() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AccountsCryptoItem(crypto: SymbolPriceBankModel,
-                    vm: ListPricesViewModel,
-                    index: Int, selectedIndex: Int,
-                    context: Context? = null,
-                    customStyles: ListPricesViewCustomStyles,
-                    onClick: (asset: AssetBankModel,
-                              pairAsset: AssetBankModel
-                    ) -> Unit) {
+fun AccountsViewList(
+    listPricesViewModel: ListPricesViewModel?,
+    accountsViewModel: AccountsViewModel?
+) {
 
-    val backgroundColor = if (index == selectedIndex) MaterialTheme.colors.primary else Color.Transparent
-    if (crypto.symbol != null) {
+    // -- Mutable Vars
+    var selectedIndex by remember { mutableStateOf(-1) }
 
-        val loadingErrorVal = "-1"
-        val asset = vm.findAsset(vm.getSymbol(crypto.symbol!!))
-        val pairAsset = vm.findAsset(vm.getPair(crypto.symbol!!))
-        val imageName = vm.getSymbol(crypto.symbol!!).lowercase()
-        val imageID = getImage(context!!, "ic_${imageName}")
+    // -- Items
+    accountsViewModel?.createAccountsFormatted(
+        prices = listPricesViewModel?.prices!!,
+        assets = listPricesViewModel.assets
+    )
 
-        val name = asset?.name ?: ""
-        val valueString = crypto.buyPrice?.let {
-            if (pairAsset != null) {
-                BigDecimalPipe.transform(it.toBigDecimal(), pairAsset)
-            } else { loadingErrorVal }
-        } ?: loadingErrorVal
-        val value = buildAnnotatedString {
-            append(valueString)
-            withStyle(style = SpanStyle(color = customStyles.itemsCodeTextColor)) {
-                append(" (${pairAsset?.code ?: ""})")
+    Column(
+        modifier = Modifier
+            .testTag(Constants.AccountsViewTestTags.List.id)
+    ) {
+        LazyColumn(modifier = Modifier
+        ) {
+            stickyHeader {
+                AccountsCryptoHeaderItem()
             }
-        }
-        if (valueString != loadingErrorVal) {
-            Surface(color = backgroundColor) {
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(vertical = 0.dp)
-                        .height(56.dp)
-                        .clickable { onClick(asset!!, pairAsset!!) },
-                ) {
-
-                    Image(
-                        painter = painterResource(id = imageID),
-                        contentDescription = "{$name}",
-                        modifier = Modifier
-                            .padding(horizontal = 0.dp)
-                            .padding(0.dp)
-                            .size(25.dp),
-                        contentScale = ContentScale.Fit
-                    )
-                    Text(
-                        text = name,
-                        modifier = Modifier.padding(start = 16.dp),
-                        fontFamily = robotoFont,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = customStyles.itemsTextSize,
-                        color = customStyles.itemsTextColor
-                    )
-                    Text(
-                        text = asset?.code ?: "",
-                        modifier = Modifier.padding(start = 5.5.dp),
-                        fontFamily = robotoFont,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = customStyles.itemsCodeTextSize,
-                        color = customStyles.itemsCodeTextColor
-                    )
-                    Text(
-                        text = value,
-                        modifier = Modifier
-                            .padding(end = 0.dp)
-                            .weight(1f),
-                        textAlign = TextAlign.End,
-                        fontFamily = robotoFont,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = customStyles.itemsTextPriceSize,
-                        color = customStyles.itemsTextColor
-                    )
-                }
+            itemsIndexed(items = accountsViewModel?.accounts ?: listOf()) { index, item ->
+                AccountsCryptoItem(
+                    balance = item,
+                    index = index,
+                    selectedIndex = selectedIndex
+                )
             }
         }
     }
 }
 
 @Composable
-fun AccountsCryptoHeaderItem(customStyles: ListPricesViewCustomStyles) {
+fun AccountsCryptoHeaderItem(
+    styles: AccountsViewStyles = AccountsViewStyles()
+) {
 
-    val priceColor = if (customStyles.headerTextColor != Color(R.color.list_prices_asset_component_header_color)) {
-        customStyles.headerTextColor
+    val priceColor = if (styles.headerTextColor != Color(R.color.list_prices_asset_component_header_color)) {
+        styles.headerTextColor
     } else {
         Color.Black
     }
@@ -253,8 +235,8 @@ fun AccountsCryptoHeaderItem(customStyles: ListPricesViewCustomStyles) {
                 text = stringResource(id = R.string.list_prices_asset_component_header_currency),
                 fontFamily = robotoFont,
                 fontWeight = FontWeight.Bold,
-                fontSize = customStyles.headerTextSize,
-                color = customStyles.headerTextColor
+                fontSize = styles.headerTextSize,
+                color = styles.headerTextColor
             )
             Text(
                 text = stringResource(id = R.string.list_prices_asset_component_header_price),
@@ -264,11 +246,81 @@ fun AccountsCryptoHeaderItem(customStyles: ListPricesViewCustomStyles) {
                 textAlign = TextAlign.End,
                 fontFamily = robotoFont,
                 fontWeight = FontWeight.Bold,
-                fontSize = customStyles.headerTextSize,
+                fontSize = styles.headerTextSize,
                 color = priceColor
             )
         }
     }
+}
+
+
+@Composable
+fun AccountsCryptoItem(balance: AccountAssetPriceModel,
+                       index: Int, selectedIndex: Int,
+                       customStyles: AccountsViewStyles = AccountsViewStyles()
+) {
+
+    val backgroundColor = if (index == selectedIndex) MaterialTheme.colors.primary else Color.Transparent
+
+    // -- Vars
+    val cryptoCode = balance.accountAssetCode
+    val imageID = getImage(LocalContext.current, "ic_${cryptoCode.lowercase()}")
+    val cryptoName = balance.assetName
+
+
+    val loadingErrorVal = "-1"
+    val valueString = "0"
+
+    if (valueString != loadingErrorVal) {
+        Surface(color = backgroundColor) {
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(vertical = 0.dp)
+                    .height(56.dp),
+            ) {
+
+                Image(
+                    painter = painterResource(id = imageID),
+                    contentDescription = "{$cryptoName}",
+                    modifier = Modifier
+                        .padding(horizontal = 0.dp)
+                        .padding(0.dp)
+                        .size(25.dp),
+                    contentScale = ContentScale.Fit
+                )
+                Text(
+                    text = cryptoName,
+                    modifier = Modifier.padding(start = 16.dp),
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = customStyles.itemsTextSize,
+                    color = customStyles.itemsTextColor
+                )
+                Text(
+                    text = cryptoCode,
+                    modifier = Modifier.padding(start = 5.5.dp),
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = customStyles.itemsCodeTextSize,
+                    color = customStyles.itemsCodeTextColor
+                )
+                Text(
+                    text = balance.buyPrice.toPlainString(),
+                    modifier = Modifier
+                        .padding(end = 0.dp)
+                        .weight(1f),
+                    textAlign = TextAlign.End,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = customStyles.itemsTextPriceSize,
+                    color = customStyles.itemsTextColor
+                )
+            }
+        }
+    }
+
 }
 
 /**
