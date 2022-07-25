@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -32,6 +33,7 @@ import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.core.BigDecimalPipe
+import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.core.toBigDecimal
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 
@@ -41,11 +43,17 @@ class AccountsView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : Component(context, attrs, defStyle) {
 
+    enum class AccountsViewState { LOADING, CONTENT }
+
     private var _listPricesViewModel:ListPricesViewModel? = null
     private var _accountsViewModel:AccountsViewModel? = null
 
+    var currentState:AccountsViewState = AccountsViewState.LOADING
+
     init {
+
         LayoutInflater.from(context).inflate(R.layout.accounts_component, this, true)
+        this.composeView = findViewById(R.id.composeContent)
     }
 
     fun setViewModels(
@@ -55,8 +63,29 @@ class AccountsView @JvmOverloads constructor(
 
         this._listPricesViewModel = listPricesViewModel
         this._accountsViewModel = accountsViewModel
+        this.setupCompose()
 
-        this.setupRunnable { Log.d("DXGOP", "Hola mundo") /*this._listPricesViewModel?.getListPrices()*/ }
+        this.setupRunnable { this._listPricesViewModel?.getListPrices() }
+    }
+
+    private fun setupCompose() {
+
+        this.composeView?.let { compose ->
+            compose.setContent {
+                AccountsView()
+            }
+        }
+    }
+}
+
+@Composable
+fun AccountsView() {
+
+    Surface(
+        modifier = Modifier
+            .testTag(Constants.AccountsViewTestTags.Surface.id)
+    ) {
+
     }
 }
 
@@ -181,3 +210,7 @@ fun AccountsCryptoHeaderItem(customStyles: ListPricesViewCustomStyles) {
         }
     }
 }
+
+/**
+ * Compose Previews
+ * **/

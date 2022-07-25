@@ -10,6 +10,10 @@ class Constants {
         ContentButtons("QuoteConfirmationContentButtons")
     }
 
+    enum class AccountsViewTestTags(val id:String) {
+        Surface("AccountsView_MainSurface")
+    }
+
     companion object {
 
         const val MIN_INTEGER_DIGITS = 0;

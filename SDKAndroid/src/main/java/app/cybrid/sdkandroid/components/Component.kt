@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import androidx.compose.ui.platform.ComposeView
 import androidx.constraintlayout.widget.ConstraintLayout
 
 open class Component @JvmOverloads constructor(
@@ -13,8 +14,10 @@ open class Component @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyle) {
 
     var updateInterval = 5000L
+
     private var _handler: Handler? = null
     private var _runnable: Runnable? = null
+    protected var composeView:ComposeView? = null
 
     fun setupRunnable(runner: () -> Unit) {
 
