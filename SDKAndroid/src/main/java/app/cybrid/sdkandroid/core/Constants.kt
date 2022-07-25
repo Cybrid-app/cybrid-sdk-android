@@ -11,7 +11,8 @@ class Constants {
     }
 
     enum class AccountsViewTestTags(val id:String) {
-        Surface("AccountsView_MainSurface")
+        Surface("AccountsView_MainSurface"),
+        Loading("AccountsView_Loading")
     }
 
     companion object {

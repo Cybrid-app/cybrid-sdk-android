@@ -31,4 +31,7 @@
     <string name="trade_flow_confirmation_modal_date">Fecha:</string>
     <string name="trade_flow_confirmation_modal_button">Comprar mas crypto</string>
 
+    <!-- Accounts View Strings -->
+    <string name="accounts_view_loading_text">Cargando</string>
+
 </resources>

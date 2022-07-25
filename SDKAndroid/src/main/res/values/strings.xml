@@ -32,4 +32,7 @@
     <string name="trade_flow_confirmation_modal_date">Date:</string>
     <string name="trade_flow_confirmation_modal_button">Buy more crypto</string>
 
+    <!-- Accounts View Strings -->
+    <string name="accounts_view_loading_text">Loading</string>
+
 </resources>

@@ -6,19 +6,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -26,7 +28,9 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
 import app.cybrid.sdkandroid.R
@@ -48,7 +52,7 @@ class AccountsView @JvmOverloads constructor(
     private var _listPricesViewModel:ListPricesViewModel? = null
     private var _accountsViewModel:AccountsViewModel? = null
 
-    var currentState:AccountsViewState = AccountsViewState.LOADING
+    var currentState = mutableStateOf(AccountsView.AccountsViewState.LOADING)
 
     init {
 
@@ -65,6 +69,9 @@ class AccountsView @JvmOverloads constructor(
         this._accountsViewModel = accountsViewModel
         this.setupCompose()
 
+        this._listPricesViewModel?.getListPrices()
+        this._accountsViewModel?.getAccounts()
+
         this.setupRunnable { this._listPricesViewModel?.getListPrices() }
     }
 
@@ -72,20 +79,73 @@ class AccountsView @JvmOverloads constructor(
 
         this.composeView?.let { compose ->
             compose.setContent {
-                AccountsView()
+                AccountsView(
+                    currentState = this.currentState,
+                    listPricesViewModel = this._listPricesViewModel,
+                    accountsViewModel = this._accountsViewModel
+                )
             }
         }
     }
 }
 
 @Composable
-fun AccountsView() {
+fun AccountsView(
+    currentState: MutableState<AccountsView.AccountsViewState>,
+    listPricesViewModel: ListPricesViewModel?,
+    accountsViewModel: AccountsViewModel?
+) {
 
+    // -- Vars
+    val currentRememberState: MutableState<AccountsView.AccountsViewState> = remember { currentState }
+    if (accountsViewModel?.accounts?.isNotEmpty()!!
+        && listPricesViewModel?.prices?.isNotEmpty()!!
+        && listPricesViewModel.assets.isNotEmpty()) {
+        currentRememberState.value = AccountsView.AccountsViewState.CONTENT
+    }
+
+    // -- Content
     Surface(
         modifier = Modifier
             .testTag(Constants.AccountsViewTestTags.Surface.id)
     ) {
 
+        when(currentRememberState.value) {
+
+            AccountsView.AccountsViewState.LOADING -> {
+                AccountsViewLoading()
+            }
+        }
+    }
+}
+
+@Composable
+fun AccountsViewLoading() {
+
+    Box(
+        modifier = Modifier
+            .height(120.dp)
+            .testTag(Constants.AccountsViewTestTags.Loading.id)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(id = R.string.accounts_view_loading_text),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Normal,
+                fontSize = 17.sp,
+                color = colorResource(id = R.color.primary_color)
+            )
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .testTag(Constants.QuoteConfirmation.LoadingIndicator.id),
+                color = colorResource(id = R.color.primary_color)
+            )
+        }
     }
 }
 
@@ -214,3 +274,8 @@ fun AccountsCryptoHeaderItem(customStyles: ListPricesViewCustomStyles) {
 /**
  * Compose Previews
  * **/
+@Preview(showBackground = true)
+@Composable
+fun AccountsViewLoadingPreview() {
+    AccountsViewLoading()
+}
