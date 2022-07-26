@@ -30,6 +30,8 @@ class AccountsViewModel : ViewModel() {
     var accountsResponse:List<AccountBankModel> by mutableStateOf(listOf())
     var accounts:List<AccountAssetPriceModel> by mutableStateOf(listOf())
 
+    var totalBalance:String by mutableStateOf("")
+
     fun getAccounts() {
 
         val accountService = AppModule.getClient().createService(AccountsApi::class.java)
@@ -100,5 +102,18 @@ class AccountsViewModel : ViewModel() {
             }
         }
         this.accounts = accountsList
+    }
+
+    fun getTotalBalance() {
+
+        var total = BigDecimal(0)
+        this.accounts.let { balances ->
+
+            val pairAsset = balances[0].pairAsset
+            balances.forEach { balance ->
+                total = total.plus(balance.accountBalanceInFiat)
+            }
+            this.totalBalance = BigDecimalPipe.transform(total, pairAsset) ?: ""
+        }
     }
 }

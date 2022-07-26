@@ -16,6 +16,7 @@ class AccountsComponentActivity : AppCompatActivity() {
 
         // -- Init the component
         val accountsView = findViewById<AccountsView>(R.id.accountsView)
+        accountsView.updateInterval = 2000L
 
         // -- Get ViewModels
         val listPricesViewModel:ListPricesViewModel by viewModels()

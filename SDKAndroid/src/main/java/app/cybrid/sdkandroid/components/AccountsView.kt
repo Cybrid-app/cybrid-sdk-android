@@ -194,11 +194,18 @@ fun AccountsViewList(
         assets = listPricesViewModel.assets
     )
 
+    // -- Get Total balance
+    accountsViewModel?.getTotalBalance()
+
     Column(
         modifier = Modifier
             .testTag(Constants.AccountsViewTestTags.List.id)
     ) {
-        LazyColumn(modifier = Modifier
+        AccountsBalance(
+            accountsViewModel = accountsViewModel
+        )
+        LazyColumn(
+            modifier = Modifier
         ) {
             /*stickyHeader {
                 AccountsCryptoHeaderItem()
@@ -210,6 +217,32 @@ fun AccountsViewList(
                     selectedIndex = selectedIndex
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun AccountsBalance(
+    accountsViewModel: AccountsViewModel?
+) {
+
+    // -- Content
+    if (accountsViewModel?.totalBalance != "") {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp, bottom = 20.dp)
+        ) {
+
+            Text(
+                text = accountsViewModel?.totalBalance ?: "",
+                modifier = Modifier,
+                textAlign = TextAlign.Center,
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Normal,
+                fontSize = 24.sp,
+                color = Color.Black
+            )
         }
     }
 }
@@ -261,85 +294,77 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
                        customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {
 
-    val backgroundColor = if (index == selectedIndex) MaterialTheme.colors.primary else Color.Transparent
-
     // -- Vars
     val cryptoCode = balance.accountAssetCode
     val imageID = getImage(LocalContext.current, "ic_${cryptoCode.lowercase()}")
     val cryptoName = balance.assetName
 
+    // -- Content
+    Surface(color = Color.Transparent) {
 
-    val loadingErrorVal = "-1"
-    val valueString = "0"
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(vertical = 0.dp)
+                .height(66.dp),
+        ) {
 
-    if (valueString != loadingErrorVal) {
-        Surface(color = backgroundColor) {
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+            Image(
+                painter = painterResource(id = imageID),
+                contentDescription = "{$cryptoName}",
                 modifier = Modifier
-                    .padding(vertical = 0.dp)
-                    .height(66.dp),
+                    .padding(horizontal = 0.dp)
+                    .padding(0.dp)
+                    .size(25.dp),
+                contentScale = ContentScale.Fit
+            )
+            Column(
+               modifier = Modifier
+                    //.weight(1f)
+                    .padding(start = 16.dp)
             ) {
-
-                Image(
-                    painter = painterResource(id = imageID),
-                    contentDescription = "{$cryptoName}",
-                    modifier = Modifier
-                        .padding(horizontal = 0.dp)
-                        .padding(0.dp)
-                        .size(25.dp),
-                    contentScale = ContentScale.Fit
+                Text(
+                    text = cryptoName,
+                    modifier = Modifier,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = customStyles.itemsTextSize,
+                    color = customStyles.itemsTextColor
                 )
-                Column(
-                   modifier = Modifier
-                        //.weight(1f)
-                        .padding(start = 16.dp)
-                ) {
-                    Text(
-                        text = cryptoName,
-                        modifier = Modifier,
-                        fontFamily = robotoFont,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = customStyles.itemsTextSize,
-                        color = customStyles.itemsTextColor
-                    )
-                    Text(
-                        text = balance.buyPriceFormatted,
-                        modifier = Modifier,
-                        fontFamily = robotoFont,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = customStyles.itemsCodeTextSize,
-                        color = customStyles.itemsCodeTextColor
-                    )
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = balance.accountBalanceFormatted.toPlainString(),
-                        modifier = Modifier.align(Alignment.End),
-                        textAlign = TextAlign.End,
-                        fontFamily = robotoFont,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = customStyles.itemsTextPriceSize,
-                        color = customStyles.itemsTextColor
-                    )
-                    Text(
-                        text = balance.accountBalanceInFiatFormatted,
-                        modifier = Modifier.align(Alignment.End),
-                        fontFamily = robotoFont,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = customStyles.itemsCodeTextSize,
-                        color = customStyles.itemsCodeTextColor
-                    )
-                }
-
+                Text(
+                    text = balance.buyPriceFormatted,
+                    modifier = Modifier,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = customStyles.itemsCodeTextSize,
+                    color = customStyles.itemsCodeTextColor
+                )
             }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = balance.accountBalanceFormatted.toPlainString(),
+                    modifier = Modifier.align(Alignment.End),
+                    textAlign = TextAlign.End,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = customStyles.itemsTextPriceSize,
+                    color = customStyles.itemsTextColor
+                )
+                Text(
+                    text = balance.accountBalanceInFiatFormatted,
+                    modifier = Modifier.align(Alignment.End),
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = customStyles.itemsCodeTextSize,
+                    color = customStyles.itemsCodeTextColor
+                )
+            }
+
         }
     }
-
 }
 
 /**
