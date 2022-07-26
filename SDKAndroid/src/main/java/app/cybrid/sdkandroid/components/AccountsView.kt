@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -199,9 +200,9 @@ fun AccountsViewList(
     ) {
         LazyColumn(modifier = Modifier
         ) {
-            stickyHeader {
+            /*stickyHeader {
                 AccountsCryptoHeaderItem()
-            }
+            }*/
             itemsIndexed(items = accountsViewModel?.accounts ?: listOf()) { index, item ->
                 AccountsCryptoItem(
                     balance = item,
@@ -278,7 +279,7 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .padding(vertical = 0.dp)
-                    .height(56.dp),
+                    .height(66.dp),
             ) {
 
                 Image(
@@ -290,33 +291,51 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
                         .size(25.dp),
                     contentScale = ContentScale.Fit
                 )
-                Text(
-                    text = cryptoName,
-                    modifier = Modifier.padding(start = 16.dp),
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = customStyles.itemsTextSize,
-                    color = customStyles.itemsTextColor
-                )
-                Text(
-                    text = cryptoCode,
-                    modifier = Modifier.padding(start = 5.5.dp),
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = customStyles.itemsCodeTextSize,
-                    color = customStyles.itemsCodeTextColor
-                )
-                Text(
-                    text = balance.buyPrice.toPlainString(),
+                Column(
+                   modifier = Modifier
+                        //.weight(1f)
+                        .padding(start = 16.dp)
+                ) {
+                    Text(
+                        text = cryptoName,
+                        modifier = Modifier,
+                        fontFamily = robotoFont,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = customStyles.itemsTextSize,
+                        color = customStyles.itemsTextColor
+                    )
+                    Text(
+                        text = balance.buyPriceFormatted,
+                        modifier = Modifier,
+                        fontFamily = robotoFont,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = customStyles.itemsCodeTextSize,
+                        color = customStyles.itemsCodeTextColor
+                    )
+                }
+                Column(
                     modifier = Modifier
-                        .padding(end = 0.dp)
-                        .weight(1f),
-                    textAlign = TextAlign.End,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = customStyles.itemsTextPriceSize,
-                    color = customStyles.itemsTextColor
-                )
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = balance.accountBalanceFormatted.toPlainString(),
+                        modifier = Modifier.align(Alignment.End),
+                        textAlign = TextAlign.End,
+                        fontFamily = robotoFont,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = customStyles.itemsTextPriceSize,
+                        color = customStyles.itemsTextColor
+                    )
+                    Text(
+                        text = balance.accountBalanceInFiatFormatted,
+                        modifier = Modifier.align(Alignment.End),
+                        fontFamily = robotoFont,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = customStyles.itemsCodeTextSize,
+                        color = customStyles.itemsCodeTextColor
+                    )
+                }
+
             }
         }
     }

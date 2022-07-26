@@ -12,6 +12,9 @@ import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
+import app.cybrid.sdkandroid.core.AssetPipe
+import app.cybrid.sdkandroid.core.BigDecimal
+import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
 import app.cybrid.sdkandroid.util.getResult
@@ -62,11 +65,25 @@ class AccountsViewModel : ViewModel() {
                 val code = balance.asset ?: ""
                 val symbol = "$code-$currentFiatCurrency"
                 val asset = assets.find { it.code == code }
+                val pairAsset = assets.find { it.code == currentFiatCurrency }
                 val price = prices.find { it.symbol ==  symbol}
+                val assetDecimals = BigDecimal(asset?.decimals ?: JavaBigDecimal(0))
+
+                val balanceValue = BigDecimal(balance.platformBalance ?: JavaBigDecimal(0))
+                val balanceValueFormatted = AssetPipe.transform(balanceValue, assetDecimals, "trade")
+
+                val buyPrice = BigDecimal(price?.buyPrice ?: JavaBigDecimal(0))
+                val buyPriceFormatted = BigDecimalPipe.transform(buyPrice, pairAsset!!)
+
+                val accountBalanceInFiat = balanceValueFormatted.times(buyPrice)
+                val accountBalanceInFiatFormatted = BigDecimalPipe.transform(accountBalanceInFiat, pairAsset)
 
                 val account = AccountAssetPriceModel(
                     accountAssetCode = code,
-                    accountBalance = balance.platformBalance ?: JavaBigDecimal(0),
+                    accountBalance = balanceValue.toJavaBigDecimal(),
+                    accountBalanceFormatted = balanceValueFormatted,
+                    accountBalanceInFiat = accountBalanceInFiat,
+                    accountBalanceInFiatFormatted = accountBalanceInFiatFormatted ?: "$0.0",
                     accountGuid = balance.guid ?: "",
                     accountType = balance.type ?: AccountBankModel.Type.trading,
                     accountCreated = balance.createdAt ?: java.time.OffsetDateTime.now(),
@@ -74,7 +91,9 @@ class AccountsViewModel : ViewModel() {
                     assetSymbol = asset?.symbol ?: "",
                     assetType = asset?.type ?: AssetBankModel.Type.fiat,
                     assetDecimals = asset?.decimals ?: JavaBigDecimal(0),
-                    buyPrice = price?.buyPrice ?: JavaBigDecimal(0),
+                    pairAsset = pairAsset,
+                    buyPrice = buyPrice,
+                    buyPriceFormatted = buyPriceFormatted ?: "",
                     sellPrice = price?.sellPrice ?: JavaBigDecimal(0)
                 )
                 accountsList.add(account)
