@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
+import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
@@ -51,7 +53,7 @@ class AccountsView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : Component(context, attrs, defStyle) {
 
-    enum class AccountsViewState { LOADING, CONTENT }
+    enum class AccountsViewState { LOADING, CONTENT, TRADES }
 
     private var _listPricesViewModel:ListPricesViewModel? = null
     private var _accountsViewModel:AccountsViewModel? = null
@@ -123,7 +125,12 @@ fun AccountsView(
     if (accountsViewModel?.accountsResponse?.isNotEmpty()!!
         && listPricesViewModel?.prices?.isNotEmpty()!!
         && listPricesViewModel.assets.isNotEmpty()) {
-        currentRememberState.value = AccountsView.AccountsViewState.CONTENT
+
+        if (accountsViewModel.trades.isEmpty()) {
+            currentRememberState.value = AccountsView.AccountsViewState.CONTENT
+        } else {
+            currentRememberState.value = AccountsView.AccountsViewState.TRADES
+        }
     }
 
     // -- Content
@@ -131,6 +138,12 @@ fun AccountsView(
         modifier = Modifier
             .testTag(Constants.AccountsViewTestTags.Surface.id)
     ) {
+        
+        BackHandler { if (currentState.value == AccountsView.AccountsViewState.TRADES) {
+
+            accountsViewModel.trades = listOf()
+            currentRememberState.value = AccountsView.AccountsViewState.CONTENT }
+        }
 
         when(currentRememberState.value) {
 
@@ -140,6 +153,15 @@ fun AccountsView(
 
             AccountsView.AccountsViewState.CONTENT -> {
                 AccountsViewList(
+                    listPricesViewModel = listPricesViewModel,
+                    accountsViewModel = accountsViewModel,
+                    currentRememberState = currentRememberState
+                )
+            }
+
+            AccountsView.AccountsViewState.TRADES -> {
+
+                AccountTrades(
                     listPricesViewModel = listPricesViewModel,
                     accountsViewModel = accountsViewModel
                 )
@@ -182,7 +204,8 @@ fun AccountsViewLoading() {
 @Composable
 fun AccountsViewList(
     listPricesViewModel: ListPricesViewModel?,
-    accountsViewModel: AccountsViewModel?
+    accountsViewModel: AccountsViewModel?,
+    currentRememberState: MutableState<AccountsView.AccountsViewState>
 ) {
 
     // -- Mutable Vars
@@ -207,14 +230,16 @@ fun AccountsViewList(
         LazyColumn(
             modifier = Modifier
         ) {
-            /*stickyHeader {
+            stickyHeader {
                 AccountsCryptoHeaderItem()
-            }*/
+            }
             itemsIndexed(items = accountsViewModel?.accounts ?: listOf()) { index, item ->
                 AccountsCryptoItem(
                     balance = item,
                     index = index,
-                    selectedIndex = selectedIndex
+                    selectedIndex = selectedIndex,
+                    accountsViewModel = accountsViewModel,
+                    currentRememberState = currentRememberState
                 )
             }
         }
@@ -270,10 +295,10 @@ fun AccountsCryptoHeaderItem(
                 fontFamily = robotoFont,
                 fontWeight = FontWeight.Bold,
                 fontSize = styles.headerTextSize,
-                color = styles.headerTextColor
+                color = priceColor
             )
             Text(
-                text = stringResource(id = R.string.list_prices_asset_component_header_price),
+                text = "Balance",
                 modifier = Modifier
                     .padding(end = 0.dp)
                     .weight(1f),
@@ -291,6 +316,8 @@ fun AccountsCryptoHeaderItem(
 @Composable
 fun AccountsCryptoItem(balance: AccountAssetPriceModel,
                        index: Int, selectedIndex: Int,
+                       accountsViewModel: AccountsViewModel?,
+                       currentRememberState: MutableState<AccountsView.AccountsViewState>,
                        customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {
 
@@ -306,7 +333,12 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(vertical = 0.dp)
-                .height(66.dp),
+                .height(66.dp)
+                .clickable {
+
+                    currentRememberState.value = AccountsView.AccountsViewState.LOADING
+                    accountsViewModel?.getTrades(balance.accountGuid)
+                },
         ) {
 
             Image(
@@ -355,6 +387,148 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
                 )
                 Text(
                     text = balance.accountBalanceInFiatFormatted,
+                    modifier = Modifier.align(Alignment.End),
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = customStyles.itemsCodeTextSize,
+                    color = customStyles.itemsCodeTextColor
+                )
+            }
+
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun AccountTrades(
+    listPricesViewModel: ListPricesViewModel?,
+    accountsViewModel: AccountsViewModel?
+) {
+    Column() {
+        Text(
+            text = "Trades",
+            modifier = Modifier,
+            textAlign = TextAlign.Center,
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal,
+            fontSize = 24.sp,
+            color = Color.Black
+        )
+        LazyColumn(
+            modifier = Modifier
+                .padding(top = 15.dp)
+        ) {
+            stickyHeader {
+                AccountTradesHeaderItem()
+            }
+            itemsIndexed(items = accountsViewModel?.trades ?: listOf()) { index, item ->
+                AccountTradesItem(
+                    trade = item,
+                    index = index,
+                    listPricesViewModel = listPricesViewModel,
+                    accountsViewModel = accountsViewModel,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AccountTradesHeaderItem(
+    styles: AccountsViewStyles = AccountsViewStyles()
+) {
+
+    val priceColor = if (styles.headerTextColor != Color(R.color.list_prices_asset_component_header_color)) {
+        styles.headerTextColor
+    } else {
+        Color.Black
+    }
+
+    Surface(color = Color.Transparent) {
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 16.dp)
+        ) {
+
+            Text(
+                text = "Data",
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Bold,
+                fontSize = styles.headerTextSize,
+                color = priceColor
+            )
+            Text(
+                text = "Amount",
+                modifier = Modifier
+                    .padding(end = 0.dp)
+                    .weight(1f),
+                textAlign = TextAlign.End,
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Bold,
+                fontSize = styles.headerTextSize,
+                color = priceColor
+            )
+        }
+    }
+}
+
+@Composable
+fun AccountTradesItem(trade: TradeBankModel,
+                       index: Int,
+                       listPricesViewModel: ListPricesViewModel?,
+                       accountsViewModel: AccountsViewModel?,
+                       customStyles: AccountsViewStyles = AccountsViewStyles()
+) {
+
+    // -- Content
+    Surface(color = Color.Transparent) {
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(vertical = 0.dp)
+                .height(66.dp),
+        ) {
+
+            Column(
+                modifier = Modifier
+                    //.weight(1f)
+                    .padding(start = 0.dp)
+            ) {
+                Text(
+                    text = trade.symbol ?: "",
+                    modifier = Modifier,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = customStyles.itemsTextSize,
+                    color = customStyles.itemsTextColor
+                )
+                Text(
+                    text = if (trade.side == TradeBankModel.Side.sell) { "Sell" } else { "Buy" },
+                    modifier = Modifier,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = customStyles.itemsCodeTextSize,
+                    color = customStyles.itemsCodeTextColor
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = accountsViewModel?.getTradeAmount(trade, listPricesViewModel?.assets!!) ?: "",
+                    modifier = Modifier.align(Alignment.End),
+                    textAlign = TextAlign.End,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = customStyles.itemsTextPriceSize,
+                    color = customStyles.itemsTextColor
+                )
+                Text(
+                    text = "${trade.fee.toString()} Fee",
                     modifier = Modifier.align(Alignment.End),
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Normal,
