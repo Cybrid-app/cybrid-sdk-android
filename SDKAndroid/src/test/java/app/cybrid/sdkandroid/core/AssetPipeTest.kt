@@ -65,4 +65,42 @@ class AssetPipeTest {
 
         Assert.assertEquals(transformZero, result3)
     }
+
+    @Test
+    fun transformDigitsTest() {
+
+        // -- Given
+        val valueString = "5"
+        val valueInt = 5
+        val valueBigDecimal = BigDecimal(5)
+        val decimals = BigDecimal(TestConstants.CAD_ASSET.decimals)
+
+        val result1 = BigDecimal(500)
+        val result2 = BigDecimal(0.05).setScale(2)
+        val result3 = BigDecimal.ZERO
+
+        // -- When
+        val transformCAD1BD = AssetPipe.transform(valueBigDecimal, decimals, "base")
+        val transformCAD2BD = AssetPipe.transform(valueBigDecimal, decimals, "trade")
+
+        val transformCAD1String = AssetPipe.transform(valueString, decimals, "base")
+        val transformCAD2String = AssetPipe.transform(valueString, decimals, "trade")
+
+        val transformCAD1Int = AssetPipe.transform(valueInt, decimals, "base")
+        val transformCAD2Int = AssetPipe.transform(valueInt, decimals, "trade")
+
+        val transformZero = AssetPipe.transform(valueInt, decimals, "")
+
+        // -- Then
+        Assert.assertEquals(transformCAD1BD, result1)
+        Assert.assertEquals(transformCAD2BD, result2)
+
+        Assert.assertEquals(transformCAD1String, result1)
+        Assert.assertEquals(transformCAD2String, result2)
+
+        Assert.assertEquals(transformCAD1Int, result1)
+        Assert.assertEquals(transformCAD2Int, result2)
+
+        Assert.assertEquals(transformZero, result3)
+    }
 }
