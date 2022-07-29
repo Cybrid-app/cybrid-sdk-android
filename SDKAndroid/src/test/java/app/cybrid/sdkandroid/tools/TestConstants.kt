@@ -1,6 +1,9 @@
 package app.cybrid.sdkandroid.tools
 
+import app.cybrid.cybrid_api_bank.client.models.AccountBankModel
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
+import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
+import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import java.math.BigDecimal
 
 object TestConstants {
@@ -29,5 +32,58 @@ object TestConstants {
         name = "Canadian Dollar",
         symbol = "$",
         type= AssetBankModel.Type.fiat,
+    )
+
+    val prices:List<SymbolPriceBankModel> = listOf(
+        SymbolPriceBankModel(
+            symbol = "BTC-USD",
+            buyPrice = BigDecimal(2374100),
+            sellPrice = BigDecimal(2374000)
+        ),
+        SymbolPriceBankModel(
+            symbol = "ETH-USD",
+            buyPrice = BigDecimal(168230),
+            sellPrice = BigDecimal(168220)
+        )
+    )
+
+    val assets:List<AssetBankModel> = listOf(
+        BTC_ASSET, ETH_ASSET
+    )
+
+    val accounts:List<AccountBankModel> = listOf(
+        AccountBankModel(
+            type = AccountBankModel.Type.trading,
+            guid = "5b13ffda9fc47c322af321434818709a",
+            asset = "ETH",
+            name = "ETH-USD",
+            platformBalance = BigDecimal(2500000000000000000)
+        ),
+        AccountBankModel(
+            type = AccountBankModel.Type.trading,
+            guid = "15d755452f76634df53a88efc06248ec",
+            asset = "BTC",
+            name = "BTC-USD",
+            platformBalance = BigDecimal(200000000)
+        )
+    )
+
+    val trades:List<TradeBankModel> = listOf(
+        TradeBankModel(
+            guid = "3c0af815210ca8ce21294a6e81979d7b",
+            symbol = "ETH-USD",
+            side = TradeBankModel.Side.sell,
+            receiveAmount = BigDecimal(14278),
+            deliverAmount = BigDecimal(100000000000000000),
+            fee = BigDecimal(0)
+        ),
+        TradeBankModel(
+            guid = "7b19efae72f928ff378898de3484acac",
+            symbol = "ETH-USD",
+            side = TradeBankModel.Side.buy,
+            receiveAmount = BigDecimal(100000000000000000),
+            deliverAmount = BigDecimal(14286),
+            fee = BigDecimal(0)
+        )
     )
 }

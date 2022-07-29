@@ -29,19 +29,21 @@ class ListPricesViewModel : ViewModel() {
         val pricesService = AppModule.getClient().createService(PricesApi::class.java)
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
-                viewModelScope.launch {
+                viewModelScope.let {
+                    it.launch {
 
-                    // -- Getting assets
-                    if (assetsResponse == null) { getAssets() }
+                        // -- Getting assets
+                        if (assetsResponse == null) { getAssets() }
 
-                    // -- Getting prices
-                    val pricesResult = getResult { pricesService.listPrices(symbol) }
-                    pricesResult.let {
-                        prices = if (isSuccessful(it.code ?: 500)) {
-                            it.data!!
-                        } else {
-                            Logger.log(LoggerEvents.DATA_ERROR, "ListPricesView Component - Prices Data :: ${it.message}")
-                            listOf()
+                        // -- Getting prices
+                        val pricesResult = getResult { pricesService.listPrices(symbol) }
+                        pricesResult.let {
+                            prices = if (isSuccessful(it.code ?: 500)) {
+                                it.data!!
+                            } else {
+                                Logger.log(LoggerEvents.DATA_ERROR, "ListPricesView Component - Prices Data :: ${it.message}")
+                                listOf()
+                            }
                         }
                     }
                 }
