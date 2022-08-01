@@ -257,6 +257,7 @@ fun AccountsBalance(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp, bottom = 20.dp)
+                .testTag(Constants.AccountsViewTestTags.Balance.id)
         ) {
 
             Text(

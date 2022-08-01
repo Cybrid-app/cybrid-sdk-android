@@ -1,10 +1,8 @@
 package app.cybrid.sdkandroid.components.accounts
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import app.cybrid.sdkandroid.components.AccountsView
 import app.cybrid.sdkandroid.components.AccountsViewLoading
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
@@ -46,7 +44,6 @@ class AccountsViewUITest {
         every { listPricesViewModel.prices } returns TestConstants.prices
         every { listPricesViewModel.assets } returns TestConstants.assets
         every { accountsViewModel.accountsResponse } returns TestConstants.accounts
-        every { accountsViewModel.trades } returns TestConstants.trades
     }
 
     @Test
@@ -61,7 +58,7 @@ class AccountsViewUITest {
     }
 
     @Test
-    fun `AccountsView List Prices Test`() {
+    fun `AccountsView List Test`() {
 
         composeTestRule.setContent {
             AccountsView(
@@ -70,7 +67,8 @@ class AccountsViewUITest {
                 accountsViewModel = accountsViewModel)
         }
 
-        //composeTestRule.onNodeWithTag(Constants.AccountsViewTestTags.List.id).assertIsDisplayed()
-        composeTestRule.onNodeWithText("Bitcoin_")
+        composeTestRule.onRoot(true).printToLog("TAG")
+        composeTestRule.onNodeWithTag(Constants.AccountsViewTestTags.List.id).assertIsDisplayed()
+        composeTestRule.onNodeWithTag(Constants.AccountsViewTestTags.Balance.id).assertIsDisplayed()
     }
 }

@@ -34,6 +34,14 @@ object TestConstants {
         type= AssetBankModel.Type.fiat,
     )
 
+    val USD_ASSET: AssetBankModel = AssetBankModel(
+        code = "USD",
+        decimals = BigDecimal(2),
+        name = "American Dollar",
+        symbol = "$",
+        type= AssetBankModel.Type.fiat,
+    )
+
     val prices:List<SymbolPriceBankModel> = listOf(
         SymbolPriceBankModel(
             symbol = "BTC-USD",
@@ -48,7 +56,7 @@ object TestConstants {
     )
 
     val assets:List<AssetBankModel> = listOf(
-        BTC_ASSET, ETH_ASSET
+        BTC_ASSET, ETH_ASSET, USD_ASSET, CAD_ASSET
     )
 
     val accounts:List<AccountBankModel> = listOf(
