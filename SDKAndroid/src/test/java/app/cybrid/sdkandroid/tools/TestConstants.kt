@@ -4,7 +4,9 @@ import app.cybrid.cybrid_api_bank.client.models.AccountBankModel
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
+import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
 import java.math.BigDecimal
+import java.time.OffsetDateTime
 
 object TestConstants {
 
@@ -65,6 +67,7 @@ object TestConstants {
             guid = "5b13ffda9fc47c322af321434818709a",
             asset = "ETH",
             name = "ETH-USD",
+            createdAt = OffsetDateTime.parse("2022-08-02T10:55:34.039847-05:00"),
             platformBalance = BigDecimal(2500000000000000000)
         ),
         AccountBankModel(
@@ -72,6 +75,7 @@ object TestConstants {
             guid = "15d755452f76634df53a88efc06248ec",
             asset = "BTC",
             name = "BTC-USD",
+            createdAt = OffsetDateTime.parse("2022-08-02T10:55:34.039847-05:00"),
             platformBalance = BigDecimal(200000000)
         )
     )
@@ -92,6 +96,45 @@ object TestConstants {
             receiveAmount = BigDecimal(100000000000000000),
             deliverAmount = BigDecimal(14286),
             fee = BigDecimal(0)
+        )
+    )
+
+    val accountsFormatted:List<AccountAssetPriceModel> = listOf(
+        AccountAssetPriceModel(
+            accountAssetCode = "ETH",
+            accountBalance = BigDecimal("2500000000000000000"),
+            accountBalanceFormatted = app.cybrid.sdkandroid.core.BigDecimal(2.5),
+            accountBalanceInFiat = app.cybrid.sdkandroid.core.BigDecimal(420575.0).setScale(1),
+            accountBalanceInFiatFormatted = "$4,205.75",
+            accountGuid = "5b13ffda9fc47c322af321434818709a",
+            accountType = AccountBankModel.Type.trading,
+            accountCreated = OffsetDateTime.parse("2022-08-02T10:55:34.039847-05:00"),
+            assetName = "Ethereum",
+            assetSymbol = "Ξ",
+            assetType = AssetBankModel.Type.crypto,
+            assetDecimals = BigDecimal(18),
+            pairAsset = USD_ASSET,
+            buyPrice = app.cybrid.sdkandroid.core.BigDecimal(168230),
+            buyPriceFormatted = "$1,682.30",
+            sellPrice = BigDecimal(168220)
+        ),
+        AccountAssetPriceModel(
+            accountAssetCode = "BTC",
+            accountBalance = BigDecimal("200000000"),
+            accountBalanceFormatted = app.cybrid.sdkandroid.core.BigDecimal(2),
+            accountBalanceInFiat = app.cybrid.sdkandroid.core.BigDecimal(4748200),
+            accountBalanceInFiatFormatted = "$47,482.00",
+            accountGuid = "15d755452f76634df53a88efc06248ec",
+            accountType = AccountBankModel.Type.trading,
+            accountCreated = OffsetDateTime.parse("2022-08-02T10:55:34.039847-05:00"),
+            assetName = "Bitcoin",
+            assetSymbol = "₿",
+            assetType = AssetBankModel.Type.crypto,
+            assetDecimals = BigDecimal(8),
+            pairAsset = USD_ASSET,
+            buyPrice = app.cybrid.sdkandroid.core.BigDecimal(2374100),
+            buyPriceFormatted = "$23,741.00",
+            sellPrice = BigDecimal(2374000)
         )
     )
 }

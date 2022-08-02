@@ -21,11 +21,11 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLog
 
-//@RunWith(RobolectricTestRunner::class)
-//@Config(instrumentedPackages = ["androidx.loader.content"])
+@RunWith(RobolectricTestRunner::class)
+@Config(instrumentedPackages = ["androidx.loader.content"])
 class AccountsViewUITest {
 
-    /*private lateinit var listPricesViewModel: ListPricesViewModel
+    private lateinit var listPricesViewModel: ListPricesViewModel
     private lateinit var accountsViewModel: AccountsViewModel
 
     @get:Rule
@@ -55,18 +55,4 @@ class AccountsViewUITest {
         composeTestRule.onNodeWithTag(Constants.AccountsViewTestTags.Loading.id).assertIsDisplayed()
         composeTestRule.onNodeWithText("Loading").assertIsDisplayed()
     }
-
-    @Test
-    fun `AccountsView List Test`() {
-
-        composeTestRule.setContent {
-            AccountsView(
-                currentState = mutableStateOf(AccountsView.AccountsViewState.CONTENT),
-                listPricesViewModel = listPricesViewModel,
-                accountsViewModel = accountsViewModel)
-        }
-
-        composeTestRule.onRoot(true).printToLog("TAG")
-        composeTestRule.onNodeWithTag(Constants.AccountsViewTestTags.List.id).assertIsDisplayed()
-    }*/
 }

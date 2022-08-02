@@ -10,7 +10,7 @@ class BigDecimalPipeTest {
     fun initTest() {
 
         // -- Given
-        val bigDecimalPipe = BigDecimalPipe()
+        val bigDecimalPipe = BigDecimalPipe
 
         // -- When
 
@@ -22,7 +22,7 @@ class BigDecimalPipeTest {
     fun companionTest() {
 
         // -- Given
-        val bigDecimalCompanion = BigDecimalPipe.Companion
+        val bigDecimalCompanion = BigDecimalPipe
 
         // -- Then
         Assert.assertNotNull(bigDecimalCompanion)

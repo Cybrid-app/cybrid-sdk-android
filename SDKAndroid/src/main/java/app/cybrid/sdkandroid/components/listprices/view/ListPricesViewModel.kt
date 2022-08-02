@@ -29,8 +29,8 @@ class ListPricesViewModel : ViewModel() {
         val pricesService = AppModule.getClient().createService(PricesApi::class.java)
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
-                viewModelScope.let {
-                    it.launch {
+                viewModelScope.let { scope ->
+                    scope.launch {
 
                         // -- Getting assets
                         if (assetsResponse == null) { getAssetsList() }

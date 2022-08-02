@@ -62,11 +62,39 @@ class AccountsViewModelTest {
     }
 
     @Test
+    fun createAccountsFormattedTest() {
+
+        accountsViewModel.createAccountsFormatted(listPricesViewModel.prices, listPricesViewModel.assets)
+        val accountsFormatted = accountsViewModel.accounts
+
+        Assert.assertEquals(accountsFormatted, TestConstants.accountsFormatted)
+    }
+
+    @Test
     fun getTotalBalanceTest() {
 
         accountsViewModel.createAccountsFormatted(listPricesViewModel.prices, listPricesViewModel.assets)
         accountsViewModel.getCalculatedBalance()
 
         Assert.assertEquals(accountsViewModel.totalBalance, "$51,687.75")
+    }
+
+    @Test
+    fun getTradeAmountTest() {
+
+        val trades = TestConstants.trades
+
+        val tradeAmount1 = accountsViewModel.getTradeAmount(
+            trade = trades[0],
+            assets = listPricesViewModel.assets
+        )
+
+        val tradeAmount2 = accountsViewModel.getTradeAmount(
+            trade = trades[1],
+            assets = listPricesViewModel.assets
+        )
+
+        Assert.assertEquals(tradeAmount1, "Ξ0.10")
+        Assert.assertEquals(tradeAmount2, "Ξ0.10")
     }
 }
