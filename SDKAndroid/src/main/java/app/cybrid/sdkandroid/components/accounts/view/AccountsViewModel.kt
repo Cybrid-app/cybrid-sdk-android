@@ -24,7 +24,6 @@ import app.cybrid.sdkandroid.util.isSuccessful
 import kotlinx.coroutines.launch
 import java.math.BigDecimal as JavaBigDecimal
 
-
 class AccountsViewModel : ViewModel() {
 
     var currentFiatCurrency = "USD"
@@ -37,21 +36,21 @@ class AccountsViewModel : ViewModel() {
     // -- Trades List
     var trades:List<TradeBankModel> by mutableStateOf(listOf())
 
-    fun getAccounts() {
+    fun getAccountsList() {
 
         val accountService = AppModule.getClient().createService(AccountsApi::class.java)
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
-                viewModelScope.launch {
-
-                    // -- Getting prices
-                    val accountsResult = getResult { accountService.listAccounts(customerGuid = Cybrid.instance.customerGuid) }
-                    accountsResult.let {
-                        accountsResponse = if (isSuccessful(it.code ?: 500)) {
-                            it.data?.objects ?: listOf()
-                        } else {
-                            Logger.log(LoggerEvents.DATA_ERROR, "Accounts Component - Data :: ${it.message}")
-                            listOf()
+                viewModelScope.let { scope ->
+                    scope.launch {
+                        val accountsResult = getResult { accountService.listAccounts(customerGuid = Cybrid.instance.customerGuid) }
+                        accountsResult.let {
+                            accountsResponse = if (isSuccessful(it.code ?: 500)) {
+                                it.data?.objects ?: listOf()
+                            } else {
+                                Logger.log(LoggerEvents.DATA_ERROR, "Accounts Component - Data :: ${it.message}")
+                                listOf()
+                            }
                         }
                     }
                 }
@@ -109,7 +108,7 @@ class AccountsViewModel : ViewModel() {
         this.accounts = accountsList
     }
 
-    fun getTotalBalance() {
+    fun getCalculatedBalance() {
 
         var total = BigDecimal(0)
         if (this.accounts != null && this.accounts.isNotEmpty()) {
@@ -121,7 +120,7 @@ class AccountsViewModel : ViewModel() {
         }
     }
 
-    fun getTrades(accountGuid: String) {
+    fun getTradesList(accountGuid: String) {
 
         val tradesService = AppModule.getClient().createService(TradesApi::class.java)
         Cybrid.instance.let { cybrid ->
@@ -148,10 +147,7 @@ class AccountsViewModel : ViewModel() {
         val tradeSymbol = trade.symbol
         val assetsParts = tradeSymbol?.split("-")
         val assetString = assetsParts!![0]
-        val pairAssetString = assetsParts[1]
-
         val asset = assets.find { it.code == assetString }
-        val pairAsset = assets.find { it.code == pairAssetString }
         val returnValue = if (trade.side == TradeBankModel.Side.sell) {
             BigDecimalPipe.transform(BigDecimal(trade.deliverAmount!!), asset!!)
         } else {

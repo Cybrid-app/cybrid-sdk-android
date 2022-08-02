@@ -2,18 +2,15 @@ package app.cybrid.sdkandroid.components
 
 import android.content.Context
 import android.util.AttributeSet
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -26,25 +23,18 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
-import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
-import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.core.Constants
-import app.cybrid.sdkandroid.core.toBigDecimal
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 
 class AccountsView @JvmOverloads constructor(
@@ -75,10 +65,10 @@ class AccountsView @JvmOverloads constructor(
         this._accountsViewModel = accountsViewModel
         this.setupCompose()
 
-        this._listPricesViewModel?.getListPrices()
-        this._accountsViewModel?.getAccounts()
+        this._listPricesViewModel?.getPricesList()
+        this._accountsViewModel?.getAccountsList()
 
-        this.setupRunnable { this._listPricesViewModel?.getListPrices() }
+        this.setupRunnable { this._listPricesViewModel?.getPricesList() }
     }
 
     private fun setupCompose() {
@@ -218,7 +208,7 @@ fun AccountsViewList(
     )
 
     // -- Get Total balance
-    accountsViewModel?.getTotalBalance()
+    accountsViewModel?.getCalculatedBalance()
 
     Column(
         modifier = Modifier
@@ -337,7 +327,7 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
                 .clickable {
 
                     currentRememberState.value = AccountsView.AccountsViewState.LOADING
-                    accountsViewModel?.getTrades(balance.accountGuid)
+                    accountsViewModel?.getTradesList(balance.accountGuid)
                 },
         ) {
 

@@ -24,7 +24,7 @@ class ListPricesViewModel : ViewModel() {
     private var assetsResponse:AssetListBankModel? = null
     var assets:List<AssetBankModel> by mutableStateOf(listOf())
 
-    fun getListPrices(symbol: String? = null) {
+    fun getPricesList(symbol: String? = null) {
 
         val pricesService = AppModule.getClient().createService(PricesApi::class.java)
         Cybrid.instance.let { cybrid ->
@@ -33,7 +33,7 @@ class ListPricesViewModel : ViewModel() {
                     it.launch {
 
                         // -- Getting assets
-                        if (assetsResponse == null) { getAssets() }
+                        if (assetsResponse == null) { getAssetsList() }
 
                         // -- Getting prices
                         val pricesResult = getResult { pricesService.listPrices(symbol) }
@@ -51,7 +51,7 @@ class ListPricesViewModel : ViewModel() {
         }
     }
 
-    private fun getAssets() {
+    private fun getAssetsList() {
 
         val assetsService = AppModule.getClient().createService(AssetsApi::class.java)
         viewModelScope.launch {

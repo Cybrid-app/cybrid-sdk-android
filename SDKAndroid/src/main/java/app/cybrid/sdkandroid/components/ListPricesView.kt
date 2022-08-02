@@ -94,7 +94,7 @@ open class ListPricesView @JvmOverloads constructor(
     fun setViewModel(viewModel: ListPricesViewModel) {
 
         _viewModel = viewModel
-        _viewModel?.getListPrices()
+        _viewModel?.getPricesList()
 
         _handler = Handler(Looper.getMainLooper())
         _runnable = Runnable { this.refreshPrices() }
@@ -104,7 +104,7 @@ open class ListPricesView @JvmOverloads constructor(
     private fun refreshPrices() {
 
         Logger.log(LoggerEvents.DATA_REFRESHED, "ListPricesView Component data")
-        _viewModel.let { it?.getListPrices() }
+        _viewModel.let { it?.getPricesList() }
         _handler.let {
             _runnable.let { _it ->
                 it?.postDelayed(_it!!, updateInterval)
