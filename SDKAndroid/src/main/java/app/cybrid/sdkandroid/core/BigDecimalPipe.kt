@@ -12,7 +12,7 @@ class BigDecimalPipe {
 
             val divisor = BigDecimal(10).pow(asset.decimals.toBigDecimal())
             val baseUnit = value.div(divisor)
-            val prefix = if (value == BigDecimal.ZERO) "${asset.symbol}0" else asset.symbol
+            val prefix = if (value == BigDecimal(0)) "${asset.symbol}0" else asset.symbol
             return transformAny(baseUnit, asset, prefix)
         }
 

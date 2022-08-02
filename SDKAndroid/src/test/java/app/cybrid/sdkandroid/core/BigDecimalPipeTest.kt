@@ -32,7 +32,7 @@ class BigDecimalPipeTest {
     fun transformTest() {
 
         // -- Given
-        val zeroBigDecimal = BigDecimal.ZERO
+        val zeroBigDecimal = BigDecimal(0)
         val oneBigDecimal = BigDecimal(1)
 
         // -- When

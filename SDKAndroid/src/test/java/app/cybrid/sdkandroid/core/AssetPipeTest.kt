@@ -1,28 +1,40 @@
 package app.cybrid.sdkandroid.core
 
 import app.cybrid.sdkandroid.tools.TestConstants
+import io.mockk.MockKAnnotations
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 
 class AssetPipeTest {
+
+    private lateinit var classUnderTest: AssetPipe
+
+    @Before
+    fun setUp() {
+
+        MockKAnnotations.init(this, relaxUnitFun = true)
+        classUnderTest = AssetPipe
+    }
 
     @Test
     fun initTest() {
 
         // -- Given
-        val assetPipe = AssetPipe()
+        val assetPipe = AssetPipe
 
         // -- When
 
         // -- Then
         Assert.assertNotNull(assetPipe)
+        Assert.assertNotNull(classUnderTest)
     }
 
     @Test
     fun companionTest() {
 
         // -- Given
-        val assetCompanion = AssetPipe.Companion
+        val assetCompanion = AssetPipe
 
         // -- Then
         Assert.assertNotNull(assetCompanion)
@@ -39,7 +51,7 @@ class AssetPipeTest {
 
         val result1 = BigDecimal(500)
         val result2 = BigDecimal(0.05).setScale(2)
-        val result3 = BigDecimal.ZERO
+        val result3 = BigDecimal(0)
 
         // -- When
         val transformCAD1BD = AssetPipe.transform(valueBigDecimal, asset, "base")
@@ -77,7 +89,7 @@ class AssetPipeTest {
 
         val result1 = BigDecimal(500)
         val result2 = BigDecimal(0.05).setScale(2)
-        val result3 = BigDecimal.ZERO
+        val result3 = BigDecimal(0)
 
         // -- When
         val transformCAD1BD = AssetPipe.transform(valueBigDecimal, decimals, "base")

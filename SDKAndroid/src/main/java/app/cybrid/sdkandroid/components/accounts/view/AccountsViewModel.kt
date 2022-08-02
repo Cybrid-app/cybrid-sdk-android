@@ -112,10 +112,9 @@ class AccountsViewModel : ViewModel() {
     fun getTotalBalance() {
 
         var total = BigDecimal(0)
-        this.accounts.let { balances ->
-
-            val pairAsset = balances[0].pairAsset
-            balances.forEach { balance ->
+        if (this.accounts != null && this.accounts.isNotEmpty()) {
+            val pairAsset = this.accounts[0].pairAsset
+            this.accounts.forEach { balance ->
                 total = total.plus(balance.accountBalanceInFiat)
             }
             this.totalBalance = BigDecimalPipe.transform(total, pairAsset) ?: ""
