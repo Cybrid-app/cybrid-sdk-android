@@ -6,13 +6,14 @@ import android.view.LayoutInflater
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,8 +24,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -34,6 +38,7 @@ import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
+import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 
@@ -221,7 +226,9 @@ fun AccountsViewList(
             modifier = Modifier
         ) {
             stickyHeader {
-                AccountsCryptoHeaderItem()
+                AccountsCryptoHeaderItem(
+                    accountsViewModel = accountsViewModel
+                )
             }
             itemsIndexed(items = accountsViewModel?.accounts ?: listOf()) { index, item ->
                 AccountsCryptoItem(
@@ -241,6 +248,19 @@ fun AccountsBalance(
     accountsViewModel: AccountsViewModel?
 ) {
 
+    // -- Vars
+    val balanceFormatted = buildAnnotatedString {
+        append(accountsViewModel?.totalBalance ?: "")
+        withStyle(style = SpanStyle(
+            color = colorResource(id = R.color.list_prices_asset_component_code_color),
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal
+        )
+        ) {
+            append(" ${accountsViewModel?.currentFiatCurrency}")
+        }
+    }
+
     // -- Content
     if (accountsViewModel?.totalBalance != "") {
         Surface(
@@ -249,22 +269,39 @@ fun AccountsBalance(
                 .padding(top = 20.dp, bottom = 20.dp)
         ) {
 
-            Text(
-                text = accountsViewModel?.totalBalance ?: "",
+            Column(
                 modifier = Modifier,
-                textAlign = TextAlign.Center,
-                fontFamily = robotoFont,
-                fontWeight = FontWeight.Normal,
-                fontSize = 24.sp,
-                color = Color.Black
-            )
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                Text(
+                    text = stringResource(id = R.string.accounts_view_balance_title),
+                    modifier = Modifier,
+                    textAlign = TextAlign.Center,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp,
+                    color = colorResource(id = R.color.list_prices_asset_component_code_color)
+                )
+
+                Text(
+                    text = balanceFormatted,
+                    modifier = Modifier,
+                    textAlign = TextAlign.Center,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 22.5.sp,
+                    color = Color.Black
+                )
+            }
         }
     }
 }
 
 @Composable
 fun AccountsCryptoHeaderItem(
-    styles: AccountsViewStyles = AccountsViewStyles()
+    styles: AccountsViewStyles = AccountsViewStyles(),
+    accountsViewModel: AccountsViewModel?,
 ) {
 
     val priceColor = if (styles.headerTextColor != Color(R.color.list_prices_asset_component_header_color)) {
@@ -280,24 +317,47 @@ fun AccountsCryptoHeaderItem(
             modifier = Modifier.padding(bottom = 16.dp)
         ) {
 
-            Text(
-                text = stringResource(id = R.string.list_prices_asset_component_header_currency),
-                fontFamily = robotoFont,
-                fontWeight = FontWeight.Bold,
-                fontSize = styles.headerTextSize,
-                color = priceColor
-            )
-            Text(
-                text = "Balance",
+            Column {
+                Text(
+                    text = stringResource(id = R.string.accounts_view_list_header_asset),
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = styles.headerTextSize,
+                    color = priceColor
+                )
+                Text(
+                    text = stringResource(id = R.string.accounts_view_list_header_asset_sub),
+                    modifier = Modifier,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = styles.itemsCodeTextSize,
+                    color = styles.itemsCodeTextColor
+                )
+            }
+
+            Column(
                 modifier = Modifier
-                    .padding(end = 0.dp)
-                    .weight(1f),
-                textAlign = TextAlign.End,
-                fontFamily = robotoFont,
-                fontWeight = FontWeight.Bold,
-                fontSize = styles.headerTextSize,
-                color = priceColor
-            )
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(id = R.string.accounts_view_list_header_balance),
+                    modifier = Modifier.align(Alignment.End),
+                    textAlign = TextAlign.End,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = styles.headerTextSize,
+                    color = priceColor
+                )
+                Text(
+                    text = accountsViewModel?.currentFiatCurrency ?: "",
+                    modifier = Modifier.align(Alignment.End),
+                    textAlign = TextAlign.End,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = styles.itemsCodeTextSize,
+                    color = styles.itemsCodeTextColor
+                )
+            }
         }
     }
 }
@@ -305,16 +365,25 @@ fun AccountsCryptoHeaderItem(
 
 @Composable
 fun AccountsCryptoItem(balance: AccountAssetPriceModel,
-                       index: Int, selectedIndex: Int,
-                       accountsViewModel: AccountsViewModel?,
-                       currentRememberState: MutableState<AccountsView.AccountsViewState>,
-                       customStyles: AccountsViewStyles = AccountsViewStyles()
+    index: Int, selectedIndex: Int,
+    accountsViewModel: AccountsViewModel?,
+    currentRememberState: MutableState<AccountsView.AccountsViewState>,
+    customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {
 
     // -- Vars
     val cryptoCode = balance.accountAssetCode
     val imageID = getImage(LocalContext.current, "ic_${cryptoCode.lowercase()}")
     val cryptoName = balance.assetName
+    val assetNameCode = buildAnnotatedString {
+        append(cryptoName)
+        withStyle(style = SpanStyle(
+            color = colorResource(id = R.color.list_prices_asset_component_code_color),
+            fontFamily = robotoFont)
+        ) {
+            append(" $cryptoCode")
+        }
+    }
 
     // -- Content
     Surface(color = Color.Transparent) {
@@ -346,7 +415,7 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
                     .padding(start = 16.dp)
             ) {
                 Text(
-                    text = cryptoName,
+                    text = assetNameCode,
                     modifier = Modifier,
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Normal,
@@ -466,10 +535,10 @@ fun AccountTradesHeaderItem(
 
 @Composable
 fun AccountTradesItem(trade: TradeBankModel,
-   index: Int,
-   listPricesViewModel: ListPricesViewModel?,
-   accountsViewModel: AccountsViewModel?,
-   customStyles: AccountsViewStyles = AccountsViewStyles()
+    index: Int,
+    listPricesViewModel: ListPricesViewModel?,
+    accountsViewModel: AccountsViewModel?,
+    customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {
 
     // -- Content

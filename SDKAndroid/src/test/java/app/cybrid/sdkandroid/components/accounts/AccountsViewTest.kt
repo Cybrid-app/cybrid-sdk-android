@@ -8,7 +8,6 @@ import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.tools.TestConstants
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.runBlocking
 import org.junit.*
 
 class AccountsViewTest {

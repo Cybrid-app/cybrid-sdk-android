@@ -1,9 +1,7 @@
 package app.cybrid.sdkandroid.components.accounts
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import app.cybrid.sdkandroid.components.AccountsView
 import app.cybrid.sdkandroid.components.AccountsViewLoading
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
@@ -12,7 +10,6 @@ import app.cybrid.sdkandroid.tools.TestConstants
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.spyk
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
