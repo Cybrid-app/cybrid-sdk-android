@@ -33,6 +33,6 @@ open class Component @JvmOverloads constructor(
                 }
             }
         }
-        _handler?.postDelayed(_runnable!!, updateInterval)
+        _handler?.postDelayed(_runnable ?: Runnable {}, updateInterval)
     }
 }

@@ -466,10 +466,10 @@ fun AccountTradesHeaderItem(
 
 @Composable
 fun AccountTradesItem(trade: TradeBankModel,
-                       index: Int,
-                       listPricesViewModel: ListPricesViewModel?,
-                       accountsViewModel: AccountsViewModel?,
-                       customStyles: AccountsViewStyles = AccountsViewStyles()
+   index: Int,
+   listPricesViewModel: ListPricesViewModel?,
+   accountsViewModel: AccountsViewModel?,
+   customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {
 
     // -- Content
