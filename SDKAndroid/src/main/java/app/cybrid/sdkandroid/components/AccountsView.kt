@@ -1,6 +1,7 @@
 package app.cybrid.sdkandroid.components
 
 import android.content.Context
+import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.activity.compose.BackHandler
@@ -217,6 +218,7 @@ fun AccountsViewList(
 
     Column(
         modifier = Modifier
+            .background(Color.Transparent)
             .testTag(Constants.AccountsViewTestTags.List.id)
     ) {
         AccountsBalance(
@@ -603,7 +605,7 @@ fun AccountTradesItem(trade: TradeBankModel,
 /**
  * Compose Previews
  * **/
-@Preview(showBackground = true)
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun AccountsViewLoadingPreview() {
     AccountsViewLoading()
