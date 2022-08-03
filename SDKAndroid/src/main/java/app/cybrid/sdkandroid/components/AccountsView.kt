@@ -413,7 +413,6 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
             )
             Column(
                modifier = Modifier
-                    //.weight(1f)
                     .padding(start = 16.dp)
             ) {
                 Text(
@@ -468,7 +467,7 @@ fun AccountTrades(
 ) {
     Column() {
         Text(
-            text = "Trades",
+            text = stringResource(id = R.string.accounts_view_trades_title),
             modifier = Modifier,
             textAlign = TextAlign.Center,
             fontFamily = robotoFont,
@@ -514,14 +513,14 @@ fun AccountTradesHeaderItem(
         ) {
 
             Text(
-                text = "Data",
+                text = stringResource(id = R.string.accounts_view_trades_list_data),
                 fontFamily = robotoFont,
                 fontWeight = FontWeight.Bold,
                 fontSize = styles.headerTextSize,
                 color = priceColor
             )
             Text(
-                text = "Amount",
+                text = stringResource(id = R.string.accounts_view_trades_list_amount),
                 modifier = Modifier
                     .padding(end = 0.dp)
                     .weight(1f),
@@ -555,7 +554,6 @@ fun AccountTradesItem(trade: TradeBankModel,
 
             Column(
                 modifier = Modifier
-                    //.weight(1f)
                     .padding(start = 0.dp)
             ) {
                 Text(
