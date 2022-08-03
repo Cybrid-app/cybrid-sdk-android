@@ -595,7 +595,7 @@ class TradeFlow @JvmOverloads constructor(
                 textButton = stringResource(id = R.string.trade_flow_buy_action_button)
             }
             1 -> {
-                PostQuoteBankModel.Side.sell
+                side.value = PostQuoteBankModel.Side.sell
                 textButton = stringResource(id = R.string.trade_flow_sell_action_button)
             }
         }

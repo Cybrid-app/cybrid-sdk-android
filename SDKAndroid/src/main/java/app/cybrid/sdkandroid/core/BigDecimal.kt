@@ -76,11 +76,6 @@ class BigDecimal(internal val value:JavaBigDecimal) : Comparable<BigDecimal> {
         return value.toPlainString()
     }
 
-    companion object {
-
-        val ZERO: BigDecimal = BigDecimal(0)
-    }
-
     fun setScale(scale: Int): BigDecimal {
         return BigDecimal(value.setScale(scale, RoundingMode.FLOOR))
     }

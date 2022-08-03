@@ -94,7 +94,7 @@ open class ListPricesView @JvmOverloads constructor(
     fun setViewModel(viewModel: ListPricesViewModel) {
 
         _viewModel = viewModel
-        _viewModel?.getListPrices()
+        _viewModel?.getPricesList()
 
         _handler = Handler(Looper.getMainLooper())
         _runnable = Runnable { this.refreshPrices() }
@@ -104,7 +104,7 @@ open class ListPricesView @JvmOverloads constructor(
     private fun refreshPrices() {
 
         Logger.log(LoggerEvents.DATA_REFRESHED, "ListPricesView Component data")
-        _viewModel.let { it?.getListPrices() }
+        _viewModel.let { it?.getPricesList() }
         _handler.let {
             _runnable.let { _it ->
                 it?.postDelayed(_it!!, updateInterval)
@@ -164,27 +164,30 @@ fun CryptoList(
     customStyles: ListPricesViewCustomStyles,
     onClick: (asset: AssetBankModel, pairAsset: AssetBankModel) -> Unit) {
 
+    // -- Vars
     var selectedIndex by remember { mutableStateOf(-1) }
     val textState = remember { mutableStateOf(TextFieldValue("")) }
     val topPadding = if (!customStyles.searchBar) { 0.dp } else { 20.dp }
 
+    val filtered = if (textState.value.text.isNotEmpty()) {
+        ArrayList(cryptoList.filter {
+
+            val asset = viewModel?.findAsset(viewModel.getSymbol(it.symbol!!))
+            asset?.name?.lowercase()?.contains(textState.value.text.lowercase())
+                ?: it.symbol?.lowercase()!!.contains(textState.value.text.lowercase())
+        })
+    } else { cryptoList }
+
+    // -- Content
     Column {
 
-        if (customStyles.searchBar) { SearchView(state = textState) }
-        LazyColumn(modifier =
-        Modifier
+        if (customStyles.searchBar) {
+            SearchView(state = textState)
+        }
+        LazyColumn(modifier = Modifier
             .testTag("ListPricesView")
             .padding(top = topPadding)
             .padding(horizontal = 3.5.dp)) {
-
-            val filtered = if (textState.value.text.isNotEmpty()) {
-                ArrayList(cryptoList.filter {
-
-                    val asset = viewModel?.findAsset(viewModel.getSymbol(it.symbol!!))
-                    asset?.name?.lowercase()?.contains(textState.value.text.lowercase())
-                        ?: it.symbol?.lowercase()!!.contains(textState.value.text.lowercase())
-                })
-            } else { cryptoList }
 
             stickyHeader {
                 CryptoAssetHeaderItem(customStyles)
