@@ -24,24 +24,26 @@ class ListPricesViewModel : ViewModel() {
     private var assetsResponse:AssetListBankModel? = null
     var assets:List<AssetBankModel> by mutableStateOf(listOf())
 
-    fun getListPrices(symbol: String? = null) {
+    fun getPricesList(symbol: String? = null) {
 
         val pricesService = AppModule.getClient().createService(PricesApi::class.java)
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
-                viewModelScope.launch {
+                viewModelScope.let { scope ->
+                    scope.launch {
 
-                    // -- Getting assets
-                    if (assetsResponse == null) { getAssets() }
+                        // -- Getting assets
+                        if (assetsResponse == null) { getAssetsList() }
 
-                    // -- Getting prices
-                    val pricesResult = getResult { pricesService.listPrices(symbol) }
-                    pricesResult.let {
-                        prices = if (isSuccessful(it.code ?: 500)) {
-                            it.data!!
-                        } else {
-                            Logger.log(LoggerEvents.DATA_ERROR, "ListPricesView Component - Prices Data :: ${it.message}")
-                            listOf()
+                        // -- Getting prices
+                        val pricesResult = getResult { pricesService.listPrices(symbol) }
+                        pricesResult.let {
+                            prices = if (isSuccessful(it.code ?: 500)) {
+                                it.data!!
+                            } else {
+                                Logger.log(LoggerEvents.DATA_ERROR, "ListPricesView Component - Prices Data :: ${it.message}")
+                                listOf()
+                            }
                         }
                     }
                 }
@@ -49,7 +51,7 @@ class ListPricesViewModel : ViewModel() {
         }
     }
 
-    private fun getAssets() {
+    private fun getAssetsList() {
 
         val assetsService = AppModule.getClient().createService(AssetsApi::class.java)
         viewModelScope.launch {

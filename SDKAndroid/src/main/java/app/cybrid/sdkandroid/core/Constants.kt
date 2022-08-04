@@ -3,11 +3,13 @@ package app.cybrid.sdkandroid.core
 class Constants {
 
     enum class QuoteConfirmation(val id:String) {
-        LoadingIndicator("QuoteConfirmationLoadingProgressIndicator"),
-        ContentPurchaseAmount("QuoteConfirmationContentPurchaseAmount"),
-        ContentPurchaseQuantity("QuoteConfirmationContentPurchaseQuantity"),
-        ContentFee("QuoteConfirmationContentPurchaseFee"),
-        ContentButtons("QuoteConfirmationContentButtons")
+        LoadingIndicator("QuoteConfirmationLoadingProgressIndicator")
+    }
+
+    enum class AccountsViewTestTags(val id:String) {
+        Surface("AccountsView_MainSurface"),
+        Loading("AccountsView_Loading"),
+        List("AccountsView_List")
     }
 
     companion object {

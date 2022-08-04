@@ -467,7 +467,7 @@ class BigDecimalTest {
     fun zeroTest() {
 
         // -- Given
-        val bigDecimal1 = BigDecimal.ZERO
+        val bigDecimal1 = BigDecimal(0)
         val expected = BigDecimal(0)
 
         // -- When

@@ -31,4 +31,14 @@
     <string name="trade_flow_confirmation_modal_date">Fecha:</string>
     <string name="trade_flow_confirmation_modal_button">Comprar mas crypto</string>
 
+    <!-- Accounts View Strings -->
+    <string name="accounts_view_loading_text">Cargando</string>
+    <string name="accounts_view_list_header_asset">Activo</string>
+    <string name="accounts_view_balance_title">Valor total</string>
+    <string name="accounts_view_list_header_asset_sub">Precio en el mercado</string>
+    <string name="accounts_view_list_header_balance">Balance</string>
+    <string name="accounts_view_trades_list_data">Información</string>
+    <string name="accounts_view_trades_list_amount">Cantidad</string>
+    <string name="accounts_view_trades_title">Transacciones</string>
+
 </resources>
