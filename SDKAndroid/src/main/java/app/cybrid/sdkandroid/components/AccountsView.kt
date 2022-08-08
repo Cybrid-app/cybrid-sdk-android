@@ -103,7 +103,7 @@ data class AccountsViewStyles(
     var itemsTextColor: Color = Color.Black,
     var itemsTextPriceSize: TextUnit = 15.sp,
     var itemsCodeTextSize: TextUnit = 14.sp,
-    var itemsCodeTextColor: Color = Color(R.color.list_prices_asset_component_header_color)
+    var itemsCodeTextColor: Color = Color(R.color.accounts_view_balance_title)
 )
 
 /**
@@ -292,6 +292,7 @@ fun AccountsBalance(
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Medium,
                     fontSize = 19.sp,
+                    lineHeight = 32.sp,
                     color = Color.Black
                 )
             }
@@ -324,6 +325,7 @@ fun AccountsCryptoHeaderItem(
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Bold,
                     fontSize = styles.headerTextSize,
+                    lineHeight = 20.sp,
                     color = priceColor
                 )
                 Text(
@@ -332,7 +334,8 @@ fun AccountsCryptoHeaderItem(
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Normal,
                     fontSize = styles.itemsCodeTextSize,
-                    color = styles.itemsCodeTextColor
+                    lineHeight = 20.sp,
+                    color = colorResource(id = R.color.accounts_view_balance_title)
                 )
             }
 
@@ -380,7 +383,9 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
         append(cryptoName)
         withStyle(style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
-            fontFamily = robotoFont)
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal
+        )
         ) {
             append(" $cryptoCode")
         }
@@ -407,7 +412,7 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
                 modifier = Modifier
                     .padding(horizontal = 0.dp)
                     .padding(0.dp)
-                    .size(25.dp),
+                    .size(22.dp),
                 contentScale = ContentScale.Fit
             )
             Column(
@@ -418,8 +423,9 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
                     text = assetNameCode,
                     modifier = Modifier,
                     fontFamily = robotoFont,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = customStyles.itemsTextSize,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.5.sp,
+                    lineHeight = 20.sp,
                     color = customStyles.itemsTextColor
                 )
                 Text(
@@ -427,7 +433,8 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
                     modifier = Modifier,
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Normal,
-                    fontSize = customStyles.itemsCodeTextSize,
+                    fontSize = 13.5.sp,
+                    lineHeight = 20.sp,
                     color = customStyles.itemsCodeTextColor
                 )
             }
@@ -440,8 +447,9 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
                     modifier = Modifier.align(Alignment.End),
                     textAlign = TextAlign.End,
                     fontFamily = robotoFont,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = customStyles.itemsTextPriceSize,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    lineHeight = 20.sp,
                     color = customStyles.itemsTextColor
                 )
                 Text(
@@ -449,7 +457,8 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
                     modifier = Modifier.align(Alignment.End),
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Normal,
-                    fontSize = customStyles.itemsCodeTextSize,
+                    fontSize = 15.sp,
+                    lineHeight = 20.sp,
                     color = customStyles.itemsCodeTextColor
                 )
             }
