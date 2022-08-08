@@ -34,7 +34,7 @@
     <!-- Accounts View Strings -->
     <string name="accounts_view_loading_text">Chargement en cours</string>
     <string name="accounts_view_list_header_asset">Actif</string>
-    <string name="accounts_view_balance_title">Valeur totale</string>
+    <string name="accounts_view_balance_title">Solde du compte</string>
     <string name="accounts_view_list_header_asset_sub">Prix du marché</string>
     <string name="accounts_view_list_header_balance">Solde</string>
     <string name="accounts_view_trades_list_data">Les données</string>

@@ -20,4 +20,6 @@
     <color name="modal_sub_title_refresh_color">#FF5252</color>
     <color name="modal_divider">#79747E</color>
 
+    <color name="accounts_view_balance_title">#616161</color>
+
 </resources>

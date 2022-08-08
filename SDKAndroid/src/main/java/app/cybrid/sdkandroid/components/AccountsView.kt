@@ -268,31 +268,30 @@ fun AccountsBalance(
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp, bottom = 20.dp)
+                .padding(top = 20.dp, bottom = 25.5.dp)
         ) {
 
             Column(
-                modifier = Modifier,
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
             ) {
 
                 Text(
                     text = stringResource(id = R.string.accounts_view_balance_title),
                     modifier = Modifier,
-                    textAlign = TextAlign.Center,
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
-                    color = colorResource(id = R.color.list_prices_asset_component_code_color)
+                    fontSize = 13.sp,
+                    lineHeight = 20.sp,
+                    color = colorResource(id = R.color.accounts_view_balance_title)
                 )
 
                 Text(
                     text = balanceFormatted,
-                    modifier = Modifier,
-                    textAlign = TextAlign.Center,
+                    modifier = Modifier.
+                        padding(top = 1.dp),
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Medium,
-                    fontSize = 22.5.sp,
+                    fontSize = 19.sp,
                     color = Color.Black
                 )
             }
