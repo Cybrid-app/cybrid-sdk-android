@@ -42,6 +42,7 @@ import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
+import app.cybrid.sdkandroid.util.getSpannableStyle
 
 class AccountsView @JvmOverloads constructor(
     context: Context,
@@ -107,7 +108,7 @@ data class AccountsViewStyles(
 )
 
 /**
- * Composable Static Functions
+ * Composable Functions for Accounts
  * **/
 @Composable
 fun AccountsView(
@@ -137,7 +138,7 @@ fun AccountsView(
         
         BackHandler { if (currentState.value == AccountsView.AccountsViewState.TRADES) {
 
-            accountsViewModel.trades = listOf()
+            accountsViewModel.cleanTrades()
             currentRememberState.value = AccountsView.AccountsViewState.CONTENT }
         }
 
@@ -402,7 +403,7 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
                 .clickable {
 
                     currentRememberState.value = AccountsView.AccountsViewState.LOADING
-                    accountsViewModel?.getTradesList(balance.accountGuid)
+                    accountsViewModel?.getTradesList(balance)
                 },
         ) {
 
@@ -443,7 +444,7 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = balance.accountBalanceFormatted.toPlainString(),
+                    text = balance.accountBalanceFormattedString,
                     modifier = Modifier.align(Alignment.End),
                     textAlign = TextAlign.End,
                     fontFamily = robotoFont,
@@ -467,22 +468,116 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
     }
 }
 
+/**
+ * Composable Functions for Trades
+ * **/
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AccountTrades(
     listPricesViewModel: ListPricesViewModel?,
-    accountsViewModel: AccountsViewModel?
+    accountsViewModel: AccountsViewModel?,
+    customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {
+
+    // -- Vars
+    val balance = accountsViewModel?.getCurrentTradeAccount()
+    val cryptoCode = balance?.accountAssetCode ?: ""
+    val imageID = getImage(LocalContext.current, "ic_${cryptoCode.lowercase()}")
+    val cryptoName = balance?.assetName ?: ""
+    val assetNameCode = buildAnnotatedString {
+        append(cryptoName)
+        withStyle(style = SpanStyle(
+            color = colorResource(id = R.color.list_prices_asset_component_code_color),
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal
+        )
+        ) {
+            append(" $cryptoCode")
+        }
+    }
+    val assetHoldings = "$cryptoCode ${stringResource(id = R.string.accounts_view_trades_holding_title)} "
+    val assetBalance = getSpannableStyle(
+        text = balance?.accountBalanceFormattedString ?: "",
+        secondaryText = " $cryptoCode",
+        style = SpanStyle(
+            color = colorResource(id = R.color.list_prices_asset_component_code_color),
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal
+        )
+    )
+    val assetBalanceFiat = getSpannableStyle(
+        text = balance?.accountBalanceInFiatFormatted ?: "",
+        secondaryText = " ${balance?.pairAsset?.code}",
+        style = SpanStyle(
+            color = colorResource(id = R.color.list_prices_asset_component_code_color),
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal
+        )
+    )
+
+    // -- Content
     Column() {
+
+        Row(
+            modifier = Modifier
+                .padding(top = 11.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Image(
+                painter = painterResource(id = imageID),
+                contentDescription = "{$cryptoName}",
+                modifier = Modifier
+                    .padding(horizontal = 0.dp)
+                    .padding(0.dp)
+                    .size(36.dp),
+                contentScale = ContentScale.Fit
+            )
+            Text(
+                text = assetNameCode,
+                modifier = Modifier
+                    .padding(start = 10.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                lineHeight = 32.sp,
+                color = customStyles.itemsTextColor
+            )
+        }
         Text(
-            text = stringResource(id = R.string.accounts_view_trades_title),
-            modifier = Modifier,
+            text = assetHoldings,
+            modifier = Modifier
+                .padding(top = 13.dp),
             textAlign = TextAlign.Center,
             fontFamily = robotoFont,
             fontWeight = FontWeight.Normal,
-            fontSize = 24.sp,
+            fontSize = 13.sp,
+            lineHeight = 20.sp,
+            color = colorResource(id = R.color.accounts_view_trades_holdings_title)
+        )
+        Text(
+            text = assetBalance,
+            modifier = Modifier
+                .padding(top = 5.dp),
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Bold,
+            fontSize = 15.sp,
+            lineHeight = 22.sp,
             color = Color.Black
         )
+        Text(
+            text = assetBalanceFiat,
+            modifier = Modifier
+                .padding(top = 3.dp),
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal,
+            fontSize = 15.sp,
+            lineHeight = 22.sp,
+            color = Color.Black
+        )
+
+
+
         LazyColumn(
             modifier = Modifier
                 .padding(top = 15.dp)

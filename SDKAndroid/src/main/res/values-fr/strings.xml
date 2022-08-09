@@ -39,6 +39,6 @@
     <string name="accounts_view_list_header_balance">Solde</string>
     <string name="accounts_view_trades_list_data">Les données</string>
     <string name="accounts_view_trades_list_amount">montante</string>
-    <string name="accounts_view_trades_title">métiers</string>
+    <string name="accounts_view_trades_holding_title">Avoirs</string>
 
 </resources>

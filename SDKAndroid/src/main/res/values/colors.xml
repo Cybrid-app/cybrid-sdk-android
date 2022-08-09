@@ -21,5 +21,6 @@
     <color name="modal_divider">#79747E</color>
 
     <color name="accounts_view_balance_title">#616161</color>
+    <color name="accounts_view_trades_holdings_title">#424242</color>
 
 </resources>
