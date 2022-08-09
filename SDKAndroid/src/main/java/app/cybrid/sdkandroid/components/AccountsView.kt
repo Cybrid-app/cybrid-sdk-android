@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.Outbound
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -138,10 +139,13 @@ fun AccountsView(
             .testTag(Constants.AccountsViewTestTags.Surface.id)
     ) {
         
-        BackHandler { if (currentState.value == AccountsView.AccountsViewState.TRADES) {
+        BackHandler(enabled = currentState.value == AccountsView.AccountsViewState.TRADES) {
 
-            accountsViewModel.cleanTrades()
-            currentRememberState.value = AccountsView.AccountsViewState.CONTENT }
+            if (currentState.value == AccountsView.AccountsViewState.TRADES) {
+
+                accountsViewModel.cleanTrades()
+                currentRememberState.value = AccountsView.AccountsViewState.CONTENT
+            }
         }
 
         when(currentRememberState.value) {
@@ -536,6 +540,15 @@ fun AccountTradesBalanceAndHoldings(
             fontWeight = FontWeight.Normal
         )
     )
+    val priceInFiatFormatted = getSpannableStyle(
+        text = balance?.buyPriceFormatted ?: "",
+        secondaryText = " ${balance?.pairAsset?.code}",
+        style = SpanStyle(
+            color = colorResource(id = R.color.list_prices_asset_component_code_color),
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal
+        )
+    )
 
     // -- Content
     Row(
@@ -561,6 +574,17 @@ fun AccountTradesBalanceAndHoldings(
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
             lineHeight = 32.sp,
+            color = customStyles.itemsTextColor
+        )
+        Text(
+            text = priceInFiatFormatted,
+            modifier = Modifier
+                .fillMaxWidth(),
+            textAlign = TextAlign.End,
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            lineHeight = 22.sp,
             color = customStyles.itemsTextColor
         )
     }
@@ -695,6 +719,7 @@ fun AccountTradesItem(
     var side = stringResource(id = R.string.accounts_view_trades_list_buy)
     var icon = Icons.Outlined.Outbound
     var iconColor = colorResource(id = R.color.accounts_view_trades_buy)
+    var rotate = 90f
     val code = trade.symbol?.split("-")?.get(0) ?: ""
     val date = getDateInFormat(
         date = trade.createdAt ?: OffsetDateTime.now()
@@ -723,6 +748,7 @@ fun AccountTradesItem(
         side = stringResource(id = R.string.accounts_view_trades_list_sell)
         icon = Icons.Outlined.Outbound
         iconColor = colorResource(id = R.color.accounts_view_trades_sell)
+        rotate = 0f
     }
 
     // -- Content
@@ -742,11 +768,12 @@ fun AccountTradesItem(
                 modifier = Modifier
                     .padding(horizontal = 0.dp)
                     .padding(0.dp)
-                    .size(25.dp)
+                    .size(27.dp)
+                    .rotate(rotate)
             )
             Column(
                 modifier = Modifier
-                    .padding(start = 16.dp)
+                    .padding(start = 12.dp)
             ) {
                 Text(
                     text = side,
