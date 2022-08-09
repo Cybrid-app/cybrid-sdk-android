@@ -12,8 +12,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,7 +37,6 @@ import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
-import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.getSpannableStyle
@@ -158,7 +155,7 @@ fun AccountsView(
 
             AccountsView.AccountsViewState.TRADES -> {
 
-                AccountTrades(
+                AccountTradesView(
                     listPricesViewModel = listPricesViewModel,
                     accountsViewModel = accountsViewModel
                 )
@@ -473,7 +470,7 @@ fun AccountsCryptoItem(balance: AccountAssetPriceModel,
  * **/
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AccountTrades(
+fun AccountTradesView(
     listPricesViewModel: ListPricesViewModel?,
     accountsViewModel: AccountsViewModel?,
     customStyles: AccountsViewStyles = AccountsViewStyles()
@@ -481,6 +478,44 @@ fun AccountTrades(
 
     // -- Vars
     val balance = accountsViewModel?.getCurrentTradeAccount()
+    val cryptoCode = balance?.accountAssetCode ?: ""
+
+
+    // -- Content
+    Column() {
+
+        AccountTradesBalanceAndHoldings(
+            balance = balance
+        )
+
+
+
+        LazyColumn(
+            modifier = Modifier
+                .padding(top = 15.dp)
+        ) {
+            stickyHeader {
+                AccountTradesHeaderItem()
+            }
+            itemsIndexed(items = accountsViewModel?.trades ?: listOf()) { index, item ->
+                AccountTradesItem(
+                    trade = item,
+                    index = index,
+                    listPricesViewModel = listPricesViewModel,
+                    accountsViewModel = accountsViewModel,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AccountTradesBalanceAndHoldings(
+    balance: AccountAssetPriceModel?,
+    customStyles: AccountsViewStyles = AccountsViewStyles(),
+) {
+
+    // -- Vars
     val cryptoCode = balance?.accountAssetCode ?: ""
     val imageID = getImage(LocalContext.current, "ic_${cryptoCode.lowercase()}")
     val cryptoName = balance?.assetName ?: ""
@@ -516,85 +551,63 @@ fun AccountTrades(
     )
 
     // -- Content
-    Column() {
+    Row(
+        modifier = Modifier
+            .padding(top = 11.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
 
-        Row(
+        Image(
+            painter = painterResource(id = imageID),
+            contentDescription = "{$cryptoName}",
             modifier = Modifier
-                .padding(top = 11.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Image(
-                painter = painterResource(id = imageID),
-                contentDescription = "{$cryptoName}",
-                modifier = Modifier
-                    .padding(horizontal = 0.dp)
-                    .padding(0.dp)
-                    .size(36.dp),
-                contentScale = ContentScale.Fit
-            )
-            Text(
-                text = assetNameCode,
-                modifier = Modifier
-                    .padding(start = 10.dp),
-                fontFamily = robotoFont,
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                lineHeight = 32.sp,
-                color = customStyles.itemsTextColor
-            )
-        }
-        Text(
-            text = assetHoldings,
-            modifier = Modifier
-                .padding(top = 13.dp),
-            textAlign = TextAlign.Center,
-            fontFamily = robotoFont,
-            fontWeight = FontWeight.Normal,
-            fontSize = 13.sp,
-            lineHeight = 20.sp,
-            color = colorResource(id = R.color.accounts_view_trades_holdings_title)
+                .padding(horizontal = 0.dp)
+                .padding(0.dp)
+                .size(36.dp),
+            contentScale = ContentScale.Fit
         )
         Text(
-            text = assetBalance,
+            text = assetNameCode,
             modifier = Modifier
-                .padding(top = 5.dp),
+                .padding(start = 10.dp),
             fontFamily = robotoFont,
             fontWeight = FontWeight.Bold,
-            fontSize = 15.sp,
-            lineHeight = 22.sp,
-            color = Color.Black
+            fontSize = 20.sp,
+            lineHeight = 32.sp,
+            color = customStyles.itemsTextColor
         )
-        Text(
-            text = assetBalanceFiat,
-            modifier = Modifier
-                .padding(top = 3.dp),
-            fontFamily = robotoFont,
-            fontWeight = FontWeight.Normal,
-            fontSize = 15.sp,
-            lineHeight = 22.sp,
-            color = Color.Black
-        )
-
-
-
-        LazyColumn(
-            modifier = Modifier
-                .padding(top = 15.dp)
-        ) {
-            stickyHeader {
-                AccountTradesHeaderItem()
-            }
-            itemsIndexed(items = accountsViewModel?.trades ?: listOf()) { index, item ->
-                AccountTradesItem(
-                    trade = item,
-                    index = index,
-                    listPricesViewModel = listPricesViewModel,
-                    accountsViewModel = accountsViewModel,
-                )
-            }
-        }
     }
+    Text(
+        text = assetHoldings,
+        modifier = Modifier
+            .padding(top = 13.dp),
+        textAlign = TextAlign.Center,
+        fontFamily = robotoFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 13.sp,
+        lineHeight = 20.sp,
+        color = colorResource(id = R.color.accounts_view_trades_holdings_title)
+    )
+    Text(
+        text = assetBalance,
+        modifier = Modifier
+            .padding(top = 5.dp),
+        fontFamily = robotoFont,
+        fontWeight = FontWeight.Bold,
+        fontSize = 15.sp,
+        lineHeight = 22.sp,
+        color = Color.Black
+    )
+    Text(
+        text = assetBalanceFiat,
+        modifier = Modifier
+            .padding(top = 3.dp),
+        fontFamily = robotoFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 15.sp,
+        lineHeight = 20.sp,
+        color = Color.Black
+    )
 }
 
 @Composable
