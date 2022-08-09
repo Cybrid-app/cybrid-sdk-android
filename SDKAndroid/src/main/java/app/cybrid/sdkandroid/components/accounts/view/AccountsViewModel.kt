@@ -146,18 +146,32 @@ class AccountsViewModel : ViewModel() {
         }
     }
 
-    fun getTradeAmount(trade: TradeBankModel, assets:List<AssetBankModel>) : String {
+    fun getTradeAmount(trade: TradeBankModel, assets:List<AssetBankModel>?) : String {
 
         val tradeSymbol = trade.symbol
         val assetsParts = tradeSymbol?.split("-")
         val assetString = assetsParts!![0]
-        val asset = assets.find { it.code == assetString }
+        val asset = assets?.find { it.code == assetString }
         val returnValue = if (trade.side == TradeBankModel.Side.sell) {
-            BigDecimalPipe.transform(BigDecimal(trade.deliverAmount!!), asset!!)
+            AssetPipe.transform(BigDecimal(trade.deliverAmount!!), asset!!, "trade")
         } else {
-            BigDecimalPipe.transform(BigDecimal(trade.receiveAmount!!), asset!!)
+            AssetPipe.transform(BigDecimal(trade.receiveAmount!!), asset!!, "trade")
         }
-        return returnValue ?: ""
+        return returnValue.toPlainString()
+    }
+
+    fun getTradeFiatAmount(trade: TradeBankModel, assets:List<AssetBankModel>?) : String? {
+
+        val tradeSymbol = trade.symbol
+        val assetsParts = tradeSymbol?.split("-")
+        val assetString = assetsParts!![1]
+        val asset = assets?.find { it.code == assetString }
+        val returnValue = if (trade.side == TradeBankModel.Side.sell) {
+            BigDecimalPipe.transform(BigDecimal(trade.receiveAmount!!), asset!!)
+        } else {
+            BigDecimalPipe.transform(BigDecimal(trade.deliverAmount!!), asset!!)
+        }
+        return returnValue
     }
 
     fun getCurrentTradeAccount() : AccountAssetPriceModel? {
