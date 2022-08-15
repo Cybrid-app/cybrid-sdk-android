@@ -34,7 +34,7 @@
     <!-- Accounts View Strings -->
     <string name="accounts_view_loading_text">Cargando</string>
     <string name="accounts_view_list_header_asset">Activo</string>
-    <string name="accounts_view_balance_title">Balance de la cuenta</string>
+    <string name="accounts_view_balance_title">Valor de la cuenta</string>
     <string name="accounts_view_list_header_asset_sub">Precio en el mercado</string>
     <string name="accounts_view_list_header_balance">Balance</string>
     <string name="accounts_view_trades_holding_title">Respaldados</string>

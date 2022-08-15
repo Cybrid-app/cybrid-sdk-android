@@ -33,7 +33,7 @@
 
     <!-- Accounts View Strings -->
     <string name="accounts_view_loading_text">Loading</string>
-    <string name="accounts_view_balance_title">Account Balance</string>
+    <string name="accounts_view_balance_title">Account Value</string>
     <string name="accounts_view_list_header_asset">Asset</string>
     <string name="accounts_view_list_header_asset_sub">Market Price</string>
     <string name="accounts_view_list_header_balance">Balance</string>

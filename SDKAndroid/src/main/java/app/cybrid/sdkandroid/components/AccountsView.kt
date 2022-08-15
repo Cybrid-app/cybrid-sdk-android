@@ -263,7 +263,8 @@ fun AccountsBalance(
         withStyle(style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
             fontFamily = robotoFont,
-            fontWeight = FontWeight.Normal
+            fontWeight = FontWeight.Normal,
+            fontSize = 17.sp
         )
         ) {
             append(" ${accountsViewModel?.currentFiatCurrency}")
@@ -279,7 +280,8 @@ fun AccountsBalance(
         ) {
 
             Column(
-                modifier = Modifier
+                modifier = Modifier,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 Text(
@@ -297,8 +299,8 @@ fun AccountsBalance(
                     modifier = Modifier.
                         padding(top = 1.dp),
                     fontFamily = robotoFont,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 23.sp,
                     lineHeight = 32.sp,
                     color = Color.Black
                 )
