@@ -512,25 +512,14 @@ fun AccountTradesBalanceAndHoldings(
     val cryptoCode = balance?.accountAssetCode ?: ""
     val imageID = getImage(LocalContext.current, "ic_${cryptoCode.lowercase()}")
     val cryptoName = balance?.assetName ?: ""
-    val assetNameCode = buildAnnotatedString {
-        append(cryptoName)
-        withStyle(style = SpanStyle(
-            color = colorResource(id = R.color.list_prices_asset_component_code_color),
-            fontFamily = robotoFont,
-            fontWeight = FontWeight.Normal
-        )
-        ) {
-            append(" $cryptoCode")
-        }
-    }
-    val assetHoldings = "$cryptoCode ${stringResource(id = R.string.accounts_view_trades_holding_title)} "
     val assetBalance = getSpannableStyle(
         text = balance?.accountBalanceFormattedString ?: "",
         secondaryText = " $cryptoCode",
         style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
             fontFamily = robotoFont,
-            fontWeight = FontWeight.Normal
+            fontWeight = FontWeight.Normal,
+            fontSize = 19.sp
         )
     )
     val assetBalanceFiat = getSpannableStyle(
@@ -542,21 +531,14 @@ fun AccountTradesBalanceAndHoldings(
             fontWeight = FontWeight.Normal
         )
     )
-    val priceInFiatFormatted = getSpannableStyle(
-        text = balance?.buyPriceFormatted ?: "",
-        secondaryText = " ${balance?.pairAsset?.code}",
-        style = SpanStyle(
-            color = colorResource(id = R.color.list_prices_asset_component_code_color),
-            fontFamily = robotoFont,
-            fontWeight = FontWeight.Normal
-        )
-    )
 
     // -- Content
     Row(
         modifier = Modifier
+            .fillMaxWidth()
             .padding(top = 11.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
 
         Image(
@@ -565,61 +547,43 @@ fun AccountTradesBalanceAndHoldings(
             modifier = Modifier
                 .padding(horizontal = 0.dp)
                 .padding(0.dp)
-                .size(36.dp),
+                .size(28.dp),
             contentScale = ContentScale.Fit
         )
         Text(
-            text = assetNameCode,
+            text = cryptoName,
             modifier = Modifier
                 .padding(start = 10.dp),
             fontFamily = robotoFont,
             fontWeight = FontWeight.Bold,
-            fontSize = 20.sp,
-            lineHeight = 32.sp,
-            color = customStyles.itemsTextColor
-        )
-        Text(
-            text = priceInFiatFormatted,
-            modifier = Modifier
-                .fillMaxWidth(),
-            textAlign = TextAlign.End,
-            fontFamily = robotoFont,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            lineHeight = 22.sp,
+            fontSize = 17.sp,
+            lineHeight = 28.sp,
             color = customStyles.itemsTextColor
         )
     }
     Text(
-        text = assetHoldings,
-        modifier = Modifier
-            .padding(top = 15.dp),
-        textAlign = TextAlign.Center,
-        fontFamily = robotoFont,
-        fontWeight = FontWeight.Normal,
-        fontSize = 13.sp,
-        lineHeight = 20.sp,
-        color = colorResource(id = R.color.accounts_view_trades_holdings_title)
-    )
-    Text(
         text = assetBalance,
         modifier = Modifier
-            .padding(top = 5.dp),
+            .fillMaxWidth()
+            .padding(top = 16.dp),
         fontFamily = robotoFont,
-        fontWeight = FontWeight.Bold,
-        fontSize = 15.sp,
-        lineHeight = 22.sp,
-        color = Color.Black
+        fontWeight = FontWeight.Normal,
+        fontSize = 24.sp,
+        lineHeight = 32.sp,
+        color = Color.Black,
+        textAlign = TextAlign.Center
     )
     Text(
         text = assetBalanceFiat,
         modifier = Modifier
-            .padding(top = 3.dp),
+            .fillMaxWidth()
+            .padding(top = 4.dp),
         fontFamily = robotoFont,
         fontWeight = FontWeight.Normal,
         fontSize = 15.sp,
-        lineHeight = 20.sp,
-        color = Color.Black
+        lineHeight = 24.sp,
+        color = Color.Black,
+        textAlign = TextAlign.Center
     )
 }
 

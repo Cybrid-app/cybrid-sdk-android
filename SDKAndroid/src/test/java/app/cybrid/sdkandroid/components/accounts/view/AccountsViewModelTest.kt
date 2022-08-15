@@ -94,7 +94,7 @@ class AccountsViewModelTest {
             assets = listPricesViewModel.assets
         )
 
-        Assert.assertEquals(tradeAmount1, "Ξ0.10")
-        Assert.assertEquals(tradeAmount2, "Ξ0.10")
+        Assert.assertEquals(tradeAmount1, "0.1")
+        Assert.assertEquals(tradeAmount2, "0.1")
     }
 }

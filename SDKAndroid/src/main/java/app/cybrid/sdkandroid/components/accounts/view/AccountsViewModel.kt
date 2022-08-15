@@ -83,7 +83,7 @@ class AccountsViewModel : ViewModel() {
                 val buyPrice = BigDecimal(price?.buyPrice ?: JavaBigDecimal(0))
                 val buyPriceFormatted = BigDecimalPipe.transform(buyPrice, pairAsset!!)
 
-                val accountBalanceInFiat = balanceValueFormatted.times(buyPrice)
+                val accountBalanceInFiat = balanceValueFormatted.times(buyPrice).setScale(2)
                 val accountBalanceInFiatFormatted = BigDecimalPipe.transform(accountBalanceInFiat, pairAsset)
 
                 val account = AccountAssetPriceModel(
