@@ -44,7 +44,7 @@ class UtilsTest {
         val dateFormattedThree = getDateInFormat(dateOne, "")
 
         // -- Then
-        Assert.assertEquals(dateFormattedOne, "ago. 02, 2022")
+        Assert.assertEquals(dateFormattedOne, "Ago 02, 2022")
         Assert.assertEquals(dateFormattedTwo, "08,02,2022")
         Assert.assertEquals(dateFormattedThree, "")
     }
