@@ -596,7 +596,7 @@ fun AccountTradesList(
 
     LazyColumn(
         modifier = Modifier
-            .padding(top = 25.dp)
+            .padding(top = 25.dp, bottom = 20.dp)
     ) {
         stickyHeader {
             AccountTradesHeaderItem(
@@ -626,7 +626,7 @@ fun AccountTradesHeaderItem(
         Color.Black
     }
 
-    Surface(color = Color.Transparent) {
+    Surface(color = Color.White) {
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
