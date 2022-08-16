@@ -25,15 +25,5 @@ class Constants {
 
         const val MIN_INTEGER_DIGITS = 0
         const val MIN_FRACTION_DIGITS = 2
-
-        @Composable
-        fun getAnnotatedStyle(fontSize:TextUnit): SpanStyle {
-            return SpanStyle(
-                color = colorResource(id = R.color.list_prices_asset_component_code_color),
-                fontFamily = robotoFont,
-                fontWeight = FontWeight.Normal,
-                fontSize = fontSize
-            )
-        }
     }
 }

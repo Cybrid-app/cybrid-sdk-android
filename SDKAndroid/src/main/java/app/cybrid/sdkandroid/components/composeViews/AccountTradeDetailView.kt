@@ -27,8 +27,8 @@ import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
-import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
+import app.cybrid.sdkandroid.util.getAnnotatedStyle
 import app.cybrid.sdkandroid.util.getDateInFormat
 import app.cybrid.sdkandroid.util.getSpannableStyle
 import java.time.OffsetDateTime
@@ -95,11 +95,11 @@ fun AccountTradeDetailContent(
 
     val fiatAssetValueString = getSpannableStyle(
         text = "$fiatValue ", secondaryText = fiatCode,
-        style = Constants.getAnnotatedStyle(15.sp))
+        style = getAnnotatedStyle(15.sp))
 
     val assetValueString = getSpannableStyle(
         text = "$assetValue ", secondaryText = assetCode,
-        style = Constants.getAnnotatedStyle(15.sp))
+        style = getAnnotatedStyle(15.sp))
 
     val tradeDate = getDateInFormat(
         date = trade.createdAt ?: OffsetDateTime.now(),
