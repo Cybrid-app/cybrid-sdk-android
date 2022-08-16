@@ -42,5 +42,16 @@
     <string name="accounts_view_trades_list_sub_title">Balance</string>
     <string name="accounts_view_trades_list_sell">Venta</string>
     <string name="accounts_view_trades_list_buy">Compra</string>
+    <string name="accounts_view_trade_detail_bought">%s Comprado</string>
+    <string name="accounts_view_trade_detail_sold">%s Vendido</string>
+    <string name="accounts_view_trade_detail_fiat_asset">%s %s en %s</string>
+    <string name="accounts_view_trade_detail_status">Status</string>
+    <string name="accounts_view_trade_detail_order_placed">Pedido realizado</string>
+    <string name="accounts_view_trade_detail_order_finalized">Orden Finalizada</string>
+    <string name="accounts_view_trade_detail_order_date">Fecha y hora de la transacción</string>
+    <string name="accounts_view_trade_detail_order_account_id">ID Cuenta</string>
+    <string name="accounts_view_trade_detail_order_order_id">ID Orden</string>
+    <string name="accounts_view_trade_detail_order_close_button">Cerrar</string>
+
 
 </resources>

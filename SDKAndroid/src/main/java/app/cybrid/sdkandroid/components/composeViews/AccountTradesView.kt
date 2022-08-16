@@ -13,6 +13,9 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Outbound
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -268,13 +271,24 @@ fun AccountTradesItem(
             fontWeight = FontWeight.Normal
         )
     )
-
+    // -- Side Logic
     if (trade.side == TradeBankModel.Side.sell) {
 
         side = stringResource(id = R.string.accounts_view_trades_list_sell)
         icon = Icons.Outlined.Outbound
         iconColor = colorResource(id = R.color.accounts_view_trades_sell)
         rotate = 0f
+    }
+
+    // -- Modal Logic
+    val showDialog:MutableState<Boolean> = remember { mutableStateOf(false) }
+    if (showDialog.value) {
+        AccountTradeDetailView(
+            showDialog = showDialog,
+            trade = trade,
+            listPricesViewModel = listPricesViewModel,
+            accountsViewModel = accountsViewModel
+        )
     }
 
     // -- Content
@@ -284,7 +298,9 @@ fun AccountTradesItem(
             modifier = Modifier
                 .padding(vertical = 0.dp)
                 .height(66.dp)
-                .clickable {},
+                .clickable {
+                   showDialog.value = true
+                },
         ) {
 
             Icon(

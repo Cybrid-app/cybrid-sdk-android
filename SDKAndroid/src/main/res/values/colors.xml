@@ -25,5 +25,6 @@
     <color name="accounts_view_trades_separator">#E0E0E0</color>
     <color name="accounts_view_trades_buy">#4CAF50</color>
     <color name="accounts_view_trades_sell">#757575</color>
+    <color name="account_trade_detail_content_item_color">#424242</color>
 
 </resources>

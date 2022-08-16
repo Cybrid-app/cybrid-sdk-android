@@ -42,5 +42,16 @@
     <string name="accounts_view_trades_list_sub_title">Solde</string>
     <string name="accounts_view_trades_list_sell">Vendre</string>
     <string name="accounts_view_trades_list_buy">Acheter</string>
+    <string name="accounts_view_trade_detail_bought">%s Acheté</string>
+    <string name="accounts_view_trade_detail_sold">%s Vendu</string>
+    <string name="accounts_view_trade_detail_fiat_asset">%s %s dans %s</string>
+    <string name="accounts_view_trade_detail_status">Statut</string>
+    <string name="accounts_view_trade_detail_order_placed">Commande Passée</string>
+    <string name="accounts_view_trade_detail_order_finalized">Commande Finalisée</string>
+    <string name="accounts_view_trade_detail_order_date">Date et heure de la transaction</string>
+    <string name="accounts_view_trade_detail_order_account_id">Identifiant de compte</string>
+    <string name="accounts_view_trade_detail_order_order_id">Numéro de commande</string>
+    <string name="accounts_view_trade_detail_order_close_button">Proche</string>
+
 
 </resources>
