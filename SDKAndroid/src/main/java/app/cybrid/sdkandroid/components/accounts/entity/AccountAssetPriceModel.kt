@@ -9,6 +9,7 @@ data class AccountAssetPriceModel (
     var accountAssetCode:String,
     var accountBalance:JavaBigDecimal,
     var accountBalanceFormatted:BigDecimal,
+    var accountBalanceFormattedString:String,
     var accountBalanceInFiat:BigDecimal,
     var accountBalanceInFiatFormatted:String,
     var accountGuid:String,

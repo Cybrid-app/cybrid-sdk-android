@@ -15,6 +15,7 @@ import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
 import app.cybrid.sdkandroid.core.AssetPipe
+import app.cybrid.sdkandroid.core.AssetPipe.AssetPipeTrade
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.util.Logger
@@ -35,6 +36,7 @@ class AccountsViewModel : ViewModel() {
 
     // -- Trades List
     var trades:List<TradeBankModel> by mutableStateOf(listOf())
+    private var currentAccountAssetPriceModel:AccountAssetPriceModel? by mutableStateOf(null)
 
     fun getAccountsList() {
 
@@ -77,17 +79,19 @@ class AccountsViewModel : ViewModel() {
 
                 val balanceValue = BigDecimal(balance.platformBalance ?: JavaBigDecimal(0))
                 val balanceValueFormatted = AssetPipe.transform(balanceValue, assetDecimals, "trade")
+                val balanceValueFormattedString = balanceValueFormatted.toPlainString()
 
                 val buyPrice = BigDecimal(price?.buyPrice ?: JavaBigDecimal(0))
                 val buyPriceFormatted = BigDecimalPipe.transform(buyPrice, pairAsset!!)
 
-                val accountBalanceInFiat = balanceValueFormatted.times(buyPrice)
+                val accountBalanceInFiat = balanceValueFormatted.times(buyPrice).setScale(2)
                 val accountBalanceInFiatFormatted = BigDecimalPipe.transform(accountBalanceInFiat, pairAsset)
 
                 val account = AccountAssetPriceModel(
                     accountAssetCode = code,
                     accountBalance = balanceValue.toJavaBigDecimal(),
                     accountBalanceFormatted = balanceValueFormatted,
+                    accountBalanceFormattedString = balanceValueFormattedString,
                     accountBalanceInFiat = accountBalanceInFiat,
                     accountBalanceInFiatFormatted = accountBalanceInFiatFormatted ?: "$0.0",
                     accountGuid = balance.guid ?: "",
@@ -120,15 +124,16 @@ class AccountsViewModel : ViewModel() {
         }
     }
 
-    fun getTradesList(accountGuid: String) {
+    fun getTradesList(balance: AccountAssetPriceModel) {
 
+        this.currentAccountAssetPriceModel = balance
         val tradesService = AppModule.getClient().createService(TradesApi::class.java)
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
                 viewModelScope.launch {
 
                     // -- Getting prices
-                    val tradesResult = getResult { tradesService.listTrades(accountGuid = accountGuid) }
+                    val tradesResult = getResult { tradesService.listTrades(accountGuid = balance.accountGuid) }
                     tradesResult.let {
                         trades = if (isSuccessful(it.code ?: 500)) {
                              it.data?.objects ?: listOf()
@@ -142,17 +147,41 @@ class AccountsViewModel : ViewModel() {
         }
     }
 
-    fun getTradeAmount(trade: TradeBankModel, assets:List<AssetBankModel>) : String {
+    fun getTradeAmount(trade: TradeBankModel, assets:List<AssetBankModel>?) : String {
 
         val tradeSymbol = trade.symbol
         val assetsParts = tradeSymbol?.split("-")
         val assetString = assetsParts!![0]
-        val asset = assets.find { it.code == assetString }
+        val asset = assets?.find { it.code == assetString }
         val returnValue = if (trade.side == TradeBankModel.Side.sell) {
-            BigDecimalPipe.transform(BigDecimal(trade.deliverAmount!!), asset!!)
+            AssetPipe.transform(BigDecimal(trade.deliverAmount!!), asset!!, AssetPipeTrade)
         } else {
-            BigDecimalPipe.transform(BigDecimal(trade.receiveAmount!!), asset!!)
+            AssetPipe.transform(BigDecimal(trade.receiveAmount!!), asset!!, AssetPipeTrade)
         }
-        return returnValue ?: ""
+        return returnValue.toPlainString()
+    }
+
+    fun getTradeFiatAmount(trade: TradeBankModel, assets:List<AssetBankModel>?) : String? {
+
+        val tradeSymbol = trade.symbol
+        val assetsParts = tradeSymbol?.split("-")
+        val assetString = assetsParts!![1]
+        val asset = assets?.find { it.code == assetString }
+        val returnValue = if (trade.side == TradeBankModel.Side.sell) {
+            BigDecimalPipe.transform(BigDecimal(trade.receiveAmount!!), asset!!)
+        } else {
+            BigDecimalPipe.transform(BigDecimal(trade.deliverAmount!!), asset!!)
+        }
+        return returnValue
+    }
+
+    fun getCurrentTradeAccount() : AccountAssetPriceModel? {
+        return this.currentAccountAssetPriceModel
+    }
+
+    fun cleanTrades() {
+
+        this.trades = listOf()
+        this.currentAccountAssetPriceModel = null
     }
 }
