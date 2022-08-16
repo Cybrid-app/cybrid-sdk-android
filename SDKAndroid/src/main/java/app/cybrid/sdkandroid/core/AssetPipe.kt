@@ -4,6 +4,9 @@ import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 
 object AssetPipe {
 
+    const val AssetPipeTrade:String = "trade"
+    const val AssetPipeBase:String = "base"
+
     fun transform(value:BigDecimal, asset: AssetBankModel, unit: String) : BigDecimal {
         return transformAny(value, asset, unit)
     }

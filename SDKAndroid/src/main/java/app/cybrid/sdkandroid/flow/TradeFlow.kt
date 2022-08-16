@@ -52,6 +52,7 @@ import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.components.quote.view.QuoteConfirmationModal
 import app.cybrid.sdkandroid.components.quote.view.QuoteViewModel
 import app.cybrid.sdkandroid.core.AssetPipe
+import app.cybrid.sdkandroid.core.AssetPipe.AssetPipeBase
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
@@ -533,7 +534,7 @@ class TradeFlow @JvmOverloads constructor(
                 val baseValue = AssetPipe.transform(
                     stateInt,
                     pairAsset,
-                    "base"
+                    AssetPipeBase
                 )
                 val value = baseValue.divL(buyPriceDecimal)
                 amount = value.toPlainString()

@@ -11,6 +11,7 @@ import app.cybrid.cybrid_api_bank.client.models.*
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.core.AssetPipe
+import app.cybrid.sdkandroid.core.AssetPipe.AssetPipeBase
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
@@ -59,7 +60,7 @@ class QuoteViewModel: ViewModel() {
                         receiveAmount = AssetPipe.transform(
                             value = amount,
                             asset = asset,
-                            unit = "base"
+                            unit = AssetPipeBase
                         ).toJavaBigDecimal()
                     )
                 } else {
@@ -70,7 +71,7 @@ class QuoteViewModel: ViewModel() {
                         deliverAmount = AssetPipe.transform(
                             value = amount,
                             asset = pairAsset,
-                            unit = "base"
+                            unit = AssetPipeBase
                         ).toJavaBigDecimal()
                     )
                 }
@@ -86,7 +87,7 @@ class QuoteViewModel: ViewModel() {
                         receiveAmount = AssetPipe.transform(
                             value = amount,
                             asset = pairAsset,
-                            unit = "base"
+                            unit = AssetPipeBase
                         ).toJavaBigDecimal()
                     )
                 } else {
@@ -97,7 +98,7 @@ class QuoteViewModel: ViewModel() {
                         deliverAmount = AssetPipe.transform(
                             value = amount,
                             asset = asset,
-                            unit = "base"
+                            unit = AssetPipeBase
                         ).toJavaBigDecimal()
                     )
                 }

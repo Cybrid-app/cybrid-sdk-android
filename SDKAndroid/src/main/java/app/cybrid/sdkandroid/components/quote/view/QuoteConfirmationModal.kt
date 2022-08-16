@@ -32,6 +32,7 @@ import app.cybrid.cybrid_api_bank.client.models.PostTradeBankModel
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.core.*
+import app.cybrid.sdkandroid.core.AssetPipe.AssetPipeTrade
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import java.math.BigDecimal as JavaBigDecimal
 
@@ -189,7 +190,7 @@ private fun QuoteConfirmationContent(
     // -- Purchase quantity
     val receiveAmountBD = BigDecimal(viewModel.quoteBankModel.receiveAmount ?: JavaBigDecimal(0))
     val receiveValue = buildAnnotatedString {
-        append(AssetPipe.transform(receiveAmountBD, asset.value, "trade").toPlainString())
+        append(AssetPipe.transform(receiveAmountBD, asset.value, AssetPipeTrade).toPlainString())
         withStyle(style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
             fontFamily = robotoFont)
@@ -409,7 +410,7 @@ private fun QuoteConfirmationContentDone(
     // -- Purchase quantity
     val receiveAmountBD = BigDecimal(viewModel.tradeBankModel.receiveAmount ?: JavaBigDecimal(0))
     val receiveValue = buildAnnotatedString {
-        append(AssetPipe.transform(receiveAmountBD, asset.value, "trade").toPlainString())
+        append(AssetPipe.transform(receiveAmountBD, asset.value, AssetPipeTrade).toPlainString())
         withStyle(style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
             fontFamily = robotoFont)

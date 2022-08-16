@@ -15,6 +15,7 @@ import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
 import app.cybrid.sdkandroid.core.AssetPipe
+import app.cybrid.sdkandroid.core.AssetPipe.AssetPipeTrade
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.util.Logger
@@ -153,9 +154,9 @@ class AccountsViewModel : ViewModel() {
         val assetString = assetsParts!![0]
         val asset = assets?.find { it.code == assetString }
         val returnValue = if (trade.side == TradeBankModel.Side.sell) {
-            AssetPipe.transform(BigDecimal(trade.deliverAmount!!), asset!!, "trade")
+            AssetPipe.transform(BigDecimal(trade.deliverAmount!!), asset!!, AssetPipeTrade)
         } else {
-            AssetPipe.transform(BigDecimal(trade.receiveAmount!!), asset!!, "trade")
+            AssetPipe.transform(BigDecimal(trade.receiveAmount!!), asset!!, AssetPipeTrade)
         }
         return returnValue.toPlainString()
     }
