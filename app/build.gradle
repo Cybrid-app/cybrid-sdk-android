@@ -57,7 +57,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation project(path: ':SDKAndroid')
-    implementation 'androidx.compose.ui:ui:1.1.1'
+    implementation 'androidx.compose.ui:ui:1.2.1'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.8.1'
     testImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
