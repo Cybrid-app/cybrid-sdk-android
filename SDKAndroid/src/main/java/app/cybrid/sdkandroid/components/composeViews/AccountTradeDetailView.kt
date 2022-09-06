@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.components.composeViews
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,7 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -26,8 +30,10 @@ import androidx.compose.ui.window.DialogProperties
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
+import app.cybrid.sdkandroid.components.getImage
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
+import app.cybrid.sdkandroid.ui.libs.BottomSheetDialog
 import app.cybrid.sdkandroid.util.getAnnotatedStyle
 import app.cybrid.sdkandroid.util.getDateInFormat
 import app.cybrid.sdkandroid.util.getSpannableStyle
@@ -43,20 +49,17 @@ fun AccountTradeDetailView(
 ) {
 
     // -- Content
-    Dialog(
+    BottomSheetDialog(
         onDismissRequest = {
             showDialog.value = false
-        },
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false
-        ),
+        }
     ) {
         Surface(
             shape = RoundedCornerShape(28.dp),
-            color = colorResource(id = R.color.modal_color),
+            color = colorResource(id = R.color.white),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp)
+                .padding(start = 10.dp, end = 10.dp)
         ) {
             AccountTradeDetailContent(
                 showDialog = showDialog,
@@ -88,7 +91,6 @@ fun AccountTradeDetailContent(
         stringResource(id = R.string.accounts_view_trade_detail_bought)
     }
 
-    val title = String.format(titleType, assetCode)
     val fiatAssetTitle = String.format(
         stringResource(id = R.string.accounts_view_trade_detail_fiat_asset),
         fiatValue, fiatCode, assetCode)
@@ -105,42 +107,37 @@ fun AccountTradeDetailContent(
         date = trade.createdAt ?: OffsetDateTime.now(),
         pattern = "MMMM dd, YYYY hh:mm a"
     )
+    val imageID = getImage(LocalContext.current, "ic_${assetCode.lowercase()}")
 
     // -- Content
-    Box() {
+    Box {
         Column(
             modifier = Modifier
-                .padding(start = 24.dp, end = 24.dp)
+                .padding(start = 24.dp, end = 19.dp)
         ) {
             Row(
                 modifier = Modifier
                     .padding(top = 24.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Image(
+                    painter = painterResource(id = imageID),
+                    contentDescription = assetCode,
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+                        .padding(0.dp)
+                        .size(26.dp),
+                    contentScale = ContentScale.Fit
+                )
                 Text(
-                    text = title,
-                    modifier = Modifier,
+                    text = titleType,
+                    modifier = Modifier
+                        .padding(start = 10.dp),
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Normal,
                     fontSize = 24.sp,
                     lineHeight = 32.sp,
                     color = colorResource(id = R.color.modal_title_color)
-                )
-                Box(
-                    modifier = Modifier
-                        .weight(4f)
-                ) {}
-                Icon(
-                    Icons.Outlined.Close,
-                    contentDescription = null,
-                    tint = colorResource(id = R.color.primary_color),
-                    modifier = Modifier
-                        .weight(1f)
-                        .align(Alignment.CenterVertically)
-                        .size(25.dp)
-                        .clickable {
-                            showDialog.value = false
-                        }
                 )
             }
             Text(
@@ -171,10 +168,6 @@ fun AccountTradeDetailContent(
                 subTitleLabel = AnnotatedString(tradeDate)
             )
             AccountTradeDetailContentItem(
-                titleLabel = stringResource(id = R.string.accounts_view_trade_detail_order_account_id),
-                subTitleLabel = AnnotatedString(accountsViewModel?.getCurrentTradeAccount()?.accountGuid ?: "")
-            )
-            AccountTradeDetailContentItem(
                 titleLabel = stringResource(id = R.string.accounts_view_trade_detail_order_order_id),
                 subTitleLabel = AnnotatedString(trade.guid ?: "")
             )
@@ -183,7 +176,7 @@ fun AccountTradeDetailContent(
                 text = stringResource(id = R.string.accounts_view_trade_detail_order_close_button),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 40.dp, bottom = 13.dp)
+                    .padding(top = 40.dp, bottom = 30.dp)
                     .clickable {
                         showDialog.value = false
                     },

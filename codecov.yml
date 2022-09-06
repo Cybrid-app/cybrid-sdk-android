@@ -17,7 +17,7 @@ ignore:
   - SDKAndroid/src/main/java/app/cybrid/sdkandroid/util/DataAccessStrategy.kt
   - SDKAndroid/src/main/java/app/cybrid/sdkandroid/util/UtilsComposable.kt
   - SDKAndroid/src/main/java/app/cybrid/sdkandroid/core/Constants.kt
-  - SDKAndroid/src/main/java/app/cybrid/sdkandroid/ui/Theme
+  - SDKAndroid/src/main/java/app/cybrid/sdkandroid/ui
 
 parsers:
   gcov:
