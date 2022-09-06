@@ -86,8 +86,6 @@ class App : Application(), CybridSDKEvents {
             list.recycledViewPool.setMaxRecycledViews(0, 10)
             list.layoutManager = layout
             list.setItemViewCacheSize(10)
-            list.isDrawingCacheEnabled = true
-            list.drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
         }
 
         fun createRecyclerHorizontalList(list: RecyclerView, context: Context?) {
@@ -96,8 +94,6 @@ class App : Application(), CybridSDKEvents {
             list.recycledViewPool.setMaxRecycledViews(0, 10)
             list.layoutManager = layout
             list.setItemViewCacheSize(10)
-            list.isDrawingCacheEnabled = true
-            list.drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
         }
 
     }

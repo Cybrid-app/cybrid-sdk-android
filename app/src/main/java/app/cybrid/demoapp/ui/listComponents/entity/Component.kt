@@ -16,12 +16,6 @@ class Component() {
 
             val components = ArrayList<Component>()
 
-            // -- ListPrices Component
-            val pricesComponents = Component(1, "ListPrices Component")
-
-            // -- ListPrices Assets Component
-            val pricesAssetsComponents = Component(2, "ListPrices + Assets Component")
-
             // -- Trade Flow
             val tradeFlow = Component(3, "TradeFlow")
             components.add(tradeFlow)
