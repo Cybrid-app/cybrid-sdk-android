@@ -3,6 +3,7 @@ package app.cybrid.sdkandroid.flow
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.sdkandroid.R
@@ -13,12 +14,14 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLog
 
-@RunWith(RobolectricTestRunner::class)
-@Config(instrumentedPackages = ["androidx.loader.content"])
+//@RunWith(RobolectricTestRunner::class)
+//@Config(instrumentedPackages = ["androidx.loader.content"])
+@RunWith(AndroidJUnit4::class)
 class TradeFlowUITest {
 
     @get:Rule
