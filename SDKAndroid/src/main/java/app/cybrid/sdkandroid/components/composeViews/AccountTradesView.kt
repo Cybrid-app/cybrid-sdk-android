@@ -327,7 +327,7 @@ fun AccountTradesItem(
                     color = Color.Black
                 )
                 Text(
-                    text = date ?: "",
+                    text = date,
                     modifier = Modifier,
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Medium,

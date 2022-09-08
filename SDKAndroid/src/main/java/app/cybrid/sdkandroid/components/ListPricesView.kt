@@ -469,7 +469,7 @@ fun cryptoListPreview() {
         cryptoList = listOf(),
         type = ListPricesViewType.Assets,
         customStyles = ListPricesViewCustomStyles(),
-        onClick = {it, it2 ->})
+        onClick = {_, _ ->})
 }
 
 /**
