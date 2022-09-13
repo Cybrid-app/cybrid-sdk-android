@@ -77,7 +77,6 @@ fun BottomSheetDialog(
                 BottomSheetDialogLayout(
                     modifier = Modifier
                         .semantics { dialog() }
-                    //.nestedScroll(nestedScrollConnection),
                 ) {
                     currentContent()
                 }
@@ -184,7 +183,6 @@ private class BottomSheetDialogWrapper(
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
 
-        //super.onBackPressed()
         if (properties.dismissOnBackPress) {
             onDismissRequest()
         }
