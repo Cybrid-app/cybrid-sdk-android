@@ -103,6 +103,8 @@ class QuoteViewModel: ViewModel() {
                     )
                 }
             }
+
+            else -> {}
         }
 
         // -- Return PostQuoteBankModel

@@ -42,8 +42,8 @@
     <string name="accounts_view_trades_list_sub_title">Balance</string>
     <string name="accounts_view_trades_list_sell">Sell</string>
     <string name="accounts_view_trades_list_buy">Buy</string>
-    <string name="accounts_view_trade_detail_bought">%s Bought</string>
-    <string name="accounts_view_trade_detail_sold">%s Sold</string>
+    <string name="accounts_view_trade_detail_bought">Buy</string>
+    <string name="accounts_view_trade_detail_sold">Sell</string>
     <string name="accounts_view_trade_detail_fiat_asset">%s %s in %s</string>
     <string name="accounts_view_trade_detail_status">Status</string>
     <string name="accounts_view_trade_detail_order_placed">Order Placed</string>

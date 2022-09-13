@@ -34,6 +34,7 @@ import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.core.*
 import app.cybrid.sdkandroid.core.AssetPipe.AssetPipeTrade
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
+import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
 import java.math.BigDecimal as JavaBigDecimal
 
 private enum class QuoteConfirmationState {
@@ -65,23 +66,19 @@ fun QuoteConfirmationModal(
     }
 
     // -- Content
-    Dialog(
+    BottomSheetDialog(
         onDismissRequest = {
 
             viewModel.canUpdateQuote = true
             showDialog.value = false
             dismissModal(modalState, viewModel)
-        },
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false
-        ),
+        }
     ) {
         Surface(
             shape = RoundedCornerShape(28.dp),
-            color = colorResource(id = R.color.modal_color),
+            color = colorResource(id = R.color.white),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp)
         ) {
 
             when(modalState.value) {
