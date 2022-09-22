@@ -115,6 +115,7 @@ class QuoteViewModel: ViewModel() {
 
         if (canUpdateQuote) {
 
+            Logger.log(LoggerEvents.DATA_REFRESHED, "TradeFlow: Quote Component Data")
             val quoteService = AppModule.getClient().createService(QuotesApi::class.java)
             viewModelScope.launch {
 

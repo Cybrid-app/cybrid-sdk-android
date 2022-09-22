@@ -189,7 +189,6 @@ class TradeFlow @JvmOverloads constructor(
 
     private fun refreshQuoteModel() {
 
-        Logger.log(LoggerEvents.DATA_REFRESHED, "TradeFlow: Quote Component Data")
         if (this.quoteViewModel != null && this.postQuoteBankModel != null) {
 
             quoteViewModel?.getQuote(this.postQuoteBankModel!!)
@@ -669,9 +668,11 @@ class TradeFlow @JvmOverloads constructor(
         showDialog.value = true
 
         // -- Set runnable for Quote Model
-        _handler = Handler(Looper.getMainLooper())
-        _runnable = Runnable { this.refreshQuoteModel() }
-        _handler?.postDelayed(_runnable!!, updateInterval)
+        if (_handler == null) { _handler = Handler(Looper.getMainLooper()) }
+        if (_runnable == null) {
+            _runnable = Runnable { this.refreshQuoteModel() }
+            _handler?.postDelayed(_runnable!!, updateInterval)
+        }
 
         // -- PostQuoteBankModel
         this.postQuoteBankModel = quoteViewModel?.getQuoteObject(
