@@ -121,14 +121,16 @@ class QuoteViewModel: ViewModel() {
                 val quoteResult = getResult { quoteService.createQuote(quoteObject) }
                 quoteResult.let {
 
-                    quoteBankModel = if (isSuccessful(it.code ?: 500)) {
-                        it.data!!
-                    } else {
-                        Logger.log(
-                            LoggerEvents.DATA_ERROR,
-                            "Quote Confirmation Component - Data :: {${it.message}}"
-                        )
-                        QuoteBankModel()
+                    if (canUpdateQuote) {
+                        quoteBankModel = if (isSuccessful(it.code ?: 500)) {
+                            it.data!!
+                        } else {
+                            Logger.log(
+                                LoggerEvents.DATA_ERROR,
+                                "Quote Confirmation Component - Data :: {${it.message}}"
+                            )
+                            QuoteBankModel()
+                        }
                     }
                 }
             }
