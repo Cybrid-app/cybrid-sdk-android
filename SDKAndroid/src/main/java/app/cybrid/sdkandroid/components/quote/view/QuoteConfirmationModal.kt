@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalComposeUiApi::class)
-
 package app.cybrid.sdkandroid.components.quote.view
 
 import androidx.compose.foundation.background
@@ -29,6 +27,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.PostTradeBankModel
+import app.cybrid.cybrid_api_bank.client.models.QuoteBankModel
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.core.*
@@ -51,6 +50,8 @@ fun QuoteConfirmationModal(
     updateInterval: Long = 5000
 ) {
 
+    viewModel.canUpdateQuote = true
+
     // -- Modal State
     val modalState:MutableState<QuoteConfirmationState> =
         remember { mutableStateOf(QuoteConfirmationState.PENDING) }
@@ -69,7 +70,6 @@ fun QuoteConfirmationModal(
     BottomSheetDialog(
         onDismissRequest = {
 
-            viewModel.canUpdateQuote = true
             showDialog.value = false
             dismissModal(modalState, viewModel)
         }
@@ -173,26 +173,30 @@ private fun QuoteConfirmationContent(
     }
 
     // -- Purchase amount
-    val deliverAmountBD = BigDecimal(viewModel.quoteBankModel.deliverAmount ?: JavaBigDecimal(0))
+    val amount = if (selectedTabIndex.value == 0) viewModel.quoteBankModel.deliverAmount else viewModel.quoteBankModel.receiveAmount
+    val amountAsset: AssetBankModel = pairAsset
+    val deliverAmountBD = BigDecimal(amount ?: JavaBigDecimal(0))
     val purchaseValue = buildAnnotatedString {
-        append(BigDecimalPipe.transform(deliverAmountBD, pairAsset)!!)
+        append(BigDecimalPipe.transform(deliverAmountBD, amountAsset)!!)
         withStyle(style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
             fontFamily = robotoFont)
         ) {
-            append(" ${pairAsset.code}")
+            append(" ${amountAsset.code}")
         }
     }
 
     // -- Purchase quantity
-    val receiveAmountBD = BigDecimal(viewModel.quoteBankModel.receiveAmount ?: JavaBigDecimal(0))
+    val quantity = if (selectedTabIndex.value == 0) viewModel.quoteBankModel.receiveAmount else viewModel.quoteBankModel.deliverAmount
+    val quantityAsset: AssetBankModel = asset.value
+    val receiveAmountBD = BigDecimal(quantity ?: JavaBigDecimal(0))
     val receiveValue = buildAnnotatedString {
-        append(AssetPipe.transform(receiveAmountBD, asset.value, AssetPipeTrade).toPlainString())
+        append(AssetPipe.transform(receiveAmountBD, quantityAsset, AssetPipeTrade).toPlainString())
         withStyle(style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
             fontFamily = robotoFont)
         ) {
-            append(" ${asset.value.code}")
+            append(" ${quantityAsset.code}")
         }
     }
 
@@ -239,7 +243,8 @@ private fun QuoteConfirmationContent(
                         R.string.trade_flow_quote_confirmation_modal_sell_amount_title
 
                     }),
-                subTitleLabel = purchaseValue
+                subTitleLabel = purchaseValue,
+                subTitleTestTag = "PurchaseAmountId"
             )
             // -- Purchase quantity
             QuoteConfirmationContentItem(
@@ -249,13 +254,15 @@ private fun QuoteConfirmationContent(
                     } else {
                         R.string.trade_flow_quote_confirmation_modal_sell_quantity_title
                     }),
-                subTitleLabel = receiveValue
+                subTitleLabel = receiveValue,
+                subTitleTestTag = "PurchaseQuantityId"
             )
             // -- Transaction Fee
             QuoteConfirmationContentItem(
                 titleLabel = stringResource(
                     id = R.string.trade_flow_quote_confirmation_modal_transaction_fee_title),
-                subTitleLabel = transactionFeeValue
+                subTitleLabel = transactionFeeValue,
+                subTitleTestTag = "PurchaseFeeId"
             )
             // -- Buttons
             QuoteConfirmationButtons(
@@ -270,7 +277,8 @@ private fun QuoteConfirmationContent(
 @Composable
 private fun QuoteConfirmationContentItem(
     titleLabel: String,
-    subTitleLabel: AnnotatedString
+    subTitleLabel: AnnotatedString,
+    subTitleTestTag: String
 ) {
 
     Column(
@@ -290,7 +298,8 @@ private fun QuoteConfirmationContentItem(
         Text(
             text = subTitleLabel,
             modifier = Modifier
-                .padding(top = 7.dp),
+                .padding(top = 7.dp)
+                .testTag(subTitleTestTag),
             fontFamily = robotoFont,
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
@@ -462,7 +471,8 @@ private fun QuoteConfirmationContentDone(
                         R.string.trade_flow_quote_confirmation_modal_sell_amount_title
 
                     }),
-                subTitleLabel = purchaseValue
+                subTitleLabel = purchaseValue,
+                subTitleTestTag = "PurchaseAmountValueId"
             )
             // -- Purchase quantity
             QuoteConfirmationContentItem(
@@ -472,13 +482,15 @@ private fun QuoteConfirmationContentDone(
                     } else {
                         R.string.trade_flow_quote_confirmation_modal_sell_quantity_title
                     }),
-                subTitleLabel = receiveValue
+                subTitleLabel = receiveValue,
+                subTitleTestTag = "PurchaseQuantityValueId"
             )
             // -- Transaction Fee
             QuoteConfirmationContentItem(
                 titleLabel = stringResource(
                     id = R.string.trade_flow_quote_confirmation_modal_transaction_fee_title),
-                subTitleLabel = transactionFeeValue
+                subTitleLabel = transactionFeeValue,
+                subTitleTestTag = "PurchaseFeeValueId"
             )
             // -- Buy Button
             Row(
@@ -542,6 +554,9 @@ private fun dismissModal(
     modalState:MutableState<QuoteConfirmationState>,
     viewModel: QuoteViewModel
 ) {
+
+    viewModel.canUpdateQuote = false
+    viewModel.quoteBankModel = QuoteBankModel()
 
     if (modalState.value == QuoteConfirmationState.SUBMITTED ||
         modalState.value == QuoteConfirmationState.DONE ||

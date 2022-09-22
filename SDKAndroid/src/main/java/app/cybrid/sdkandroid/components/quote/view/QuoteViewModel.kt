@@ -115,20 +115,23 @@ class QuoteViewModel: ViewModel() {
 
         if (canUpdateQuote) {
 
+            Logger.log(LoggerEvents.DATA_REFRESHED, "TradeFlow: Quote Component Data")
             val quoteService = AppModule.getClient().createService(QuotesApi::class.java)
             viewModelScope.launch {
 
                 val quoteResult = getResult { quoteService.createQuote(quoteObject) }
                 quoteResult.let {
 
-                    quoteBankModel = if (isSuccessful(it.code ?: 500)) {
-                        it.data!!
-                    } else {
-                        Logger.log(
-                            LoggerEvents.DATA_ERROR,
-                            "Quote Confirmation Component - Data :: {${it.message}}"
-                        )
-                        QuoteBankModel()
+                    if (canUpdateQuote) {
+                        quoteBankModel = if (isSuccessful(it.code ?: 500)) {
+                            it.data!!
+                        } else {
+                            Logger.log(
+                                LoggerEvents.DATA_ERROR,
+                                "Quote Confirmation Component - Data :: {${it.message}}"
+                            )
+                            QuoteBankModel()
+                        }
                     }
                 }
             }

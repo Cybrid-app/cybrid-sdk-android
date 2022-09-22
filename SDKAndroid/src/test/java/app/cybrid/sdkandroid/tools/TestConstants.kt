@@ -1,9 +1,6 @@
 package app.cybrid.sdkandroid.tools
 
-import app.cybrid.cybrid_api_bank.client.models.AccountBankModel
-import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
-import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
-import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
+import app.cybrid.cybrid_api_bank.client.models.*
 import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
 import java.math.BigDecimal
 import java.time.OffsetDateTime
@@ -59,6 +56,36 @@ object TestConstants {
 
     val assets:List<AssetBankModel> = listOf(
         BTC_ASSET, ETH_ASSET, USD_ASSET, CAD_ASSET
+    )
+
+    val buyQuote = QuoteBankModel(
+        guid = "cb18e7d490c08da003c1afe5c31b8a6d",
+        productType = QuoteBankModel.ProductType.trading,
+        customerGuid = "bf10305829337d106b82c521bb6c8fd2",
+        symbol = "BTC-USD",
+        asset = null,
+        side = QuoteBankModel.Side.buy,
+        receiveAmount = java.math.BigDecimal("1321413"),
+        deliverAmount = java.math.BigDecimal("25000"),
+        fee = BigDecimal("0"),
+        issuedAt = null,
+        expiresAt = null,
+        productProvider = null
+    )
+
+    val sellQuote = QuoteBankModel(
+        guid = "cb18e7d490c08da003c1afe5c31b8a6d",
+        productType = QuoteBankModel.ProductType.trading,
+        customerGuid = "bf10305829337d106b82c521bb6c8fd2",
+        symbol = "BTC-USD",
+        asset = null,
+        side = QuoteBankModel.Side.sell,
+        receiveAmount = java.math.BigDecimal("25000"),
+        deliverAmount = java.math.BigDecimal("1321413"),
+        fee = BigDecimal("0"),
+        issuedAt = null,
+        expiresAt = null,
+        productProvider = null
     )
 
     val accounts:List<AccountBankModel> = listOf(

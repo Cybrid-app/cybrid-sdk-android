@@ -2,6 +2,7 @@ package app.cybrid.sdkandroid.components.quote.view
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -9,6 +10,7 @@ import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.tools.TestConstants
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -67,5 +69,67 @@ class QuoteConfirmationModalTest {
         // -- Then
         composeTestRule.onNodeWithText("Order Quote").assertIsDisplayed()
         composeTestRule.onNodeWithTag(Constants.QuoteConfirmation.LoadingIndicator.id).assertIsDisplayed()
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `Buy Content Test`() = runTest {
+
+        // --
+        val viewModel = QuoteViewModel()
+        viewModel.quoteBankModel = TestConstants.buyQuote
+
+        // -- When
+        composeTestRule.setContent {
+            QuoteConfirmationModal(
+                viewModel = viewModel,
+                asset = mutableStateOf(TestConstants.BTC_ASSET),
+                pairAsset = TestConstants.USD_ASSET,
+                showDialog = mutableStateOf(true),
+                selectedTabIndex = mutableStateOf(0)
+            )
+        }
+
+        // -- Then
+        composeTestRule.onNodeWithText("Purchase amount", true).assertExists()
+        composeTestRule.onNodeWithTag("PurchaseAmountId", true)
+            .assertExists()
+            .assertTextEquals("$250.00 USD")
+
+        composeTestRule.onNodeWithText("Purchase quantity", true).assertExists()
+        composeTestRule.onNodeWithTag("PurchaseQuantityId", true)
+            .assertExists()
+            .assertTextEquals("0.01321413 BTC")
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `Sell Content Test`() = runTest {
+
+        // --
+        val viewModel = QuoteViewModel()
+        viewModel.quoteBankModel = TestConstants.sellQuote
+
+        // -- When
+        composeTestRule.setContent {
+            QuoteConfirmationModal(
+                viewModel = viewModel,
+                asset = mutableStateOf(TestConstants.BTC_ASSET),
+                pairAsset = TestConstants.USD_ASSET,
+                showDialog = mutableStateOf(true),
+                selectedTabIndex = mutableStateOf(1)
+            )
+        }
+
+        // -- Then
+        composeTestRule.onNodeWithText("Sell amount", true).assertExists()
+        composeTestRule.onNodeWithTag("PurchaseAmountId", true)
+            .assertExists()
+            .assertTextEquals("$250.00 USD")
+
+        composeTestRule.onNodeWithText("Sell quantity", true).assertExists()
+        composeTestRule.onNodeWithTag("PurchaseQuantityId", true)
+            .assertExists()
+            .assertTextEquals("0.01321413 BTC")
     }
 }
