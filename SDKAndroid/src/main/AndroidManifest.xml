@@ -3,6 +3,9 @@
 
     <application>
         <activity
+            android:name=".components.persona.PersonaIntegration"
+            android:exported="false" />
+        <activity
             android:name=".components.plaid.PlaidIntegration"
             android:exported="false" />
     </application>
