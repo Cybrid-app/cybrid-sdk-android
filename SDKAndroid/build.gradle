@@ -163,6 +163,8 @@ signing {
 }
 
 dependencies {
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
 
     // -- Vars
     ext.retrofitVersion = '2.9.0'
@@ -199,13 +201,16 @@ dependencies {
     testImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
     debugImplementation 'androidx.compose.ui:ui-test-manifest:1.2.1'
 
-    //Lifecycle
+    // -- Lifecycle
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
     implementation "androidx.lifecycle:lifecycle-common-java8:2.5.1"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.activity:activity-ktx:1.5.1'
     implementation 'androidx.fragment:fragment-ktx:1.5.2'
+
+    // -- Plaid
+    implementation 'com.plaid.link:sdk-core:3.10.1'
 
     // -- SDK Test
     testImplementation 'com.android.support.test:runner:1.0.2'
