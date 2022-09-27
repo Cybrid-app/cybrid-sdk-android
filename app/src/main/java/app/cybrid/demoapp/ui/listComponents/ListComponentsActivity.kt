@@ -13,6 +13,7 @@ import app.cybrid.demoapp.ui.listComponents.entity.Component
 import app.cybrid.demoapp.ui.listPricesComponent.ListPricesAssetsComponentActivity
 import app.cybrid.demoapp.ui.listPricesComponent.ListPricesComponentActivity
 import app.cybrid.demoapp.ui.tradeFlow.TradeFlowActivity
+import app.cybrid.sdkandroid.components.persona.PersonaIntegration
 import app.cybrid.sdkandroid.components.plaid.PlaidIntegration
 
 class ListComponentsActivity : AppCompatActivity(), ComponentListener {
@@ -43,6 +44,7 @@ class ListComponentsActivity : AppCompatActivity(), ComponentListener {
             3 -> startActivity(Intent(this, TradeFlowActivity::class.java))
             4 -> startActivity(Intent(this, AccountsComponentActivity::class.java))
             5 -> startActivity(Intent(this, PlaidIntegration::class.java))
+            6 -> startActivity(Intent(this, PersonaIntegration::class.java))
         }
     }
 }

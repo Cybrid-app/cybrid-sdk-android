@@ -34,6 +34,10 @@ class Component() {
             val plaidComponent = Component(5, "Plaid Integration")
             components.add(plaidComponent)
 
+            // -- Persona Component
+            val personaComponent = Component(6, "Persona Integration")
+            components.add(personaComponent)
+
             // --
             return components
         }
