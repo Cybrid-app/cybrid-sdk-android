@@ -18,7 +18,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
 class App : Application(), CybridSDKEvents {
 
     private val tokenRequest = TokenRequest(
@@ -45,10 +44,11 @@ class App : Application(), CybridSDKEvents {
     }
 
     // -- Helper method to get the bearer
-    fun getBearer(listener: BearerListener? = null) {
+    fun getBearer(listener: BearerListener? = null, request: TokenRequest? = null) {
 
         val tokenService = Util.getClient().create(AppService::class.java)
-        tokenService.getBearer(this.tokenRequest).enqueue(object : Callback<TokenResponse> {
+        val token = request ?: this.tokenRequest
+        tokenService.getBearer(token).enqueue(object : Callback<TokenResponse> {
             override fun onResponse(call: Call<TokenResponse>, response: Response<TokenResponse>) {
 
                 if (response.isSuccessful) {
@@ -86,8 +86,6 @@ class App : Application(), CybridSDKEvents {
             list.recycledViewPool.setMaxRecycledViews(0, 10)
             list.layoutManager = layout
             list.setItemViewCacheSize(10)
-            list.isDrawingCacheEnabled = true
-            list.drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
         }
 
         fun createRecyclerHorizontalList(list: RecyclerView, context: Context?) {
@@ -96,9 +94,6 @@ class App : Application(), CybridSDKEvents {
             list.recycledViewPool.setMaxRecycledViews(0, 10)
             list.layoutManager = layout
             list.setItemViewCacheSize(10)
-            list.isDrawingCacheEnabled = true
-            list.drawingCacheQuality = View.DRAWING_CACHE_QUALITY_HIGH
         }
-
     }
 }
