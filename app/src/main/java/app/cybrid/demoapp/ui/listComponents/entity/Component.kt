@@ -30,6 +30,10 @@ class Component() {
             val accountsComponent = Component(4, "Accounts Component")
             components.add(accountsComponent)
 
+            // -- Plaid Component
+            val plaidComponent = Component(5, "Plaid Integration")
+            components.add(plaidComponent)
+
             // --
             return components
         }
