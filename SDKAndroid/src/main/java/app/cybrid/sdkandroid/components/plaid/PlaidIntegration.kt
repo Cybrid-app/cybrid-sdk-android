@@ -17,7 +17,7 @@ class PlaidIntegration : AppCompatActivity() {
 
         // --
         val linkTokenConfiguration = linkTokenConfiguration {
-            token = "link-sandbox-bc71e7b3-4b82-454d-90a8-58fa9dbfb699"
+            token = "link-sandbox-09703628-aa09-462f-bdca-2014b9aa3d29"
         }
 
         val linkAccountToPlaid = registerForActivityResult(OpenPlaidLink()) {
