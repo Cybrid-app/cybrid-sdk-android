@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Cybrid Android Demo App</string>
+
+    <string name="login_client_id">Client ID</string>
+    <string name="login_client_secret">Client Secret</string>
+    <string name="login_customer_guid">Cutomer GUID</string>
+    <string name="login_button">Login con Cybrid</string>
+    <string name="login_demo">Acceder en version Demo</string>
+    <string name="login_fill_error">Llena todos los campos por favor</string>
+
     <string name="auth_title">Autentificandote con Cybrid</string>
     <string name="auth_toast_error">¿Estas seguro de que configuraste su id y secret?</string>
 

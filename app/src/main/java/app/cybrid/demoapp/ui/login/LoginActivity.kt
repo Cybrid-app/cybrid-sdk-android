@@ -41,6 +41,7 @@ class LoginActivity : AppCompatActivity(), BearerListener {
         val clientGUIDLayout = findViewById<TextInputLayout>(R.id.clientGUIDLayout)
         val login = findViewById<TextView>(R.id.login)
         val demo = findViewById<TextView>(R.id.demo)
+        demo.alpha = 1.0f
 
         image.animate().translationY(-800f).setDuration(1800).setListener(object: AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
@@ -60,7 +61,7 @@ class LoginActivity : AppCompatActivity(), BearerListener {
             val customerGUID = findViewById<EditText>(R.id.clientGUID).text
 
             if (id.isEmpty() && secret.isEmpty() && customerGUID.isEmpty()) {
-                Toast.makeText(this, "Please fill the fields", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.login_fill_error), Toast.LENGTH_LONG).show()
             } else {
 
                 val tokenRequest = TokenRequest(

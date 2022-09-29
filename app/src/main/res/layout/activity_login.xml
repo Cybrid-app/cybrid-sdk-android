@@ -32,7 +32,7 @@
         android:layout_marginHorizontal="30dp"
         android:textColorHint="@color/white"
         app:hintTextColor="@color/white"
-        android:hint="Client ID"
+        android:hint="@string/login_client_id"
         app:hintTextAppearance="@style/text_in_layout_hint_Style"
         app:helperTextTextAppearance="@color/white">
 
@@ -61,7 +61,7 @@
         android:layout_marginHorizontal="30dp"
         android:textColorHint="@color/white"
         app:hintTextColor="@color/white"
-        android:hint="Client Secret"
+        android:hint="@string/login_client_secret"
         app:hintTextAppearance="@style/text_in_layout_hint_Style"
         app:helperTextTextAppearance="@color/white">
 
@@ -90,7 +90,7 @@
         android:layout_marginHorizontal="30dp"
         android:textColorHint="@color/white"
         app:hintTextColor="@color/white"
-        android:hint="Cutomer GUID"
+        android:hint="@string/login_customer_guid"
         app:hintTextAppearance="@style/text_in_layout_hint_Style"
         app:helperTextTextAppearance="@color/white">
 
@@ -117,7 +117,7 @@
         android:layout_marginHorizontal="30dp"
         android:alpha="0"
         android:textColor="@color/primary_color"
-        android:text="Login with Cybrid"
+        android:text="@string/login_button"
         android:textSize="16sp"
         android:gravity="center"
         android:background="@drawable/login_button_background"/>
@@ -133,7 +133,7 @@
         android:layout_marginHorizontal="30dp"
         android:alpha="0"
         android:textColor="@color/white"
-        android:text="Access in Demo Mode"
+        android:text="@string/login_demo"
         android:textSize="16sp"
         android:gravity="center"/>
 
