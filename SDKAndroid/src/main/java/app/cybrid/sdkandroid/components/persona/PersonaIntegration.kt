@@ -17,7 +17,9 @@ class PersonaIntegration : AppCompatActivity() {
         // --
         val getInquiryResult = registerForActivityResult(Inquiry.Contract()) { result ->
                 when (result) {
-                    is InquiryResponse.Complete -> {}
+                    is InquiryResponse.Complete -> {
+
+                    }
                     is InquiryResponse.Cancel -> {}
                     is InquiryResponse.Error -> {}
                 }
