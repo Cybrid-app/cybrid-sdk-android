@@ -2,7 +2,15 @@
 <resources>
 
     <string name="app_name">Cybrid Android Demo App</string>
-    <string name="auth_title">Authenticate with Cybrid Services</string>
+
+    <string name="login_client_id">Client ID</string>
+    <string name="login_client_secret">Client Secret</string>
+    <string name="login_customer_guid">Cutomer GUID</string>
+    <string name="login_button">Login with Cybrid</string>
+    <string name="login_demo">Access in Demo Mode</string>
+    <string name="login_fill_error">Please fill all the fields</string>
+
+    <string name="auth_title">Authenticating with Cybrid Services</string>
     <string name="auth_toast_error">Are you sure you configure your id and client?</string>
 
     <string name="activity_list_components_title">List of Components</string>
