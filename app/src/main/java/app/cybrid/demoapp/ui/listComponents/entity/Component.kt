@@ -38,6 +38,10 @@ class Component() {
             val personaComponent = Component(6, "Persona Integration")
             components.add(personaComponent)
 
+            // -- KYC Component
+            val kycComponent = Component(7, "KYC Component")
+            components.add(kycComponent)
+
             // --
             return components
         }
