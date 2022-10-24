@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import app.cybrid.cybrid_api_bank.client.models.CustomerBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.kyc.view.IdentityVerificationViewModel
 import app.cybrid.sdkandroid.core.Constants
@@ -63,6 +64,7 @@ class KYCView @JvmOverloads constructor(
         this.composeView?.let { compose ->
             compose.setContent {
                 KYCView(
+                    viewModel = this.identityViewModel!!,
                     currentState = this.currentState
                 )
             }
@@ -88,11 +90,24 @@ class KYCView @JvmOverloads constructor(
 
 @Composable
 fun KYCView(
+    viewModel: IdentityVerificationViewModel,
     currentState: MutableState<KYCView.KYCViewState>
 ) {
 
+    when(viewModel.customerState) {
+
+        CustomerBankModel.State.storing -> {}
+
+        CustomerBankModel.State.verified -> {
+            currentState.value = KYCView.KYCViewState.REQUIRED
+        }
+    }
+
+
     Handler().postDelayed({
-        currentState.value = KYCView.KYCViewState.REQUIRED
+
+      viewModel.customerState = CustomerBankModel.State.verified
+        //currentState.value = KYCView.KYCViewState.REQUIRED
     }, 4000)
 
     // -- Content
