@@ -27,6 +27,7 @@ import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.kyc.view.IdentityVerificationViewModel
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import com.withpersona.sdk2.inquiry.Environment
@@ -42,12 +43,19 @@ class KYCView @JvmOverloads constructor(
     enum class KYCViewState { LOADING, REQUIRED, VERIFIED, ERROR, REVIEWING, GLOBAL_ERROR }
 
     private var currentState = mutableStateOf(KYCViewState.LOADING)
+    private var identityViewModel: IdentityVerificationViewModel? = null
 
     init {
 
         LayoutInflater.from(context).inflate(R.layout.kyc_component, this, true)
         this.composeView = findViewById(R.id.composeContent)
+    }
+
+    fun setViewModel(identityViewModel: IdentityVerificationViewModel) {
+
+        this.identityViewModel = identityViewModel
         this.initComposeView()
+        this.identityViewModel?.getCustomerStatus()
     }
 
     private fun initComposeView() {
