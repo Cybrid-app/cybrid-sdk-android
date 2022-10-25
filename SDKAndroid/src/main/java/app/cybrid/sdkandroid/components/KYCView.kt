@@ -98,8 +98,9 @@ fun KYCView(
 
         CustomerBankModel.State.storing -> {}
 
-        CustomerBankModel.State.verified -> {
-            currentState.value = KYCView.KYCViewState.REQUIRED
+        CustomerBankModel.State.unverified -> {
+
+            viewModel.getIdentityVerificationDetail()
         }
     }
 
