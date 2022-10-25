@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,8 +17,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,6 +37,8 @@ import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import com.withpersona.sdk2.inquiry.Environment
 import com.withpersona.sdk2.inquiry.Inquiry
 import com.withpersona.sdk2.inquiry.InquiryResponse
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class KYCView @JvmOverloads constructor(
     context: Context,
@@ -55,8 +60,11 @@ class KYCView @JvmOverloads constructor(
     fun setViewModel(identityViewModel: IdentityVerificationViewModel) {
 
         this.identityViewModel = identityViewModel
+        this.identityViewModel?.UIState = this.currentState
         this.initComposeView()
-        this.identityViewModel?.getCustomerStatus()
+        GlobalScope.launch {
+            identityViewModel.createCustomerTest()
+        }
     }
 
     private fun initComposeView() {
@@ -73,11 +81,14 @@ class KYCView @JvmOverloads constructor(
 
     companion object {
 
-        fun openPersona(getInquiryResult: ManagedActivityResultLauncher<Inquiry, InquiryResponse>) {
+        fun openPersona(
+            identityViewModel: IdentityVerificationViewModel,
+            getInquiryResult: ManagedActivityResultLauncher<Inquiry, InquiryResponse>
+        ) {
 
-            val TEMPLATE_ID = "itmpl_ArgEXWw8ZYtYLvfC26tr9zmY"
-            val inquiry = Inquiry.fromTemplate(TEMPLATE_ID)
-                .environment(Environment.SANDBOX)
+            val id = identityViewModel.latestIdentityVerification?.personaInquiryId ?: ""
+            val inquiry = Inquiry.fromInquiry(id)
+                //.environment(Environment.SANDBOX)
                 .build()
             getInquiryResult.launch(inquiry)
         }
@@ -94,23 +105,6 @@ fun KYCView(
     currentState: MutableState<KYCView.KYCViewState>
 ) {
 
-    when(viewModel.customerState) {
-
-        CustomerBankModel.State.storing -> {}
-
-        CustomerBankModel.State.unverified -> {
-
-            viewModel.getIdentityVerificationDetail()
-        }
-    }
-
-
-    Handler().postDelayed({
-
-      viewModel.customerState = CustomerBankModel.State.verified
-        //currentState.value = KYCView.KYCViewState.REQUIRED
-    }, 4000)
-
     // -- Content
     Surface(
         modifier = Modifier
@@ -124,10 +118,23 @@ fun KYCView(
             }
 
             KYCView.KYCViewState.REQUIRED -> {
-                KYCView_Required()
+                KYCView_Required(
+                    viewModel = viewModel,
+                    currentState = currentState
+                )
             }
 
-            else -> {}
+            KYCView.KYCViewState.VERIFIED -> {
+                KYCView_Verified()
+            }
+
+            KYCView.KYCViewState.ERROR -> {
+                KYCView_Error()
+            }
+
+            KYCView.KYCViewState.REVIEWING -> {
+                KYCView_Reviewing()
+            }
         }
     }
 }
@@ -163,10 +170,30 @@ fun KYCView_Loading() {
 }
 
 @Composable
-fun KYCView_Required() {
+fun KYCView_Required(
+    viewModel: IdentityVerificationViewModel,
+    currentState: MutableState<KYCView.KYCViewState>
+) {
 
     // -- Vars
-    val getInquiryResult = rememberLauncherForActivityResult(Inquiry.Contract()) {}
+    val getInquiryResult = rememberLauncherForActivityResult(Inquiry.Contract()) { result ->
+
+        when(result) {
+
+            is InquiryResponse.Complete -> {
+
+                currentState.value = KYCView.KYCViewState.LOADING
+                viewModel.getIdentityVerificationStatus(viewModel.latestIdentityVerification)
+            }
+
+            is InquiryResponse.Cancel -> {}
+
+            is InquiryResponse.Complete -> {
+
+                currentState.value = KYCView.KYCViewState.ERROR
+            }
+        }
+    }
 
     // -- Content
     ConstraintLayout(
@@ -177,20 +204,35 @@ fun KYCView_Required() {
 
         val (text, buttons) = createRefs()
 
-        Text(
-            text = stringResource(id = R.string.kyc_view_required_text),
-            Modifier.constrainAs(text) {
+        Row(
+            modifier = Modifier.constrainAs(text) {
                 start.linkTo(parent.start, margin = 0.dp)
                 top.linkTo(parent.top, margin = 0.dp)
                 end.linkTo(parent.end, margin = 0.dp)
                 bottom.linkTo(parent.bottom, margin = 0.dp)
             },
-            textAlign = TextAlign.Center,
-            fontFamily = robotoFont,
-            fontWeight = FontWeight.Medium,
-            fontSize = 19.sp,
-            color = colorResource(id = R.color.black)
-        )
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.kyc_required),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(top = 5.dp)
+                    .padding(0.dp)
+                    .size(26.dp),
+                contentScale = ContentScale.Fit
+            )
+            Text(
+                text = stringResource(id = R.string.kyc_view_required_text),
+                modifier = Modifier
+                    .padding(start = 10.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Medium,
+                fontSize = 19.sp,
+                lineHeight = 32.sp,
+                color = colorResource(id = R.color.black)
+            )
+        }
         // -- Buttons
         ConstraintLayout(
             Modifier.constrainAs(buttons) {
@@ -238,7 +280,9 @@ fun KYCView_Required() {
             // -- Continue Button
             Button(
                 onClick = {
-                    KYCView.openPersona(getInquiryResult)
+                    KYCView.openPersona(
+                        identityViewModel = viewModel,
+                        getInquiryResult = getInquiryResult)
                 },
                 modifier = Modifier
                     .constrainAs(beginButton) {
@@ -265,6 +309,273 @@ fun KYCView_Required() {
                     color = Color.White,
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun KYCView_Verified() {
+
+    // -- Content
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag(Constants.AccountsViewTestTags.Loading.id)
+    ) {
+
+        val (text, buttons) = createRefs()
+
+        Row(
+            modifier = Modifier.constrainAs(text) {
+                start.linkTo(parent.start, margin = 0.dp)
+                top.linkTo(parent.top, margin = 0.dp)
+                end.linkTo(parent.end, margin = 0.dp)
+                bottom.linkTo(parent.bottom, margin = 0.dp)
+            },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.kyc_verified),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(top = 5.dp)
+                    .padding(0.dp)
+                    .size(26.dp),
+                contentScale = ContentScale.Fit
+            )
+            Text(
+                text = stringResource(id = R.string.kyc_view_verified_text),
+                modifier = Modifier
+                    .padding(start = 10.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Medium,
+                fontSize = 19.sp,
+                lineHeight = 32.sp,
+                color = colorResource(id = R.color.black)
+            )
+        }
+        // -- Buttons
+        ConstraintLayout(
+            Modifier.constrainAs(buttons) {
+                start.linkTo(parent.start, margin = 10.dp)
+                end.linkTo(parent.end, margin = 10.dp)
+                bottom.linkTo(parent.bottom, margin = 20.dp)
+                width = Dimension.fillToConstraints
+                height = Dimension.value(50.dp)
+            }
+        ) {
+
+            val (cancelButton, beginButton) = createRefs()
+
+            // -- Done Button
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .constrainAs(cancelButton) {
+                        start.linkTo(parent.start, margin = 10.dp)
+                        end.linkTo(parent.end, margin = 10.dp)
+                        top.linkTo(parent.top, margin = 0.dp)
+                        bottom.linkTo(parent.bottom, margin = 0.dp)
+                        width = Dimension.fillToConstraints
+                        height = Dimension.fillToConstraints
+                    },
+                shape = RoundedCornerShape(10.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 4.dp,
+                    disabledElevation = 0.dp
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = colorResource(id = R.color.accent_blue),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = stringResource(id = R.string.kyc_view_required_done_button),
+                    color = Color.White,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun KYCView_Error() {
+
+    // -- Content
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag(Constants.AccountsViewTestTags.Loading.id)
+    ) {
+
+        val (text, buttons) = createRefs()
+
+        Row(
+            modifier = Modifier.constrainAs(text) {
+                start.linkTo(parent.start, margin = 0.dp)
+                top.linkTo(parent.top, margin = 0.dp)
+                end.linkTo(parent.end, margin = 0.dp)
+                bottom.linkTo(parent.bottom, margin = 0.dp)
+            },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.kyc_error),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(top = 5.dp)
+                    .padding(0.dp)
+                    .size(26.dp),
+                contentScale = ContentScale.Fit
+            )
+            Text(
+                text = stringResource(id = R.string.kyc_view_error_text),
+                modifier = Modifier
+                    .padding(start = 10.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Medium,
+                fontSize = 19.sp,
+                lineHeight = 32.sp,
+                color = colorResource(id = R.color.black)
+            )
+        }
+        // -- Buttons
+        ConstraintLayout(
+            Modifier.constrainAs(buttons) {
+                start.linkTo(parent.start, margin = 10.dp)
+                end.linkTo(parent.end, margin = 10.dp)
+                bottom.linkTo(parent.bottom, margin = 20.dp)
+                width = Dimension.fillToConstraints
+                height = Dimension.value(50.dp)
+            }
+        ) {
+
+            val (cancelButton, beginButton) = createRefs()
+
+            // -- Done Button
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .constrainAs(cancelButton) {
+                        start.linkTo(parent.start, margin = 10.dp)
+                        end.linkTo(parent.end, margin = 10.dp)
+                        top.linkTo(parent.top, margin = 0.dp)
+                        bottom.linkTo(parent.bottom, margin = 0.dp)
+                        width = Dimension.fillToConstraints
+                        height = Dimension.fillToConstraints
+                    },
+                shape = RoundedCornerShape(10.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 4.dp,
+                    disabledElevation = 0.dp
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = colorResource(id = R.color.accent_blue),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = stringResource(id = R.string.kyc_view_required_done_button),
+                    color = Color.White,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun KYCView_Reviewing() {
+
+    // -- Content
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag(Constants.AccountsViewTestTags.Loading.id)
+    ) {
+
+        val (text, buttons) = createRefs()
+
+        Row(
+            modifier = Modifier.constrainAs(text) {
+                start.linkTo(parent.start, margin = 0.dp)
+                top.linkTo(parent.top, margin = 0.dp)
+                end.linkTo(parent.end, margin = 0.dp)
+                bottom.linkTo(parent.bottom, margin = 0.dp)
+            },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.kyc_reviewing),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(top = 5.dp)
+                    .padding(0.dp)
+                    .size(26.dp),
+                contentScale = ContentScale.Fit
+            )
+            Text(
+                text = stringResource(id = R.string.kyc_view_reviewing_text),
+                modifier = Modifier
+                    .padding(start = 10.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Medium,
+                fontSize = 19.sp,
+                lineHeight = 32.sp,
+                color = colorResource(id = R.color.black)
+            )
+        }
+        // -- Buttons
+        ConstraintLayout(
+            Modifier.constrainAs(buttons) {
+                start.linkTo(parent.start, margin = 10.dp)
+                end.linkTo(parent.end, margin = 10.dp)
+                bottom.linkTo(parent.bottom, margin = 20.dp)
+                width = Dimension.fillToConstraints
+                height = Dimension.value(50.dp)
+            }
+        ) {
+
+            val (cancelButton, beginButton) = createRefs()
+
+            // -- Done Button
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .constrainAs(cancelButton) {
+                        start.linkTo(parent.start, margin = 10.dp)
+                        end.linkTo(parent.end, margin = 10.dp)
+                        top.linkTo(parent.top, margin = 0.dp)
+                        bottom.linkTo(parent.bottom, margin = 0.dp)
+                        width = Dimension.fillToConstraints
+                        height = Dimension.fillToConstraints
+                    },
+                shape = RoundedCornerShape(10.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 4.dp,
+                    disabledElevation = 0.dp
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = colorResource(id = R.color.accent_blue),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = stringResource(id = R.string.kyc_view_required_done_button),
+                    color = Color.White,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
                 )
             }
