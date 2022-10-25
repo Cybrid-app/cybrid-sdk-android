@@ -46,7 +46,7 @@ class KYCView @JvmOverloads constructor(
     defStyle: Int = 0):
     Component(context, attrs, defStyle) {
 
-    enum class KYCViewState { LOADING, REQUIRED, VERIFIED, ERROR, REVIEWING, GLOBAL_ERROR }
+    enum class KYCViewState { LOADING, REQUIRED, VERIFIED, ERROR, REVIEWING }
 
     private var currentState = mutableStateOf(KYCViewState.LOADING)
     private var identityViewModel: IdentityVerificationViewModel? = null

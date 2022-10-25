@@ -55,7 +55,6 @@ class IdentityVerificationViewModel: ViewModel() {
         }
     }
 
-    // -- Loop
     fun getCustomerStatus() {
 
         Cybrid.instance.let { cybrid ->
@@ -76,7 +75,6 @@ class IdentityVerificationViewModel: ViewModel() {
         }
     }
 
-    // -- Loop
     fun getIdentityVerificationStatus(record: IdentityVerificationBankModel? = null) {
 
         Cybrid.instance.let { cybrid ->

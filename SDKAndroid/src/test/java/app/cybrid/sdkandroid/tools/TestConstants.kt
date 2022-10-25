@@ -63,14 +63,12 @@ object TestConstants {
         productType = QuoteBankModel.ProductType.trading,
         customerGuid = "bf10305829337d106b82c521bb6c8fd2",
         symbol = "BTC-USD",
-        asset = null,
         side = QuoteBankModel.Side.buy,
         receiveAmount = java.math.BigDecimal("1321413"),
         deliverAmount = java.math.BigDecimal("25000"),
         fee = BigDecimal("0"),
         issuedAt = null,
-        expiresAt = null,
-        productProvider = null
+        expiresAt = null
     )
 
     val sellQuote = QuoteBankModel(
@@ -78,14 +76,12 @@ object TestConstants {
         productType = QuoteBankModel.ProductType.trading,
         customerGuid = "bf10305829337d106b82c521bb6c8fd2",
         symbol = "BTC-USD",
-        asset = null,
         side = QuoteBankModel.Side.sell,
         receiveAmount = java.math.BigDecimal("25000"),
         deliverAmount = java.math.BigDecimal("1321413"),
         fee = BigDecimal("0"),
         issuedAt = null,
-        expiresAt = null,
-        productProvider = null
+        expiresAt = null
     )
 
     val accounts:List<AccountBankModel> = listOf(
