@@ -108,7 +108,7 @@ fun KYCView(
     // -- Content
     Surface(
         modifier = Modifier
-            .testTag(Constants.AccountsViewTestTags.Surface.id)
+            .testTag(Constants.IdentityVerificationView.Surface.id)
     ) {
 
         when(currentState.value) {
@@ -145,7 +145,7 @@ fun KYCView_Loading() {
     Box(
         modifier = Modifier
             .height(120.dp)
-            .testTag(Constants.AccountsViewTestTags.Loading.id)
+            .testTag(Constants.IdentityVerificationView.LoadingView.id)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -162,7 +162,7 @@ fun KYCView_Loading() {
             CircularProgressIndicator(
                 modifier = Modifier
                     .padding(top = 16.dp)
-                    .testTag(Constants.QuoteConfirmation.LoadingIndicator.id),
+                    .testTag(Constants.IdentityVerificationView.LoadingViewIndicator.id),
                 color = colorResource(id = R.color.primary_color)
             )
         }
@@ -199,7 +199,7 @@ fun KYCView_Required(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .testTag(Constants.AccountsViewTestTags.Loading.id)
+            .testTag(Constants.IdentityVerificationView.RequiredView.id)
     ) {
 
         val (text, buttons) = createRefs()
@@ -323,7 +323,7 @@ fun KYCView_Verified() {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .testTag(Constants.AccountsViewTestTags.Loading.id)
+            .testTag(Constants.IdentityVerificationView.VerifiedView.id)
     ) {
 
         val (text, buttons) = createRefs()
@@ -412,7 +412,7 @@ fun KYCView_Error() {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .testTag(Constants.AccountsViewTestTags.Loading.id)
+            .testTag(Constants.IdentityVerificationView.ErrorView.id)
     ) {
 
         val (text, buttons) = createRefs()
@@ -501,7 +501,7 @@ fun KYCView_Reviewing() {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .testTag(Constants.AccountsViewTestTags.Loading.id)
+            .testTag(Constants.IdentityVerificationView.ReviewingView.id)
     ) {
 
         val (text, buttons) = createRefs()

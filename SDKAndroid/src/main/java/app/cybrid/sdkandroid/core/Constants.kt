@@ -21,6 +21,16 @@ class Constants {
         List("AccountsView_List")
     }
 
+    enum class IdentityVerificationView(val id:String) {
+        Surface("IdentityVerificationView_MainSurface"),
+        LoadingView("IdentityVerificationView_LoadingView"),
+        LoadingViewIndicator("IdentityVerificationView_LoadingView_Indicator"),
+        RequiredView("IdentityVerificationView_RequiredView"),
+        VerifiedView("IdentityVerificationView_VerifiedView"),
+        ErrorView("IdentityVerificationView_ErrorView"),
+        ReviewingView("IdentityVerificationView_ReviewingView"),
+    }
+
     companion object {
 
         const val MIN_INTEGER_DIGITS = 0
