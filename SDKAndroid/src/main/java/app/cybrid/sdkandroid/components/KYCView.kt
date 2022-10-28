@@ -1,13 +1,11 @@
 package app.cybrid.sdkandroid.components
 
 import android.content.Context
-import android.os.Handler
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -23,18 +21,14 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import app.cybrid.cybrid_api_bank.client.models.CustomerBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.kyc.view.IdentityVerificationViewModel
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
-import com.withpersona.sdk2.inquiry.Environment
 import com.withpersona.sdk2.inquiry.Inquiry
 import com.withpersona.sdk2.inquiry.InquiryResponse
 import kotlinx.coroutines.GlobalScope
