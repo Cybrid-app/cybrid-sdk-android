@@ -3,12 +3,6 @@
 
     <application>
         <activity
-            android:name=".components.persona.PersonaIntegration"
-            android:exported="false" />
-        <activity
-            android:name=".components.plaid.PlaidIntegration"
-            android:exported="false" />
-        <activity
             android:name=".components.activity.KYCActivity"
             android:exported="false" />
     </application>

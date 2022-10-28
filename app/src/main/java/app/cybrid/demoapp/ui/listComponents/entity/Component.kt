@@ -30,16 +30,8 @@ class Component() {
             val accountsComponent = Component(4, "Accounts Component")
             components.add(accountsComponent)
 
-            // -- Plaid Component
-            val plaidComponent = Component(5, "Plaid Integration")
-            components.add(plaidComponent)
-
-            // -- Persona Component
-            val personaComponent = Component(6, "Persona Integration")
-            components.add(personaComponent)
-
             // -- KYC Component
-            val kycComponent = Component(7, "KYC Component")
+            val kycComponent = Component(5, "KYC Component")
             components.add(kycComponent)
 
             // --
