@@ -31,7 +31,7 @@ class UtilsTest {
         Assert.assertFalse(result4)
     }
 
-    /*@Test
+    @Test
     fun getDateInFormatTest() {
 
         // -- Given
@@ -47,5 +47,5 @@ class UtilsTest {
         Assert.assertEquals(dateFormattedOne, "Aug 02, 2022")
         Assert.assertEquals(dateFormattedTwo, "08,02,2022")
         Assert.assertEquals(dateFormattedThree, "")
-    }*/
+    }
 }
