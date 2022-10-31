@@ -3,7 +3,7 @@ package app.cybrid.sdkandroid.util
 import android.os.Handler
 import android.os.Looper
 
-class Pooling(runner: () -> Unit) {
+class Polling(runner: () -> Unit) {
 
     var updateInterval = 4000L
     var handler: Handler = Handler(Looper.getMainLooper())

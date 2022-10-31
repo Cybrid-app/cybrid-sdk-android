@@ -2,9 +2,6 @@ package app.cybrid.sdkandroid.components.kyc.view
 
 import android.util.Log
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cybrid.sdkandroid.AppModule
@@ -13,7 +10,7 @@ import app.cybrid.cybrid_api_bank.client.apis.IdentityVerificationsApi
 import app.cybrid.cybrid_api_bank.client.models.*
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.KYCView
-import app.cybrid.sdkandroid.util.Pooling
+import app.cybrid.sdkandroid.util.Polling
 import java.math.BigDecimal as JavaBigDecimal
 import app.cybrid.sdkandroid.util.getResult
 import kotlinx.coroutines.*
@@ -23,8 +20,8 @@ class IdentityVerificationViewModel: ViewModel() {
     private val customerService = AppModule.getClient().createService(CustomersApi::class.java)
     private val identityService = AppModule.getClient().createService(IdentityVerificationsApi::class.java)
 
-    protected var customerJob: Pooling? = null
-    protected var identityJob: Pooling? = null
+    protected var customerJob: Polling? = null
+    protected var identityJob: Polling? = null
 
     var customerGuid = Cybrid.instance.customerGuid
     var UIState: MutableState<KYCView.KYCViewState>? = null
@@ -96,7 +93,7 @@ class IdentityVerificationViewModel: ViewModel() {
                         }
                         val recordResponse = getResult {
                             identityService.getIdentityVerification(
-                                identityVerificationGuid = lastVerification?.guid ?: ""
+                                identityVerificationGuid = lastVerification?.guid!!
                             )
                         }
                         Log.d("DXGOP", "IDENTITY STATUS")
@@ -119,7 +116,7 @@ class IdentityVerificationViewModel: ViewModel() {
                         val identityResponse = getResult {
                             identityService.listIdentityVerifications(
                                 customerGuid = customerGuid,
-                                page = JavaBigDecimal(1),
+                                page = JavaBigDecimal(0),
                                 perPage = JavaBigDecimal(1)
                             )
                         }
@@ -178,7 +175,7 @@ class IdentityVerificationViewModel: ViewModel() {
             CustomerBankModel.State.storing -> {
 
                 if (customerJob == null) {
-                    customerJob = Pooling { getCustomerStatus() }
+                    customerJob = Polling { getCustomerStatus() }
                 }
             }
 
@@ -209,19 +206,22 @@ class IdentityVerificationViewModel: ViewModel() {
             IdentityVerificationBankModel.State.storing -> {
 
                 if (identityJob == null) {
-                    identityJob = Pooling { getIdentityVerificationStatus(record = record) }
+                    identityJob = Polling { getIdentityVerificationStatus(record = record) }
                 }
             }
 
             IdentityVerificationBankModel.State.waiting -> {
 
-                if (record.personaState != IdentityVerificationBankModel.PersonaState.completed) {
+                if (record.personaState == IdentityVerificationBankModel.PersonaState.completed ||
+                        record.personaState == IdentityVerificationBankModel.PersonaState.processing) {
+
+                    identityJob = Polling { getIdentityVerificationStatus(record = record) }
+
+                } else {
 
                     identityJob?.stop()
                     identityJob = null
                     checkIdentityPersonaStatus(record)
-                } else {
-                    identityJob = Pooling { getIdentityVerificationStatus(record = record) }
                 }
             }
 
@@ -238,6 +238,8 @@ class IdentityVerificationViewModel: ViewModel() {
                 identityJob = null
                 UIState?.value = KYCView.KYCViewState.VERIFIED
             }
+
+            else -> {}
         }
     }
 
@@ -266,6 +268,8 @@ class IdentityVerificationViewModel: ViewModel() {
 
                 UIState?.value = KYCView.KYCViewState.ERROR
             }
+
+            else -> {}
         }
     }
 }

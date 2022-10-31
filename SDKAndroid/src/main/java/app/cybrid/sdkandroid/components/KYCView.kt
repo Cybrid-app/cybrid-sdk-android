@@ -82,7 +82,6 @@ class KYCView @JvmOverloads constructor(
 
             val id = identityViewModel.latestIdentityVerification?.personaInquiryId ?: ""
             val inquiry = Inquiry.fromInquiry(id)
-                //.environment(Environment.SANDBOX)
                 .build()
             getInquiryResult.launch(inquiry)
         }

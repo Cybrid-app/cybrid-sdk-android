@@ -5,15 +5,15 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-class PoolingTest {
+class PollingTest {
 
-    private lateinit var classUnderTest: Pooling
+    private lateinit var classUnderTest: Polling
 
     @Before
     fun setup() {
 
         MockKAnnotations.init(this, relaxUnitFun = true)
-        classUnderTest = Pooling {}
+        classUnderTest = Polling {}
     }
 
     @Test
@@ -31,7 +31,7 @@ class PoolingTest {
         // -- Given
         var num = 1
         val runner: () -> Unit = { num += 1 }
-        val polling = Pooling(runner = runner)
+        val polling = Polling(runner = runner)
 
         // -- Then
         Assert.assertNotNull(polling)
