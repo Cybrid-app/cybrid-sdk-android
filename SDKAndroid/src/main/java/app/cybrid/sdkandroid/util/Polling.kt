@@ -2,25 +2,32 @@ package app.cybrid.sdkandroid.util
 
 import android.os.Handler
 import android.os.Looper
+import androidx.core.os.postDelayed
+import java.util.concurrent.ScheduledThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 class Polling(runner: () -> Unit) {
 
-    var updateInterval = 4000L
+    var updateInterval = 4L
     var handler: Handler = Handler(Looper.getMainLooper())
-    var runnable: Runnable?
+    var runnable: Runnable? = null
     var runner: () -> Unit
+
+    var executor: ScheduledThreadPoolExecutor? = null
 
     init {
 
         this.runner = runner
-        runnable = Runnable {
-            runner.invoke()
-        }
-        handler.postDelayed(runnable!!, updateInterval)
+        this.runnable = Runnable { runner.invoke() }
+        this.executor = ScheduledThreadPoolExecutor(1)
+        this.executor?.scheduleWithFixedDelay(this.runnable, 0L, updateInterval, TimeUnit.SECONDS)
     }
 
     fun stop() {
 
-        runnable = null
+        this.executor?.remove(this.runnable)
+        this.executor?.shutdownNow()
+        this.executor = null
+        this.runnable = null
     }
 }

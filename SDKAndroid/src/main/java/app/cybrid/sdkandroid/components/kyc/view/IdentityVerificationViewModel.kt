@@ -10,6 +10,8 @@ import app.cybrid.cybrid_api_bank.client.apis.IdentityVerificationsApi
 import app.cybrid.cybrid_api_bank.client.models.*
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.KYCView
+import app.cybrid.sdkandroid.util.Logger
+import app.cybrid.sdkandroid.util.LoggerEvents
 import app.cybrid.sdkandroid.util.Polling
 import java.math.BigDecimal as JavaBigDecimal
 import app.cybrid.sdkandroid.util.getResult
@@ -41,8 +43,7 @@ class IdentityVerificationViewModel: ViewModel() {
                                     type = PostCustomerBankModel.Type.individual)
                             )
                         }
-                        Log.d("DXGOP", "CREATE CUSTOMER")
-                        Log.d("DXGOP", customerResult.toString())
+                        Logger.log(LoggerEvents.DATA_FETCHED, "Customer created")
                         customerGuid = customerResult.data?.guid ?: customerGuid
                         getCustomerStatus()
                     }
@@ -63,8 +64,7 @@ class IdentityVerificationViewModel: ViewModel() {
                             customerService.getCustomer(
                                 customerGuid = customerGuid)
                         }
-                        Log.d("DXGOP", "CUSTOMER STATUS")
-                        Log.d("DXGOP", customerResult.toString())
+                        Logger.log(LoggerEvents.DATA_FETCHED, "Customer status")
                         checkCustomerStatus(customerResult.data?.state ?: CustomerBankModel.State.storing)
                     }
                 }
@@ -80,24 +80,18 @@ class IdentityVerificationViewModel: ViewModel() {
                     scope.launch {
 
                         var lastVerification = record ?: getLastIdentityVerification()
-                        Log.d("DXGOP", "---> LAST VERIFICATION")
-                        Log.d("DXGOP", lastVerification.toString())
-
                         if (lastVerification == null ||
                             lastVerification.state == IdentityVerificationBankModel.State.expired ||
                             lastVerification.personaState == IdentityVerificationBankModel.PersonaState.expired) {
 
                             lastVerification = createIdentityVerification()
-                            Log.d("DXGOP", "---> CREATION")
-                            Log.d("DXGOP", lastVerification.toString())
                         }
                         val recordResponse = getResult {
                             identityService.getIdentityVerification(
                                 identityVerificationGuid = lastVerification?.guid!!
                             )
                         }
-                        Log.d("DXGOP", "IDENTITY STATUS")
-                        Log.d("DXGOP", recordResponse.toString())
+                        Logger.log(LoggerEvents.DATA_FETCHED, "Identity Verification status")
                         checkIdentityRecordStatus(recordResponse.data)
                     }
                 }
@@ -120,9 +114,7 @@ class IdentityVerificationViewModel: ViewModel() {
                                 perPage = JavaBigDecimal(1)
                             )
                         }
-                        Log.d("DXGOP", "VERIFICATIONS LIST")
-                        Log.d("DXGOP", identityResponse.toString())
-
+                        Logger.log(LoggerEvents.DATA_FETCHED, "Identity Verifications list")
                         val total: JavaBigDecimal = identityResponse.data?.total ?: JavaBigDecimal(0)
                         if (total > JavaBigDecimal(0)) {
 
@@ -156,8 +148,7 @@ class IdentityVerificationViewModel: ViewModel() {
                                 )
                             )
                         }
-                        Log.d("DXGOP", "CREATE VERIFICATION")
-                        Log.d("DXGOP", recordResponse.toString())
+                        Logger.log(LoggerEvents.DATA_FETCHED, "Identity Verification created")
                         verification = recordResponse.data
                         return@async verification
                     }
@@ -182,18 +173,21 @@ class IdentityVerificationViewModel: ViewModel() {
             CustomerBankModel.State.verified -> {
 
                 customerJob?.stop()
+                customerJob = null
                 UIState?.value = KYCView.KYCViewState.VERIFIED
             }
 
             CustomerBankModel.State.unverified -> {
 
                 customerJob?.stop()
+                customerJob = null
                 getIdentityVerificationStatus()
             }
 
             CustomerBankModel.State.rejected -> {
 
                 customerJob?.stop()
+                customerJob = null
                 UIState?.value = KYCView.KYCViewState.ERROR
             }
         }
@@ -215,7 +209,9 @@ class IdentityVerificationViewModel: ViewModel() {
                 if (record.personaState == IdentityVerificationBankModel.PersonaState.completed ||
                         record.personaState == IdentityVerificationBankModel.PersonaState.processing) {
 
-                    identityJob = Polling { getIdentityVerificationStatus(record = record) }
+                    if (identityJob == null) {
+                        identityJob = Polling { getIdentityVerificationStatus(record = record) }
+                    }
 
                 } else {
 
@@ -239,23 +235,26 @@ class IdentityVerificationViewModel: ViewModel() {
                 UIState?.value = KYCView.KYCViewState.VERIFIED
             }
 
-            else -> {}
+            else -> {
+
+                identityJob?.stop()
+                identityJob = null
+            }
         }
     }
 
     private fun checkIdentityPersonaStatus(record: IdentityVerificationBankModel?) {
 
+        this.latestIdentityVerification = record
         when(record?.personaState) {
 
             IdentityVerificationBankModel.PersonaState.waiting -> {
 
-                this.latestIdentityVerification = record
                 UIState?.value = KYCView.KYCViewState.REQUIRED
             }
 
             IdentityVerificationBankModel.PersonaState.pending -> {
 
-                this.latestIdentityVerification = record
                 UIState?.value = KYCView.KYCViewState.REQUIRED
             }
 
@@ -264,12 +263,10 @@ class IdentityVerificationViewModel: ViewModel() {
                 UIState?.value = KYCView.KYCViewState.REVIEWING
             }
 
-            IdentityVerificationBankModel.PersonaState.unknown -> {
+            else -> {
 
                 UIState?.value = KYCView.KYCViewState.ERROR
             }
-
-            else -> {}
         }
     }
 }

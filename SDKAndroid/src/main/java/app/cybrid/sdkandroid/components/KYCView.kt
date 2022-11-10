@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.viewmodel.compose.viewModel
+import app.cybrid.sdkandroid.BuildConfig
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.kyc.view.IdentityVerificationViewModel
 import app.cybrid.sdkandroid.core.Constants
@@ -56,8 +58,11 @@ class KYCView @JvmOverloads constructor(
         this.identityViewModel = identityViewModel
         this.identityViewModel?.UIState = this.currentState
         this.initComposeView()
-        GlobalScope.launch {
-            identityViewModel.createCustomerTest()
+
+        if (BuildConfig.DEBUG) {
+            GlobalScope.launch { identityViewModel.createCustomerTest() }
+        } else {
+            identityViewModel.getCustomerStatus()
         }
     }
 
