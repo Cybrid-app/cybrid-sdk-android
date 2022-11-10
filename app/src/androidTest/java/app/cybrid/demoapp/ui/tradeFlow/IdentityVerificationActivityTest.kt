@@ -1,6 +1,9 @@
 package app.cybrid.demoapp.ui.tradeFlow
 
 import android.content.res.Resources
+import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
@@ -16,12 +19,12 @@ import androidx.test.rule.ActivityTestRule
 import app.cybrid.demoapp.R
 import app.cybrid.demoapp.ui.login.LoginActivity
 import app.cybrid.demoapp.ui.tradeFlow.util.waitUntilDoesNotExist
-import app.cybrid.demoapp.ui.tradeFlow.util.waitUntilExists
 import app.cybrid.demoapp.ui.tradeFlow.util.waitUntilViewIsDisplayed
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+
 
 @RunWith(AndroidJUnit4::class)
 class IdentityVerificationActivityTest {
@@ -60,9 +63,22 @@ class IdentityVerificationActivityTest {
         val loadingText = "Checking Identity..."
         compose.onNodeWithText(loadingText).assertIsDisplayed()
 
-        compose.waitUntilDoesNotExist(hasText(loadingText), 10_000L)
+        compose.waitUntilDoesNotExist(hasText(loadingText), 15_000L)
         val requiredText = "Begin identity verification."
         compose.onNodeWithText(requiredText).assertIsDisplayed()
         compose.onNodeWithText("Begin").performClick()
+
+        // -- Check Persona Flow
+        val personaBeginVerification = withText("Begin verifying")
+        waitUntilViewIsDisplayed(personaBeginVerification)
+        onView(personaBeginVerification)
+            .check(ViewAssertions.matches(isDisplayed()))
+            .perform(ViewActions.click())
+
+        val personaBeginVerificationVisa = withText("Visa")
+        waitUntilViewIsDisplayed(personaBeginVerificationVisa)
+        onView(personaBeginVerificationVisa)
+            .check(ViewAssertions.matches(isDisplayed()))
+            .perform(ViewActions.click())
     }
 }
