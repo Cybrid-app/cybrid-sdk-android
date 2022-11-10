@@ -67,18 +67,5 @@ class IdentityVerificationActivityTest {
         val requiredText = "Begin identity verification."
         compose.onNodeWithText(requiredText).assertIsDisplayed()
         compose.onNodeWithText("Begin").performClick()
-
-        // -- Check Persona Flow
-        val personaBeginVerification = withText("Begin verifying")
-        waitUntilViewIsDisplayed(personaBeginVerification)
-        onView(personaBeginVerification)
-            .check(ViewAssertions.matches(isDisplayed()))
-            .perform(ViewActions.click())
-
-        val personaBeginVerificationVisa = withText("Visa")
-        waitUntilViewIsDisplayed(personaBeginVerificationVisa)
-        onView(personaBeginVerificationVisa)
-            .check(ViewAssertions.matches(isDisplayed()))
-            .perform(ViewActions.click())
     }
 }
