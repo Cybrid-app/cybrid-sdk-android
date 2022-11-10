@@ -20,6 +20,7 @@ class PollingTest {
     fun test_init() {
 
         Assert.assertNotNull(classUnderTest)
+        Assert.assertNotNull(classUnderTest.executor)
         Assert.assertNotNull(classUnderTest.handler)
         Assert.assertNotNull(classUnderTest.runnable)
         Assert.assertNotNull(classUnderTest.runner)
@@ -48,6 +49,8 @@ class PollingTest {
         classUnderTest.stop()
 
         // -- Then
+        Assert.assertTrue(classUnderTest.executor?.isShutdown ?: true)
+        Assert.assertNull(classUnderTest.executor)
         Assert.assertNull(classUnderTest.runnable)
     }
 }
