@@ -20,6 +20,59 @@ parameters:
 
 jobs:
 
+  android-sdk-test:
+    docker:
+      - image: cimg/android:2022.09.2
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      - run:
+          name: Download Dependencies
+          command: |
+            ./gradlew SDKAndroid:androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      - run:
+          name: Run SDK Unit Test
+          command: |
+            ./gradlew koverXmlReport
+      - store_artifacts:
+          path: SDKAndroid/build/reports/kover/project-xml/report.xml
+          destination: reports
+      - codecov/upload:
+          file: 'SDKAndroid/build/reports/kover/project-xml/report.xml'
+
+  android-e2e:
+    executor:
+      name: android/android-machine
+      resource-class: large
+      tag: 2021.10.1
+    steps:
+      - checkout
+      - android/create-avd:
+          avd-name: myavd
+          install: true
+          system-image: system-images;android-29;default;x86
+      - android/start-emulator:
+          avd-name: myavd
+          no-window: true
+          restore-gradle-cache-prefix: v1a
+      - run:
+          name: Run UI Test
+          command: |
+            ./gradlew app:connectedDebugAndroidTest
+      - run:
+          name: Run Unit Test
+          command: |
+            ./gradlew app:testDebugUnitTest
+      - android/save-gradle-cache:
+          cache-prefix: v1a
+
   android-sdk-publish:
     docker:
       - image: cimg/android:2022.09.2
@@ -93,58 +146,46 @@ jobs:
                --device model=redfin,version=30,locale=en,orientation=portrait \
                --timeout 10m
 
-  android-e2e:
-    executor:
-      name: android/android-machine
-      resource-class: large
-      tag: 2021.10.1
-    steps:
-      - checkout
-      - android/create-avd:
-          avd-name: myavd
-          install: true
-          system-image: system-images;android-29;default;x86
-      - android/start-emulator:
-          avd-name: myavd
-          no-window: true
-          restore-gradle-cache-prefix: v1a
-      - run:
-          name: Run UI Test
-          command: |
-            ./gradlew app:connectedDebugAndroidTest
-      - run:
-          name: Run Unit Test
-          command: |
-            ./gradlew app:testDebugUnitTest
-      - android/save-gradle-cache:
-          cache-prefix: v1a
-
-  android-sdk-test:
+  demo-app-publish:
     docker:
       - image: cimg/android:2022.09.2
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
+      - run:
+          name: Install brew
+          command: |
+              sudo apt-get install build-essential curl file git
+              sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+              echo 'export PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin/:$PATH"' >> $BASH_ENV
+              echo 'export MANPATH="/home/linuxbrew/.linuxbrew/share/man:$MANPATH"' >> $BASH_ENV
+              echo 'export INFOPATH="/home/linuxbrew/.linuxbrew/share/info:$INFOPATH"' >> $BASH_ENV
+      - run:
+          name: Install Appetize
+          command: |
+              brew install YusukeIwaki/appetize/appetize
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
           name: Download Dependencies
           command: |
-            ./gradlew SDKAndroid:androidDependencies
+              ./gradlew SDKAndroid:androidDependencies
       - save_cache:
           paths:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
-          name: Run SDK Unit Test
+          name: Compile Debug App
           command: |
-            ./gradlew koverXmlReport
+              ./gradlew app:assembleDebug
       - store_artifacts:
-          path: SDKAndroid/build/reports/kover/project-xml/report.xml
-          destination: reports
-      - codecov/upload:
-          file: 'SDKAndroid/build/reports/kover/project-xml/report.xml'
+          path: app/build/outputs/apk/debug/app-debug.apk
+          destination: debugAPK
+      - run:
+          name: Upload app to Appetize
+          command: |
+              appetize upload ${APPETIZE_PUBLIC_API_TOKEN} app/build/outputs/apk/debug/app-debug.apk --platform=android --token=${APPETIZE_API_TOKEN}
 
 workflows:
   android-test:
@@ -164,3 +205,4 @@ workflows:
             branches:
               only:
                 - main
+      - demo-app-publish
