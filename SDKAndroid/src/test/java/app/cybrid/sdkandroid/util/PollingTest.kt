@@ -49,8 +49,7 @@ class PollingTest {
         classUnderTest.stop()
 
         // -- Then
-        Assert.assertTrue(classUnderTest.executor?.isShutdown ?: true)
-        Assert.assertNull(classUnderTest.executor)
+        Assert.assertTrue(classUnderTest.executor.isShutdown)
         Assert.assertNull(classUnderTest.runnable)
     }
 }

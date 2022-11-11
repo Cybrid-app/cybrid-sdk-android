@@ -13,21 +13,19 @@ class Polling(runner: () -> Unit) {
     var runnable: Runnable? = null
     var runner: () -> Unit
 
-    var executor: ScheduledThreadPoolExecutor? = null
+    var executor: ScheduledThreadPoolExecutor
 
     init {
 
         this.runner = runner
         this.runnable = Runnable { runner.invoke() }
         this.executor = ScheduledThreadPoolExecutor(1)
-        this.executor?.scheduleWithFixedDelay(this.runnable, 0L, updateInterval, TimeUnit.SECONDS)
+        this.executor.scheduleWithFixedDelay(this.runnable, 0L, updateInterval, TimeUnit.SECONDS)
     }
 
     fun stop() {
 
-        this.executor?.remove(this.runnable)
-        this.executor?.shutdownNow()
-        this.executor = null
+        this.executor.shutdownNow()
         this.runnable = null
     }
 }
