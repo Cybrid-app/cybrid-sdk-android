@@ -193,7 +193,7 @@ workflows:
             branches:
               only:
                 - main
-      - demo-app-publish
+      - demo-app-publish:
           requires:
             - android-e2e
           filters:
