@@ -205,6 +205,9 @@ dependencies {
     // -- Persona
     implementation 'com.withpersona.sdk2:inquiry:2.2.37'
 
+    // -- Plaid
+    implementation 'com.plaid.link:sdk-core:3.10.1'
+
     // -- SDK Test
     testImplementation 'com.android.support.test:runner:1.0.2'
     testImplementation "io.mockk:mockk:1.13.1"

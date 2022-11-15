@@ -34,6 +34,10 @@ class Component() {
             val kycComponent = Component(5, "KYC Component")
             components.add(kycComponent)
 
+            // -- Bank Accounts Component
+            val bankAccountsComponent = Component(6, "Bank Accounts Component")
+            components.add(bankAccountsComponent)
+
             // --
             return components
         }
