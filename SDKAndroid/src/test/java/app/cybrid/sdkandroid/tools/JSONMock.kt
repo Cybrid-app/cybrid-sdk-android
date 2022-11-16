@@ -1,31 +1,46 @@
 package app.cybrid.sdkandroid.tools
 
 import app.cybrid.sdkandroid.BuildConfig
-import okhttp3.Interceptor
+import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.Protocol
-import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
 
 class JSONMock: Interceptor {
 
-    private fun getResponse(): String {
-        return ""
+    private fun getResponse(request: Request): String {
+
+        val method = request.method
+        val divider = "://"
+        val toReplace = "${request.url.scheme}${divider}${request.url.host}/api/"
+        val endpoint = request.url.toUri().toString().replace(toReplace, "")
+        var response = """[]"""
+
+        when (endpoint) {
+
+            "customers" -> {
+
+                when (method) {
+
+                    "POST" -> {}
+                }
+            }
+        }
+        return response
     }
 
     override fun intercept(chain: Interceptor.Chain): Response {
 
         if (BuildConfig.DEBUG) {
 
-            val responseString = """[]"""
+            val response = getResponse(chain.request())
             val mediaType = "application/json; charset=utf-8".toMediaType()
             return chain.proceed(chain.request())
                 .newBuilder()
                 .code(200)
                 .request(chain.request())
                 .protocol(Protocol.HTTP_2)
-                .body(responseString.toResponseBody(mediaType))
-                .message(responseString)
+                .body(response.toResponseBody(mediaType))
+                .message(response)
                 .addHeader("content-type", "application/json")
                 .build()
         } else {
