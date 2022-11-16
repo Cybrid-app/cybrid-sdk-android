@@ -11,9 +11,9 @@ open class Cybrid {
     private var bearer: String = ""
     var customerGuid: String = ""
 
-    var tag:String = "CybridSDK"
+    var tag: String = "CybridSDK"
     var invalidToken = false
-    var listener:CybridSDKEvents? = null
+    var listener: CybridSDKEvents? = null
 
     fun setBearer(bearer: String) {
 
@@ -22,7 +22,7 @@ open class Cybrid {
         Logger.log(LoggerEvents.AUTH_SET)
     }
 
-    fun getOKHttpClient() : OkHttpClient.Builder {
+    fun getOKHttpClient(): OkHttpClient.Builder {
 
         return OkHttpClient()
             .newBuilder()

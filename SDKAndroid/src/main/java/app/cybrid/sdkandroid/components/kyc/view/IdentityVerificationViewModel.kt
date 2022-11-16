@@ -1,12 +1,12 @@
 package app.cybrid.sdkandroid.components.kyc.view
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.cybrid_api_bank.client.apis.CustomersApi
 import app.cybrid.cybrid_api_bank.client.apis.IdentityVerificationsApi
+import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.*
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.KYCView
@@ -19,8 +19,8 @@ import kotlinx.coroutines.*
 
 class IdentityVerificationViewModel: ViewModel() {
 
-    private val customerService = AppModule.getClient().createService(CustomersApi::class.java)
-    private val identityService = AppModule.getClient().createService(IdentityVerificationsApi::class.java)
+    private var customerService = AppModule.getClient().createService(CustomersApi::class.java)
+    private var identityService = AppModule.getClient().createService(IdentityVerificationsApi::class.java)
 
     protected var customerJob: Polling? = null
     protected var identityJob: Polling? = null
@@ -29,6 +29,12 @@ class IdentityVerificationViewModel: ViewModel() {
     var UIState: MutableState<KYCView.KYCViewState>? = null
 
     var latestIdentityVerification: IdentityVerificationBankModel? = null
+
+    fun setDataProvider(dataProvider: ApiClient)  {
+
+        customerService = dataProvider.createService(CustomersApi::class.java)
+        identityService = dataProvider.createService(IdentityVerificationsApi::class.java)
+    }
 
     suspend fun createCustomerTest() {
 
