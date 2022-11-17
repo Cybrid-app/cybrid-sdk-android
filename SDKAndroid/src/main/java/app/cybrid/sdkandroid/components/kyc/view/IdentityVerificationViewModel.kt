@@ -22,8 +22,8 @@ class IdentityVerificationViewModel: ViewModel() {
     private var customerService = AppModule.getClient().createService(CustomersApi::class.java)
     private var identityService = AppModule.getClient().createService(IdentityVerificationsApi::class.java)
 
-    protected var customerJob: Polling? = null
-    protected var identityJob: Polling? = null
+    var customerJob: Polling? = null
+    var identityJob: Polling? = null
 
     var customerGuid = Cybrid.instance.customerGuid
     var UIState: MutableState<KYCView.KYCViewState>? = null
@@ -105,7 +105,7 @@ class IdentityVerificationViewModel: ViewModel() {
         }
     }
 
-    private suspend fun getLastIdentityVerification(): IdentityVerificationBankModel? {
+    suspend fun getLastIdentityVerification(): IdentityVerificationBankModel? {
 
         var verification: IdentityVerificationBankModel? = null
         Cybrid.instance.let { cybrid ->
@@ -137,7 +137,7 @@ class IdentityVerificationViewModel: ViewModel() {
         return verification
     }
 
-    private suspend fun createIdentityVerification(): IdentityVerificationBankModel? {
+    suspend fun createIdentityVerification(): IdentityVerificationBankModel? {
 
         var verification: IdentityVerificationBankModel? = null
         Cybrid.instance.let { cybrid ->
@@ -165,7 +165,7 @@ class IdentityVerificationViewModel: ViewModel() {
         return verification
     }
 
-    private fun checkCustomerStatus(state: CustomerBankModel.State) {
+    fun checkCustomerStatus(state: CustomerBankModel.State) {
 
         when (state) {
 
@@ -199,7 +199,7 @@ class IdentityVerificationViewModel: ViewModel() {
         }
     }
 
-    private fun checkIdentityRecordStatus(record: IdentityVerificationBankModel?) {
+    fun checkIdentityRecordStatus(record: IdentityVerificationBankModel?) {
 
         when(record?.state) {
 
@@ -249,7 +249,7 @@ class IdentityVerificationViewModel: ViewModel() {
         }
     }
 
-    private fun checkIdentityPersonaStatus(record: IdentityVerificationBankModel?) {
+    fun checkIdentityPersonaStatus(record: IdentityVerificationBankModel?) {
 
         this.latestIdentityVerification = record
         when(record?.personaState) {
