@@ -63,10 +63,10 @@ class IdentityVerificationViewModelTestError {
     }
 
     @Test
-    fun test_getIdentityVerificationStatus_Successfully() = runBlocking {
+    fun test_getIdentityVerificationStatus_Error() = runBlocking {
 
         // -- Given
-        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
 

@@ -94,6 +94,24 @@ class IdentityVerificationViewModelTest {
     }
 
     @Test
+    fun test_getCustomerStatus_Successfully() = runBlocking {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+        val originalCustomerGuid = viewModel.customerGuid
+
+        // -- When
+        viewModel.getCustomerStatus()
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertEquals(viewModel.customerGuid, originalCustomerGuid)
+        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.LOADING)
+    }
+
+    @Test
     fun test_getIdentityVerificationStatus_Successfully() = runBlocking {
 
         // -- Given
@@ -106,7 +124,6 @@ class IdentityVerificationViewModelTest {
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        //Assert.assertNotNull(viewModel.identityJob)
     }
 
     @Test
@@ -124,8 +141,8 @@ class IdentityVerificationViewModelTest {
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(identity)
         Assert.assertEquals(identity?.type, IdentityVerificationBankModel.Type.kyc)
-        Assert.assertEquals(identity?.guid, "c82bebca5415884e9f43c620f5947676")
-        Assert.assertEquals(identity?.customerGuid, "bf10305829337d106b82c521bb6c8fd2")
+        Assert.assertEquals(identity?.guid, "1234")
+        Assert.assertEquals(identity?.customerGuid, "1234")
         Assert.assertEquals(identity?.method, IdentityVerificationBankModel.Method.idAndSelfie)
         Assert.assertEquals(identity?.state, IdentityVerificationBankModel.State.storing)
         Assert.assertNull(identity?.personaInquiryId)
@@ -163,8 +180,8 @@ class IdentityVerificationViewModelTest {
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(identity)
         Assert.assertEquals(identity?.type, IdentityVerificationBankModel.Type.kyc)
-        Assert.assertEquals(identity?.guid, "c82bebca5415884e9f43c620f5947676")
-        Assert.assertEquals(identity?.customerGuid, "bf10305829337d106b82c521bb6c8fd2")
+        Assert.assertEquals(identity?.guid, "1234")
+        Assert.assertEquals(identity?.customerGuid, "1234")
         Assert.assertEquals(identity?.method, IdentityVerificationBankModel.Method.idAndSelfie)
         Assert.assertEquals(identity?.state, IdentityVerificationBankModel.State.storing)
         Assert.assertNull(identity?.personaInquiryId)

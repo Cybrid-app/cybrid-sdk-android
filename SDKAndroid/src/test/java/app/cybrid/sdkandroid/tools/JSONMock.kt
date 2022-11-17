@@ -64,6 +64,11 @@ class JSONMock(state: JSONMockState): Interceptor {
                             JSONMockState.SUCCESS -> { response = TestConstants.CREATE_CUSTOMER_SUCCESS }
                         }
                     }
+                    "GET" -> {
+                        when (state) {
+                            JSONMockState.SUCCESS -> { response = TestConstants.FETCH_CUSTOMER_SUCCESS }
+                        }
+                    }
                 }
             }
 
