@@ -12,34 +12,28 @@ class JSONMock(state: JSONMockState): Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
 
-        if (BuildConfig.DEBUG) {
+        if (state == JSONMockState.ERROR) {
 
-            if (state == JSONMockState.ERROR) {
+            return chain.proceed(chain.request())
+                .newBuilder()
+                .code(403)
+                .request(chain.request())
+                .protocol(Protocol.HTTP_2)
+                .build()
 
-                return chain.proceed(chain.request())
-                    .newBuilder()
-                    .code(403)
-                    .request(chain.request())
-                    .protocol(Protocol.HTTP_2)
-                    .build()
-
-            } else {
-
-                val response = getResponse(chain.request())
-                val mediaType = "application/json; charset=utf-8".toMediaType()
-                return chain.proceed(chain.request())
-                    .newBuilder()
-                    .code(200)
-                    .request(chain.request())
-                    .protocol(Protocol.HTTP_2)
-                    .body(response.toResponseBody(mediaType))
-                    .message(response)
-                    .addHeader("content-type", "application/json")
-                    .build()
-            }
         } else {
-            throw IllegalAccessError("MockInterceptor is only meant for Testing Purposes and " +
-                    "bound to be used only with DEBUG mode")
+
+            val response = getResponse(chain.request())
+            val mediaType = "application/json; charset=utf-8".toMediaType()
+            return chain.proceed(chain.request())
+                .newBuilder()
+                .code(200)
+                .request(chain.request())
+                .protocol(Protocol.HTTP_2)
+                .body(response.toResponseBody(mediaType))
+                .message(response)
+                .addHeader("content-type", "application/json")
+                .build()
         }
     }
 

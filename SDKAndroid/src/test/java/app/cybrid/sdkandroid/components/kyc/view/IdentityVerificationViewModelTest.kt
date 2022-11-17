@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import okhttp3.OkHttpClient
 import org.junit.After
@@ -76,7 +77,7 @@ class IdentityVerificationViewModelTest {
     }
 
     @Test
-    fun test_createCustomerTest_Successfully() = runBlocking {
+    fun test_createCustomerTest_Successfully() = runTest {
 
         // -- Given
         val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
