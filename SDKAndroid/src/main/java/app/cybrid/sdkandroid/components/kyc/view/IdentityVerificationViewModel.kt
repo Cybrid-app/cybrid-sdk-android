@@ -30,10 +30,16 @@ class IdentityVerificationViewModel: ViewModel() {
 
     var latestIdentityVerification: IdentityVerificationBankModel? = null
 
+    private var scope: CoroutineScope = viewModelScope
+
     fun setDataProvider(dataProvider: ApiClient)  {
 
         customerService = dataProvider.createService(CustomersApi::class.java)
         identityService = dataProvider.createService(IdentityVerificationsApi::class.java)
+    }
+
+    fun setScope(scope: CoroutineScope) {
+        this.scope = scope
     }
 
     suspend fun createCustomerTest() {
@@ -142,8 +148,9 @@ class IdentityVerificationViewModel: ViewModel() {
         var verification: IdentityVerificationBankModel? = null
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    val waitFor = scope.async {
+
+                scope.let {
+                    val waitFor = it.async {
 
                         val recordResponse = getResult {
                             identityService.createIdentityVerification(
@@ -160,6 +167,9 @@ class IdentityVerificationViewModel: ViewModel() {
                     }
                     waitFor.await()
                 }
+               /* viewModelScope.let { scope ->
+
+                }*/
             }
         }
         return verification

@@ -105,4 +105,21 @@ class DataAccessStrategyTest {
         Assert.assertEquals(result.code, 500)
         Assert.assertNotNull(result.message)
     }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_call_invoke() = runBlocking {
+
+        val expectedCode = 200
+        val apiClient = prepareClient(expectedCode)
+        val pricesService = apiClient.createService(PricesApi::class.java)
+        val result = getResult { pricesService.listPrices() }
+
+        val result2 = pricesService.listPrices()
+        val resourceToCheck = Resource.success(result2.body(), result2.code())
+
+        Assert.assertNotNull(result)
+        Assert.assertEquals(result.code, expectedCode)
+        Assert.assertEquals(result, resourceToCheck)
+    }
 }

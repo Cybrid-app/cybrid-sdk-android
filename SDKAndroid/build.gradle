@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'maven-publish'
     id 'signing'
+    id 'org.jetbrains.kotlinx.kover'
 }
 
 def filesExcluded = [
@@ -83,7 +84,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
     kotlinOptions.freeCompilerArgs = ["-Xjvm-default=enable"]
 }
 
-tasks.koverHtmlReport {
+/*tasks.koverHtmlReport {
 
     enabled = true
     excludes = filesExcluded
@@ -93,6 +94,17 @@ tasks.koverXmlReport {
 
     enabled = true
     excludes = filesExcluded
+}*/
+
+kover {
+
+    instrumentation {
+        excludeTasks.add "testReleaseUnitTest"
+    }
+
+    htmlReport {
+        onCheck.set(false)
+    }
 }
 
 task androidSourcesJar(type: Jar) {
@@ -216,6 +228,7 @@ dependencies {
     testImplementation 'com.android.support.test:runner:1.0.2'
     testImplementation "io.mockk:mockk:1.13.1"
     testImplementation 'org.robolectric:robolectric:4.8.1'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
