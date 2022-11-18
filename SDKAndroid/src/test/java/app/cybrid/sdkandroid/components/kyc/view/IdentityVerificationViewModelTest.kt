@@ -17,25 +17,13 @@ import org.junit.*
 
 class IdentityVerificationViewModelTest {
 
-    /*@ExperimentalCoroutinesApi
-    @get:Rule
-    val mainDispatcherRule = MainDispatcherRule()*/
-
-    private val dispatcher = TestCoroutineDispatcher()
+    @ExperimentalCoroutinesApi
     private val scope = TestScope()
-
-    private lateinit var identityVerificationViewModel: IdentityVerificationViewModel
 
     @ExperimentalCoroutinesApi
     @Before
     fun setUp() {
-
-        MockKAnnotations.init(this, relaxed = true)
-        //Dispatchers.setMain(dispatcher)
         Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
-        //TestSubject.setScope(scope)
-        identityVerificationViewModel = spyk(IdentityVerificationViewModel())
-        identityVerificationViewModel.setScope(scope)
     }
 
     @ExperimentalCoroutinesApi
@@ -54,10 +42,9 @@ class IdentityVerificationViewModelTest {
 
     private fun createViewModel(): IdentityVerificationViewModel {
 
-        //val viewModel = IdentityVerificationViewModel()
-        //viewModel.UIState = mutableStateOf(KYCView.KYCViewState.LOADING)
-        identityVerificationViewModel.UIState = mutableStateOf(KYCView.KYCViewState.LOADING)
-        return identityVerificationViewModel
+        val viewModel = IdentityVerificationViewModel()
+        viewModel.UIState = mutableStateOf(KYCView.KYCViewState.LOADING)
+        return viewModel
     }
 
     @ExperimentalCoroutinesApi
@@ -96,12 +83,15 @@ class IdentityVerificationViewModelTest {
 
         // -- Given
         val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
-        //var identity: IdentityVerificationBankModel? = null
+        var identity: IdentityVerificationBankModel? = null
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
 
         // -- When
-        val identity = viewModel.createIdentityVerification()
+        val deferred = async {
+            identity = viewModel.createIdentityVerification()
+        }
+        deferred.await()
 
         // -- Then
         Assert.assertNotNull(viewModel)

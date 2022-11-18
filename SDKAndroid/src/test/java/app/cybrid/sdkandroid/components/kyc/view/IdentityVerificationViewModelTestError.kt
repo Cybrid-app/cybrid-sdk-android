@@ -18,7 +18,8 @@ import org.junit.Test
 
 class IdentityVerificationViewModelTestError {
 
-    /*private val dispatcher = TestCoroutineDispatcher()
+    @ExperimentalCoroutinesApi
+    private val dispatcher = TestCoroutineDispatcher()
 
     private fun prepareClient(state: JSONMock.JSONMockState): ApiClient {
 
@@ -115,5 +116,5 @@ class IdentityVerificationViewModelTestError {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertNull(identity)
-    }*/
+    }
 }
