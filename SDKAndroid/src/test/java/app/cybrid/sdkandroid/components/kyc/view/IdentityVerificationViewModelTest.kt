@@ -4,16 +4,16 @@ import androidx.compose.runtime.mutableStateOf
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.CustomerBankModel
 import app.cybrid.cybrid_api_bank.client.models.IdentityVerificationBankModel
+import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.KYCView
 import app.cybrid.sdkandroid.tools.JSONMock
-import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import app.cybrid.sdkandroid.util.Polling
-import io.mockk.MockKAnnotations
-import io.mockk.spyk
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import okhttp3.OkHttpClient
 import org.junit.*
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class IdentityVerificationViewModelTest {
 
@@ -26,11 +26,13 @@ class IdentityVerificationViewModelTest {
         Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
     }
 
+
     @ExperimentalCoroutinesApi
     @After
     fun tearDown() {
         Dispatchers.resetMain()
     }
+
 
     private fun prepareClient(state: JSONMock.JSONMockState): ApiClient {
 
@@ -42,6 +44,7 @@ class IdentityVerificationViewModelTest {
 
     private fun createViewModel(): IdentityVerificationViewModel {
 
+        Cybrid.instance.invalidToken = false
         val viewModel = IdentityVerificationViewModel()
         viewModel.UIState = mutableStateOf(KYCView.KYCViewState.LOADING)
         return viewModel
@@ -79,22 +82,15 @@ class IdentityVerificationViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_createIdentityVerification_Successfully() = scope.runTest {
+    fun test_createIdentityVerification_Successfully() = runTest {
 
         // -- Given
         val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
-        var identity: IdentityVerificationBankModel? = null
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
 
         // -- When
-        val deferred = async {
-            identity = viewModel.createIdentityVerification()
-        }
-        deferred.await()
-
-        // -- Then
-        Assert.assertNotNull(viewModel)
+        val identity = viewModel.createIdentityVerification()
         Assert.assertNotNull(identity)
         Assert.assertEquals(identity?.type, IdentityVerificationBankModel.Type.kyc)
         Assert.assertEquals(identity?.guid, "1234")
@@ -103,6 +99,9 @@ class IdentityVerificationViewModelTest {
         Assert.assertEquals(identity?.state, IdentityVerificationBankModel.State.storing)
         Assert.assertNull(identity?.personaInquiryId)
         Assert.assertNull(identity?.personaState)
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
     }
 
     @ExperimentalCoroutinesApi
@@ -142,19 +141,15 @@ class IdentityVerificationViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_getLastIdentityVerification_Successfully() = scope.runTest {
+    fun test_getLastIdentityVerification_Successfully() = runTest {
 
         // -- Given
         val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
-        var identity: IdentityVerificationBankModel? = null
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
 
         // -- When
-        val deferred = async {
-            identity = viewModel.getLastIdentityVerification()
-        }
-        deferred.await()
+        val identity = viewModel.getLastIdentityVerification()
 
         // -- Then
         Assert.assertNotNull(viewModel)
@@ -187,7 +182,7 @@ class IdentityVerificationViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_createCustomerTest_Successfully() = scope.runTest {
+    fun test_createCustomerTest_Successfully() = runTest {
 
         // -- Given
         val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
@@ -196,10 +191,7 @@ class IdentityVerificationViewModelTest {
         val originalCustomerGuid = viewModel.customerGuid
 
         // -- When
-        val deferred = async {
-            viewModel.createCustomerTest()
-        }
-        deferred.await()
+        viewModel.createCustomerTest()
 
         // -- Then
         Assert.assertNotNull(viewModel)
@@ -212,10 +204,9 @@ class IdentityVerificationViewModelTest {
 
         // -- Given
         val viewModel = createViewModel()
-        var customer = CustomerBankModel()
 
         // -- state: storing - UIState: LOADING
-        customer = CustomerBankModel(state = CustomerBankModel.State.storing)
+        var customer = CustomerBankModel(state = CustomerBankModel.State.storing)
         Assert.assertNull(viewModel.customerJob)
         viewModel.checkCustomerStatus(customer.state!!)
         Assert.assertNotNull(viewModel.customerJob)

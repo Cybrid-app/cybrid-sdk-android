@@ -4,27 +4,8 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id 'org.jetbrains.kotlinx.kover'
-    id 'jacoco'
 }
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
-
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
-
-    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
-    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
-    def mainSrc = "${project.projectDir}/src/main/java"
-
-    sourceDirectories.setFrom(files([mainSrc]))
-    classDirectories.setFrom(files([debugTree]))
-    executionData.setFrom(fileTree(dir: "$buildDir", includes: [
-            "jacoco/testDebugUnitTest.exec",
-            "outputs/code-coverage/connected/*coverage.ec"
-    ]))
-}
 
 def filesExcluded = [
         'app.cybrid.sdkandroid.components.*',
@@ -52,11 +33,9 @@ android {
 
     buildTypes {
         debug {
-            testCoverageEnabled true
             minifyEnabled false
         }
         release {
-            testCoverageEnabled true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -80,9 +59,13 @@ android {
             includeAndroidResources = true
         }
         unitTests.all {
-            jacoco {
-                includeNoLocationClasses = true
-                excludes = ['jdk.internal.*']
+            if (name == "testDebugUnitTest") {
+                kover {
+                    // tool = kover
+
+                    // kotlinx.kover.api.KoverTool("1.0.683")
+                    // tool = kotlinx.kover.api.KoverToolDefault.INSTANCE
+                }
             }
         }
     }
@@ -124,10 +107,10 @@ tasks.koverXmlReport {
 
 kover {
 
+    engine = kotlinx.kover.api.DefaultIntellijEngine.INSTANCE
     instrumentation {
         excludeTasks.add "testReleaseUnitTest"
     }
-
     htmlReport {
         onCheck.set(false)
     }
