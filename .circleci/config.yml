@@ -42,10 +42,10 @@ jobs:
           command: |
             ./gradlew koverXmlReport
       - store_artifacts:
-          path: SDKAndroid/build/reports/kover/project-xml/report.xml
+          path: SDKAndroid/build/reports/kover/xml/report.xml
           destination: reports
       - codecov/upload:
-          file: 'SDKAndroid/build/reports/kover/project-xml/report.xml'
+          file: 'SDKAndroid/build/reports/kover/xml/report.xml'
 
   android-e2e:
     executor:
