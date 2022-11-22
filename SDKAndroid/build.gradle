@@ -96,6 +96,9 @@ kover {
     htmlReport {
         onCheck.set(false)
     }
+    xmlReport {
+        onCheck.set(false)
+    }
 }
 
 task androidSourcesJar(type: Jar) {
