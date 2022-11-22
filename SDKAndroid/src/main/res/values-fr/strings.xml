@@ -53,5 +53,14 @@
     <string name="accounts_view_trade_detail_order_order_id">Numéro de commande</string>
     <string name="accounts_view_trade_detail_order_close_button">Proche</string>
 
+    <!-- KYC Component -->
+    <string name="kyc_view_loading_text">Checking Identity...</string>
+    <string name="kyc_view_required_text">Begin identity verification.</string>
+    <string name="kyc_view_verified_text">You have been verified!</string>
+    <string name="kyc_view_error_text">Unable to verify identity.</string>
+    <string name="kyc_view_reviewing_text">Identity being reviewed.</string>
+    <string name="kyc_view_required_cancel_button">Cancel</string>
+    <string name="kyc_view_required_begin_button">Begin</string>
+    <string name="kyc_view_required_done_button">Done</string>
 
 </resources>

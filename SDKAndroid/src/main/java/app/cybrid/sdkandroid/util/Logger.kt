@@ -9,6 +9,7 @@ enum class LoggerEvents(val level:Int, val message:String) {
     AUTH_EXPIRED(Log.ERROR, "Session is expired"),
     NETWORK_ERROR(Log.ERROR, "Network error"),
     COMPONENT_INIT(Log.INFO, "Initializing"),
+    DATA_FETCHED(Log.INFO, "Data Fetched"),
     DATA_REFRESHED(Log.INFO, "Refreshing"),
     DATA_ERROR(Log.ERROR, "There was an error fetching")
 }

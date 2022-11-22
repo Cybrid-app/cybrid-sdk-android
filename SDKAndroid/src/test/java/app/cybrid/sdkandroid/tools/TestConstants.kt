@@ -63,14 +63,12 @@ object TestConstants {
         productType = QuoteBankModel.ProductType.trading,
         customerGuid = "bf10305829337d106b82c521bb6c8fd2",
         symbol = "BTC-USD",
-        asset = null,
         side = QuoteBankModel.Side.buy,
         receiveAmount = java.math.BigDecimal("1321413"),
         deliverAmount = java.math.BigDecimal("25000"),
         fee = BigDecimal("0"),
         issuedAt = null,
-        expiresAt = null,
-        productProvider = null
+        expiresAt = null
     )
 
     val sellQuote = QuoteBankModel(
@@ -78,14 +76,12 @@ object TestConstants {
         productType = QuoteBankModel.ProductType.trading,
         customerGuid = "bf10305829337d106b82c521bb6c8fd2",
         symbol = "BTC-USD",
-        asset = null,
         side = QuoteBankModel.Side.sell,
         receiveAmount = java.math.BigDecimal("25000"),
         deliverAmount = java.math.BigDecimal("1321413"),
         fee = BigDecimal("0"),
         issuedAt = null,
-        expiresAt = null,
-        productProvider = null
+        expiresAt = null
     )
 
     val accounts:List<AccountBankModel> = listOf(
@@ -166,4 +162,13 @@ object TestConstants {
             sellPrice = BigDecimal(2374000)
         )
     )
+
+    // -- JSON
+
+    val CREATE_CUSTOMER_SUCCESS = "{\"guid\":\"1234\",\"type\":\"individual\",\"created_at\":\"2022-06-23T07:08:16.718Z\",\"state\":\"storing\"}"
+    val FETCH_CUSTOMER_SUCCESS = "{\"guid\":\"1234\",\"type\":\"individual\",\"created_at\":\"2022-06-23T07:08:16.718Z\",\"state\":\"storing\"}"
+    val CREATE_IDENTITY_VERIFICATION_SUCCESS = "{\"type\":\"kyc\",\"guid\":\"1234\",\"customer_guid\":\"1234\",\"created_at\":\"2022-11-16T23:47:20.110Z\",\"method\":\"id_and_selfie\",\"state\":\"storing\",\"outcome\":null,\"failure_codes\":[]}"
+    val FETCH_LIST_IDENTITY_VERIFICATIONS_SUCCESS_EMPTY = "{\"total\":0,\"page\":0,\"per_page\":0,\"objects\":[]}"
+    val FETCH_LIST_IDENTITY_VERIFICATIONS_SUCCESS = "{\"total\":1,\"page\":0,\"per_page\":1,\"objects\":[{\"type\":\"kyc\",\"guid\":\"1234\",\"customer_guid\":\"1234\",\"created_at\":\"2022-11-16T23:47:20.110Z\",\"method\":\"id_and_selfie\",\"state\":\"storing\",\"outcome\":null,\"failure_codes\":[],\"persona_inquiry_id\":null,\"persona_state\":null}]}"
+    val FETCH_IDENTITY_VERIFICATION_SUCCESS = "{\"type\":\"kyc\",\"guid\":\"1234\",\"customer_guid\":\"1234\",\"created_at\":\"2022-11-16T23:47:20.110Z\",\"method\":\"id_and_selfie\",\"state\":\"storing\",\"outcome\":null,\"failure_codes\":[],\"persona_inquiry_id\":null,\"persona_state\":null}"
 }

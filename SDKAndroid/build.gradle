@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'maven-publish'
     id 'signing'
+    id 'org.jetbrains.kotlinx.kover'
 }
 
 def filesExcluded = [
@@ -31,11 +32,9 @@ android {
 
     buildTypes {
         debug {
-            testCoverageEnabled true
             minifyEnabled false
         }
         release {
-            testCoverageEnabled true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -57,6 +56,11 @@ android {
         unitTests.returnDefaultValues = true
         unitTests {
             includeAndroidResources = true
+        }
+        unitTests.all {
+            if (name == "testDebugUnitTest") {
+                kover {}
+            }
         }
     }
     namespace 'app.cybrid.sdkandroid'
@@ -83,16 +87,18 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
     kotlinOptions.freeCompilerArgs = ["-Xjvm-default=enable"]
 }
 
-tasks.koverHtmlReport {
+kover {
 
-    enabled = true
-    excludes = filesExcluded
-}
-
-tasks.koverXmlReport {
-
-    enabled = true
-    excludes = filesExcluded
+    engine = kotlinx.kover.api.DefaultIntellijEngine.INSTANCE
+    instrumentation {
+        excludeTasks.add "testReleaseUnitTest"
+    }
+    htmlReport {
+        onCheck.set(false)
+    }
+    xmlReport {
+        onCheck.set(false)
+    }
 }
 
 task androidSourcesJar(type: Jar) {
@@ -163,6 +169,8 @@ signing {
 }
 
 dependencies {
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
 
     // -- Vars
     ext.retrofitVersion = '2.9.0'
@@ -172,7 +180,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.6.1'
 
     // -- Cybrid API Bank
-    implementation('app.cybrid:cybrid-api-bank-kotlin:0.36.6') {
+    implementation('app.cybrid:cybrid-api-bank-kotlin:0.53.19') {
         exclude group:'org.apache.oltu.oauth2', module: 'org.apache.oltu.oauth2.common'
     }
 
@@ -198,8 +206,9 @@ dependencies {
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
     testImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
     debugImplementation 'androidx.compose.ui:ui-test-manifest:1.2.1'
+    debugImplementation "androidx.customview:customview-poolingcontainer:1.0.0"
 
-    //Lifecycle
+    // -- Lifecycle
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
     implementation "androidx.lifecycle:lifecycle-common-java8:2.5.1"
@@ -207,10 +216,14 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.5.1'
     implementation 'androidx.fragment:fragment-ktx:1.5.2'
 
+    // -- Persona
+    implementation 'com.withpersona.sdk2:inquiry:2.2.37'
+
     // -- SDK Test
     testImplementation 'com.android.support.test:runner:1.0.2'
     testImplementation "io.mockk:mockk:1.13.1"
     testImplementation 'org.robolectric:robolectric:4.8.1'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }

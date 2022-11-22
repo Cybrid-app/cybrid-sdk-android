@@ -3,8 +3,11 @@ package app.cybrid.sdkandroid.util
 import org.junit.Assert
 import org.junit.Test
 import java.time.OffsetDateTime
+import java.util.*
 
 class UtilsTest {
+
+
 
     @Test
     fun isSuccessfulTest() {
@@ -35,6 +38,7 @@ class UtilsTest {
     fun getDateInFormatTest() {
 
         // -- Given
+        Locale.setDefault(Locale.forLanguageTag("us-EN"))
         val dateOne = OffsetDateTime.parse("2022-08-02T10:55:34.039847-05:00")
         val patterOne = "MM,dd,YYYY"
 

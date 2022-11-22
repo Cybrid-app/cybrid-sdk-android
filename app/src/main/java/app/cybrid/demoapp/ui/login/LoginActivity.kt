@@ -43,7 +43,7 @@ class LoginActivity : AppCompatActivity(), BearerListener {
         val demo = findViewById<TextView>(R.id.demo)
         demo.alpha = 1.0f
 
-        image.animate().translationY(-800f).setDuration(1800).setListener(object: AnimatorListenerAdapter() {
+        image.animate().translationY(-1000f).setDuration(1800).setListener(object: AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
 
                 clientIDLayout.animate().alpha(1.0f).setDuration(1200).start()
