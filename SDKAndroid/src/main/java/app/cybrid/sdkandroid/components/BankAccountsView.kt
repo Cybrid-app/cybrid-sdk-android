@@ -29,6 +29,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.cybrid.sdkandroid.BuildConfig
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.bankAccount.BankAccountViewModel
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import com.plaid.link.OpenPlaidLink
@@ -50,11 +51,20 @@ class BankAccountsView @JvmOverloads constructor(
 
     private var currentState = mutableStateOf(BankAccountsViewState.LOADING)
 
+    var bankAccountViewModel: BankAccountViewModel? = null
+
     init {
 
         LayoutInflater.from(context).inflate(R.layout.bankaccounts_component, this, true)
         this.composeView = findViewById(R.id.composeContent)
+    }
+
+    fun setViewModel(bankAccountViewModel: BankAccountViewModel) {
+
+        this.bankAccountViewModel = bankAccountViewModel
         this.initComposeView()
+
+        GlobalScope.launch { bankAccountViewModel.createWorkflow() }
     }
 
     private fun initComposeView() {
@@ -66,6 +76,7 @@ class BankAccountsView @JvmOverloads constructor(
                 )
             }
         }
+
 
         Handler().postDelayed({
             this.currentState.value = BankAccountsViewState.REQUIRED
@@ -109,7 +120,6 @@ fun BankAccountsView(
         }
     }
 }
-
 
 @Composable
 fun BankAccountsView_Loading() {
