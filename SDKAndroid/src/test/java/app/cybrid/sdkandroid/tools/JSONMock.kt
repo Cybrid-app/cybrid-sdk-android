@@ -47,7 +47,12 @@ class JSONMock(state: JSONMockState): Interceptor {
         var endpoint = request.url.toUri().toString().replace(toReplace, "")
         if (endpoint.contains("?")) { endpoint = endpoint.split("?")[0] }
 
-        //val fetchSingle = if (endpoint.contains())
+        var fetchSingle = true
+        val endpointParts = endpoint.split("/")
+        if (endpointParts.size > 1) {
+            endpoint = endpointParts[0]
+            fetchSingle = false
+        }
 
         when (endpoint) {
 
@@ -70,8 +75,20 @@ class JSONMock(state: JSONMockState): Interceptor {
                 when (method) {
                     "GET" -> {
                         when(state) {
-                            JSONMockState.SUCCESS -> { response = TestConstants.FETCH_IDENTITY_VERIFICATIONS_SUCCESS }
-                            JSONMockState.EMPTY -> { response = TestConstants.FETCH_IDENTITY_VERIFICATIONS_SUCCESS_EMPTY }
+                            JSONMockState.SUCCESS -> {
+                                response = if (fetchSingle) {
+                                    TestConstants.FETCH_LIST_IDENTITY_VERIFICATIONS_SUCCESS
+                                } else {
+                                    TestConstants.FETCH_IDENTITY_VERIFICATION_SUCCESS
+                                }
+                            }
+                            JSONMockState.EMPTY -> {
+                                response = if (fetchSingle) {
+                                    TestConstants.FETCH_LIST_IDENTITY_VERIFICATIONS_SUCCESS_EMPTY
+                                } else {
+                                    TestConstants.FETCH_IDENTITY_VERIFICATION_SUCCESS
+                                }
+                            }
                         }
                     }
                     "POST" -> {

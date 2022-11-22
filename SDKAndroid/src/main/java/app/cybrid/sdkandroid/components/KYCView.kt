@@ -85,7 +85,7 @@ class KYCView @JvmOverloads constructor(
             getInquiryResult: ManagedActivityResultLauncher<Inquiry, InquiryResponse>
         ) {
 
-            val id = identityViewModel.latestIdentityVerification?.personaInquiryId ?: ""
+            val id = identityViewModel.latestIdentityVerification?.identityVerificationDetails?.personaInquiryId ?: ""
             val inquiry = Inquiry.fromInquiry(id)
                 .build()
             getInquiryResult.launch(inquiry)

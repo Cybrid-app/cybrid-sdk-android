@@ -28,7 +28,7 @@ class IdentityVerificationViewModel: ViewModel() {
     var customerGuid = Cybrid.instance.customerGuid
     var UIState: MutableState<KYCView.KYCViewState>? = null
 
-    var latestIdentityVerification: IdentityVerificationBankModel? = null
+    var latestIdentityVerification: IdentityVerificationWrapper? = null
 
     fun setDataProvider(dataProvider: ApiClient)  {
 
@@ -49,7 +49,7 @@ class IdentityVerificationViewModel: ViewModel() {
                                     type = PostCustomerBankModel.Type.individual)
                             )
                         }
-                        Logger.log(LoggerEvents.DATA_FETCHED, "Customer created")
+                        Logger.log(LoggerEvents.DATA_FETCHED, "Create - Customer")
                         customerGuid = customerResult.data?.guid ?: customerGuid
                         getCustomerStatus()
                     }
@@ -70,7 +70,7 @@ class IdentityVerificationViewModel: ViewModel() {
                             customerService.getCustomer(
                                 customerGuid = customerGuid)
                         }
-                        Logger.log(LoggerEvents.DATA_FETCHED, "Customer status")
+                        Logger.log(LoggerEvents.DATA_FETCHED, "Fetch - Customer Status")
                         checkCustomerStatus(customerResult.data?.state ?: CustomerBankModel.State.storing)
                     }
                 }
@@ -78,31 +78,49 @@ class IdentityVerificationViewModel: ViewModel() {
         }
     }
 
-    fun getIdentityVerificationStatus(record: IdentityVerificationBankModel? = null) {
+    fun getIdentityVerificationStatus(identityWrapper: IdentityVerificationWrapper? = null) {
 
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
                 viewModelScope.let { scope ->
                     scope.launch {
 
-                        var lastVerification = record ?: getLastIdentityVerification()
+                        var lastVerification = identityWrapper?.identityVerification ?: getLastIdentityVerification()
                         if (lastVerification == null ||
-                            lastVerification.state == IdentityVerificationBankModel.State.expired ||
-                            lastVerification.personaState == IdentityVerificationBankModel.PersonaState.expired) {
-
+                            lastVerification.state == IdentityVerificationBankModel.State.expired) {
                             lastVerification = createIdentityVerification()
                         }
-                        val recordResponse = getResult {
-                            identityService.getIdentityVerification(
-                                identityVerificationGuid = lastVerification?.guid!!
-                            )
-                        }
-                        Logger.log(LoggerEvents.DATA_FETCHED, "Identity Verification status")
-                        checkIdentityRecordStatus(recordResponse.data)
+
+                        val lastVerificationWithDetails = fetchIdentityVerificationWithDetailsStatus(guid = lastVerification?.guid!!)
+                        val returnedWrapper = IdentityVerificationWrapper(identity = lastVerification, details = lastVerificationWithDetails)
+                        checkIdentityRecordStatus(returnedWrapper)
                     }
                 }
             }
         }
+    }
+
+    suspend fun fetchIdentityVerificationWithDetailsStatus(guid: String): IdentityVerificationWithDetailsBankModel? {
+
+        var identityVerificationDetails: IdentityVerificationWithDetailsBankModel? = null
+        Cybrid.instance.let { cybrid ->
+            if (!cybrid.invalidToken) {
+                viewModelScope.let { scope ->
+                    val waitFor = scope.async {
+                        val recordResponse = getResult {
+                            identityService.getIdentityVerification(
+                                identityVerificationGuid = guid
+                            )
+                        }
+                        Logger.log(LoggerEvents.DATA_FETCHED, "Fetch - Identity Verification Status")
+                        identityVerificationDetails = recordResponse.data
+                        return@async identityVerificationDetails
+                    }
+                    waitFor.await()
+                }
+            }
+        }
+        return identityVerificationDetails
     }
 
     suspend fun getLastIdentityVerification(): IdentityVerificationBankModel? {
@@ -120,7 +138,7 @@ class IdentityVerificationViewModel: ViewModel() {
                                 perPage = JavaBigDecimal(1)
                             )
                         }
-                        Logger.log(LoggerEvents.DATA_FETCHED, "Identity Verifications list")
+                        Logger.log(LoggerEvents.DATA_FETCHED, "Fetch - Identity Verifications List")
                         val total: JavaBigDecimal = identityResponse.data?.total ?: JavaBigDecimal(0)
                         if (total > JavaBigDecimal(0)) {
 
@@ -155,7 +173,7 @@ class IdentityVerificationViewModel: ViewModel() {
                                 )
                             )
                         }
-                        Logger.log(LoggerEvents.DATA_FETCHED, "Identity Verification created")
+                        Logger.log(LoggerEvents.DATA_FETCHED, "Create - Identity Verification")
                         verification = recordResponse.data
                         return@async verification
                     }
@@ -200,42 +218,42 @@ class IdentityVerificationViewModel: ViewModel() {
         }
     }
 
-    fun checkIdentityRecordStatus(record: IdentityVerificationBankModel?) {
+    fun checkIdentityRecordStatus(identityWrapper: IdentityVerificationWrapper?) {
 
-        when(record?.state) {
+        when(identityWrapper?.identityVerificationDetails?.state) {
 
-            IdentityVerificationBankModel.State.storing -> {
+            IdentityVerificationWithDetailsBankModel.State.storing -> {
 
                 if (identityJob == null) {
-                    identityJob = Polling { getIdentityVerificationStatus(record = record) }
+                    identityJob = Polling { getIdentityVerificationStatus(identityWrapper = identityWrapper) }
                 }
             }
 
-            IdentityVerificationBankModel.State.waiting -> {
+            IdentityVerificationWithDetailsBankModel.State.waiting -> {
 
-                if (record.personaState == IdentityVerificationBankModel.PersonaState.completed ||
-                        record.personaState == IdentityVerificationBankModel.PersonaState.processing) {
+                if (identityWrapper.identityVerificationDetails?.personaState == IdentityVerificationWithDetailsBankModel.PersonaState.completed ||
+                    identityWrapper.identityVerificationDetails?.personaState == IdentityVerificationWithDetailsBankModel.PersonaState.processing) {
 
                     if (identityJob == null) {
-                        identityJob = Polling { getIdentityVerificationStatus(record = record) }
+                        identityJob = Polling { getIdentityVerificationStatus(identityWrapper = identityWrapper) }
                     }
 
                 } else {
 
                     identityJob?.stop()
                     identityJob = null
-                    checkIdentityPersonaStatus(record)
+                    checkIdentityPersonaStatus(identityWrapper = identityWrapper)
                 }
             }
 
-            IdentityVerificationBankModel.State.expired -> {
+            IdentityVerificationWithDetailsBankModel.State.expired -> {
 
                 identityJob?.stop()
                 identityJob = null
                 getIdentityVerificationStatus(null)
             }
 
-            IdentityVerificationBankModel.State.completed -> {
+            IdentityVerificationWithDetailsBankModel.State.completed -> {
 
                 identityJob?.stop()
                 identityJob = null
@@ -250,30 +268,46 @@ class IdentityVerificationViewModel: ViewModel() {
         }
     }
 
-    fun checkIdentityPersonaStatus(record: IdentityVerificationBankModel?) {
+    fun checkIdentityPersonaStatus(identityWrapper: IdentityVerificationWrapper?) {
 
-        this.latestIdentityVerification = record
-        when(record?.personaState) {
+        this.latestIdentityVerification = identityWrapper
+        when(identityWrapper?.identityVerificationDetails?.personaState) {
 
-            IdentityVerificationBankModel.PersonaState.waiting -> {
-
-                UIState?.value = KYCView.KYCViewState.REQUIRED
-            }
-
-            IdentityVerificationBankModel.PersonaState.pending -> {
+            IdentityVerificationWithDetailsBankModel.PersonaState.waiting -> {
 
                 UIState?.value = KYCView.KYCViewState.REQUIRED
             }
 
-            IdentityVerificationBankModel.PersonaState.reviewing -> {
+            IdentityVerificationWithDetailsBankModel.PersonaState.pending -> {
+
+                UIState?.value = KYCView.KYCViewState.REQUIRED
+            }
+
+            IdentityVerificationWithDetailsBankModel.PersonaState.reviewing -> {
 
                 UIState?.value = KYCView.KYCViewState.REVIEWING
+            }
+
+            IdentityVerificationWithDetailsBankModel.PersonaState.expired -> {
+                getIdentityVerificationStatus(null)
             }
 
             else -> {
 
                 UIState?.value = KYCView.KYCViewState.ERROR
             }
+        }
+    }
+
+    class IdentityVerificationWrapper(identity: IdentityVerificationBankModel?, details: IdentityVerificationWithDetailsBankModel?) {
+
+        var identityVerification: IdentityVerificationBankModel?
+        var identityVerificationDetails: IdentityVerificationWithDetailsBankModel?
+
+        init {
+
+            this.identityVerification = identity
+            this.identityVerificationDetails = details
         }
     }
 }

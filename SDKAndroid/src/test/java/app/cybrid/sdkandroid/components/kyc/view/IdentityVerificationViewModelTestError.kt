@@ -2,6 +2,7 @@ package app.cybrid.sdkandroid.components.kyc.view
 
 import androidx.compose.runtime.mutableStateOf
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
+import app.cybrid.cybrid_api_bank.client.models.IdentityVerificationWithDetailsBankModel
 import app.cybrid.sdkandroid.components.KYCView
 import app.cybrid.sdkandroid.tools.JSONMock
 import kotlinx.coroutines.Dispatchers
@@ -9,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import okhttp3.OkHttpClient
 import org.junit.After
@@ -65,6 +67,22 @@ class IdentityVerificationViewModelTestError {
         Assert.assertNotNull(viewModel)
         Assert.assertEquals(viewModel.customerGuid, originalCustomerGuid)
         Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.LOADING)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_fetchIdentityVerificationWithDetailsStatus_Error() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- When
+        val identityStatus = viewModel.fetchIdentityVerificationWithDetailsStatus("1234")
+
+        // -- Then
+        Assert.assertNull(identityStatus)
     }
 
     @ExperimentalCoroutinesApi

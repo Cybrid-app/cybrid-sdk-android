@@ -189,6 +189,8 @@ workflows:
               only:
                 - main
       - firebase-robo:
+          requires:
+            - android-e2e
           filters:
             branches:
               only:
@@ -196,6 +198,7 @@ workflows:
       - demo-app-publish:
           requires:
             - android-e2e
+            - firebase-robo
           filters:
             branches:
               only:

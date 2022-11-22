@@ -6,7 +6,6 @@ plugins {
     id 'org.jetbrains.kotlinx.kover'
 }
 
-
 def filesExcluded = [
         'app.cybrid.sdkandroid.components.*',
         'app.cybrid.sdkandroid.BuildConfig',
@@ -60,12 +59,7 @@ android {
         }
         unitTests.all {
             if (name == "testDebugUnitTest") {
-                kover {
-                    // tool = kover
-
-                    // kotlinx.kover.api.KoverTool("1.0.683")
-                    // tool = kotlinx.kover.api.KoverToolDefault.INSTANCE
-                }
+                kover {}
             }
         }
     }
@@ -92,18 +86,6 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
     kotlinOptions.jvmTarget = "1.8"
     kotlinOptions.freeCompilerArgs = ["-Xjvm-default=enable"]
 }
-
-/*tasks.koverHtmlReport {
-
-    enabled = true
-    excludes = filesExcluded
-}
-
-tasks.koverXmlReport {
-
-    enabled = true
-    excludes = filesExcluded
-}*/
 
 kover {
 
@@ -195,7 +177,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.6.1'
 
     // -- Cybrid API Bank
-    implementation('app.cybrid:cybrid-api-bank-kotlin:0.52.4') {
+    implementation('app.cybrid:cybrid-api-bank-kotlin:0.53.19') {
         exclude group:'org.apache.oltu.oauth2', module: 'org.apache.oltu.oauth2.common'
     }
 
