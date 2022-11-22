@@ -206,6 +206,7 @@ dependencies {
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
     testImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
     debugImplementation 'androidx.compose.ui:ui-test-manifest:1.2.1'
+    debugImplementation "androidx.customview:customview-poolingcontainer:1.0.0"
 
     // -- Lifecycle
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
