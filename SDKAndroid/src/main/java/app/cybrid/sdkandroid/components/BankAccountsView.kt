@@ -62,9 +62,9 @@ class BankAccountsView @JvmOverloads constructor(
     fun setViewModel(bankAccountViewModel: BankAccountViewModel) {
 
         this.bankAccountViewModel = bankAccountViewModel
+        this.currentState = bankAccountViewModel.UIState
         this.initComposeView()
-
-        GlobalScope.launch { bankAccountViewModel.createWorkflow() }
+        bankAccountViewModel.createWorkflow()
     }
 
     private fun initComposeView() {
@@ -76,11 +76,6 @@ class BankAccountsView @JvmOverloads constructor(
                 )
             }
         }
-
-
-        Handler().postDelayed({
-            this.currentState.value = BankAccountsViewState.REQUIRED
-        }, 5000L)
     }
 
     companion object {
