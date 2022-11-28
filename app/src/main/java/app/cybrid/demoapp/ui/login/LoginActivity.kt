@@ -44,7 +44,7 @@ class LoginActivity : AppCompatActivity(), BearerListener {
         demo.alpha = 1.0f
 
         image.animate().translationY(-1000f).setDuration(1800).setListener(object: AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
+            override fun onAnimationEnd(animation: Animator) {
 
                 clientIDLayout.animate().alpha(1.0f).setDuration(1200).start()
                 clientSecretLayout.animate().alpha(1.0f).setDuration(1200).start()

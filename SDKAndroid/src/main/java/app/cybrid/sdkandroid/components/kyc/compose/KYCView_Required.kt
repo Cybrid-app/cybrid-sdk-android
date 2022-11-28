@@ -55,7 +55,7 @@ fun KYCView_Required(
 
             is InquiryResponse.Cancel -> {}
 
-            is InquiryResponse.Complete -> {
+            is InquiryResponse.Error -> {
 
                 currentState.value = KYCView.KYCViewState.ERROR
             }
