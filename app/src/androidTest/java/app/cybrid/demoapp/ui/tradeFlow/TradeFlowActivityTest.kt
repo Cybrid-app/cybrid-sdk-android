@@ -36,7 +36,7 @@ class TradeFlowActivityTest {
         resources = rule.activity.resources
     }
 
-    @Test
+    /*@Test
     fun checkAppFlow() = runTest {
 
         Thread.sleep(2500)
@@ -64,5 +64,5 @@ class TradeFlowActivityTest {
         compose.onNodeWithText("Bitcoin").performClick()
 
         Thread.sleep(3000)
-    }
+    }*/
 }
