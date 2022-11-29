@@ -7,7 +7,6 @@ import app.cybrid.sdkandroid.components.BankAccountsView
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.tools.JSONMock
 import app.cybrid.sdkandroid.util.Polling
-import com.plaid.link.result.LinkAccount
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
@@ -60,7 +59,7 @@ class BankAccountsViewModelTest {
         Assert.assertNotNull(viewModel.customerGuid)
         Assert.assertNotNull(viewModel.UIState)
         Assert.assertEquals(viewModel.UIState.value, BankAccountsView.BankAccountsViewState.LOADING)
-        Assert.assertNull(viewModel.latestWorflow)
+        Assert.assertNull(viewModel.latestWorkflow)
     }
 
     @ExperimentalCoroutinesApi
@@ -77,7 +76,7 @@ class BankAccountsViewModelTest {
         Assert.assertNotNull(viewModel.customerGuid)
         Assert.assertNotNull(viewModel.UIState)
         Assert.assertEquals(viewModel.UIState.value, BankAccountsView.BankAccountsViewState.LOADING)
-        Assert.assertNull(viewModel.latestWorflow)
+        Assert.assertNull(viewModel.latestWorkflow)
     }
 
     @ExperimentalCoroutinesApi
@@ -165,7 +164,7 @@ class BankAccountsViewModelTest {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertNull(viewModel.workflowJob)
-        Assert.assertEquals(viewModel.latestWorflow, workflow)
+        Assert.assertEquals(viewModel.latestWorkflow, workflow)
         Assert.assertEquals(viewModel.UIState.value, BankAccountsView.BankAccountsViewState.REQUIRED)
     }
 
@@ -184,7 +183,7 @@ class BankAccountsViewModelTest {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(viewModel.workflowJob)
-        Assert.assertNull(viewModel.latestWorflow)
+        Assert.assertNull(viewModel.latestWorkflow)
         Assert.assertEquals(viewModel.UIState.value, BankAccountsView.BankAccountsViewState.LOADING)
     }
 }

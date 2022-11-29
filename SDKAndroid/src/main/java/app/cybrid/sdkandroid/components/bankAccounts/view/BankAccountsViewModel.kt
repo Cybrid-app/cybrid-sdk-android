@@ -11,14 +11,19 @@ import app.cybrid.cybrid_api_bank.client.models.PostExternalBankAccountBankModel
 import app.cybrid.cybrid_api_bank.client.models.PostWorkflowBankModel
 import app.cybrid.cybrid_api_bank.client.models.WorkflowWithDetailsBankModel
 import app.cybrid.sdkandroid.AppModule
+import app.cybrid.sdkandroid.BuildConfig
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.util.*
 import app.cybrid.sdkandroid.components.BankAccountsView.BankAccountsViewState as BankAccountsViewState
 import com.plaid.link.result.LinkAccount
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class BankAccountsViewModel: ViewModel() {
+
+    private val plaidCustomizationName = "default"
+    private val androidPackageName = "app.cybrid.sdkandroid"
 
     private var workflowService = AppModule.getClient().createService(WorkflowsApi::class.java)
     private var externalBankAccountsService = AppModule.getClient().createService(ExternalBankAccountsApi::class.java)
@@ -27,8 +32,7 @@ class BankAccountsViewModel: ViewModel() {
 
     var UIState: MutableState<BankAccountsViewState> = mutableStateOf(BankAccountsViewState.LOADING)
     var workflowJob: Polling? = null
-
-    var latestWorflow: WorkflowWithDetailsBankModel? = null
+    var latestWorkflow: WorkflowWithDetailsBankModel? = null
 
     fun setDataProvider(dataProvider: ApiClient)  {
 
@@ -49,17 +53,20 @@ class BankAccountsViewModel: ViewModel() {
                                     type = PostWorkflowBankModel.Type.plaid,
                                     kind = PostWorkflowBankModel.Kind.create,
                                     customerGuid = customerGuid,
-                                    externalBankAccountGuid = "3aa2bc487ae469bbc03cb42cf72e3aa3",
-                                    language = PostWorkflowBankModel.Language.en,
-                                    linkCustomizationName = "default",
-                                    androidPackageName = "app.cybrid.sdkandroid"
+                                    language = getLanguage(Locale.getDefault().language),
+                                    linkCustomizationName = plaidCustomizationName,
+                                    androidPackageName = androidPackageName
                                 )
                             )
                         }
-                        Logger.log(LoggerEvents.DATA_FETCHED, "Create - Workflow")
+
                         workflowResult.let {
                             if (isSuccessful(it.code ?: 500)) {
+                                Logger.log(LoggerEvents.DATA_FETCHED, "Create - Workflow")
                                 workflowJob = Polling { fetchWorkflow(guid = workflowResult.data?.guid!!) }
+                            } else {
+                                Logger.log(LoggerEvents.NETWORK_ERROR, "Create - Workflow")
+                                UIState.value = BankAccountsViewState.ERROR
                             }
                         }
                     }
@@ -78,10 +85,12 @@ class BankAccountsViewModel: ViewModel() {
                         val workflowResult = getResult {
                             workflowService.getWorkflow(workflowGuid = guid)
                         }
-                        Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
                         workflowResult.let {
                             if (isSuccessful(it.code ?: 500)) {
+                                Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
                                 checkWorkflowStatus(workflow = workflowResult.data!!)
+                            } else {
+                                Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Workflow")
                             }
                         }
                     }
@@ -109,10 +118,14 @@ class BankAccountsViewModel: ViewModel() {
                                 )
                             )
                         }
-                        Logger.log(LoggerEvents.DATA_FETCHED, "Create - External BankAccount")
+
                         externalBankAccountResult.let {
                             if (isSuccessful(it.code ?: 500)) {
+                                Logger.log(LoggerEvents.DATA_FETCHED, "Create - External BankAccount")
                                 UIState.value = BankAccountsViewState.DONE
+                            } else {
+                                Logger.log(LoggerEvents.NETWORK_ERROR, "Create - External BankAccount")
+                                UIState.value = BankAccountsViewState.ERROR
                             }
                         }
                     }
@@ -128,7 +141,7 @@ class BankAccountsViewModel: ViewModel() {
 
             this.workflowJob?.stop()
             this.workflowJob = null
-            this.latestWorflow = workflow
+            this.latestWorkflow = workflow
             this.UIState.value = BankAccountsViewState.REQUIRED
         }
     }

@@ -186,15 +186,6 @@ fun BankAccountsView_Required(viewModel: BankAccountsViewModel?) {
             },
             verticalAlignment = Alignment.CenterVertically
         ) {
-            /*Image(
-                painter = null,
-                contentDescription = "No banks accounts connected.",
-                modifier = Modifier
-                    .padding(top = 5.dp)
-                    .padding(0.dp)
-                    .size(26.dp),
-                contentScale = ContentScale.Fit
-            )*/
             Text(
                 text = "No banks accounts connected.",
                 modifier = Modifier
@@ -217,17 +208,17 @@ fun BankAccountsView_Required(viewModel: BankAccountsViewModel?) {
             }
         ) {
 
-            val (cancelButton, beginButton) = createRefs()
+            val (continueButton) = createRefs()
 
             // -- Continue Button
             Button(
                 onClick = {
                     BankAccountsView.openPlaid(
-                        plaidToken = viewModel?.latestWorflow?.plaidLinkToken!!,
+                        plaidToken = viewModel?.latestWorkflow?.plaidLinkToken!!,
                         getPlaidResult = getPlaidResult)
                 },
                 modifier = Modifier
-                    .constrainAs(cancelButton) {
+                    .constrainAs(continueButton) {
                         start.linkTo(parent.start, margin = 10.dp)
                         end.linkTo(parent.end, margin = 10.dp)
                         top.linkTo(parent.top, margin = 0.dp)

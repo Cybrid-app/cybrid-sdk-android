@@ -7,8 +7,6 @@ import java.util.*
 
 class UtilsTest {
 
-
-
     @Test
     fun isSuccessfulTest() {
 
@@ -51,5 +49,39 @@ class UtilsTest {
         Assert.assertEquals(dateFormattedOne, "Aug 02, 2022")
         Assert.assertEquals(dateFormattedTwo, "08,02,2022")
         Assert.assertEquals(dateFormattedThree, "")
+    }
+
+    @Test
+    fun test_getLanguage() {
+
+        // -- EN
+        var languageString = "en"
+        var language = getLanguage(languageString)
+        Assert.assertEquals(language.value, languageString)
+
+        // -- FR
+        languageString = "fr"
+        language = getLanguage(languageString)
+        Assert.assertEquals(language.value, languageString)
+
+        // -- ES
+        languageString = "es"
+        language = getLanguage(languageString)
+        Assert.assertEquals(language.value, languageString)
+
+        // -- NL
+        languageString = "nl"
+        language = getLanguage(languageString)
+        Assert.assertEquals(language.value, languageString)
+
+        // -- NL
+        languageString = "nl"
+        language = getLanguage(languageString)
+        Assert.assertEquals(language.value, languageString)
+
+        // -- Other
+        languageString = "other"
+        language = getLanguage(languageString)
+        Assert.assertEquals(language.value, "en")
     }
 }
