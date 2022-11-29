@@ -8,6 +8,7 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import app.cybrid.demoapp.R
 import app.cybrid.demoapp.ui.login.LoginActivity
@@ -28,12 +29,12 @@ class TradeFlowActivityTest {
     @Rule
     var compose = createEmptyComposeRule()
 
-    private var resources: Resources? = null
+    private lateinit var resources: Resources
 
     @Before
-    fun init() {
+    fun setup() {
 
-        resources = rule.activity.resources
+        resources = InstrumentationRegistry.getInstrumentation().context.resources
     }
 
     @Test

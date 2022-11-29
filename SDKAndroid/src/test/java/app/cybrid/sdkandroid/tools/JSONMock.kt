@@ -1,6 +1,5 @@
 package app.cybrid.sdkandroid.tools
 
-import app.cybrid.sdkandroid.BuildConfig
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -61,11 +60,13 @@ class JSONMock(state: JSONMockState): Interceptor {
                     "POST" -> {
                         when (state) {
                             JSONMockState.SUCCESS -> { response = TestConstants.CREATE_CUSTOMER_SUCCESS }
+                            else -> {}
                         }
                     }
                     "GET" -> {
                         when (state) {
                             JSONMockState.SUCCESS -> { response = TestConstants.FETCH_CUSTOMER_SUCCESS }
+                            else -> {}
                         }
                     }
                 }
@@ -89,11 +90,13 @@ class JSONMock(state: JSONMockState): Interceptor {
                                     TestConstants.FETCH_IDENTITY_VERIFICATION_SUCCESS
                                 }
                             }
+                            else -> {}
                         }
                     }
                     "POST" -> {
                         when(state) {
                             JSONMockState.SUCCESS -> { response = TestConstants.CREATE_IDENTITY_VERIFICATION_SUCCESS }
+                            else -> {}
                         }
                     }
                 }
