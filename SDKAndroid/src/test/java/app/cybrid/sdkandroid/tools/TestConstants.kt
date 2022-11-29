@@ -171,4 +171,8 @@ object TestConstants {
     val FETCH_LIST_IDENTITY_VERIFICATIONS_SUCCESS_EMPTY = "{\"total\":0,\"page\":0,\"per_page\":0,\"objects\":[]}"
     val FETCH_LIST_IDENTITY_VERIFICATIONS_SUCCESS = "{\"total\":1,\"page\":0,\"per_page\":1,\"objects\":[{\"type\":\"kyc\",\"guid\":\"1234\",\"customer_guid\":\"1234\",\"created_at\":\"2022-11-16T23:47:20.110Z\",\"method\":\"id_and_selfie\",\"state\":\"storing\",\"outcome\":null,\"failure_codes\":[],\"persona_inquiry_id\":null,\"persona_state\":null}]}"
     val FETCH_IDENTITY_VERIFICATION_SUCCESS = "{\"type\":\"kyc\",\"guid\":\"1234\",\"customer_guid\":\"1234\",\"created_at\":\"2022-11-16T23:47:20.110Z\",\"method\":\"id_and_selfie\",\"state\":\"storing\",\"outcome\":null,\"failure_codes\":[],\"persona_inquiry_id\":null,\"persona_state\":null}"
+    val CREATE_WORKFLOW_SUCCESS = "{\"guid\":\"1234\",\"customer_guid\":\"1234\",\"type\":\"plaid\",\"created_at\":\"2022-11-29T16:39:33.905Z\"}"
+    val FETCH_WOKFLOW_SUCCESS = "{\"guid\":\"1234\",\"customer_guid\":\"1234\",\"type\":\"plaid\",\"created_at\":\"2022-11-29T16:39:33.905Z\",\"plaid_link_token\":\"link-sandbox-c\"}"
+    val FETCH_WOKFLOW_SUCCESS_INCOMPLETE = "{\"guid\":\"1234\",\"customer_guid\":\"1234\",\"type\":\"plaid\",\"created_at\":\"2022-11-29T16:39:33.905Z\",\"plaid_link_token\":\"\"}"
+    val CREATE_EXTERNAL_BANK_ACCOUNT = "{\"guid\":\"1234\",\"name\":\"USD\",\"asset\":\"USD\",\"account_kind\":\"plaid\",\"environment\":\"sandbox\",\"created_at\":\"2022-11-29T16:40:16.057Z\",\"customer_guid\":\"1234\",\"bank_guid\":\"1234\",\"plaid_access_token\":null}"
 }
