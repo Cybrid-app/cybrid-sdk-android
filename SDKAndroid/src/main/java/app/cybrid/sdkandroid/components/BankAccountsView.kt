@@ -1,7 +1,8 @@
+@file:OptIn(DelicateCoroutinesApi::class)
+
 package app.cybrid.sdkandroid.components
 
 import android.content.Context
-import android.os.Handler
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -20,16 +21,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.lifecycle.viewmodel.compose.viewModel
-import app.cybrid.sdkandroid.BuildConfig
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.bankAccount.BankAccountViewModel
+import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import com.plaid.link.OpenPlaidLink
@@ -38,6 +36,7 @@ import com.plaid.link.linkTokenConfiguration
 import com.plaid.link.result.LinkExit
 import com.plaid.link.result.LinkResult
 import com.plaid.link.result.LinkSuccess
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -47,11 +46,11 @@ class BankAccountsView @JvmOverloads constructor(
     defStyle: Int = 0):
     Component(context, attrs, defStyle) {
 
-    enum class BankAccountsViewState { LOADING, REQUIRED, VERIFIED, ERROR, REVIEWING }
+    enum class BankAccountsViewState { LOADING, REQUIRED, DONE, ERROR }
 
     private var currentState = mutableStateOf(BankAccountsViewState.LOADING)
 
-    var bankAccountViewModel: BankAccountViewModel? = null
+    var bankAccountViewModel: BankAccountsViewModel? = null
 
     init {
 
@@ -59,12 +58,12 @@ class BankAccountsView @JvmOverloads constructor(
         this.composeView = findViewById(R.id.composeContent)
     }
 
-    fun setViewModel(bankAccountViewModel: BankAccountViewModel) {
+    fun setViewModel(bankAccountViewModel: BankAccountsViewModel) {
 
         this.bankAccountViewModel = bankAccountViewModel
         this.currentState = bankAccountViewModel.UIState
         this.initComposeView()
-        bankAccountViewModel.createWorkflow()
+        GlobalScope.launch { bankAccountViewModel.createWorkflow() }
     }
 
     private fun initComposeView() {
@@ -72,7 +71,8 @@ class BankAccountsView @JvmOverloads constructor(
         this.composeView?.let { compose ->
             compose.setContent {
                 BankAccountsView(
-                    currentState = this.currentState
+                    currentState = this.currentState,
+                    viewModel = bankAccountViewModel
                 )
             }
         }
@@ -80,10 +80,10 @@ class BankAccountsView @JvmOverloads constructor(
 
     companion object {
 
-        fun openPlaid(getPlaidResult: ManagedActivityResultLauncher<LinkTokenConfiguration, LinkResult>) {
+        fun openPlaid(plaidToken: String, getPlaidResult: ManagedActivityResultLauncher<LinkTokenConfiguration, LinkResult>) {
 
             val linkTokenConfiguration = linkTokenConfiguration {
-                token = "link-sandbox-09703628-aa09-462f-bdca-2014b9aa3d29"
+                token = plaidToken
             }
             getPlaidResult.launch(linkTokenConfiguration)
         }
@@ -96,7 +96,8 @@ class BankAccountsView @JvmOverloads constructor(
 
 @Composable
 fun BankAccountsView(
-    currentState: MutableState<BankAccountsView.BankAccountsViewState>) {
+    currentState: MutableState<BankAccountsView.BankAccountsViewState>,
+    viewModel: BankAccountsViewModel?) {
 
     // -- Content
     Surface {
@@ -108,7 +109,11 @@ fun BankAccountsView(
             }
 
             BankAccountsView.BankAccountsViewState.REQUIRED -> {
-                BankAccountsView_Required()
+                BankAccountsView_Required(viewModel)
+            }
+
+            BankAccountsView.BankAccountsViewState.DONE -> {
+                BankAccountsView_Done()
             }
 
             else -> {}
@@ -145,12 +150,20 @@ fun BankAccountsView_Loading() {
 }
 
 @Composable
-fun BankAccountsView_Required() {
+fun BankAccountsView_Required(viewModel: BankAccountsViewModel?) {
 
     // -- Activity Result for Plaid
     val getPlaidResult = rememberLauncherForActivityResult(OpenPlaidLink()) {
         when (it) {
-            is LinkSuccess -> {}
+            is LinkSuccess -> {
+
+                viewModel?.UIState?.value = BankAccountsView.BankAccountsViewState.LOADING
+                GlobalScope.launch {
+                    viewModel?.createExternalBankAccount(
+                        publicToken = it.publicToken,
+                        account = it.metadata.accounts[0])
+                }
+            }
             is LinkExit -> {}
         }
     }
@@ -209,7 +222,9 @@ fun BankAccountsView_Required() {
             // -- Continue Button
             Button(
                 onClick = {
-                    BankAccountsView.openPlaid(getPlaidResult = getPlaidResult)
+                    BankAccountsView.openPlaid(
+                        plaidToken = viewModel?.latestWorflow?.plaidLinkToken!!,
+                        getPlaidResult = getPlaidResult)
                 },
                 modifier = Modifier
                     .constrainAs(cancelButton) {
@@ -233,6 +248,95 @@ fun BankAccountsView_Required() {
             ) {
                 Text(
                     text = "Add account",
+                    color = Color.White,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun BankAccountsView_Done() {
+
+    // -- Content
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag(Constants.AccountsViewTestTags.List.id)
+    ) {
+
+        val (text, buttons) = createRefs()
+
+        Row(
+            modifier = Modifier.constrainAs(text) {
+                start.linkTo(parent.start, margin = 0.dp)
+                top.linkTo(parent.top, margin = 0.dp)
+                end.linkTo(parent.end, margin = 0.dp)
+                bottom.linkTo(parent.bottom, margin = 0.dp)
+            },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.kyc_verified),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(top = 5.dp)
+                    .padding(0.dp)
+                    .size(26.dp),
+                contentScale = ContentScale.Fit
+            )
+            Text(
+                text = "Account added successfully.",
+                modifier = Modifier
+                    .padding(start = 10.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Medium,
+                fontSize = 19.sp,
+                lineHeight = 32.sp,
+                color = colorResource(id = R.color.black)
+            )
+        }
+        // -- Buttons
+        ConstraintLayout(
+            Modifier.constrainAs(buttons) {
+                start.linkTo(parent.start, margin = 10.dp)
+                end.linkTo(parent.end, margin = 10.dp)
+                bottom.linkTo(parent.bottom, margin = 20.dp)
+                width = Dimension.fillToConstraints
+                height = Dimension.value(50.dp)
+            }
+        ) {
+
+            val (doneButton) = createRefs()
+
+            // -- Continue Button
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .constrainAs(doneButton) {
+                        start.linkTo(parent.start, margin = 10.dp)
+                        end.linkTo(parent.end, margin = 10.dp)
+                        top.linkTo(parent.top, margin = 0.dp)
+                        bottom.linkTo(parent.bottom, margin = 0.dp)
+                        width = Dimension.fillToConstraints
+                        height = Dimension.fillToConstraints
+                    },
+                shape = RoundedCornerShape(10.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 4.dp,
+                    disabledElevation = 0.dp
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = colorResource(id = R.color.primary_color),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = "Continue",
                     color = Color.White,
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Bold,
