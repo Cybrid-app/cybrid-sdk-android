@@ -61,6 +61,7 @@ class BankAccountsViewModelTestError {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertNull(viewModel.workflowJob)
+        Assert.assertEquals(viewModel.UIState.value, BankAccountsView.BankAccountsViewState.ERROR)
     }
 
     @ExperimentalCoroutinesApi
@@ -95,6 +96,6 @@ class BankAccountsViewModelTestError {
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        Assert.assertEquals(viewModel.UIState.value, BankAccountsView.BankAccountsViewState.LOADING)
+        Assert.assertEquals(viewModel.UIState.value, BankAccountsView.BankAccountsViewState.ERROR)
     }
 }

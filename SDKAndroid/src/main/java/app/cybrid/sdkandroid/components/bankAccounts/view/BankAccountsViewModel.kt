@@ -4,12 +4,12 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.cybrid.cybrid_api_bank.client.apis.BanksApi
+import app.cybrid.cybrid_api_bank.client.apis.CustomersApi
 import app.cybrid.cybrid_api_bank.client.apis.ExternalBankAccountsApi
 import app.cybrid.cybrid_api_bank.client.apis.WorkflowsApi
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
-import app.cybrid.cybrid_api_bank.client.models.PostExternalBankAccountBankModel
-import app.cybrid.cybrid_api_bank.client.models.PostWorkflowBankModel
-import app.cybrid.cybrid_api_bank.client.models.WorkflowWithDetailsBankModel
+import app.cybrid.cybrid_api_bank.client.models.*
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.BuildConfig
 import app.cybrid.sdkandroid.Cybrid
@@ -24,13 +24,18 @@ class BankAccountsViewModel: ViewModel() {
 
     private val plaidCustomizationName = "default"
     private val androidPackageName = "app.cybrid.sdkandroid"
+    private val defaultASsetCurrency = "USD"
 
     private var workflowService = AppModule.getClient().createService(WorkflowsApi::class.java)
     private var externalBankAccountsService = AppModule.getClient().createService(ExternalBankAccountsApi::class.java)
+    private var customerService = AppModule.getClient().createService(CustomersApi::class.java)
+    private var bankService = AppModule.getClient().createService(BanksApi::class.java)
 
     var customerGuid = Cybrid.instance.customerGuid
 
     var UIState: MutableState<BankAccountsViewState> = mutableStateOf(BankAccountsViewState.LOADING)
+    var UIStateError: String = ""
+
     var workflowJob: Polling? = null
     var latestWorkflow: WorkflowWithDetailsBankModel? = null
 
@@ -38,6 +43,8 @@ class BankAccountsViewModel: ViewModel() {
 
         workflowService = dataProvider.createService(WorkflowsApi::class.java)
         externalBankAccountsService = dataProvider.createService(ExternalBankAccountsApi::class.java)
+        customerService = dataProvider.createService(CustomersApi::class.java)
+        bankService = dataProvider.createService(BanksApi::class.java)
     }
 
     suspend fun createWorkflow() {
@@ -106,32 +113,136 @@ class BankAccountsViewModel: ViewModel() {
                 viewModelScope.let { scope ->
                     val waitFor = scope.async {
 
-                        val externalBankAccountResult = getResult {
-                            externalBankAccountsService.createExternalBankAccount(
-                                postExternalBankAccountBankModel = PostExternalBankAccountBankModel(
-                                    name = account?.name ?: "",
-                                    accountKind = PostExternalBankAccountBankModel.AccountKind.plaid,
-                                    asset = "USD",
-                                    customerGuid = customerGuid,
-                                    plaidPublicToken = publicToken,
-                                    plaidAccountId = account?.id ?: ""
-                                )
-                            )
-                        }
+                        val assetCurrency = if (account?.balance?.currency == null && BuildConfig.DEBUG) {
+                            defaultASsetCurrency
+                        } else { account?.balance?.currency }
 
-                        externalBankAccountResult.let {
+                        if (assetIsSupported(asset = assetCurrency)) {
+
+                            val externalBankAccountResult = getResult {
+                                externalBankAccountsService.createExternalBankAccount(
+                                    postExternalBankAccountBankModel = PostExternalBankAccountBankModel(
+                                        name = account?.name ?: "",
+                                        accountKind = PostExternalBankAccountBankModel.AccountKind.plaid,
+                                        asset = assetCurrency!!,
+                                        customerGuid = customerGuid,
+                                        plaidPublicToken = publicToken,
+                                        plaidAccountId = account?.id ?: ""
+                                    )
+                                )
+                            }
+
+                            externalBankAccountResult.let {
+                                if (isSuccessful(it.code ?: 500)) {
+                                    Logger.log(LoggerEvents.DATA_FETCHED, "Create - External BankAccount")
+                                    UIState.value = BankAccountsViewState.DONE
+                                } else {
+                                    Logger.log(LoggerEvents.NETWORK_ERROR, "Create - External BankAccount")
+                                    UIState.value = BankAccountsViewState.ERROR
+                                }
+                            }
+                        } else {
+                            UIState.value = BankAccountsViewState.ERROR
+                        }
+                    }
+                    waitFor.await()
+                }
+            }
+        }
+    }
+
+    suspend fun getCustomer(): CustomerBankModel? {
+
+        var customer: CustomerBankModel? = null
+        Cybrid.instance.let { cybrid ->
+            if (!cybrid.invalidToken) {
+                viewModelScope.let { scope ->
+                    val waitFor = scope.async {
+                        val customerResult = getResult {
+                            customerService.getCustomer(customerGuid = customerGuid)
+                        }
+                        customerResult.let {
                             if (isSuccessful(it.code ?: 500)) {
-                                Logger.log(LoggerEvents.DATA_FETCHED, "Create - External BankAccount")
-                                UIState.value = BankAccountsViewState.DONE
+                                Logger.log(LoggerEvents.DATA_FETCHED, "Fetch - Customer")
+                                customer = it.data
+                                return@async customer
                             } else {
-                                Logger.log(LoggerEvents.NETWORK_ERROR, "Create - External BankAccount")
-                                UIState.value = BankAccountsViewState.ERROR
+                                Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Customer")
                             }
                         }
                     }
                     waitFor.await()
                 }
             }
+        }
+        return customer
+    }
+
+    suspend fun getBank(guid: String): BankBankModel? {
+
+        var bank: BankBankModel? = null
+        Cybrid.instance.let { cybrid ->
+            if (!cybrid.invalidToken) {
+                viewModelScope.let { scope ->
+                    val waitFor = scope.async {
+                        val bankResult = getResult {
+                            bankService.getBank(bankGuid = guid)
+                        }
+                        bankResult.let {
+                            if (isSuccessful(it.code ?: 500)) {
+                                Logger.log(LoggerEvents.DATA_FETCHED, "Fetch - Bank")
+                                bank = it.data
+                                return@async bank
+                            } else {
+                                Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Bank")
+                            }
+                        }
+                    }
+                    waitFor.await()
+                }
+            }
+        }
+        return bank
+    }
+
+    suspend fun assetIsSupported(asset: String?): Boolean {
+
+        if (asset == null) {
+            Logger.log(LoggerEvents.ERROR, "Account asset can't be null")
+            return false
+        } else {
+
+            var allowed = false
+            Cybrid.instance.let { cybrid ->
+                viewModelScope.let { scope ->
+                    val waitFor = scope.async {
+
+                        val customer = getCustomer()
+                        if (customer != null) {
+                            if (customer.bankGuid != null) {
+                                val bank = getBank(customer.bankGuid!!)
+                                if (bank != null) {
+                                    if (bank.supportedFiatAccountAssets != null) {
+                                        if (bank.supportedFiatAccountAssets!!.contains(asset)) {
+                                            allowed = true
+                                        } else {
+                                            Logger.log(LoggerEvents.ERROR, "Asset is not supported")
+                                        }
+                                    } else {
+                                        Logger.log(LoggerEvents.ERROR, "Bank don't have fiat assets")
+                                    }
+                                } else {
+                                    Logger.log(LoggerEvents.ERROR, "Bank has a problem")
+                                }
+                            }
+                        } else {
+                            Logger.log(LoggerEvents.ERROR, "Customer has a problem")
+                        }
+                    }
+                    waitFor.await()
+                }
+            }
+            return allowed
         }
     }
 
