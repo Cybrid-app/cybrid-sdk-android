@@ -165,14 +165,16 @@ object TestConstants {
 
     // -- JSON
 
-    val CREATE_CUSTOMER_SUCCESS = "{\"guid\":\"1234\",\"type\":\"individual\",\"created_at\":\"2022-06-23T07:08:16.718Z\",\"state\":\"storing\"}"
-    val FETCH_CUSTOMER_SUCCESS = "{\"guid\":\"1234\",\"type\":\"individual\",\"created_at\":\"2022-06-23T07:08:16.718Z\",\"state\":\"storing\"}"
-    val CREATE_IDENTITY_VERIFICATION_SUCCESS = "{\"type\":\"kyc\",\"guid\":\"1234\",\"customer_guid\":\"1234\",\"created_at\":\"2022-11-16T23:47:20.110Z\",\"method\":\"id_and_selfie\",\"state\":\"storing\",\"outcome\":null,\"failure_codes\":[]}"
-    val FETCH_LIST_IDENTITY_VERIFICATIONS_SUCCESS_EMPTY = "{\"total\":0,\"page\":0,\"per_page\":0,\"objects\":[]}"
-    val FETCH_LIST_IDENTITY_VERIFICATIONS_SUCCESS = "{\"total\":1,\"page\":0,\"per_page\":1,\"objects\":[{\"type\":\"kyc\",\"guid\":\"1234\",\"customer_guid\":\"1234\",\"created_at\":\"2022-11-16T23:47:20.110Z\",\"method\":\"id_and_selfie\",\"state\":\"storing\",\"outcome\":null,\"failure_codes\":[],\"persona_inquiry_id\":null,\"persona_state\":null}]}"
-    val FETCH_IDENTITY_VERIFICATION_SUCCESS = "{\"type\":\"kyc\",\"guid\":\"1234\",\"customer_guid\":\"1234\",\"created_at\":\"2022-11-16T23:47:20.110Z\",\"method\":\"id_and_selfie\",\"state\":\"storing\",\"outcome\":null,\"failure_codes\":[],\"persona_inquiry_id\":null,\"persona_state\":null}"
-    val CREATE_WORKFLOW_SUCCESS = "{\"guid\":\"1234\",\"customer_guid\":\"1234\",\"type\":\"plaid\",\"created_at\":\"2022-11-29T16:39:33.905Z\"}"
-    val FETCH_WOKFLOW_SUCCESS = "{\"guid\":\"1234\",\"customer_guid\":\"1234\",\"type\":\"plaid\",\"created_at\":\"2022-11-29T16:39:33.905Z\",\"plaid_link_token\":\"link-sandbox-c\"}"
-    val FETCH_WOKFLOW_SUCCESS_INCOMPLETE = "{\"guid\":\"1234\",\"customer_guid\":\"1234\",\"type\":\"plaid\",\"created_at\":\"2022-11-29T16:39:33.905Z\",\"plaid_link_token\":\"\"}"
-    val CREATE_EXTERNAL_BANK_ACCOUNT = "{\"guid\":\"1234\",\"name\":\"USD\",\"asset\":\"USD\",\"account_kind\":\"plaid\",\"environment\":\"sandbox\",\"created_at\":\"2022-11-29T16:40:16.057Z\",\"customer_guid\":\"1234\",\"bank_guid\":\"1234\",\"plaid_access_token\":null}"
+    const val CREATE_CUSTOMER_SUCCESS = "{\"guid\":\"1234\",\"bank_guid\":\"1234\",\"type\":\"individual\",\"created_at\":\"2022-06-23T07:08:16.718Z\",\"state\":\"storing\"}"
+    const val FETCH_CUSTOMER_SUCCESS = "{\"guid\":\"1234\",\"bank_guid\":\"1234\",\"type\":\"individual\",\"created_at\":\"2022-06-23T07:08:16.718Z\",\"state\":\"storing\"}"
+    const val CREATE_IDENTITY_VERIFICATION_SUCCESS = "{\"type\":\"kyc\",\"guid\":\"1234\",\"customer_guid\":\"1234\",\"created_at\":\"2022-11-16T23:47:20.110Z\",\"method\":\"id_and_selfie\",\"state\":\"storing\",\"outcome\":null,\"failure_codes\":[]}"
+    const val FETCH_LIST_IDENTITY_VERIFICATIONS_SUCCESS_EMPTY = "{\"total\":0,\"page\":0,\"per_page\":0,\"objects\":[]}"
+    const val FETCH_LIST_IDENTITY_VERIFICATIONS_SUCCESS = "{\"total\":1,\"page\":0,\"per_page\":1,\"objects\":[{\"type\":\"kyc\",\"guid\":\"1234\",\"customer_guid\":\"1234\",\"created_at\":\"2022-11-16T23:47:20.110Z\",\"method\":\"id_and_selfie\",\"state\":\"storing\",\"outcome\":null,\"failure_codes\":[],\"persona_inquiry_id\":null,\"persona_state\":null}]}"
+    const val FETCH_IDENTITY_VERIFICATION_SUCCESS = "{\"type\":\"kyc\",\"guid\":\"1234\",\"customer_guid\":\"1234\",\"created_at\":\"2022-11-16T23:47:20.110Z\",\"method\":\"id_and_selfie\",\"state\":\"storing\",\"outcome\":null,\"failure_codes\":[],\"persona_inquiry_id\":null,\"persona_state\":null}"
+    const val CREATE_WORKFLOW_SUCCESS = "{\"guid\":\"1234\",\"customer_guid\":\"1234\",\"type\":\"plaid\",\"created_at\":\"2022-11-29T16:39:33.905Z\"}"
+    const val FETCH_WORKFLOW_SUCCESS = "{\"guid\":\"1234\",\"customer_guid\":\"1234\",\"type\":\"plaid\",\"created_at\":\"2022-11-29T16:39:33.905Z\",\"plaid_link_token\":\"link-sandbox-c\"}"
+    const val FETCH_WORKFLOW_SUCCESS_INCOMPLETE = "{\"guid\":\"1234\",\"customer_guid\":\"1234\",\"type\":\"plaid\",\"created_at\":\"2022-11-29T16:39:33.905Z\",\"plaid_link_token\":\"\"}"
+    const val CREATE_EXTERNAL_BANK_ACCOUNT = "{\"guid\":\"1234\",\"name\":\"USD\",\"asset\":\"USD\",\"account_kind\":\"plaid\",\"environment\":\"sandbox\",\"created_at\":\"2022-11-29T16:40:16.057Z\",\"customer_guid\":\"1234\",\"bank_guid\":\"1234\",\"plaid_access_token\":null}"
+    const val CREATE_BANK_SUCCESS = "{\"guid\":\"string\",\"organization_guid\":\"string\",\"name\":\"string\",\"type\":\"sandbox\",\"supported_trading_symbols\":[\"string\"],\"supported_fiat_account_assets\":[\"USD\"],\"supported_country_codes\":[\"string\"],\"features\":[\"attestation_identity_records\"],\"created_at\":\"2022-11-29T22:35:04.005Z\"}"
+    const val CREATE_BANK_SUCCESS_EMPTY = "{\"guid\":\"string\",\"organization_guid\":\"string\",\"name\":\"string\",\"type\":\"sandbox\",\"supported_trading_symbols\":[\"string\"],\"supported_fiat_account_assets\":[\"string\"],\"supported_country_codes\":[\"string\"],\"features\":[\"attestation_identity_records\"],\"created_at\":\"2022-11-29T22:35:04.005Z\"}"
 }

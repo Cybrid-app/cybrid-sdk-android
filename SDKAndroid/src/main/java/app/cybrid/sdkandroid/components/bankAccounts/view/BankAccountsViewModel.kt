@@ -24,7 +24,7 @@ class BankAccountsViewModel: ViewModel() {
 
     private val plaidCustomizationName = "default"
     private val androidPackageName = "app.cybrid.sdkandroid"
-    private val defaultASsetCurrency = "USD"
+    private val defaultAssetCurrency = "USD"
 
     private var workflowService = AppModule.getClient().createService(WorkflowsApi::class.java)
     private var externalBankAccountsService = AppModule.getClient().createService(ExternalBankAccountsApi::class.java)
@@ -33,9 +33,7 @@ class BankAccountsViewModel: ViewModel() {
 
     var customerGuid = Cybrid.instance.customerGuid
 
-    var UIState: MutableState<BankAccountsViewState> = mutableStateOf(BankAccountsViewState.LOADING)
-    var UIStateError: String = ""
-
+    var uiState: MutableState<BankAccountsViewState> = mutableStateOf(BankAccountsViewState.LOADING)
     var workflowJob: Polling? = null
     var latestWorkflow: WorkflowWithDetailsBankModel? = null
 
@@ -73,7 +71,7 @@ class BankAccountsViewModel: ViewModel() {
                                 workflowJob = Polling { fetchWorkflow(guid = workflowResult.data?.guid!!) }
                             } else {
                                 Logger.log(LoggerEvents.NETWORK_ERROR, "Create - Workflow")
-                                UIState.value = BankAccountsViewState.ERROR
+                                uiState.value = BankAccountsViewState.ERROR
                             }
                         }
                     }
@@ -114,7 +112,7 @@ class BankAccountsViewModel: ViewModel() {
                     val waitFor = scope.async {
 
                         val assetCurrency = if (account?.balance?.currency == null && BuildConfig.DEBUG) {
-                            defaultASsetCurrency
+                            defaultAssetCurrency
                         } else { account?.balance?.currency }
 
                         if (assetIsSupported(asset = assetCurrency)) {
@@ -135,14 +133,14 @@ class BankAccountsViewModel: ViewModel() {
                             externalBankAccountResult.let {
                                 if (isSuccessful(it.code ?: 500)) {
                                     Logger.log(LoggerEvents.DATA_FETCHED, "Create - External BankAccount")
-                                    UIState.value = BankAccountsViewState.DONE
+                                    uiState.value = BankAccountsViewState.DONE
                                 } else {
                                     Logger.log(LoggerEvents.NETWORK_ERROR, "Create - External BankAccount")
-                                    UIState.value = BankAccountsViewState.ERROR
+                                    uiState.value = BankAccountsViewState.ERROR
                                 }
                             }
                         } else {
-                            UIState.value = BankAccountsViewState.ERROR
+                            uiState.value = BankAccountsViewState.ERROR
                         }
                     }
                     waitFor.await()
@@ -253,7 +251,7 @@ class BankAccountsViewModel: ViewModel() {
             this.workflowJob?.stop()
             this.workflowJob = null
             this.latestWorkflow = workflow
-            this.UIState.value = BankAccountsViewState.REQUIRED
+            this.uiState.value = BankAccountsViewState.REQUIRED
         }
     }
 }

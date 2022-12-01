@@ -5,6 +5,7 @@ package app.cybrid.sdkandroid.components
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.Image
@@ -44,7 +45,7 @@ class BankAccountsView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0):
-    Component(context, attrs, defStyle) {
+Component(context, attrs, defStyle) {
 
     enum class BankAccountsViewState { LOADING, REQUIRED, DONE, ERROR }
 
@@ -61,7 +62,7 @@ class BankAccountsView @JvmOverloads constructor(
     fun setViewModel(bankAccountViewModel: BankAccountsViewModel) {
 
         this.bankAccountViewModel = bankAccountViewModel
-        this.currentState = bankAccountViewModel.UIState
+        this.currentState = bankAccountViewModel.uiState
         this.initComposeView()
         GlobalScope.launch { bankAccountViewModel.createWorkflow() }
     }
@@ -116,7 +117,9 @@ fun BankAccountsView(
                 BankAccountsView_Done()
             }
 
-            else -> {}
+            BankAccountsView.BankAccountsViewState.ERROR -> {
+                BankAccountsView_Error()
+            }
         }
     }
 }
@@ -157,11 +160,17 @@ fun BankAccountsView_Required(viewModel: BankAccountsViewModel?) {
         when (it) {
             is LinkSuccess -> {
 
-                viewModel?.UIState?.value = BankAccountsView.BankAccountsViewState.LOADING
-                GlobalScope.launch {
-                    viewModel?.createExternalBankAccount(
-                        publicToken = it.publicToken,
-                        account = it.metadata.accounts[0])
+                if (it.metadata.accounts.size == 1) {
+
+                    viewModel?.uiState?.value = BankAccountsView.BankAccountsViewState.LOADING
+                    GlobalScope.launch {
+                        viewModel?.createExternalBankAccount(
+                            publicToken = it.publicToken,
+                            account = it.metadata.accounts[0])
+                    }
+                } else {
+                    // -- Log multiple accounts or empty accounts
+                    viewModel?.uiState?.value = BankAccountsView.BankAccountsViewState.ERROR
                 }
             }
             is LinkExit -> {}
@@ -328,6 +337,100 @@ fun BankAccountsView_Done() {
             ) {
                 Text(
                     text = "Continue",
+                    color = Color.White,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun BankAccountsView_Error() {
+
+    // -- Vars
+    val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
+    // -- Content
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag(Constants.AccountsViewTestTags.List.id)
+    ) {
+
+        val (text, buttons) = createRefs()
+
+        Row(
+            modifier = Modifier.constrainAs(text) {
+                start.linkTo(parent.start, margin = 0.dp)
+                top.linkTo(parent.top, margin = 0.dp)
+                end.linkTo(parent.end, margin = 0.dp)
+                bottom.linkTo(parent.bottom, margin = 0.dp)
+            },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.kyc_error),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(top = 5.dp)
+                    .padding(0.dp)
+                    .size(26.dp),
+                contentScale = ContentScale.Fit
+            )
+            Text(
+                text = "An error has occurred, try again.",
+                modifier = Modifier
+                    .padding(start = 10.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Medium,
+                fontSize = 19.sp,
+                lineHeight = 32.sp,
+                color = colorResource(id = R.color.black)
+            )
+        }
+        // -- Buttons
+        ConstraintLayout(
+            Modifier.constrainAs(buttons) {
+                start.linkTo(parent.start, margin = 10.dp)
+                end.linkTo(parent.end, margin = 10.dp)
+                bottom.linkTo(parent.bottom, margin = 20.dp)
+                width = Dimension.fillToConstraints
+                height = Dimension.value(50.dp)
+            }
+        ) {
+
+            val (doneButton) = createRefs()
+
+            // -- Continue Button
+            Button(
+                onClick = {
+                    onBackPressedDispatcher?.onBackPressed()
+                },
+                modifier = Modifier
+                    .constrainAs(doneButton) {
+                        start.linkTo(parent.start, margin = 10.dp)
+                        end.linkTo(parent.end, margin = 10.dp)
+                        top.linkTo(parent.top, margin = 0.dp)
+                        bottom.linkTo(parent.bottom, margin = 0.dp)
+                        width = Dimension.fillToConstraints
+                        height = Dimension.fillToConstraints
+                    },
+                shape = RoundedCornerShape(10.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 4.dp,
+                    disabledElevation = 0.dp
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = colorResource(id = R.color.primary_color),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = "Done",
                     color = Color.White,
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Bold,

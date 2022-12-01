@@ -57,8 +57,8 @@ class BankAccountsViewModelTest {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(viewModel.customerGuid)
-        Assert.assertNotNull(viewModel.UIState)
-        Assert.assertEquals(viewModel.UIState.value, BankAccountsView.BankAccountsViewState.LOADING)
+        Assert.assertNotNull(viewModel.uiState)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.BankAccountsViewState.LOADING)
         Assert.assertNull(viewModel.latestWorkflow)
     }
 
@@ -74,8 +74,8 @@ class BankAccountsViewModelTest {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(viewModel.customerGuid)
-        Assert.assertNotNull(viewModel.UIState)
-        Assert.assertEquals(viewModel.UIState.value, BankAccountsView.BankAccountsViewState.LOADING)
+        Assert.assertNotNull(viewModel.uiState)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.BankAccountsViewState.LOADING)
         Assert.assertNull(viewModel.latestWorkflow)
     }
 
@@ -146,7 +146,92 @@ class BankAccountsViewModelTest {
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        Assert.assertEquals(viewModel.UIState.value, BankAccountsView.BankAccountsViewState.DONE)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.BankAccountsViewState.DONE)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_getCustomer() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- When
+        val customer = viewModel.getCustomer()
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(customer)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_getBank() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- When
+        val bank = viewModel.getBank("1234")
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(bank)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_assetIsSupported() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- When
+        val supported = viewModel.assetIsSupported("USD")
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertTrue(supported)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_assetIsSupported_Null() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- When
+        val supported = viewModel.assetIsSupported(null)
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertFalse(supported)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_assetIsSupported_AssetNotSupported() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- When
+        val supported = viewModel.assetIsSupported("Cybrid")
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertFalse(supported)
     }
 
     @ExperimentalCoroutinesApi
@@ -165,7 +250,7 @@ class BankAccountsViewModelTest {
         Assert.assertNotNull(viewModel)
         Assert.assertNull(viewModel.workflowJob)
         Assert.assertEquals(viewModel.latestWorkflow, workflow)
-        Assert.assertEquals(viewModel.UIState.value, BankAccountsView.BankAccountsViewState.REQUIRED)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.BankAccountsViewState.REQUIRED)
     }
 
     @ExperimentalCoroutinesApi
@@ -184,6 +269,6 @@ class BankAccountsViewModelTest {
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(viewModel.workflowJob)
         Assert.assertNull(viewModel.latestWorkflow)
-        Assert.assertEquals(viewModel.UIState.value, BankAccountsView.BankAccountsViewState.LOADING)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.BankAccountsViewState.LOADING)
     }
 }

@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.cybrid.demoapp.BuildConfig
@@ -41,6 +42,13 @@ class App : Application(), CybridSDKEvents {
 
         Log.d(TAG, "onBearerExpired")
         this.getBearer()
+    }
+
+    override fun onEvent(level: Int, message: String) {
+
+        if (level == Log.ERROR) {
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        }
     }
 
     // -- Helper method to get the bearer

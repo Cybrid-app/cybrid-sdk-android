@@ -61,7 +61,7 @@ class BankAccountsViewModelTestError {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertNull(viewModel.workflowJob)
-        Assert.assertEquals(viewModel.UIState.value, BankAccountsView.BankAccountsViewState.ERROR)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.BankAccountsViewState.ERROR)
     }
 
     @ExperimentalCoroutinesApi
@@ -96,6 +96,57 @@ class BankAccountsViewModelTestError {
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        Assert.assertEquals(viewModel.UIState.value, BankAccountsView.BankAccountsViewState.ERROR)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.BankAccountsViewState.ERROR)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_getCustomer_Error() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- When
+        val customer = viewModel.getCustomer()
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNull(customer)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_getBank_Error() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- When
+        val bank = viewModel.getBank("1234")
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNull(bank)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_assetIsSupported_Error() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- When
+        val supported = viewModel.assetIsSupported("USD")
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertFalse(supported)
     }
 }

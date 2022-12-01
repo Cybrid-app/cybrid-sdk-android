@@ -11,7 +11,8 @@ enum class LoggerEvents(val level:Int, val message:String) {
     COMPONENT_INIT(Log.INFO, "Initializing"),
     DATA_FETCHED(Log.INFO, "Data Fetched"),
     DATA_REFRESHED(Log.INFO, "Refreshing"),
-    DATA_ERROR(Log.ERROR, "There was an error fetching")
+    DATA_ERROR(Log.ERROR, "There was an error fetching"),
+    ERROR(Log.ERROR, "Error")
 }
 
 object Logger {
@@ -19,10 +20,20 @@ object Logger {
     fun log(event:LoggerEvents) {
 
         Log.println(event.level, Cybrid.instance.tag, event.message)
+        Cybrid.instance.let {
+            if (it.listener != null) {
+                it.listener?.onEvent(event.level, event.message)
+            }
+        }
     }
 
     fun log(event:LoggerEvents, data:String) {
 
         Log.println(event.level, Cybrid.instance.tag, event.message + ": " + data)
+        Cybrid.instance.let {
+            if (it.listener != null) {
+                it.listener?.onEvent(event.level, event.message + ": " + data)
+            }
+        }
     }
 }

@@ -105,8 +105,8 @@ class JSONMock(private var state: JSONMockState): Interceptor {
                 when(method) {
                     "GET" -> {
                         when(state) {
-                            JSONMockState.SUCCESS -> { response = TestConstants.FETCH_WOKFLOW_SUCCESS }
-                            JSONMockState.EMPTY -> { response = TestConstants.FETCH_WOKFLOW_SUCCESS_INCOMPLETE }
+                            JSONMockState.SUCCESS -> { response = TestConstants.FETCH_WORKFLOW_SUCCESS }
+                            JSONMockState.EMPTY -> { response = TestConstants.FETCH_WORKFLOW_SUCCESS_INCOMPLETE }
                             else -> {}
                         }
                     }
@@ -124,6 +124,17 @@ class JSONMock(private var state: JSONMockState): Interceptor {
                     "POST" -> {
                         when(state) {
                             JSONMockState.SUCCESS -> { response = TestConstants.CREATE_EXTERNAL_BANK_ACCOUNT }
+                            else -> {}
+                        }
+                    }
+                }
+            }
+
+            "banks" -> {
+                when(method) {
+                    "GET" -> {
+                        when(state) {
+                            JSONMockState.SUCCESS -> { response = TestConstants.CREATE_BANK_SUCCESS }
                             else -> {}
                         }
                     }
