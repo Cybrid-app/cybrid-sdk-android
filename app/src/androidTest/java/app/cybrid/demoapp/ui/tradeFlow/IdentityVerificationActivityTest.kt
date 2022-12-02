@@ -62,7 +62,7 @@ class IdentityVerificationActivityTest {
         val loadingText = "Checking Identity..."
         compose.onNodeWithText(loadingText).assertIsDisplayed()
 
-        compose.waitUntilDoesNotExist(hasText(loadingText), 15_000L)
+        compose.waitUntilDoesNotExist(hasText(loadingText), 20_000L)
         val requiredText = "Begin identity verification."
         compose.onNodeWithText(requiredText).assertIsDisplayed()
         compose.onNodeWithText("Begin").performClick()

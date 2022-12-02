@@ -72,7 +72,7 @@ tasks.withType(Test) {
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
 
     kotlinOptions.jvmTarget = "1.8"
-    kotlinOptions.freeCompilerArgs = ["-Xjvm-default=enable"]
+    kotlinOptions.freeCompilerArgs = ["-Xjvm-default=all-compatibility"]
 }
 
 kover {
@@ -204,6 +204,9 @@ dependencies {
 
     // -- Persona
     implementation 'com.withpersona.sdk2:inquiry:2.2.37'
+
+    // -- Plaid
+    implementation 'com.plaid.link:sdk-core:3.10.1'
 
     // -- SDK Test
     testImplementation 'com.android.support.test:runner:1.0.2'

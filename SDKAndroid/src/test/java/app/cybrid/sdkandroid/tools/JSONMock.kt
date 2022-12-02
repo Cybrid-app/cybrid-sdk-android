@@ -4,10 +4,9 @@ import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
 
-class JSONMock(state: JSONMockState): Interceptor {
+class JSONMock(private var state: JSONMockState): Interceptor {
 
     enum class JSONMockState { SUCCESS, EMPTY, ERROR }
-    private var state:JSONMockState = state
 
     override fun intercept(chain: Interceptor.Chain): Response {
 
@@ -96,6 +95,46 @@ class JSONMock(state: JSONMockState): Interceptor {
                     "POST" -> {
                         when(state) {
                             JSONMockState.SUCCESS -> { response = TestConstants.CREATE_IDENTITY_VERIFICATION_SUCCESS }
+                            else -> {}
+                        }
+                    }
+                }
+            }
+
+            "workflows" -> {
+                when(method) {
+                    "GET" -> {
+                        when(state) {
+                            JSONMockState.SUCCESS -> { response = TestConstants.FETCH_WORKFLOW_SUCCESS }
+                            JSONMockState.EMPTY -> { response = TestConstants.FETCH_WORKFLOW_SUCCESS_INCOMPLETE }
+                            else -> {}
+                        }
+                    }
+                    "POST" -> {
+                        when(state) {
+                            JSONMockState.SUCCESS -> { response = TestConstants.CREATE_WORKFLOW_SUCCESS }
+                            else -> {}
+                        }
+                    }
+                }
+            }
+
+            "external_bank_accounts" -> {
+                when(method) {
+                    "POST" -> {
+                        when(state) {
+                            JSONMockState.SUCCESS -> { response = TestConstants.CREATE_EXTERNAL_BANK_ACCOUNT }
+                            else -> {}
+                        }
+                    }
+                }
+            }
+
+            "banks" -> {
+                when(method) {
+                    "GET" -> {
+                        when(state) {
+                            JSONMockState.SUCCESS -> { response = TestConstants.CREATE_BANK_SUCCESS }
                             else -> {}
                         }
                     }

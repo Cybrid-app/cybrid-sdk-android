@@ -60,6 +60,7 @@ class CybridTest {
         // -- When
         cybrid.listener = object : CybridSDKEvents {
             override fun onTokenExpired() {}
+            override fun onEvent(level: Int, message: String) {}
         }
 
         // -- Then
