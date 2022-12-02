@@ -63,4 +63,13 @@
     <string name="kyc_view_required_begin_button">Begin</string>
     <string name="kyc_view_required_done_button">Done</string>
 
+    <!-- KYC Component -->
+    <string name="bank_accounts_view_loading_text">Checando Cuentas Bancarias</string>
+    <string name="bank_accounts_view_required_text">No hay cuentas bancarias conectadas.</string>
+    <string name="bank_accounts_view_required_button">Agregar cuenta</string>
+    <string name="bank_accounts_view_done_text">Cuenta agregada correctamente.</string>
+    <string name="bank_accounts_view_done_button">Continuar</string>
+    <string name="bank_accounts_view_error_text">Ha ocurrido un error, vuelve a intentarlo.</string>
+    <string name="bank_accounts_view_error_button">Listo</string>
+
 </resources>
