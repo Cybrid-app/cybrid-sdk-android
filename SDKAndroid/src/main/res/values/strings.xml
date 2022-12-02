@@ -61,7 +61,16 @@
     <string name="kyc_view_error_text">Unable to verify identity.</string>
     <string name="kyc_view_reviewing_text">Identity being reviewed.</string>
     <string name="kyc_view_required_cancel_button">Cancel</string>
-    <string name="kyc_view_required_begin_button">Begin</string>ç
+    <string name="kyc_view_required_begin_button">Begin</string>
     <string name="kyc_view_required_done_button">Done</string>
+
+    <!-- Bank Accounts Component -->
+    <string name="bank_accounts_view_loading_text">Checking Bank Accounts</string>
+    <string name="bank_accounts_view_required_text">No banks accounts connected.</string>
+    <string name="bank_accounts_view_required_button">Add account</string>
+    <string name="bank_accounts_view_done_text">Account added successfully.</string>
+    <string name="bank_accounts_view_done_button">Continue</string>
+    <string name="bank_accounts_view_error_text">An error has occurred, try again.</string>
+    <string name="bank_accounts_view_error_button">Done</string>
 
 </resources>
