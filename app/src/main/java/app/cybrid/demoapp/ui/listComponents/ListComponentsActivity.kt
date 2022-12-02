@@ -14,7 +14,7 @@ import app.cybrid.demoapp.ui.listPricesComponent.ListPricesAssetsComponentActivi
 import app.cybrid.demoapp.ui.listPricesComponent.ListPricesComponentActivity
 import app.cybrid.demoapp.ui.tradeFlow.TradeFlowActivity
 import app.cybrid.sdkandroid.components.activity.KYCActivity
-import app.cybrid.sdkandroid.BankAccountsActivity
+import app.cybrid.sdkandroid.components.activity.BankAccountsActivity
 
 class ListComponentsActivity : AppCompatActivity(), ComponentListener {
 

@@ -21,9 +21,7 @@ object Logger {
 
         Log.println(event.level, Cybrid.instance.tag, event.message)
         Cybrid.instance.let {
-            if (it.listener != null) {
-                it.listener?.onEvent(event.level, event.message)
-            }
+            it.listener?.onEvent(event.level, event.message)
         }
     }
 
@@ -31,9 +29,7 @@ object Logger {
 
         Log.println(event.level, Cybrid.instance.tag, event.message + ": " + data)
         Cybrid.instance.let {
-            if (it.listener != null) {
-                it.listener?.onEvent(event.level, event.message + ": " + data)
-            }
+            it.listener?.onEvent(event.level, event.message + ": " + data)
         }
     }
 }

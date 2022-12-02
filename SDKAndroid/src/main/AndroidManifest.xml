@@ -6,7 +6,7 @@
             android:name=".components.activity.KYCActivity"
             android:exported="false" />
         <activity
-            android:name=".BankAccountsActivity"
+            android:name=".components.activity.BankAccountsActivity"
             android:exported="false" />
     </application>
 
