@@ -6,12 +6,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 
 @Composable
@@ -20,6 +22,7 @@ fun BankAccountsView_Loading() {
     Box(
         modifier = Modifier
             .height(120.dp)
+            .testTag(Constants.BankAccountsView.LoadingView.id)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -35,8 +38,9 @@ fun BankAccountsView_Loading() {
             )
             CircularProgressIndicator(
                 modifier = Modifier
-                    .padding(top = 16.dp),
-                color = colorResource(id = R.color.primary_color)
+                    .padding(top = 16.dp)
+                    .testTag(Constants.BankAccountsView.LoadingViewIndicator.id),
+            color = colorResource(id = R.color.primary_color)
             )
         }
     }

@@ -38,7 +38,7 @@ fun BankAccountsView_Error() {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .testTag(Constants.AccountsViewTestTags.List.id)
+            .testTag(Constants.BankAccountsView.ErrorView.id)
     ) {
 
         val (text, buttons) = createRefs()

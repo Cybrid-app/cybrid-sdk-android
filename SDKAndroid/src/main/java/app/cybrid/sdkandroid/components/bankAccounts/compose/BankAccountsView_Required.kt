@@ -63,7 +63,7 @@ fun BankAccountsView_Required(viewModel: BankAccountsViewModel?) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .testTag(Constants.AccountsViewTestTags.List.id)
+            .testTag(Constants.BankAccountsView.RequiredView.id)
     ) {
 
         val (text, buttons) = createRefs()

@@ -34,7 +34,7 @@ fun BankAccountsView_Done() {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .testTag(Constants.AccountsViewTestTags.List.id)
+            .testTag(Constants.BankAccountsView.DoneView.id)
     ) {
 
         val (text, buttons) = createRefs()
