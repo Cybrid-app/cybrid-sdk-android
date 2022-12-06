@@ -36,8 +36,7 @@ class TradeFlowActivityTest {
 
         resources = InstrumentationRegistry.getInstrumentation().context.resources
     }
-
-    @Test
+    
     fun checkAppFlow() = runTest {
 
         Thread.sleep(2500)
