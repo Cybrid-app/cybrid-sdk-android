@@ -19,6 +19,7 @@ import androidx.test.rule.ActivityTestRule
 import app.cybrid.demoapp.R
 import app.cybrid.demoapp.ui.login.LoginActivity
 import app.cybrid.demoapp.ui.tradeFlow.util.waitUntilDoesNotExist
+import app.cybrid.demoapp.ui.tradeFlow.util.waitUntilExists
 import app.cybrid.demoapp.ui.tradeFlow.util.waitUntilViewIsDisplayed
 import org.junit.Before
 import org.junit.Rule
@@ -60,10 +61,11 @@ class IdentityVerificationActivityTest {
         compose.waitForIdle()
 
         val loadingText = "Checking Identity..."
+        compose.waitUntilExists(hasText(loadingText))
         compose.onNodeWithText(loadingText).assertIsDisplayed()
 
-        compose.waitUntilDoesNotExist(hasText(loadingText), 20_000L)
         val requiredText = "Begin identity verification."
+        compose.waitUntilExists(hasText(requiredText), 20_000L)
         compose.onNodeWithText(requiredText).assertIsDisplayed()
         compose.onNodeWithText("Begin").performClick()
     }
