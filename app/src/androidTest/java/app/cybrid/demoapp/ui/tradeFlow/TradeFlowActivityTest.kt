@@ -47,7 +47,7 @@ class TradeFlowActivityTest {
         onView(withId(R.id.list)).check(matches(isDisplayed()))
         onView(withText("TradeFlow")).check(matches(isDisplayed())).perform(click())
 
-        Thread.sleep(5000)
+        Thread.sleep(10000)
         compose.waitForIdle()
         compose.onNodeWithTag("ListPricesView").assertIsDisplayed()
         compose.onNodeWithText("Search").assertIsDisplayed()
@@ -57,7 +57,7 @@ class TradeFlowActivityTest {
         compose.onNodeWithText("Search").performTextInput("Eth")
         compose.onNodeWithText("Bitcoin").assertDoesNotExist()
         compose.onNodeWithText("Ethereum").assertIsDisplayed()
-        Thread.sleep(2000)
+        Thread.sleep(5000)
 
         compose.onNodeWithText("Eth").performTextInput("")
         compose.onNodeWithText("Bitcoin").assertIsDisplayed()
