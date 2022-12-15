@@ -18,6 +18,7 @@ import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.AssetPipe.AssetPipeTrade
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
+import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
 import app.cybrid.sdkandroid.util.getResult
@@ -33,6 +34,7 @@ class AccountsViewModel : ViewModel() {
     var accounts:List<AccountAssetPriceModel> by mutableStateOf(listOf())
 
     var totalBalance:String by mutableStateOf("")
+    var totalFiatBalance:String by mutableStateOf("")
 
     // -- Trades List
     var trades:List<TradeBankModel> by mutableStateOf(listOf())
@@ -60,22 +62,21 @@ class AccountsViewModel : ViewModel() {
         }
     }
 
-    fun createAccountsFormatted(
-        prices:List<SymbolPriceBankModel>,
-        assets:List<AssetBankModel>
-    ) {
+    fun createAccountsFormatted(prices:List<SymbolPriceBankModel>, assets:List<AssetBankModel>) {
 
         this.accounts = listOf()
         val accountsList = ArrayList<AccountAssetPriceModel>()
         this.accountsResponse.let { balances ->
             balances.forEach { balance ->
 
-                val code = balance.asset ?: ""
-                val symbol = "$code-$currentFiatCurrency"
-                val asset = assets.find { it.code == code }
-                val pairAsset = assets.find { it.code == currentFiatCurrency }
-                val price = prices.find { it.symbol ==  symbol}
-                val assetDecimals = BigDecimal(asset?.decimals ?: JavaBigDecimal(0))
+                val code = balance.asset ?: "" // BTC
+                val symbol = "$code-$currentFiatCurrency" // BTC-USD
+
+                val asset = assets.find { it.code == code } // BTC
+                val pairAsset = assets.find { it.code == currentFiatCurrency } // USD
+                val price = prices.find { it.symbol ==  symbol } // BTC-USD
+
+                val assetDecimals = BigDecimal(asset?.decimals ?: JavaBigDecimal(0)) // 18
 
                 val balanceValue = BigDecimal(balance.platformBalance ?: JavaBigDecimal(0))
                 val balanceValueFormatted = AssetPipe.transform(balanceValue, assetDecimals, "trade")
@@ -115,12 +116,26 @@ class AccountsViewModel : ViewModel() {
     fun getCalculatedBalance() {
 
         var total = BigDecimal(0)
-        if (this.accounts != null && this.accounts.isNotEmpty()) {
+        if (this.accounts.isNotEmpty()) {
             val pairAsset = this.accounts[0].pairAsset
             this.accounts.forEach { balance ->
                 total = total.plus(balance.accountBalanceInFiat)
             }
             this.totalBalance = BigDecimalPipe.transform(total, pairAsset) ?: ""
+        }
+    }
+
+    fun getCalculatedFiatBalance() {
+
+        var total = BigDecimal(0)
+        if (this.accounts.isNotEmpty()) {
+            val pairAsset = Constants.USD_ASSET
+            this.accounts.forEach { balance ->
+                if (balance.accountType == AccountBankModel.Type.fiat) {
+                    total = total.plus(BigDecimal(balance.accountBalance))
+                }
+            }
+            this.totalFiatBalance = BigDecimalPipe.transform(total, pairAsset) ?: ""
         }
     }
 
