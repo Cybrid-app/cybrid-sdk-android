@@ -53,6 +53,7 @@ class BankTransferViewModel: ViewModel() {
         assetsService = dataProvider.createService(AssetsApi::class.java)
     }
 
+<<<<<<< HEAD
     suspend fun fetchAssets(): List<AssetBankModel>? {
 
         var assets: List<AssetBankModel>? = null
@@ -78,6 +79,10 @@ class BankTransferViewModel: ViewModel() {
 
     suspend fun fetchAccounts() {
 
+=======
+    suspend fun fetchAccounts() {
+
+>>>>>>> ce60a99 (Initial commit)
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
                 viewModelScope.let { scope ->
@@ -128,7 +133,11 @@ class BankTransferViewModel: ViewModel() {
 
     fun calculateFiatBalance() {
 
+<<<<<<< HEAD
         val pairAsset = assets?.find { it.code == currentFiatCurrency }
+=======
+        val pairAsset = assets.find { it.code == currentFiatCurrency }
+>>>>>>> ce60a99 (Initial commit)
         var total = BigDecimal(0)
         this.accounts.forEach { account ->
             if (account.type == AccountBankModel.Type.fiat &&
@@ -137,9 +146,13 @@ class BankTransferViewModel: ViewModel() {
                 total = total.plus(balance)
             }
         }
+<<<<<<< HEAD
         this.fiatBalance = if (pairAsset != null) {
             BigDecimalPipe.transform(total, pairAsset) ?: ""
         } else { "" }
+=======
+        this.fiatBalance = BigDecimalPipe.transform(total, pairAsset!!) ?: ""
+>>>>>>> ce60a99 (Initial commit)
     }
 
     suspend fun createQuote(side: PostQuoteBankModel.Side, amount: BigDecimal) {
