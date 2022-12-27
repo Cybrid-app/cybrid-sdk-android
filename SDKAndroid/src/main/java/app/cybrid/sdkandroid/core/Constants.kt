@@ -46,5 +46,7 @@ class Constants {
             symbol = "$",
             type= AssetBankModel.Type.fiat,
         )
+
+        val assets: List<AssetBankModel> = listOf(USD_ASSET)
     }
 }

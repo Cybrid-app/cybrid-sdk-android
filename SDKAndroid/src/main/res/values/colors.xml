@@ -28,5 +28,7 @@
     <color name="account_trade_detail_content_item_color">#424242</color>
 
     <color name="accent_blue">#007AFF</color>
+
+    <color name="select_background">#CCEDEDED</color>
     
 </resources>

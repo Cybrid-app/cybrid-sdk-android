@@ -1,6 +1,7 @@
 package app.cybrid.sdkandroid.components
 
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Outbound
@@ -36,14 +38,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
+import app.cybrid.sdkandroid.components.activity.BankTransferActivity
 import app.cybrid.sdkandroid.components.composeViews.AccountTradesView
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
+import app.cybrid.sdkandroid.util.Polling
 import app.cybrid.sdkandroid.util.getDateInFormat
 import app.cybrid.sdkandroid.util.getSpannableStyle
 import java.time.OffsetDateTime
@@ -56,8 +62,9 @@ class AccountsView @JvmOverloads constructor(
 
     enum class AccountsViewState { LOADING, CONTENT, TRADES }
 
-    private var _listPricesViewModel:ListPricesViewModel? = null
-    private var _accountsViewModel:AccountsViewModel? = null
+    private var _listPricesViewModel: ListPricesViewModel? = null
+    private var _accountsViewModel: AccountsViewModel? = null
+    private var pricesPolling: Polling? = null
 
     var currentState = mutableStateOf(AccountsViewState.LOADING)
 
@@ -79,7 +86,7 @@ class AccountsView @JvmOverloads constructor(
         this._listPricesViewModel?.getPricesList()
         this._accountsViewModel?.getAccountsList()
 
-        this.setupRunnable { this._listPricesViewModel?.getPricesList() }
+        this.pricesPolling = Polling { this._listPricesViewModel?.getPricesList() }
     }
 
     private fun setupCompose() {
@@ -230,24 +237,75 @@ fun AccountsViewList(
             .background(Color.Transparent)
             .testTag(Constants.AccountsViewTestTags.List.id)
     ) {
-        AccountsBalance(
-            accountsViewModel = accountsViewModel
-        )
-        LazyColumn(
-            modifier = Modifier
+        ConstraintLayout(
+            Modifier.fillMaxSize()
         ) {
-            stickyHeader {
-                AccountsCryptoHeaderItem(
-                    accountsViewModel = accountsViewModel
-                )
+
+            val (balance, list, button) = createRefs()
+            val context = LocalContext.current
+
+            AccountsBalance(
+                accountsViewModel = accountsViewModel,
+                modifier = Modifier.constrainAs(balance) {
+                    start.linkTo(parent.start, margin = 0.dp)
+                    top.linkTo(parent.top, margin = 0.dp)
+                    end.linkTo(parent.end, margin = 0.dp)
+                }
+            )
+
+            LazyColumn(
+                modifier = Modifier.constrainAs(list) {
+                    start.linkTo(parent.start, margin = 0.dp)
+                    top.linkTo(balance.bottom, margin = 0.dp)
+                    end.linkTo(parent.end, margin = 0.dp)
+                }
+            ) {
+                stickyHeader {
+                    AccountsCryptoHeaderItem(
+                        accountsViewModel = accountsViewModel
+                    )
+                }
+                itemsIndexed(items = accountsViewModel?.accounts ?: listOf()) { index, item ->
+                    AccountsCryptoItem(
+                        balance = item,
+                        index = index,
+                        selectedIndex = selectedIndex,
+                        accountsViewModel = accountsViewModel,
+                        currentRememberState = currentRememberState
+                    )
+                }
             }
-            itemsIndexed(items = accountsViewModel?.accounts ?: listOf()) { index, item ->
-                AccountsCryptoItem(
-                    balance = item,
-                    index = index,
-                    selectedIndex = selectedIndex,
-                    accountsViewModel = accountsViewModel,
-                    currentRememberState = currentRememberState
+
+            Button(
+                onClick = {
+
+                    context.startActivity(Intent(context, BankTransferActivity::class.java))
+                },
+                modifier = Modifier
+                    .constrainAs(button) {
+                        start.linkTo(parent.start, margin = 10.dp)
+                        end.linkTo(parent.end, margin = 10.dp)
+                        bottom.linkTo(parent.bottom, margin = 35.dp)
+                        width = Dimension.fillToConstraints
+                        Dimension.value(60.dp)
+                    },
+                shape = RoundedCornerShape(10.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 4.dp,
+                    disabledElevation = 0.dp
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = colorResource(id = R.color.primary_color),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = "Transfer Funds",
+                    color = Color.White,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp,
                 )
             }
         }
@@ -256,7 +314,8 @@ fun AccountsViewList(
 
 @Composable
 fun AccountsBalance(
-    accountsViewModel: AccountsViewModel?
+    accountsViewModel: AccountsViewModel?,
+    modifier: Modifier
 ) {
 
     // -- Vars
@@ -289,7 +348,7 @@ fun AccountsBalance(
     // -- Content
     if (accountsViewModel?.totalBalance != "") {
         Surface(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp, bottom = 25.5.dp)
         ) {
