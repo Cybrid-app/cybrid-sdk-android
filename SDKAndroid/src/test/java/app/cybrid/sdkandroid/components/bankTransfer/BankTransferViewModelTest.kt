@@ -3,6 +3,7 @@ package app.cybrid.sdkandroid.components.bankTransfer
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.PostQuoteBankModel
 import app.cybrid.sdkandroid.Cybrid
+import app.cybrid.sdkandroid.components.BankTransferView
 import app.cybrid.sdkandroid.components.bankTransfer.view.BankTransferViewModel
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.tools.JSONMock
@@ -75,20 +76,20 @@ class BankTransferViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_getFiatBalance() = runTest {
+    fun test_fetchAssets() = runTest {
 
         // -- Given
         val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
-        viewModel.assets = TestConstants.assets
 
         // -- When
-        val balance = viewModel.getFiatBalance()
+        val assets = viewModel.fetchAssets()
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        Assert.assertEquals(balance, "$0.10")
+        Assert.assertNotNull(assets)
+        Assert.assertTrue((assets?.size ?: 0) > 0)
     }
 
     @ExperimentalCoroutinesApi
@@ -101,12 +102,14 @@ class BankTransferViewModelTest {
         viewModel.setDataProvider(dataProvider)
 
         // -- When
-        val accounts = viewModel.fetchAccounts()
+        viewModel.fetchAccounts()
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        Assert.assertNotNull(accounts)
-        Assert.assertTrue(accounts.isNotEmpty())
+        Assert.assertNotNull(viewModel.assets)
+        Assert.assertTrue(viewModel.assets!!.isNotEmpty())
+        Assert.assertNotNull(viewModel.accounts)
+        Assert.assertTrue(viewModel.accounts.isNotEmpty())
     }
 
     @ExperimentalCoroutinesApi
@@ -124,6 +127,30 @@ class BankTransferViewModelTest {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertTrue(viewModel.externalBankAccounts.isNotEmpty())
+        Assert.assertEquals(viewModel.uiState.value, BankTransferView.ViewState.IN_LIST)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_getFiatBalance() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+        viewModel.assets = TestConstants.assets
+
+        // -- When
+        viewModel.fetchAccounts()
+        viewModel.calculateFiatBalance()
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(viewModel.assets)
+        Assert.assertTrue(viewModel.assets!!.isNotEmpty())
+        Assert.assertNotNull(viewModel.accounts)
+        Assert.assertTrue(viewModel.accounts.isNotEmpty())
+        Assert.assertEquals(viewModel.fiatBalance, "$0.10")
     }
 
     @ExperimentalCoroutinesApi

@@ -11,7 +11,7 @@ class BankTransferView @JvmOverloads constructor(
     defStyle: Int = 0):
 Component(context, attrs, defStyle) {
 
-    enum class ViewState { LOADING }
+    enum class ViewState { LOADING, IN_LIST }
 
     init {
 

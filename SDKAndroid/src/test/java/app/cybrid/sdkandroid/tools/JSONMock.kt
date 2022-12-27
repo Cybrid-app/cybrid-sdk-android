@@ -179,6 +179,17 @@ class JSONMock(private var state: JSONMockState): Interceptor {
                     }
                 }
             }
+
+            "assets" -> {
+                when(method) {
+                   "GET" -> {
+                       when(state) {
+                           JSONMockState.SUCCESS -> { response = TestConstants.FETCH_ASSETS_SUCCESS }
+                           else -> {}
+                       }
+                   }
+                }
+            }
         }
         return response
     }
