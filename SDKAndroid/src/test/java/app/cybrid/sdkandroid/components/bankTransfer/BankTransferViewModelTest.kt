@@ -132,13 +132,12 @@ class BankTransferViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_getFiatBalance() = runTest {
+    fun test_calculateFiatBalance() = runTest {
 
         // -- Given
         val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
-        viewModel.assets = TestConstants.assets
 
         // -- When
         viewModel.fetchAccounts()

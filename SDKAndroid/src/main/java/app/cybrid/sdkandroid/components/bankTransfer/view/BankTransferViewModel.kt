@@ -137,7 +137,9 @@ class BankTransferViewModel: ViewModel() {
                 total = total.plus(balance)
             }
         }
-        this.fiatBalance = BigDecimalPipe.transform(total, pairAsset!!) ?: ""
+        this.fiatBalance = if (pairAsset != null) {
+            BigDecimalPipe.transform(total, pairAsset) ?: ""
+        } else { "" }
     }
 
     suspend fun createQuote(side: PostQuoteBankModel.Side, amount: BigDecimal) {
