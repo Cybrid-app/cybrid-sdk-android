@@ -18,11 +18,12 @@ import app.cybrid.demoapp.ui.login.LoginActivity
 import app.cybrid.demoapp.ui.util.waitUntilExists
 import app.cybrid.demoapp.ui.util.waitUntilViewIsDisplayed
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
+//@RunWith(AndroidJUnit4::class)
 class IdentityVerificationActivityTest {
 
     @JvmField
@@ -35,12 +36,14 @@ class IdentityVerificationActivityTest {
 
     private lateinit var resources: Resources
 
-    @Before
+    //@Before
     fun setup() {
 
         resources = InstrumentationRegistry.getInstrumentation().context.resources
     }
 
+    //@Ignore("Disabled until KYC Bearer Token in ready")
+    //@Test
     fun test_makeTheFlow() {
 
         waitUntilViewIsDisplayed(withId(R.id.demo))
