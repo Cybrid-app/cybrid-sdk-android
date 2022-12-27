@@ -1,4 +1,4 @@
-package app.cybrid.demoapp.ui.tradeFlow.util
+package app.cybrid.demoapp.ui.util
 
 import android.view.View
 import androidx.test.espresso.*

@@ -1,9 +1,6 @@
-package app.cybrid.demoapp.ui.tradeFlow
+package app.cybrid.demoapp.ui.kyc
 
 import android.content.res.Resources
-import android.util.Log
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
@@ -18,9 +15,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import app.cybrid.demoapp.R
 import app.cybrid.demoapp.ui.login.LoginActivity
-import app.cybrid.demoapp.ui.tradeFlow.util.waitUntilDoesNotExist
-import app.cybrid.demoapp.ui.tradeFlow.util.waitUntilExists
-import app.cybrid.demoapp.ui.tradeFlow.util.waitUntilViewIsDisplayed
+import app.cybrid.demoapp.ui.util.waitUntilExists
+import app.cybrid.demoapp.ui.util.waitUntilViewIsDisplayed
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -45,7 +41,6 @@ class IdentityVerificationActivityTest {
         resources = InstrumentationRegistry.getInstrumentation().context.resources
     }
 
-    @Test
     fun test_makeTheFlow() {
 
         waitUntilViewIsDisplayed(withId(R.id.demo))
