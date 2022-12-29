@@ -48,6 +48,7 @@ import app.cybrid.sdkandroid.components.activity.BankTransferActivity
 import app.cybrid.sdkandroid.components.composeViews.AccountTradesView
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.core.Constants
+import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.Polling
 import app.cybrid.sdkandroid.util.getDateInFormat
@@ -278,7 +279,6 @@ fun AccountsViewList(
 
             Button(
                 onClick = {
-
                     context.startActivity(Intent(context, BankTransferActivity::class.java))
                 },
                 modifier = Modifier
@@ -287,7 +287,7 @@ fun AccountsViewList(
                         end.linkTo(parent.end, margin = 10.dp)
                         bottom.linkTo(parent.bottom, margin = 35.dp)
                         width = Dimension.fillToConstraints
-                        Dimension.value(60.dp)
+                        height = Dimension.value(50.dp)
                     },
                 shape = RoundedCornerShape(10.dp),
                 elevation = ButtonDefaults.elevation(
@@ -303,9 +303,10 @@ fun AccountsViewList(
                 Text(
                     text = "Transfer Funds",
                     color = Color.White,
-                    fontFamily = robotoFont,
+                    fontFamily = interFont,
                     fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
+                    letterSpacing = (-0.4).sp
                 )
             }
         }
@@ -345,6 +346,9 @@ fun AccountsBalance(
         }
     }
 
+    val pendingDepositLabel = stringResource(id = R.string.accounts_view_pending_deposit_label)
+    val pendingDepositText = "0 $pendingDepositLabel"
+
     // -- Content
     if (accountsViewModel?.totalBalance != "") {
         Surface(
@@ -380,13 +384,13 @@ fun AccountsBalance(
                 )
 
                 Text(
-                    text = "Available to Trade",
+                    text = stringResource(id = R.string.accounts_view_balance_available_title),
                     modifier = Modifier.padding(top = 30.dp),
-                    fontFamily = robotoFont,
+                    fontFamily = interFont,
                     fontWeight = FontWeight.Normal,
                     fontSize = 13.sp,
                     lineHeight = 20.sp,
-                    color = colorResource(id = R.color.accounts_view_balance_title)
+                    color = colorResource(id = R.color.accounts_balance_available_trade_color)
                 )
 
                 Text(
@@ -398,6 +402,16 @@ fun AccountsBalance(
                     fontSize = 23.sp,
                     lineHeight = 32.sp,
                     color = Color.Black
+                )
+
+                Text(
+                    text = pendingDepositText,
+                    modifier = Modifier.padding(top = 1.dp),
+                    fontFamily = interFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 13.sp,
+                    lineHeight = 20.sp,
+                    color = colorResource(id = R.color.accounts_pending_deposit_color)
                 )
             }
         }

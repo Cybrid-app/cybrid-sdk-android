@@ -1,13 +1,10 @@
 package app.cybrid.sdkandroid.components
 
 import android.content.Context
-import android.content.Intent
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -16,7 +13,6 @@ import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.SwapVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +23,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
@@ -47,24 +42,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
-import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
-import app.cybrid.sdkandroid.components.activity.BankTransferActivity
-import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Done
-import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Error
-import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Loading
-import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Required
-import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
+import app.cybrid.sdkandroid.components.bankTransfer.compose.BankTransferView_Loading
 import app.cybrid.sdkandroid.components.bankTransfer.modal.BankTransferModal
 import app.cybrid.sdkandroid.components.bankTransfer.view.BankTransferViewModel
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.nio.channels.FileChannel.MapMode
 
 class BankTransferView @JvmOverloads constructor(
     context: Context,
@@ -83,6 +70,7 @@ Component(context, attrs, defStyle) {
         this.composeView = findViewById(R.id.composeContent)
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun setViewModel(bankTransferViewModel: BankTransferViewModel) {
 
         this.bankTransferViewModel = bankTransferViewModel
@@ -124,8 +112,10 @@ fun BankTransferView(
     // -- Content
     Surface {
 
+        BankTransferView_Loading()
+
         // -- UIState
-        when(currentState.value) {
+        /*when(currentState.value) {
 
             BankTransferView.ViewState.LOADING -> {
                 BankTransferView_Loading()
@@ -136,39 +126,7 @@ fun BankTransferView(
                     bankTransferViewModel = bankTransferViewModel
                 )
             }
-        }
-
-
-    }
-}
-
-@Composable
-fun BankTransferView_Loading() {
-
-    Box(
-        modifier = Modifier
-            .height(120.dp)
-            .testTag(Constants.BankAccountsView.LoadingView.id)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Loading",
-                fontFamily = robotoFont,
-                fontWeight = FontWeight.Normal,
-                fontSize = 17.sp,
-                color = colorResource(id = R.color.primary_color)
-            )
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .testTag(Constants.BankAccountsView.LoadingViewIndicator.id),
-                color = colorResource(id = R.color.primary_color)
-            )
-        }
+        }*/
     }
 }
 

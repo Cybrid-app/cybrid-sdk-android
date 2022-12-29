@@ -35,6 +35,8 @@
     <string name="accounts_view_loading_text">Chargement en cours</string>
     <string name="accounts_view_list_header_asset">Actif</string>
     <string name="accounts_view_balance_title">Valeur du compte</string>
+    <string name="accounts_view_balance_available_title">Disponible pour le commerce</string>
+    <string name="accounts_view_pending_deposit_label"> dépôt en attente</string>
     <string name="accounts_view_list_header_asset_sub">Prix du marché</string>
     <string name="accounts_view_list_header_balance">Solde</string>
     <string name="accounts_view_trades_holding_title">Avoirs</string>
@@ -71,5 +73,8 @@
     <string name="bank_accounts_view_done_button">Continuer</string>
     <string name="bank_accounts_view_error_text">Une erreur s\'est produite, réessayez.</string>
     <string name="bank_accounts_view_error_button">Fait</string>
+
+    <!-- Transfer Component -->
+    <string name="transfer_view_component_loading_view_title">Chargement</string>
 
 </resources>
