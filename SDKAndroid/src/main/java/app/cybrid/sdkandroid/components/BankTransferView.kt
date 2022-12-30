@@ -5,51 +5,19 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringArrayResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.toSize
-import androidx.constraintlayout.compose.ConstraintLayout
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.bankTransfer.compose.BankTransferView_Accounts
-import app.cybrid.sdkandroid.components.bankTransfer.compose.BankTransferView_Loading
-import app.cybrid.sdkandroid.components.bankTransfer.modal.BankTransferModal
+import app.cybrid.sdkandroid.components.bankTransfer.compose.BankTransferView_ActionsModal
 import app.cybrid.sdkandroid.components.bankTransfer.view.BankTransferViewModel
 import app.cybrid.sdkandroid.core.Constants
-import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -132,15 +100,19 @@ fun BankTransferView(
             }
 
             BankTransferView.ViewState.IN_LIST -> {
-                BankTransferView_List(
-                    bankTransferViewModel = bankTransferViewModel
+                BankTransferView_Accounts(
+                    bankTransferViewModel = bankTransferViewModel,
+                    selectedTabIndex = selectedTabIndex,
+                    externalBankAccount = externalBankAccount,
+                    amountMutableState = amountMutableState,
+                    showDialog = showDialog
                 )
             }
         }*/
 
         // -- Dialog
         if (showDialog.value) {
-            BankTransferModal(
+            BankTransferView_ActionsModal(
                 bankTransferViewModel = bankTransferViewModel,
                 externalBankAccount = externalBankAccount.value,
                 showDialog = showDialog,

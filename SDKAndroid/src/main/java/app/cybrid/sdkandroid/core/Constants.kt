@@ -44,15 +44,5 @@ class Constants {
 
         const val MIN_INTEGER_DIGITS = 0
         const val MIN_FRACTION_DIGITS = 2
-
-        val USD_ASSET: AssetBankModel = AssetBankModel(
-            code = "USD",
-            decimals = BigDecimal(2),
-            name = "American Dollar",
-            symbol = "$",
-            type= AssetBankModel.Type.fiat,
-        )
-
-        val assets: List<AssetBankModel> = listOf(USD_ASSET)
     }
 }

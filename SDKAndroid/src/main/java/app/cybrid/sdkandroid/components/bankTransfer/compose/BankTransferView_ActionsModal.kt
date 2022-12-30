@@ -1,4 +1,4 @@
-package app.cybrid.sdkandroid.components.bankTransfer.modal
+package app.cybrid.sdkandroid.components.bankTransfer.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,14 +31,11 @@ import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
-import java.math.BigDecimal
 
-private enum class BankTransferModalState {
-    CONTENT
-}
+enum class ViewState { LOADING, CONTENT }
 
 @Composable
-fun BankTransferModal(
+fun BankTransferView_ActionsModal(
     bankTransferViewModel: BankTransferViewModel?,
     externalBankAccount: ExternalBankAccountBankModel?,
     showDialog: MutableState<Boolean>,
@@ -47,7 +44,7 @@ fun BankTransferModal(
 ) {
 
     // -- Vars
-    var uiState: MutableState<BankTransferModalState> = remember { mutableStateOf(BankTransferModalState.CONTENT) }
+    var modalUiState: MutableState<ViewState> = remember { mutableStateOf(ViewState.LOADING) }
 
     // -- compose Content
     BottomSheetDialog(
@@ -63,23 +60,25 @@ fun BankTransferModal(
                 .fillMaxWidth()
         ) {
 
-            when(uiState.value) {
+            when(modalUiState.value) {
 
-                BankTransferModalState.CONTENT -> {
-                    BanTransferModal_Content(
+                ViewState.CONTENT -> {
+                    BankTransferView_ActionsModal_Content(
                         bankTransferViewModel = bankTransferViewModel,
                         externalBankAccount = externalBankAccount,
                         selectedTabIndex = selectedTabIndex,
                         amountMutableState = amountMutableState
                     )
                 }
+
+                else -> {}
             }
         }
     }
 }
 
 @Composable
-fun BanTransferModal_Content(
+fun BankTransferView_ActionsModal_Content(
     bankTransferViewModel: BankTransferViewModel?,
     externalBankAccount: ExternalBankAccountBankModel?,
     selectedTabIndex: MutableState<Int>,
@@ -131,14 +130,14 @@ fun BanTransferModal_Content(
             )
 
             // -- Amount
-            BanTransferModal_Content__Item(
+            BankTransferView_ActionsModal_Content__Item(
                 titleLabel = "Amount",
                 subTitleLabel = purchaseValue,
                 subTitleTestTag = "PurchaseAmountId"
             )
 
             // -- Date
-            BanTransferModal_Content__Item(
+            BankTransferView_ActionsModal_Content__Item(
                 titleLabel = if (selectedTabIndex.value == 0) {
                         "Deposit date"
                     } else {
@@ -149,7 +148,7 @@ fun BanTransferModal_Content(
             )
 
             // -- From-To
-            BanTransferModal_Content__Item(
+            BankTransferView_ActionsModal_Content__Item(
                 titleLabel = if (selectedTabIndex.value == 0) {
                     "From"
                 } else {
@@ -194,7 +193,7 @@ fun BanTransferModal_Content(
 }
 
 @Composable
-private fun BanTransferModal_Content__Item(
+private fun BankTransferView_ActionsModal_Content__Item(
     titleLabel: String,
     subTitleLabel: AnnotatedString,
     subTitleTestTag: String

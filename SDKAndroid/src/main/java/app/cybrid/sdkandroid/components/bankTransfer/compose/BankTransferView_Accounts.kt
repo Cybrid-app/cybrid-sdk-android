@@ -44,8 +44,6 @@ import androidx.compose.ui.unit.toSize
 import androidx.constraintlayout.compose.ConstraintLayout
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.*
-import app.cybrid.sdkandroid.components.bankTransfer.modal.BankTransferModal
 import app.cybrid.sdkandroid.components.bankTransfer.view.BankTransferViewModel
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.interFont
