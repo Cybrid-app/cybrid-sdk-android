@@ -76,5 +76,13 @@
 
     <!-- Transfer Component -->
     <string name="transfer_view_component_loading_view_title">Cargando</string>
+    <string-array name="transfer_view_component_account_tabs">
+        <item>Depositar</item>
+        <item>Retirar</item>
+    </string-array>
+    <string name="transfer_view_component_balance_title">Saldo disponible</string>
+    <string name="transfer_view_component_accounts_select_title_from">De la cuenta</string>
+    <string name="transfer_view_component_accounts_select_title_to">A la cuenta</string>
+    <string name="transfer_view_component_accounts_continue_button">Continuar</string>
 
 </resources>

@@ -33,5 +33,11 @@
     <color name="accent_blue">#007AFF</color>
 
     <color name="select_background">#CCEDEDED</color>
-    
+
+    <!-- Transfer View -->
+    <color name="transfer_view_balance_title_color">#636366</color>
+    <color name="transfer_view_accounts_select_title_color">#757575</color>
+    <color name="transfer_view_accounts_input_title_color">#757575</color>
+    <color name="transfer_view_accounts_input_asset_code_color">#757575</color>
+
 </resources>

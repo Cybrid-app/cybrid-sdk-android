@@ -77,5 +77,13 @@
 
     <!-- Transfer Component -->
     <string name="transfer_view_component_loading_view_title">Loading</string>
+    <string-array name="transfer_view_component_account_tabs">
+        <item>Deposit</item>
+        <item>Withdraw</item>
+    </string-array>
+    <string name="transfer_view_component_balance_title">Available to Trade</string>
+    <string name="transfer_view_component_accounts_select_title_from">From Bank Account</string>
+    <string name="transfer_view_component_accounts_select_title_to">To Bank Account</string>
+    <string name="transfer_view_component_accounts_continue_button">Continue</string>
 
 </resources>

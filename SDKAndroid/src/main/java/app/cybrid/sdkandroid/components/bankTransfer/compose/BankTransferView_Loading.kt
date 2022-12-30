@@ -22,7 +22,7 @@ fun BankTransferView_Loading() {
     Box(
         modifier = Modifier
             .height(120.dp)
-            .testTag(Constants.BankAccountsView.LoadingView.id)
+            .testTag(Constants.TransferView.LoadingView.id)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),

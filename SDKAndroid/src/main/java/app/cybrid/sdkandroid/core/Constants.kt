@@ -34,6 +34,12 @@ class Constants {
         ErrorView("BankAccountsView_ErrorView")
     }
 
+    enum class TransferView(val id: String) {
+        Surface("TransferView_MainSurface"),
+        LoadingView("TransferView_LoadingView"),
+        AccountsView("TransferView_AccountsView")
+    }
+
     companion object {
 
         const val MIN_INTEGER_DIGITS = 0
