@@ -32,6 +32,7 @@ class AccountsViewModel : ViewModel() {
 
     var accountsResponse:List<AccountBankModel> by mutableStateOf(listOf())
     var accounts:List<AccountAssetPriceModel> by mutableStateOf(listOf())
+    var assets: List<AssetBankModel> = listOf()
 
     var totalBalance:String by mutableStateOf("")
     var totalFiatBalance:String by mutableStateOf("")
@@ -65,6 +66,7 @@ class AccountsViewModel : ViewModel() {
     fun createAccountsFormatted(prices:List<SymbolPriceBankModel>, assets:List<AssetBankModel>) {
 
         this.accounts = listOf()
+        this.assets = assets
         val accountsList = ArrayList<AccountAssetPriceModel>()
         this.accountsResponse.let { balances ->
             balances.forEach { balance ->
@@ -73,7 +75,7 @@ class AccountsViewModel : ViewModel() {
                 val symbol = "$code-$currentFiatCurrency" // BTC-USD
 
                 val asset = assets.find { it.code == code } // BTC
-                val pairAsset = assets.find { it.code == currentFiatCurrency } // USD
+                val counterAsset = assets.find { it.code == currentFiatCurrency } // USD
                 val price = prices.find { it.symbol ==  symbol } // BTC-USD
 
                 val assetDecimals = BigDecimal(asset?.decimals ?: JavaBigDecimal(0)) // 18
@@ -83,10 +85,10 @@ class AccountsViewModel : ViewModel() {
                 val balanceValueFormattedString = balanceValueFormatted.toPlainString()
 
                 val buyPrice = BigDecimal(price?.buyPrice ?: JavaBigDecimal(0))
-                val buyPriceFormatted = BigDecimalPipe.transform(buyPrice, pairAsset!!)
+                val buyPriceFormatted = BigDecimalPipe.transform(buyPrice, counterAsset!!)
 
                 val accountBalanceInFiat = balanceValueFormatted.times(buyPrice).setScale(2)
-                val accountBalanceInFiatFormatted = BigDecimalPipe.transform(accountBalanceInFiat, pairAsset)
+                val accountBalanceInFiatFormatted = BigDecimalPipe.transform(accountBalanceInFiat, counterAsset)
 
                 val account = AccountAssetPriceModel(
                     accountAssetCode = code,
@@ -102,7 +104,7 @@ class AccountsViewModel : ViewModel() {
                     assetSymbol = asset?.symbol ?: "",
                     assetType = asset?.type ?: AssetBankModel.Type.fiat,
                     assetDecimals = asset?.decimals ?: JavaBigDecimal(0),
-                    pairAsset = pairAsset,
+                    pairAsset = counterAsset,
                     buyPrice = buyPrice,
                     buyPriceFormatted = buyPriceFormatted ?: "",
                     sellPrice = price?.sellPrice ?: JavaBigDecimal(0)
@@ -129,13 +131,15 @@ class AccountsViewModel : ViewModel() {
 
         var total = BigDecimal(0)
         if (this.accounts.isNotEmpty()) {
-            val pairAsset = Constants.USD_ASSET
+            val counterAsset = assets.find { it.code == currentFiatCurrency }
             this.accounts.forEach { balance ->
                 if (balance.accountType == AccountBankModel.Type.fiat) {
                     total = total.plus(BigDecimal(balance.accountBalance))
                 }
             }
-            this.totalFiatBalance = BigDecimalPipe.transform(total, pairAsset) ?: ""
+            this.totalFiatBalance = if (counterAsset != null) {
+                BigDecimalPipe.transform(total, counterAsset) ?: ""
+            } else { "" }
         }
     }
 
