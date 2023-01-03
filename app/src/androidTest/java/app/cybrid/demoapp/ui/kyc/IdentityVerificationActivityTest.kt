@@ -23,6 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+// TODO: Refactor test class to use new Cybrid instance
 //@RunWith(AndroidJUnit4::class)
 class IdentityVerificationActivityTest {
 
@@ -42,6 +43,7 @@ class IdentityVerificationActivityTest {
         resources = InstrumentationRegistry.getInstrumentation().context.resources
     }
 
+    // TODO: Refactor test case with new structure of multi-tokens
     //@Ignore("Disabled until KYC Bearer Token in ready")
     //@Test
     fun test_makeTheFlow() {
