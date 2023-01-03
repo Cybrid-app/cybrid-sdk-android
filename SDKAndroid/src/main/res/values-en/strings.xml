@@ -84,5 +84,7 @@
     <string name="transfer_view_component_accounts_select_title_from">From Bank Account</string>
     <string name="transfer_view_component_accounts_select_title_to">To Bank Account</string>
     <string name="transfer_view_component_accounts_continue_button">Continue</string>
+    <string name="transfer_view_component_modal_content_trade_title">Confirm Deposit Details</string>
+    <string name="transfer_view_component_modal_content_withdraw_title">Confirm Withdraw Details</string>
 
 </resources>

@@ -84,5 +84,7 @@
     <string name="transfer_view_component_accounts_select_title_from">De la cuenta</string>
     <string name="transfer_view_component_accounts_select_title_to">A la cuenta</string>
     <string name="transfer_view_component_accounts_continue_button">Continuar</string>
+    <string name="transfer_view_component_modal_content_trade_title">Confirmación de deposito</string>
+    <string name="transfer_view_component_modal_content_withdraw_title">Confirmación de retiro</string>
 
 </resources>

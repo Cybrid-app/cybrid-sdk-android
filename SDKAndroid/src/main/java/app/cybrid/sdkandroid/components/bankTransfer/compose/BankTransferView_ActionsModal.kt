@@ -44,14 +44,11 @@ fun BankTransferView_ActionsModal(
 ) {
 
     // -- Vars
-    var modalUiState: MutableState<ViewState> = remember { mutableStateOf(ViewState.LOADING) }
+    val modalUiState: MutableState<ViewState> = remember { mutableStateOf(ViewState.LOADING) }
 
-    // -- compose Content
+    // -- Compose Content
     BottomSheetDialog(
-        onDismissRequest = {
-
-            showDialog.value = false
-        }
+        onDismissRequest = { showDialog.value = false }
     ) {
         Surface(
             shape = RoundedCornerShape(28.dp),
@@ -86,7 +83,11 @@ fun BankTransferView_ActionsModal_Content(
 ) {
 
     // -- Vars
-    val titleText = if (selectedTabIndex.value == 0) { "Confirm Deposit Details" } else { "Confirm Withdraw Details" }
+    val titleText = if (selectedTabIndex.value == 0) { 
+        stringResource(id = R.string.transfer_view_component_modal_content_trade_title)
+    } else { 
+        stringResource(id = R.string.transfer_view_component_modal_content_withdraw_title)
+    }
 
     // -- Amount
     val amountFormatted = BigDecimalPipe.transform(amountMutableState.value, Constants.USD_ASSET)
