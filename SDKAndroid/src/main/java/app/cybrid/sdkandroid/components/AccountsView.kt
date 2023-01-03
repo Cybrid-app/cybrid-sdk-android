@@ -223,6 +223,7 @@ fun AccountsViewList(
 
     // -- Get Total balance
     accountsViewModel?.getCalculatedBalance()
+    accountsViewModel?.getCalculatedFiatBalance()
 
     Column(
         modifier = Modifier
@@ -272,6 +273,19 @@ fun AccountsBalance(
         }
     }
 
+    val balanceFiatFormatted = buildAnnotatedString {
+        append(accountsViewModel?.totalFiatBalance ?: "")
+        withStyle(style = SpanStyle(
+            color = colorResource(id = R.color.list_prices_asset_component_code_color),
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal,
+            fontSize = 17.sp
+        )
+        ) {
+            append(" ${accountsViewModel?.currentFiatCurrency}")
+        }
+    }
+
     // -- Content
     if (accountsViewModel?.totalBalance != "") {
         Surface(
@@ -299,6 +313,27 @@ fun AccountsBalance(
                     text = balanceFormatted,
                     modifier = Modifier.
                         padding(top = 1.dp),
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 23.sp,
+                    lineHeight = 32.sp,
+                    color = Color.Black
+                )
+
+                Text(
+                    text = "Available to Trade",
+                    modifier = Modifier.padding(top = 30.dp),
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 13.sp,
+                    lineHeight = 20.sp,
+                    color = colorResource(id = R.color.accounts_view_balance_title)
+                )
+
+                Text(
+                    text = balanceFiatFormatted,
+                    modifier = Modifier.
+                    padding(top = 1.dp),
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Normal,
                     fontSize = 23.sp,

@@ -1,4 +1,4 @@
-package app.cybrid.demoapp.ui.tradeFlow.util
+package app.cybrid.demoapp.ui.util
 
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.junit4.ComposeTestRule

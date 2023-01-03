@@ -121,6 +121,12 @@ class JSONMock(private var state: JSONMockState): Interceptor {
 
             "external_bank_accounts" -> {
                 when(method) {
+                    "GET" -> {
+                        when(state) {
+                            JSONMockState.SUCCESS -> { response = TestConstants.FETCH_LIST_EXTERNAL_BANK_ACCOUNT }
+                            else -> {}
+                        }
+                    }
                     "POST" -> {
                         when(state) {
                             JSONMockState.SUCCESS -> { response = TestConstants.CREATE_EXTERNAL_BANK_ACCOUNT }
@@ -138,6 +144,50 @@ class JSONMock(private var state: JSONMockState): Interceptor {
                             else -> {}
                         }
                     }
+                }
+            }
+
+            "accounts" -> {
+                when(method) {
+                    "GET" -> {
+                        when (state) {
+                            JSONMockState.SUCCESS -> { response = TestConstants.FETCH_ACCOUNTS_LIST_SUCCESS }
+                            else -> {}
+                        }
+                    }
+                }
+            }
+
+            "quotes" -> {
+                when(method) {
+                    "POST" -> {
+                        when(state) {
+                            JSONMockState.SUCCESS -> { response = TestConstants.CREATE_QUOTE_SUCCESS }
+                            else -> {}
+                        }
+                    }
+                }
+            }
+
+            "trades" -> {
+                when(method) {
+                    "POST" -> {
+                        when(state) {
+                            JSONMockState.SUCCESS -> { response = TestConstants.CREATE_TRADE_SUCCESS }
+                            else -> {}
+                        }
+                    }
+                }
+            }
+
+            "assets" -> {
+                when(method) {
+                   "GET" -> {
+                       when(state) {
+                           JSONMockState.SUCCESS -> { response = TestConstants.FETCH_ASSETS_SUCCESS }
+                           else -> {}
+                       }
+                   }
                 }
             }
         }
