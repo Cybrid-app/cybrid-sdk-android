@@ -1,10 +1,10 @@
-package app.cybrid.sdkandroid.components.bankTransfer
+package app.cybrid.sdkandroid.components.transfer
 
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.PostQuoteBankModel
 import app.cybrid.sdkandroid.Cybrid
-import app.cybrid.sdkandroid.components.BankTransferView
-import app.cybrid.sdkandroid.components.bankTransfer.view.BankTransferViewModel
+import app.cybrid.sdkandroid.components.TransferView
+import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.tools.JSONMock
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +16,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-class BankTransferViewModelTestError {
+class TransferViewModelTest {
 
     @ExperimentalCoroutinesApi
     private val scope = TestScope()
@@ -41,17 +41,44 @@ class BankTransferViewModelTestError {
         return ApiClient(okHttpClientBuilder = clientBuilder)
     }
 
-    private fun createViewModel(): BankTransferViewModel {
+    private fun createViewModel(): TransferViewModel {
 
         Cybrid.instance.invalidToken = false
-        return BankTransferViewModel()
+        return TransferViewModel()
     }
 
+    @ExperimentalCoroutinesApi
     @Test
-    fun test_fetchAssets_Error() = runTest {
+    fun test_init() = runTest {
 
         // -- Given
-        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val viewModel = createViewModel()
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(viewModel.customerGuid)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_init_withDataProvider() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(viewModel.customerGuid)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_fetchAssets() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
 
@@ -60,15 +87,16 @@ class BankTransferViewModelTestError {
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        Assert.assertNull(assets)
+        Assert.assertNotNull(assets)
+        Assert.assertTrue((assets?.size ?: 0) > 0)
     }
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_fetchAccounts_Error() = runTest {
+    fun test_fetchAccounts() = runTest {
 
         // -- Given
-        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
 
@@ -77,17 +105,18 @@ class BankTransferViewModelTestError {
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        Assert.assertNull(viewModel.assets)
+        Assert.assertNotNull(viewModel.assets)
+        Assert.assertTrue(viewModel.assets!!.isNotEmpty())
         Assert.assertNotNull(viewModel.accounts)
-        Assert.assertTrue(viewModel.accounts.isEmpty())
+        Assert.assertTrue(viewModel.accounts.isNotEmpty())
     }
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_fetchExternalAccounts_Error() = runTest {
+    fun test_fetchExternalAccounts() = runTest {
 
         // -- Given
-        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
 
@@ -96,16 +125,16 @@ class BankTransferViewModelTestError {
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        Assert.assertTrue(viewModel.externalBankAccounts.isEmpty())
-        Assert.assertEquals(viewModel.uiState.value, BankTransferView.ViewState.LOADING)
+        Assert.assertTrue(viewModel.externalBankAccounts.isNotEmpty())
+        Assert.assertEquals(viewModel.uiState.value, TransferView.ViewState.ACCOUNTS)
     }
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_calculateFiatBalance_Error() = runTest {
+    fun test_calculateFiatBalance() = runTest {
 
         // -- Given
-        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
 
@@ -115,18 +144,19 @@ class BankTransferViewModelTestError {
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        Assert.assertNull(viewModel.assets)
+        Assert.assertNotNull(viewModel.assets)
+        Assert.assertTrue(viewModel.assets!!.isNotEmpty())
         Assert.assertNotNull(viewModel.accounts)
-        Assert.assertTrue(viewModel.accounts.isEmpty())
-        Assert.assertEquals(viewModel.fiatBalance, "")
+        Assert.assertTrue(viewModel.accounts.isNotEmpty())
+        Assert.assertEquals(viewModel.fiatBalance, "$0.10")
     }
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_createQuote_Error() = runTest {
+    fun test_createQuote() = runTest {
 
         // -- Given
-        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
 
@@ -135,15 +165,15 @@ class BankTransferViewModelTestError {
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        Assert.assertNull(viewModel.currentQuote)
+        Assert.assertNotNull(viewModel.currentQuote)
     }
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_createTrade_Error() = runTest {
+    fun test_createTrade() = runTest {
 
         // -- Given
-        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
 
@@ -153,7 +183,7 @@ class BankTransferViewModelTestError {
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        Assert.assertNull(viewModel.currentQuote)
-        Assert.assertNull(viewModel.currentTrade)
+        Assert.assertNotNull(viewModel.currentQuote)
+        Assert.assertNotNull(viewModel.currentTrade)
     }
 }

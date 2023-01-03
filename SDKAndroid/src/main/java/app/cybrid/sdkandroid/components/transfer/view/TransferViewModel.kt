@@ -1,4 +1,4 @@
-package app.cybrid.sdkandroid.components.bankTransfer.view
+package app.cybrid.sdkandroid.components.transfer.view
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -11,10 +11,10 @@ import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.*
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
-import app.cybrid.sdkandroid.components.BankTransferView
+import app.cybrid.sdkandroid.components.TransferView
+import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
-import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
 import app.cybrid.sdkandroid.util.getResult
@@ -22,16 +22,17 @@ import app.cybrid.sdkandroid.util.isSuccessful
 import kotlinx.coroutines.async
 import java.math.BigDecimal as JavaBigDecimal
 
-class BankTransferViewModel: ViewModel() {
+class TransferViewModel: ViewModel() {
 
+    private var assetsService = AppModule.getClient().createService(AssetsApi::class.java)
     private var accountsService = AppModule.getClient().createService(AccountsApi::class.java)
     private var customerService = AppModule.getClient().createService(CustomersApi::class.java)
     private var externalBankAccountsService = AppModule.getClient().createService(ExternalBankAccountsApi::class.java)
     private var quoteService = AppModule.getClient().createService(QuotesApi::class.java)
-    private var tradeService = AppModule.getClient().createService(TradesApi::class.java)
-    private var assetsService = AppModule.getClient().createService(AssetsApi::class.java)
+    private var transferService = AppModule.getClient().createService(TransfersApi::class.java)
 
-    var uiState: MutableState<BankTransferView.ViewState> = mutableStateOf(BankTransferView.ViewState.LOADING)
+    var uiState: MutableState<TransferView.ViewState> = mutableStateOf(TransferView.ViewState.LOADING)
+    val modalUiState: MutableState<TransferView.ModalViewState> = mutableStateOf(TransferView.ModalViewState.LOADING)
 
     var currentFiatCurrency = "USD"
     var customerGuid = Cybrid.instance.customerGuid
@@ -41,16 +42,16 @@ class BankTransferViewModel: ViewModel() {
     var externalBankAccounts: List<ExternalBankAccountBankModel> by mutableStateOf(listOf())
     var fiatBalance: String by mutableStateOf("")
     var currentQuote: QuoteBankModel? by mutableStateOf(null)
-    var currentTrade: TradeBankModel? by mutableStateOf(null)
+    var currentTransfer: TransferBankModel? by mutableStateOf(null)
 
     fun setDataProvider(dataProvider: ApiClient)  {
 
+        assetsService = dataProvider.createService(AssetsApi::class.java)
         accountsService = dataProvider.createService(AccountsApi::class.java)
         customerService = dataProvider.createService(CustomersApi::class.java)
         externalBankAccountsService = dataProvider.createService(ExternalBankAccountsApi::class.java)
         quoteService = dataProvider.createService(QuotesApi::class.java)
-        tradeService = dataProvider.createService(TradesApi::class.java)
-        assetsService = dataProvider.createService(AssetsApi::class.java)
+        transferService = dataProvider.createService(TransfersApi::class.java)
     }
 
     suspend fun fetchAssets(): List<AssetBankModel>? {
@@ -114,7 +115,7 @@ class BankTransferViewModel: ViewModel() {
                             if (isSuccessful(it.code ?: 500)) {
                                 Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
                                 externalBankAccounts = it.data?.objects ?: listOf()
-                                uiState.value = BankTransferView.ViewState.IN_LIST
+                                uiState.value = TransferView.ViewState.ACCOUNTS
                             } else {
                                 Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Workflow")
                             }
@@ -128,7 +129,7 @@ class BankTransferViewModel: ViewModel() {
 
     fun calculateFiatBalance() {
 
-        val pairAsset = assets?.find { it.code == currentFiatCurrency }
+        val counterAsset = assets?.find { it.code == currentFiatCurrency }
         var total = BigDecimal(0)
         this.accounts.forEach { account ->
             if (account.type == AccountBankModel.Type.fiat &&
@@ -137,8 +138,8 @@ class BankTransferViewModel: ViewModel() {
                 total = total.plus(balance)
             }
         }
-        this.fiatBalance = if (pairAsset != null) {
-            BigDecimalPipe.transform(total, pairAsset) ?: ""
+        this.fiatBalance = if (counterAsset != null) {
+            BigDecimalPipe.transform(total, counterAsset) ?: ""
         } else { "" }
     }
 
@@ -161,6 +162,7 @@ class BankTransferViewModel: ViewModel() {
                             if (isSuccessful(it.code ?: 500)) {
                                 Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
                                 currentQuote = it.data
+                                modalUiState.value = TransferView.ModalViewState.CONTENT
                             } else {
                                 Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Workflow")
                             }
@@ -172,19 +174,25 @@ class BankTransferViewModel: ViewModel() {
         }
     }
 
-    suspend fun createTrade() {
+    suspend fun createTransfer(externalBankAccount: ExternalBankAccountBankModel) {
 
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
                 viewModelScope.let { scope ->
                     val waitFor = scope.async {
 
-                        val postTradeBankModel = PostTradeBankModel(quoteGuid = currentQuote?.guid!!)
-                        val tradeResponse = getResult { tradeService.createTrade(postTradeBankModel) }
-                        tradeResponse.let {
+                        val postTransferPostQuoteBankModel = PostTransferBankModel(
+                            quoteGuid = currentQuote?.guid!!,
+                            transferType = PostTransferBankModel.TransferType.funding,
+                            externalBankAccountGuid = externalBankAccount.guid,
+                        )
+
+                        val transferResponse = getResult { transferService.createTransfer(postTransferPostQuoteBankModel) }
+                        transferResponse.let {
                             if (isSuccessful(it.code ?: 500)) {
                                 Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
-                                currentTrade = it.data
+                                currentTransfer = it.data
+                                modalUiState.value = TransferView.ModalViewState.CONFIRM
                             } else {
                                 Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Workflow")
                             }
@@ -193,6 +201,27 @@ class BankTransferViewModel: ViewModel() {
                     waitFor.await()
                 }
             }
+        }
+    }
+
+    fun transformAmountInBaseBigDecimal(amount: String): BigDecimal {
+
+        val counterAsset = assets?.find { it.code == currentFiatCurrency }
+        return if (counterAsset != null) {
+            AssetPipe.transform(amount, counterAsset, "base")
+        } else {
+            BigDecimal(0)
+        }
+    }
+
+    fun transformQuoteAmountInLabelString(quote: QuoteBankModel?): String {
+
+        val counterAsset = assets?.find { it.code == currentFiatCurrency }
+        return if (counterAsset != null) {
+            val amount = BigDecimal(quote?.deliverAmount ?: JavaBigDecimal(0))
+            BigDecimalPipe.transform(amount, counterAsset) ?: ""
+        } else {
+            "0"
         }
     }
 }

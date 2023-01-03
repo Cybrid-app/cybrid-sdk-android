@@ -1,16 +1,13 @@
-package app.cybrid.sdkandroid.components.bankTransfer.compose
+package app.cybrid.sdkandroid.components.transfer.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -23,90 +20,46 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.cybrid.cybrid_api_bank.client.models.*
+import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.bankTransfer.view.BankTransferViewModel
-import app.cybrid.sdkandroid.components.quote.view.*
-import app.cybrid.sdkandroid.core.BigDecimalPipe
-import app.cybrid.sdkandroid.core.Constants
+import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
-import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
-
-enum class ViewState { LOADING, CONTENT }
+import app.cybrid.sdkandroid.util.getDateInFormat
+import java.time.OffsetDateTime
 
 @Composable
-fun BankTransferView_ActionsModal(
-    bankTransferViewModel: BankTransferViewModel?,
+fun TransferView_Modal_Content(
+    transferViewModel: TransferViewModel?,
     externalBankAccount: ExternalBankAccountBankModel?,
-    showDialog: MutableState<Boolean>,
-    selectedTabIndex: MutableState<Int>,
-    amountMutableState: MutableState<String>
+    selectedTabIndex: MutableState<Int>
 ) {
 
     // -- Vars
-    val modalUiState: MutableState<ViewState> = remember { mutableStateOf(ViewState.LOADING) }
-
-    // -- Compose Content
-    BottomSheetDialog(
-        onDismissRequest = { showDialog.value = false }
-    ) {
-        Surface(
-            shape = RoundedCornerShape(28.dp),
-            color = colorResource(id = R.color.white),
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-
-            when(modalUiState.value) {
-
-                ViewState.CONTENT -> {
-                    BankTransferView_ActionsModal_Content(
-                        bankTransferViewModel = bankTransferViewModel,
-                        externalBankAccount = externalBankAccount,
-                        selectedTabIndex = selectedTabIndex,
-                        amountMutableState = amountMutableState
-                    )
-                }
-
-                else -> {}
-            }
-        }
-    }
-}
-
-@Composable
-fun BankTransferView_ActionsModal_Content(
-    bankTransferViewModel: BankTransferViewModel?,
-    externalBankAccount: ExternalBankAccountBankModel?,
-    selectedTabIndex: MutableState<Int>,
-    amountMutableState: MutableState<String>
-) {
-
-    // -- Vars
-    val titleText = if (selectedTabIndex.value == 0) { 
-        stringResource(id = R.string.transfer_view_component_modal_content_trade_title)
-    } else { 
+    val titleText = if (selectedTabIndex.value == 0) {
+        stringResource(id = R.string.transfer_view_component_modal_content_deposit_title)
+    } else {
         stringResource(id = R.string.transfer_view_component_modal_content_withdraw_title)
     }
 
     // -- Amount
-    val amountFormatted = BigDecimalPipe.transform(amountMutableState.value, Constants.USD_ASSET)
-    val purchaseValue = buildAnnotatedString {
+    val amountFormatted = transferViewModel?.transformQuoteAmountInLabelString(transferViewModel.currentQuote)
+    val amountValue = buildAnnotatedString {
         append(amountFormatted ?: "")
         withStyle(style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
-            fontFamily = robotoFont)
+            fontFamily = robotoFont
+        )
         ) {
-            append(" USD")
+            append(" " + transferViewModel?.currentFiatCurrency)
         }
     }
 
     // -- Date
-    val date = buildAnnotatedString {
+    val dateValue = buildAnnotatedString {
         append(if (selectedTabIndex.value == 0) {
-            "December 20, 2022"
+            getDateInFormat(OffsetDateTime.now())
         } else {
-            "1-2 business days"
+            stringResource(id = R.string.transfer_view_component_modal_content_withdraw_date_label)
         })
     }
 
@@ -131,25 +84,25 @@ fun BankTransferView_ActionsModal_Content(
             )
 
             // -- Amount
-            BankTransferView_ActionsModal_Content__Item(
-                titleLabel = "Amount",
-                subTitleLabel = purchaseValue,
+            TransferView_Modal_Content__Item(
+                titleLabel = stringResource(id = R.string.transfer_view_component_modal_content_amount_title),
+                subTitleLabel = amountValue,
                 subTitleTestTag = "PurchaseAmountId"
             )
 
             // -- Date
-            BankTransferView_ActionsModal_Content__Item(
+            TransferView_Modal_Content__Item(
                 titleLabel = if (selectedTabIndex.value == 0) {
-                        "Deposit date"
-                    } else {
-                        "Withdraw time"
-                    },
-                subTitleLabel = date,
+                    "Deposit date"
+                } else {
+                    "Withdraw time"
+                },
+                subTitleLabel = dateValue,
                 subTitleTestTag = "PurchaseAmountId"
             )
 
             // -- From-To
-            BankTransferView_ActionsModal_Content__Item(
+            TransferView_Modal_Content__Item(
                 titleLabel = if (selectedTabIndex.value == 0) {
                     "From"
                 } else {
@@ -194,7 +147,7 @@ fun BankTransferView_ActionsModal_Content(
 }
 
 @Composable
-private fun BankTransferView_ActionsModal_Content__Item(
+private fun TransferView_Modal_Content__Item(
     titleLabel: String,
     subTitleLabel: AnnotatedString,
     subTitleTestTag: String

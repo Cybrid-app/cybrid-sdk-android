@@ -16,13 +16,6 @@ import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
-@SuppressLint("NewApi")
-fun getDateInFormat(date: OffsetDateTime, pattern:String = "MMM dd, YYYY"): String {
-
-    val formatter = DateTimeFormatter.ofPattern(pattern)
-    return date.format(formatter)
-}
-
 @Composable
 fun getSpannableStyle(
     text: String,

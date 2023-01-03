@@ -84,7 +84,8 @@
     <string name="transfer_view_component_accounts_select_title_from">Du compte bancaire</string>
     <string name="transfer_view_component_accounts_select_title_to">Au compte bancaire</string>
     <string name="transfer_view_component_accounts_continue_button">Continuer</string>
-    <string name="transfer_view_component_modal_content_trade_title">Confirmer les détails du dépôt</string>
+    <string name="transfer_view_component_modal_content_deposit_title">Confirmer les détails du dépôt</string>
     <string name="transfer_view_component_modal_content_withdraw_title">Confirmer les détails du retrait</string>
+    <string name="transfer_view_component_modal_content_withdraw_date_label">1–2 jours ouvrables</string>
 
 </resources>

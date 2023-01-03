@@ -1,4 +1,4 @@
-package app.cybrid.sdkandroid.components.bankTransfer.compose
+package app.cybrid.sdkandroid.components.transfer.compose
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
@@ -17,7 +17,7 @@ import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 
 @Composable
-fun BankTransferView_Loading() {
+fun TransferView_Loading() {
 
     Box(
         modifier = Modifier

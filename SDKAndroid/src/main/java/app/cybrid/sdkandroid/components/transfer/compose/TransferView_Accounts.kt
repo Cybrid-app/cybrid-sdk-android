@@ -1,4 +1,4 @@
-package app.cybrid.sdkandroid.components.bankTransfer.compose
+package app.cybrid.sdkandroid.components.transfer.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,15 +43,19 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.constraintlayout.compose.ConstraintLayout
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
+import app.cybrid.cybrid_api_bank.client.models.PostQuoteBankModel
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.bankTransfer.view.BankTransferViewModel
+import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @Composable
-fun BankTransferView_Accounts(
-    bankTransferViewModel: BankTransferViewModel?,
+fun TransferView_Accounts(
+    transferViewModel: TransferViewModel?,
     selectedTabIndex: MutableState<Int>,
     externalBankAccount: MutableState<ExternalBankAccountBankModel?>,
     amountMutableState: MutableState<String>,
@@ -59,7 +63,7 @@ fun BankTransferView_Accounts(
 ) {
 
     // -- Vars
-    bankTransferViewModel?.calculateFiatBalance()
+    transferViewModel?.calculateFiatBalance()
 
     // -- Tabs
     val tabsTitles = stringArrayResource(id = R.array.transfer_view_component_account_tabs)
@@ -79,8 +83,8 @@ fun BankTransferView_Accounts(
             val (balance, tabs, select, input, button) = createRefs()
 
             // -- Compose Content
-            BankTransferView_Accounts_Balance(
-                bankTransferViewModel = bankTransferViewModel,
+            TransferView_Accounts_Balance(
+                transferViewModel = transferViewModel,
                 modifier = Modifier.constrainAs(balance) {
                     start.linkTo(parent.start, margin = 0.dp)
                     top.linkTo(parent.top, margin = 10.dp)
@@ -88,7 +92,7 @@ fun BankTransferView_Accounts(
                 }
             )
 
-            BankTransferView_Accounts_Tabs(
+            TransferView_Accounts_Tabs(
                 selectedTabIndex = selectedTabIndex,
                 tabs = tabsTitles,
                 modifier = Modifier.constrainAs(tabs) {
@@ -98,11 +102,11 @@ fun BankTransferView_Accounts(
                 }
             )
 
-            BankTransferView_Accounts_Select(
+            TransferView_Accounts_Select(
                 selectedTabIndex = selectedTabIndex,
                 selectExpanded = selectExpanded,
                 externalBankAccount = externalBankAccount,
-                bankTransferViewModel = bankTransferViewModel,
+                transferViewModel = transferViewModel,
                 modifier = Modifier
                     .constrainAs(select) {
                         start.linkTo(parent.start, margin = 0.dp)
@@ -113,8 +117,8 @@ fun BankTransferView_Accounts(
             )
 
             if (!selectExpanded.value) {
-                BankTransferView_Accounts_Input(
-                    bankTransferViewModel = bankTransferViewModel,
+                TransferView_Accounts_Input(
+                    transferViewModel = transferViewModel,
                     amountMutableState = amountMutableState,
                     modifier = Modifier
                         .constrainAs(input) {
@@ -127,8 +131,11 @@ fun BankTransferView_Accounts(
             }
 
             if (amountMutableState.value != "") {
-                BankTransferView_Accounts_Button(
+                TransferView_Accounts_Button(
+                    transferViewModel = transferViewModel,
                     showDialog = showDialog,
+                    selectedTabIndex = selectedTabIndex,
+                    amountMutableState = amountMutableState,
                     modifier = Modifier
                         .constrainAs(button) {
                             start.linkTo(parent.start, margin = 0.dp)
@@ -143,14 +150,14 @@ fun BankTransferView_Accounts(
 }
 
 @Composable
-fun BankTransferView_Accounts_Balance(
-    bankTransferViewModel: BankTransferViewModel?,
+fun TransferView_Accounts_Balance(
+    transferViewModel: TransferViewModel?,
     modifier: Modifier
 ) {
 
     // -- Vars
     val balanceFormatted = buildAnnotatedString {
-        append(bankTransferViewModel?.fiatBalance ?: "")
+        append(transferViewModel?.fiatBalance ?: "")
         withStyle(style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
             fontFamily = robotoFont,
@@ -158,7 +165,7 @@ fun BankTransferView_Accounts_Balance(
             fontSize = 17.sp
         )
         ) {
-            append(" ${bankTransferViewModel?.currentFiatCurrency}")
+            append(" ${transferViewModel?.currentFiatCurrency}")
         }
     }
 
@@ -198,7 +205,7 @@ fun BankTransferView_Accounts_Balance(
 }
 
 @Composable
-fun BankTransferView_Accounts_Tabs(
+fun TransferView_Accounts_Tabs(
     selectedTabIndex: MutableState<Int>,
     tabs: Array<String>,
     modifier: Modifier) {
@@ -238,11 +245,11 @@ fun BankTransferView_Accounts_Tabs(
 }
 
 @Composable
-fun BankTransferView_Accounts_Select(
+fun TransferView_Accounts_Select(
     selectedTabIndex: MutableState<Int>,
     selectExpanded: MutableState<Boolean>,
     externalBankAccount: MutableState<ExternalBankAccountBankModel?>,
-    bankTransferViewModel: BankTransferViewModel?,
+    transferViewModel: TransferViewModel?,
     modifier: Modifier
 ) {
 
@@ -267,23 +274,23 @@ fun BankTransferView_Accounts_Select(
             fontSize = 13.sp
         )
 
-        BankTransferView_Accounts_Select__Input(
+        TransferView_Accounts_Select__Input(
             externalBankAccount = externalBankAccount,
             selectExpanded = selectExpanded,
             inputWidth = inputWidth
         )
 
-        BankTransferView_Accounts_Select__DropDown(
+        TransferView_Accounts_Select__DropDown(
             externalBankAccount = externalBankAccount,
             selectExpanded = selectExpanded,
             inputWidth = inputWidth,
-            externalBankAccountList = bankTransferViewModel?.externalBankAccounts ?: listOf()
+            externalBankAccountList = transferViewModel?.externalBankAccounts ?: listOf()
         )
     }
 }
 
 @Composable
-fun BankTransferView_Accounts_Select__Input(
+fun TransferView_Accounts_Select__Input(
     externalBankAccount: MutableState<ExternalBankAccountBankModel?>,
     selectExpanded: MutableState<Boolean>,
     inputWidth: MutableState<Size>) {
@@ -346,7 +353,7 @@ fun BankTransferView_Accounts_Select__Input(
 }
 
 @Composable
-fun BankTransferView_Accounts_Select__DropDown(
+fun TransferView_Accounts_Select__DropDown(
     externalBankAccount: MutableState<ExternalBankAccountBankModel?>,
     selectExpanded: MutableState<Boolean>,
     inputWidth: MutableState<Size>,
@@ -405,8 +412,8 @@ fun BankTransferView_Accounts_Select__DropDown(
 }
 
 @Composable
-fun BankTransferView_Accounts_Input(
-    bankTransferViewModel: BankTransferViewModel?,
+fun TransferView_Accounts_Input(
+    transferViewModel: TransferViewModel?,
     amountMutableState: MutableState<String>,
     modifier: Modifier,
 ) {
@@ -443,7 +450,7 @@ fun BankTransferView_Accounts_Input(
             Text(
                 modifier = Modifier
                     .padding(start = 18.dp),
-                text = bankTransferViewModel?.currentFiatCurrency ?: "",
+                text = transferViewModel?.currentFiatCurrency ?: "",
                 fontFamily = interFont,
                 fontWeight = FontWeight.Normal,
                 fontSize = 17.sp,
@@ -499,16 +506,32 @@ fun BankTransferView_Accounts_Input(
     }
 }
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun BankTransferView_Accounts_Button(
+fun TransferView_Accounts_Button(
+    transferViewModel: TransferViewModel?,
     showDialog: MutableState<Boolean>,
+    selectedTabIndex: MutableState<Int>,
+    amountMutableState: MutableState<String>,
     modifier: Modifier
 ) {
+
+    val quoteSide = if (selectedTabIndex.value == 0) {
+        PostQuoteBankModel.Side.deposit
+    } else {
+        PostQuoteBankModel.Side.withdrawal
+    }
+
+    val amount = transferViewModel!!.transformAmountInBaseBigDecimal(amountMutableState.value)
 
     Column(modifier = modifier) {
 
         Button(
             onClick = {
+
+                GlobalScope.launch {
+                    transferViewModel.createQuote(side = quoteSide, amount = amount)
+                }
                 showDialog.value = true
             },
             modifier = Modifier

@@ -14,24 +14,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.bankTransfer.compose.BankTransferView_Accounts
-import app.cybrid.sdkandroid.components.bankTransfer.compose.BankTransferView_ActionsModal
-import app.cybrid.sdkandroid.components.bankTransfer.view.BankTransferViewModel
+import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Accounts
+import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Modal
+import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Loading
+import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.core.Constants
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class BankTransferView @JvmOverloads constructor(
+class TransferView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0):
 Component(context, attrs, defStyle) {
 
-    enum class ViewState { LOADING, IN_LIST }
+    enum class ViewState { LOADING, ACCOUNTS }
+    enum class ModalViewState { LOADING, CONTENT, CONFIRM }
 
     private var currentState = mutableStateOf(ViewState.LOADING)
-    var bankTransferViewModel: BankTransferViewModel? = null
+    var transferViewModel: TransferViewModel? = null
 
     init {
 
@@ -40,15 +42,15 @@ Component(context, attrs, defStyle) {
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun setViewModel(bankTransferViewModel: BankTransferViewModel) {
+    fun setViewModel(transferViewModel: TransferViewModel) {
 
-        this.bankTransferViewModel = bankTransferViewModel
-        this.currentState = bankTransferViewModel.uiState
+        this.transferViewModel = transferViewModel
+        this.currentState = transferViewModel.uiState
         this.initComposeView()
         GlobalScope.launch {
 
-            bankTransferViewModel.fetchAccounts()
-            bankTransferViewModel.fetchExternalAccounts()
+            transferViewModel.fetchAccounts()
+            transferViewModel.fetchExternalAccounts()
         }
     }
 
@@ -58,7 +60,7 @@ Component(context, attrs, defStyle) {
             compose.setContent {
                 BankTransferView(
                     currentState = currentState,
-                    bankTransferViewModel = bankTransferViewModel
+                    transferViewModel = transferViewModel
                 )
             }
         }
@@ -71,8 +73,8 @@ Component(context, attrs, defStyle) {
 
 @Composable
 fun BankTransferView(
-    currentState: MutableState<BankTransferView.ViewState>,
-    bankTransferViewModel: BankTransferViewModel?
+    currentState: MutableState<TransferView.ViewState>,
+    transferViewModel: TransferViewModel?
 ) {
 
     // -- Vars for views
@@ -84,40 +86,31 @@ fun BankTransferView(
     // -- Content
     Surface(modifier = Modifier.testTag(Constants.TransferView.Surface.id)) {
 
-        BankTransferView_Accounts(
-            bankTransferViewModel = bankTransferViewModel,
-            selectedTabIndex = selectedTabIndex,
-            externalBankAccount = externalBankAccount,
-            amountMutableState = amountMutableState,
-            showDialog = showDialog
-        )
-
         // -- UIState
-        /*when(currentState.value) {
+        when(currentState.value) {
 
-            BankTransferView.ViewState.LOADING -> {
-                BankTransferView_Loading()
+            TransferView.ViewState.LOADING -> {
+                TransferView_Loading()
             }
 
-            BankTransferView.ViewState.IN_LIST -> {
-                BankTransferView_Accounts(
-                    bankTransferViewModel = bankTransferViewModel,
+            TransferView.ViewState.ACCOUNTS -> {
+                TransferView_Accounts(
+                    transferViewModel = transferViewModel,
                     selectedTabIndex = selectedTabIndex,
                     externalBankAccount = externalBankAccount,
                     amountMutableState = amountMutableState,
                     showDialog = showDialog
                 )
             }
-        }*/
+        }
 
         // -- Dialog
         if (showDialog.value) {
-            BankTransferView_ActionsModal(
-                bankTransferViewModel = bankTransferViewModel,
-                externalBankAccount = externalBankAccount.value,
+            TransferView_Modal(
+                transferViewModel = transferViewModel,
+                externalBankAccount = externalBankAccount,
                 showDialog = showDialog,
-                selectedTabIndex = selectedTabIndex,
-                amountMutableState = amountMutableState
+                selectedTabIndex = selectedTabIndex
             )
         }
     }

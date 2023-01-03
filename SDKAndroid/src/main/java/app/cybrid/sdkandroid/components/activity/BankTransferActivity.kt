@@ -4,8 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.BankTransferView
-import app.cybrid.sdkandroid.components.bankTransfer.view.BankTransferViewModel
+import app.cybrid.sdkandroid.components.TransferView
+import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 
 class BankTransferActivity : AppCompatActivity() {
 
@@ -14,9 +14,9 @@ class BankTransferActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bank_transfer)
 
-        val bankTransferViewModel: BankTransferViewModel by viewModels()
-        val bankTransferView = findViewById<BankTransferView>(R.id.component)
+        val transferViewModel: TransferViewModel by viewModels()
+        val transferView = findViewById<TransferView>(R.id.component)
 
-        bankTransferView.setViewModel(bankTransferViewModel)
+        transferView.setViewModel(transferViewModel)
     }
 }

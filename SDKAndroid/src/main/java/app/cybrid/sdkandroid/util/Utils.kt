@@ -1,6 +1,9 @@
 package app.cybrid.sdkandroid.util
 
+import android.annotation.SuppressLint
 import app.cybrid.cybrid_api_bank.client.models.PostWorkflowBankModel
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 
 fun isSuccessful(code: Int): Boolean {
     return code in 200..299
@@ -17,4 +20,11 @@ fun getLanguage(deviceLanguage: String): PostWorkflowBankModel.Language {
         }
     }
     return language
+}
+
+@SuppressLint("NewApi")
+fun getDateInFormat(date: OffsetDateTime, pattern:String = "MMM dd, YYYY"): String {
+
+    val formatter = DateTimeFormatter.ofPattern(pattern)
+    return date.format(formatter)
 }
