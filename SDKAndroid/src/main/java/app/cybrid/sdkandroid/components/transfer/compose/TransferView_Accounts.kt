@@ -157,7 +157,7 @@ fun TransferView_Accounts_Balance(
 
     // -- Vars
     val balanceFormatted = buildAnnotatedString {
-        append(transferViewModel?.fiatBalance ?: "")
+        append(transferViewModel?.fiatBalance?.value!!)
         withStyle(style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
             fontFamily = robotoFont,

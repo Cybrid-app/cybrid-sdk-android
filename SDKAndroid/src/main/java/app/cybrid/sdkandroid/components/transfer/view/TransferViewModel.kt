@@ -40,7 +40,7 @@ class TransferViewModel: ViewModel() {
 
     var accounts: List<AccountBankModel> by mutableStateOf(listOf())
     var externalBankAccounts: List<ExternalBankAccountBankModel> by mutableStateOf(listOf())
-    var fiatBalance: String by mutableStateOf("")
+    var fiatBalance: MutableState<String> = mutableStateOf("")
     var currentQuote: QuoteBankModel? by mutableStateOf(null)
     var currentTransfer: TransferBankModel? by mutableStateOf(null)
 
@@ -113,9 +113,12 @@ class TransferViewModel: ViewModel() {
                         }
                         externalAccountsResponse.let {
                             if (isSuccessful(it.code ?: 500)) {
+
                                 Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
                                 externalBankAccounts = it.data?.objects ?: listOf()
                                 uiState.value = TransferView.ViewState.ACCOUNTS
+                                calculateFiatBalance()
+
                             } else {
                                 Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Workflow")
                             }
@@ -138,7 +141,7 @@ class TransferViewModel: ViewModel() {
                 total = total.plus(balance)
             }
         }
-        this.fiatBalance = if (counterAsset != null) {
+        this.fiatBalance.value = if (counterAsset != null) {
             BigDecimalPipe.transform(total, counterAsset) ?: ""
         } else { "" }
     }
@@ -162,7 +165,7 @@ class TransferViewModel: ViewModel() {
                             if (isSuccessful(it.code ?: 500)) {
                                 Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
                                 currentQuote = it.data
-                                modalUiState.value = TransferView.ModalViewState.CONTENT
+                                modalUiState.value = TransferView.ModalViewState.CONFIRM
                             } else {
                                 Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Workflow")
                             }
@@ -190,9 +193,11 @@ class TransferViewModel: ViewModel() {
                         val transferResponse = getResult { transferService.createTransfer(postTransferPostQuoteBankModel) }
                         transferResponse.let {
                             if (isSuccessful(it.code ?: 500)) {
+
                                 Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
                                 currentTransfer = it.data
-                                modalUiState.value = TransferView.ModalViewState.CONFIRM
+                                modalUiState.value = TransferView.ModalViewState.DETAILS
+
                             } else {
                                 Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Workflow")
                             }

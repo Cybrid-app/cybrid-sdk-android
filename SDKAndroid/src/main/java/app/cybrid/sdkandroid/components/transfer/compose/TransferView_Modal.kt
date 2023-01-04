@@ -13,7 +13,9 @@ import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.TransferView
 import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
+import kotlinx.coroutines.DelicateCoroutinesApi
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun TransferView_Modal(
     transferViewModel: TransferViewModel?,
@@ -46,15 +48,22 @@ fun TransferView_Modal(
                     TransferView_Modal_Loading()
                 }
 
-                TransferView.ModalViewState.CONTENT -> {
-                    TransferView_Modal_Content(
+                TransferView.ModalViewState.CONFIRM -> {
+                    TransferView_Modal_Confirm(
                         transferViewModel = transferViewModel,
                         externalBankAccount = externalBankAccount.value,
                         selectedTabIndex = selectedTabIndex
                     )
                 }
 
-                else -> {}
+                TransferView.ModalViewState.DETAILS -> {
+                    TransferView_Modal_Details(
+                        transferViewModel = transferViewModel,
+                        externalBankAccount = externalBankAccount.value,
+                        selectedTabIndex = selectedTabIndex,
+                        showDialog = showDialog
+                    )
+                }
             }
         }
     }

@@ -1,5 +1,7 @@
 package app.cybrid.sdkandroid.components.transfer.compose
 
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,23 +24,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.TransferView
 import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.getDateInFormat
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.time.OffsetDateTime
 
+@DelicateCoroutinesApi
 @Composable
-fun TransferView_Modal_Content(
+fun TransferView_Modal_Details(
     transferViewModel: TransferViewModel?,
     externalBankAccount: ExternalBankAccountBankModel?,
-    selectedTabIndex: MutableState<Int>
+    selectedTabIndex: MutableState<Int>,
+    showDialog: MutableState<Boolean>
 ) {
 
     // -- Vars
     val titleText = if (selectedTabIndex.value == 0) {
-        stringResource(id = R.string.transfer_view_component_modal_content_deposit_title)
+        stringResource(id = R.string.transfer_view_component_modal_details_deposit_title)
     } else {
-        stringResource(id = R.string.transfer_view_component_modal_content_withdraw_title)
+        stringResource(id = R.string.transfer_view_component_modal_details_withdraw_title)
     }
 
     // -- Amount
@@ -59,7 +67,7 @@ fun TransferView_Modal_Content(
         append(if (selectedTabIndex.value == 0) {
             getDateInFormat(OffsetDateTime.now())
         } else {
-            stringResource(id = R.string.transfer_view_component_modal_content_withdraw_date_label)
+            stringResource(id = R.string.transfer_view_component_modal_confirm_withdraw_date_label)
         })
     }
 
@@ -84,70 +92,45 @@ fun TransferView_Modal_Content(
             )
 
             // -- Amount
-            TransferView_Modal_Content__Item(
-                titleLabel = stringResource(id = R.string.transfer_view_component_modal_content_amount_title),
+            TransferView_Modal_Details__Item(
+                titleLabel = stringResource(id = R.string.transfer_view_component_modal_confirm_amount_title),
                 subTitleLabel = amountValue,
-                subTitleTestTag = "PurchaseAmountId"
+                subTitleTestTag = app.cybrid.sdkandroid.core.Constants.TransferView.ModalContentAmount.id
             )
 
             // -- Date
-            TransferView_Modal_Content__Item(
+            TransferView_Modal_Details__Item(
                 titleLabel = if (selectedTabIndex.value == 0) {
-                    "Deposit date"
+                    stringResource(id = R.string.transfer_view_component_modal_confirm_date_deposit_title)
                 } else {
-                    "Withdraw time"
+                    stringResource(id = R.string.transfer_view_component_modal_confirm_date_withdraw_title)
                 },
                 subTitleLabel = dateValue,
-                subTitleTestTag = "PurchaseAmountId"
+                subTitleTestTag = app.cybrid.sdkandroid.core.Constants.TransferView.ModalContentDate.id
             )
 
             // -- From-To
-            TransferView_Modal_Content__Item(
+            TransferView_Modal_Details__Item(
                 titleLabel = if (selectedTabIndex.value == 0) {
-                    "From"
+                    stringResource(id = R.string.transfer_view_component_modal_confirm_from_title)
                 } else {
-                    "To"
+                    stringResource(id = R.string.transfer_view_component_modal_confirm_to_title)
                 },
                 subTitleLabel = fromTo,
-                subTitleTestTag = "PurchaseAmountId"
+                subTitleTestTag = app.cybrid.sdkandroid.core.Constants.TransferView.ModalContentFromTo.id
             )
 
             // -- Continue Button
-            Row(
-                modifier = Modifier
-                    .padding(start = 24.dp, top = 24.dp, end = 24.dp, bottom = 24.dp)
-            ) {
-                Button(
-                    onClick = {},
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(44.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    elevation = ButtonDefaults.elevation(
-                        defaultElevation = 4.dp,
-                        pressedElevation = 4.dp,
-                        disabledElevation = 0.dp
-                    ),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = colorResource(id = R.color.primary_color),
-                        contentColor = Color.White
-                    )
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.trade_flow_quote_confirmation_modal_confirm),
-                        color = Color.White,
-                        fontFamily = robotoFont,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 14.sp
-                    )
-                }
-            }
+            TransferView_Modal_Details__Button(
+                transferViewModel = transferViewModel,
+                showDialog = showDialog
+            )
         }
     }
 }
 
 @Composable
-private fun TransferView_Modal_Content__Item(
+private fun TransferView_Modal_Details__Item(
     titleLabel: String,
     subTitleLabel: AnnotatedString,
     subTitleTestTag: String
@@ -185,5 +168,50 @@ private fun TransferView_Modal_Content__Item(
                 .height(1.dp)
                 .background(color = colorResource(id = R.color.modal_divider))
         )
+    }
+}
+
+@DelicateCoroutinesApi
+@Composable
+private fun TransferView_Modal_Details__Button(
+    transferViewModel: TransferViewModel?,
+    showDialog: MutableState<Boolean>
+) {
+
+    Row(
+        modifier = Modifier
+            .padding(start = 24.dp, top = 24.dp, end = 24.dp, bottom = 24.dp)
+    ) {
+        Button(
+            onClick = {
+
+                transferViewModel?.modalUiState?.value = TransferView.ModalViewState.LOADING
+                transferViewModel?.uiState?.value = TransferView.ViewState.LOADING
+                showDialog.value = false
+                GlobalScope.launch { transferViewModel?.fetchAccounts() }
+
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(44.dp),
+            shape = RoundedCornerShape(12.dp),
+            elevation = ButtonDefaults.elevation(
+                defaultElevation = 4.dp,
+                pressedElevation = 4.dp,
+                disabledElevation = 0.dp
+            ),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = colorResource(id = R.color.primary_color),
+                contentColor = Color.White
+            )
+        ) {
+            Text(
+                text = stringResource(id = R.string.transfer_view_component_modal_details_continue),
+                color = Color.White,
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp
+            )
+        }
     }
 }

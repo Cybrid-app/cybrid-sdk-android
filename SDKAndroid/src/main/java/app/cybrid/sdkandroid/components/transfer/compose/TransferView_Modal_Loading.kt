@@ -17,7 +17,7 @@ fun TransferView_Modal_Loading() {
     Box(
         modifier = Modifier
             .height(120.dp)
-            .testTag(Constants.TransferView.LoadingView.id)
+            .testTag(Constants.TransferView.ModalLoading.id)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),

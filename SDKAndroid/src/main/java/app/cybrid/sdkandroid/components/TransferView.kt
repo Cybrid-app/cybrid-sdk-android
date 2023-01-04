@@ -30,7 +30,7 @@ class TransferView @JvmOverloads constructor(
 Component(context, attrs, defStyle) {
 
     enum class ViewState { LOADING, ACCOUNTS }
-    enum class ModalViewState { LOADING, CONTENT, CONFIRM }
+    enum class ModalViewState { LOADING, CONFIRM, DETAILS }
 
     private var currentState = mutableStateOf(ViewState.LOADING)
     var transferViewModel: TransferViewModel? = null
@@ -48,9 +48,7 @@ Component(context, attrs, defStyle) {
         this.currentState = transferViewModel.uiState
         this.initComposeView()
         GlobalScope.launch {
-
             transferViewModel.fetchAccounts()
-            transferViewModel.fetchExternalAccounts()
         }
     }
 

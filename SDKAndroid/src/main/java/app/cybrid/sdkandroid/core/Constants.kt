@@ -37,7 +37,11 @@ class Constants {
     enum class TransferView(val id: String) {
         Surface("TransferView_MainSurface"),
         LoadingView("TransferView_LoadingView"),
-        AccountsView("TransferView_AccountsView")
+        AccountsView("TransferView_AccountsView"),
+        ModalLoading("TransferView_Modal_Loading"),
+        ModalContentAmount("TransferView_Modal_Content_Amount"),
+        ModalContentDate("TransferView_Modal_Content_Date"),
+        ModalContentFromTo("TransferView_Modal_Content_From_To")
     }
 
     companion object {
