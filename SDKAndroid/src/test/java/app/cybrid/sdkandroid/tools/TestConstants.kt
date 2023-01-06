@@ -163,6 +163,10 @@ object TestConstants {
         )
     )
 
+    val externalBankAccount = ExternalBankAccountBankModel(
+        guid = "12345"
+    )
+
     // -- JSON
 
     const val CREATE_CUSTOMER_SUCCESS = "{\"guid\":\"1234\",\"bank_guid\":\"1234\",\"type\":\"individual\",\"created_at\":\"2022-06-23T07:08:16.718Z\",\"state\":\"storing\"}"
@@ -182,4 +186,5 @@ object TestConstants {
     const val CREATE_QUOTE_SUCCESS = "{\"guid\":\"stringstringstringstringstringst\",\"product_type\":\"trading\",\"customer_guid\":\"stringstringstringstringstringst\",\"symbol\":\"string\",\"side\":\"buy\",\"receive_amount\":0,\"deliver_amount\":0,\"fee\":0,\"issued_at\":\"2022-12-15T08:49:40.526Z\",\"expires_at\":\"2022-12-15T08:49:40.526Z\"}"
     const val CREATE_TRADE_SUCCESS = "{\"guid\":\"stringstringstringstringstringst\",\"customer_guid\":\"string\",\"quote_guid\":\"stringstringstringstringstringst\",\"symbol\":\"string\",\"side\":\"buy\",\"state\":\"storing\",\"receive_amount\":0,\"deliver_amount\":0,\"fee\":0,\"created_at\":\"2022-12-15T08:39:22.907Z\"}"
     const val FETCH_ASSETS_SUCCESS = "{\"total\":0,\"page\":0,\"per_page\":0,\"objects\":[{\"type\":\"fiat\",\"code\":\"USD\",\"name\":\"USD\",\"symbol\":\"$\",\"decimals\":2}]}"
+    const val CREATE_TRANSFER_SUCCESS = "{\"guid\":\"stringstringstringstringstringst\",\"transfer_type\":\"savings\",\"customer_guid\":\"stringstringstringstringstringst\",\"quote_guid\":\"stringstringstringstringstringst\",\"asset\":\"string\",\"side\":\"deposit\",\"state\":\"storing\",\"amount\":0,\"fee\":0,\"created_at\":\"2023-01-04T03:14:13.471Z\"}"
 }

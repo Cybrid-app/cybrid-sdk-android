@@ -7,6 +7,7 @@ import app.cybrid.sdkandroid.components.TransferView
 import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.tools.JSONMock
+import app.cybrid.sdkandroid.tools.TestConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
@@ -118,7 +119,7 @@ class TransferViewModelTestError {
         Assert.assertNull(viewModel.assets)
         Assert.assertNotNull(viewModel.accounts)
         Assert.assertTrue(viewModel.accounts.isEmpty())
-        Assert.assertEquals(viewModel.fiatBalance, "")
+        Assert.assertEquals(viewModel.fiatBalance.value, "")
     }
 
     @ExperimentalCoroutinesApi
@@ -149,11 +150,11 @@ class TransferViewModelTestError {
 
         // -- When
         viewModel.createQuote(PostQuoteBankModel.Side.deposit, BigDecimal(0))
-        viewModel.createTrade()
+        viewModel.createTransfer(TestConstants.externalBankAccount)
 
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertNull(viewModel.currentQuote)
-        Assert.assertNull(viewModel.currentTrade)
+        Assert.assertNull(viewModel.currentTransfer)
     }
 }

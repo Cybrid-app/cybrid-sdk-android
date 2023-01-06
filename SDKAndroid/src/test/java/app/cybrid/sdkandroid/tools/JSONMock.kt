@@ -190,6 +190,17 @@ class JSONMock(private var state: JSONMockState): Interceptor {
                    }
                 }
             }
+
+            "transfers" -> {
+                when(method) {
+                    "POST" -> {
+                        when(state) {
+                            JSONMockState.SUCCESS -> { response = TestConstants.CREATE_TRANSFER_SUCCESS }
+                            else -> {}
+                        }
+                    }
+                }
+            }
         }
         return response
     }
