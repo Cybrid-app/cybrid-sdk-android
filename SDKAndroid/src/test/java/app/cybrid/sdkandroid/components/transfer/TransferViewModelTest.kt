@@ -231,7 +231,7 @@ class TransferViewModelTest {
         val label = viewModel.transformQuoteAmountInLabelString(quote)
 
         // -- Then
-        Assert.assertEquals(label, "$100 USD")
+        Assert.assertEquals(label, "$100.00")
     }
 
     @Test
