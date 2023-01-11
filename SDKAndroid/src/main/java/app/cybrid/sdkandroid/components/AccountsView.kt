@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import app.cybrid.cybrid_api_bank.client.models.AccountBankModel
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
@@ -233,6 +234,9 @@ fun AccountsViewList(
     accountsViewModel?.getCalculatedBalance()
     accountsViewModel?.getCalculatedFiatBalance()
 
+    // -- Accounts filtered
+    val accounts = accountsViewModel?.accounts?.filter { it.accountType == AccountBankModel.Type.trading }
+
     Column(
         modifier = Modifier
             .background(Color.Transparent)
@@ -266,7 +270,7 @@ fun AccountsViewList(
                         accountsViewModel = accountsViewModel
                     )
                 }
-                itemsIndexed(items = accountsViewModel?.accounts ?: listOf()) { index, item ->
+                itemsIndexed(items = accounts ?: listOf()) { index, item ->
                     AccountsCryptoItem(
                         balance = item,
                         index = index,
@@ -288,7 +292,8 @@ fun AccountsViewList(
                         bottom.linkTo(parent.bottom, margin = 35.dp)
                         width = Dimension.fillToConstraints
                         height = Dimension.value(50.dp)
-                    },
+                    }
+                    .testTag(Constants.AccountsViewTestTags.TransferFunds.id),
                 shape = RoundedCornerShape(10.dp),
                 elevation = ButtonDefaults.elevation(
                     defaultElevation = 4.dp,

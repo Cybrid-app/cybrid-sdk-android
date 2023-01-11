@@ -121,7 +121,7 @@ class AccountsViewModel : ViewModel() {
         if (this.accounts.isNotEmpty()) {
             val pairAsset = this.accounts[0].pairAsset
             this.accounts.forEach { balance ->
-                total = total.plus(balance.accountBalanceInFiat)
+                total = total.plus(balance.accountBalanceInFiat).setScale(2)
             }
             this.totalBalance = BigDecimalPipe.transform(total, pairAsset) ?: ""
         }
