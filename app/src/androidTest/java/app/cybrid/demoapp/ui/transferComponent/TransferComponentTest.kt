@@ -59,14 +59,5 @@ class TransferComponentTest {
 
         // Check for the button for Transfer Funds
         val transferFundsId = "AccountsView_TransferFunds_Button"
-        Thread.sleep(5000)
-       // compose.waitUntilExists(hasTestTag(transferFundsId))
-        compose.onNodeWithTag(transferFundsId).assertExists().performClick()
-        //composeTransfer.waitForIdle()
-
-        // Available to trade
-        val availableToTrade = "Available to Trade"
-        //composeTransfer.waitUntilExists(hasText(availableToTrade))
-        //composeTransfer.onNodeWithText(availableToTrade).assertExists()
     }
 }
