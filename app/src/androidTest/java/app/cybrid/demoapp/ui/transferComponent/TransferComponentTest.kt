@@ -55,8 +55,6 @@ class TransferComponentTest {
                 ViewActions.click()
             )
 
-       compose.waitForIdle()
-
         // Check for the button for Transfer Funds
         val transferFundsId = "AccountsView_TransferFunds_Button"
     }
