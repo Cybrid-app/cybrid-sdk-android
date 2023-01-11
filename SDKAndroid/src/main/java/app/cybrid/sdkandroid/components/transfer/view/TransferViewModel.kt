@@ -1,9 +1,6 @@
 package app.cybrid.sdkandroid.components.transfer.view
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.apis.*
@@ -20,6 +17,7 @@ import app.cybrid.sdkandroid.util.LoggerEvents
 import app.cybrid.sdkandroid.util.getResult
 import app.cybrid.sdkandroid.util.isSuccessful
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import java.math.BigDecimal as JavaBigDecimal
 
 class TransferViewModel: ViewModel() {
@@ -33,6 +31,7 @@ class TransferViewModel: ViewModel() {
 
     var uiState: MutableState<TransferView.ViewState> = mutableStateOf(TransferView.ViewState.LOADING)
     val modalUiState: MutableState<TransferView.ModalViewState> = mutableStateOf(TransferView.ModalViewState.LOADING)
+    val viewDismiss: MutableState<Boolean> = mutableStateOf(false)
 
     var currentFiatCurrency = "USD"
     var customerGuid = Cybrid.instance.customerGuid
@@ -228,5 +227,15 @@ class TransferViewModel: ViewModel() {
         } else {
             "0"
         }
+    }
+
+    fun notifyAccountsHaveToChange() {
+
+        Cybrid.instance.let { cybrid ->
+            viewModelScope.launch {
+                cybrid.accountsRefreshObservable.emit(true)
+            }
+        }
+        viewDismiss.value = true
     }
 }

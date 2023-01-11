@@ -188,8 +188,7 @@ private fun TransferView_Modal_Details__Button(
                 transferViewModel?.modalUiState?.value = TransferView.ModalViewState.LOADING
                 transferViewModel?.uiState?.value = TransferView.ViewState.LOADING
                 showDialog.value = false
-                GlobalScope.launch { transferViewModel?.fetchAccounts() }
-
+                transferViewModel?.notifyAccountsHaveToChange()
             },
             modifier = Modifier
                 .fillMaxWidth()

@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".components.activity.BankTransferActivity">
+    tools:context=".components.activity.TransferActivity">
 
     <app.cybrid.sdkandroid.components.TransferView
         android:id="@+id/component"

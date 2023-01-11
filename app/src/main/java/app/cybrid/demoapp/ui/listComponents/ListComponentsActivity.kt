@@ -7,12 +7,12 @@ import androidx.recyclerview.widget.RecyclerView
 import app.cybrid.demoapp.R
 import app.cybrid.demoapp.core.App
 import app.cybrid.demoapp.listener.ComponentListener
-import app.cybrid.demoapp.ui.components.accounts.AccountsComponentActivity
 import app.cybrid.demoapp.ui.listComponents.adapter.ListComponentsAdapter
 import app.cybrid.demoapp.ui.listComponents.entity.Component
 import app.cybrid.demoapp.ui.listPricesComponent.ListPricesAssetsComponentActivity
 import app.cybrid.demoapp.ui.listPricesComponent.ListPricesComponentActivity
 import app.cybrid.demoapp.ui.tradeFlow.TradeFlowActivity
+import app.cybrid.sdkandroid.components.activity.AccountsActivity
 import app.cybrid.sdkandroid.components.activity.KYCActivity
 import app.cybrid.sdkandroid.components.activity.BankAccountsActivity
 
@@ -42,7 +42,7 @@ class ListComponentsActivity : AppCompatActivity(), ComponentListener {
             1 -> startActivity(Intent(this, ListPricesComponentActivity::class.java))
             2 -> startActivity(Intent(this, ListPricesAssetsComponentActivity::class.java))
             3 -> startActivity(Intent(this, TradeFlowActivity::class.java))
-            4 -> startActivity(Intent(this, AccountsComponentActivity::class.java))
+            4 -> startActivity(Intent(this, AccountsActivity::class.java))
             5 -> startActivity(Intent(this, KYCActivity::class.java))
             6 -> startActivity(Intent(this, BankAccountsActivity::class.java))
         }

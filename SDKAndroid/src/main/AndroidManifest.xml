@@ -3,7 +3,14 @@
 
     <application>
         <activity
-            android:name=".components.activity.BankTransferActivity"
+            android:name=".components.activity.AccountsActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".components.activity.TransferActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

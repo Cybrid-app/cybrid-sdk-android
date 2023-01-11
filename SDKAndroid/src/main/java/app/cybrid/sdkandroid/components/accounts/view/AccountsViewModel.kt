@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.components.accounts.view
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -23,6 +24,7 @@ import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
 import app.cybrid.sdkandroid.util.getResult
 import app.cybrid.sdkandroid.util.isSuccessful
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.math.BigDecimal as JavaBigDecimal
 
@@ -40,6 +42,18 @@ class AccountsViewModel : ViewModel() {
     // -- Trades List
     var trades:List<TradeBankModel> by mutableStateOf(listOf())
     private var currentAccountAssetPriceModel:AccountAssetPriceModel? by mutableStateOf(null)
+
+    init {
+
+        // Only for handle flow refresh
+        viewModelScope.launch {
+            Cybrid.instance.accountsRefreshObservable.collect {
+                if (it) {
+                    getAccountsList()
+                }
+            }
+        }
+    }
 
     fun getAccountsList() {
 
@@ -123,6 +137,7 @@ class AccountsViewModel : ViewModel() {
             this.accounts.forEach { balance ->
                 total = total.plus(balance.accountBalanceInFiat).setScale(2)
             }
+            total = total
             this.totalBalance = BigDecimalPipe.transform(total, pairAsset) ?: ""
         }
     }

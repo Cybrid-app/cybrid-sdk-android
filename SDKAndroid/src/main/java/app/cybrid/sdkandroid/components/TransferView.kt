@@ -3,6 +3,7 @@ package app.cybrid.sdkandroid.components
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -34,10 +35,11 @@ Component(context, attrs, defStyle) {
 
     private var currentState = mutableStateOf(ViewState.LOADING)
     var transferViewModel: TransferViewModel? = null
+    var canDismissView = false
 
     init {
 
-        LayoutInflater.from(context).inflate(R.layout.bank_transfer_component, this, true)
+        LayoutInflater.from(context).inflate(R.layout.transfer_component, this, true)
         this.composeView = findViewById(R.id.composeContent)
     }
 
@@ -60,6 +62,10 @@ Component(context, attrs, defStyle) {
                     currentState = currentState,
                     transferViewModel = transferViewModel
                 )
+
+                if (transferViewModel?.viewDismiss?.value == true && canDismissView) {
+                    (context as AppCompatActivity).finish()
+                }
             }
         }
     }

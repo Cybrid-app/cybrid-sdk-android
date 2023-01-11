@@ -61,24 +61,24 @@ class BigDecimalPipeTest {
         val transformCADBD2 = BigDecimalPipe.transform(oneBigDecimal, TestConstants.CAD_ASSET)
 
         // -- Then
-        Assert.assertEquals(transformBTC1, "₿0.00")
-        Assert.assertEquals(transformETH1, "Ξ0.00")
+        Assert.assertEquals(transformBTC1, "₿0.00000000")
+        Assert.assertEquals(transformETH1, "Ξ0.000000000000000000")
         Assert.assertEquals(transformCAD1, "$0.00")
 
         Assert.assertEquals(transformBTC2, "₿0.00000001")
         Assert.assertEquals(transformETH2, "Ξ0.000000000000000001")
         Assert.assertEquals(transformCAD2, "$0.01")
 
-        Assert.assertEquals(transformBTCStr1, "₿0.00")
-        Assert.assertEquals(transformETHStr1, "Ξ0.00")
+        Assert.assertEquals(transformBTCStr1, "₿0.00000000")
+        Assert.assertEquals(transformETHStr1, "Ξ0.000000000000000000")
         Assert.assertEquals(transformCADStr1, "$0.00")
 
         Assert.assertEquals(transformBTCStr2, "₿0.00000001")
         Assert.assertEquals(transformETHStr2, "Ξ0.000000000000000001")
         Assert.assertEquals(transformCADStr2, "$0.01")
 
-        Assert.assertEquals(transformBTCBD1, "₿0.00")
-        Assert.assertEquals(transformETHBD1, "Ξ0.00")
+        Assert.assertEquals(transformBTCBD1, "₿0.00000000")
+        Assert.assertEquals(transformETHBD1, "Ξ0.000000000000000000")
         Assert.assertEquals(transformCADBD1, "$0.00")
 
         Assert.assertEquals(transformBTCBD2, "₿0.00000001")
@@ -133,11 +133,14 @@ class BigDecimalPipeTest {
 
         // -- Given
         val value = 36010
+        val value2 = BigDecimal("20128146.67")
 
         // -- When
         val transformCAD = BigDecimalPipe.transform(value, TestConstants.CAD_ASSET)
+        val transformCAD2 = BigDecimalPipe.transform(value2, TestConstants.CAD_ASSET)
 
         // -- Then
         Assert.assertEquals(transformCAD, "$360.10")
+        Assert.assertEquals(transformCAD2, "$201,281.46")
     }
 }

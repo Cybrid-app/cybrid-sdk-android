@@ -7,16 +7,17 @@ import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.TransferView
 import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 
-class BankTransferActivity : AppCompatActivity() {
+class TransferActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_bank_transfer)
+        setContentView(R.layout.transfer_activity)
 
         val transferViewModel: TransferViewModel by viewModels()
         val transferView = findViewById<TransferView>(R.id.component)
 
         transferView.setViewModel(transferViewModel)
+        transferView.canDismissView = true
     }
 }
