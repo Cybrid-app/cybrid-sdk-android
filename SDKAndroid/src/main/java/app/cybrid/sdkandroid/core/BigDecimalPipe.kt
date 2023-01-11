@@ -32,7 +32,7 @@ object BigDecimalPipe {
 
     private fun transformAny(baseUnit:BigDecimal, asset:AssetBankModel, prefix:String) : String? {
 
-        val baseUnitString = baseUnit.setScale(2).toPlainString()
+        val baseUnitString = baseUnit.toPlainString()
         if (baseUnitString.contains('.')) {
 
             val separator = '.'
