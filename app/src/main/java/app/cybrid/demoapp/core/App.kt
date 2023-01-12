@@ -1,5 +1,6 @@
 package app.cybrid.demoapp.core
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.util.Log
@@ -29,6 +30,8 @@ class App : Application(), CybridSDKEvents {
     override fun onCreate() {
 
         super.onCreate()
+        context = applicationContext
+
         setupCybridSDK()
     }
 
@@ -46,8 +49,8 @@ class App : Application(), CybridSDKEvents {
 
     override fun onEvent(level: Int, message: String) {
 
-        if (level == Log.ERROR) {
-            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        if (level == Log.ERROR && context != null) {
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -87,6 +90,9 @@ class App : Application(), CybridSDKEvents {
 
         const val demoUrl = "https://id.demo.cybrid.app"
         const val TAG = "CybridSDKDemo"
+
+        @SuppressLint("StaticFieldLeak")
+        var context: Context? = null
 
         fun createVerticalRecyclerList(list: RecyclerView, context: Context?) {
 
