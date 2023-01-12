@@ -23,7 +23,7 @@ import java.util.Locale
 class BankAccountsViewModel: ViewModel() {
 
     private val plaidCustomizationName = "default"
-    private val androidPackageName = "app.cybrid.sdkandroid"
+    private val androidPackageName = "app.cybrid.demoapp"
     private val defaultAssetCurrency = "USD"
 
     private var workflowService = AppModule.getClient().createService(WorkflowsApi::class.java)

@@ -1,6 +1,5 @@
 package app.cybrid.sdkandroid.core
 
-import java.lang.NullPointerException
 import java.math.MathContext
 import java.math.RoundingMode
 import java.text.NumberFormat

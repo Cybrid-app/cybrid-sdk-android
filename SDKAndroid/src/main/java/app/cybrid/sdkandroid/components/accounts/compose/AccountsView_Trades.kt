@@ -43,7 +43,7 @@ import app.cybrid.sdkandroid.util.getSpannableStyle
 import java.time.OffsetDateTime
 
 @Composable
-fun AccountTradesView(
+fun AccountsView_Trades(
     listPricesViewModel: ListPricesViewModel?,
     accountsViewModel: AccountsViewModel?,
     customStyles: AccountsViewStyles = AccountsViewStyles()
@@ -55,10 +55,10 @@ fun AccountTradesView(
     // -- Content
     Column() {
 
-        AccountTradesBalanceAndHoldings(
+        AccountsView_Trades_BalanceAndHoldings(
             balance = balance
         )
-        AccountTradesList(
+        AccountsView_Trades_List(
             accountsViewModel = accountsViewModel,
             listPricesViewModel = listPricesViewModel
         )
@@ -66,7 +66,7 @@ fun AccountTradesView(
 }
 
 @Composable
-fun AccountTradesBalanceAndHoldings(
+fun AccountsView_Trades_BalanceAndHoldings(
     balance: AccountAssetPriceModel?,
     customStyles: AccountsViewStyles = AccountsViewStyles(),
 ) {
@@ -152,7 +152,7 @@ fun AccountTradesBalanceAndHoldings(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AccountTradesList(
+fun AccountsView_Trades_List(
     accountsViewModel: AccountsViewModel?,
     listPricesViewModel: ListPricesViewModel?
 ) {
@@ -162,12 +162,12 @@ fun AccountTradesList(
             .padding(top = 25.dp, bottom = 20.dp)
     ) {
         stickyHeader {
-            AccountTradesHeaderItem(
+            AccountsView_Trades_List_Header(
                 accountsViewModel = accountsViewModel
             )
         }
         itemsIndexed(items = accountsViewModel?.trades ?: listOf()) { index, item ->
-            AccountTradesItem(
+            AccountsView_Trades_List__Item(
                 trade = item,
                 index = index,
                 listPricesViewModel = listPricesViewModel,
@@ -178,7 +178,7 @@ fun AccountTradesList(
 }
 
 @Composable
-fun AccountTradesHeaderItem(
+fun AccountsView_Trades_List_Header(
     accountsViewModel: AccountsViewModel?,
     styles: AccountsViewStyles = AccountsViewStyles()
 ) {
@@ -237,7 +237,7 @@ fun AccountTradesHeaderItem(
 }
 
 @Composable
-fun AccountTradesItem(
+fun AccountsView_Trades_List__Item(
     trade: TradeBankModel, index: Int,
     listPricesViewModel: ListPricesViewModel?,
     accountsViewModel: AccountsViewModel?,
@@ -283,7 +283,7 @@ fun AccountTradesItem(
     // -- Modal Logic
     val showDialog:MutableState<Boolean> = remember { mutableStateOf(false) }
     if (showDialog.value) {
-        AccountTradeDetailView(
+        AccountsView_Trades_Detail(
             showDialog = showDialog,
             trade = trade,
             listPricesViewModel = listPricesViewModel,

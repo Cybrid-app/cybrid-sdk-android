@@ -4,11 +4,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
@@ -37,7 +34,7 @@ import app.cybrid.sdkandroid.util.getSpannableStyle
 import java.time.OffsetDateTime
 
 @Composable
-fun AccountTradeDetailView(
+fun AccountsView_Trades_Detail(
     showDialog: MutableState<Boolean>,
     trade: TradeBankModel,
     listPricesViewModel: ListPricesViewModel?,
@@ -57,7 +54,7 @@ fun AccountTradeDetailView(
                 .fillMaxWidth()
                 .padding(start = 5.dp, end = 5.dp)
         ) {
-            AccountTradeDetailContent(
+            AccountsView_Trades_Detail_Content(
                 showDialog = showDialog,
                 trade = trade,
                 listPricesViewModel = listPricesViewModel,
@@ -68,7 +65,7 @@ fun AccountTradeDetailView(
 }
 
 @Composable
-fun AccountTradeDetailContent(
+fun AccountsView_Trades_Detail_Content(
     showDialog: MutableState<Boolean>,
     trade: TradeBankModel,
     listPricesViewModel: ListPricesViewModel?,
@@ -147,23 +144,23 @@ fun AccountTradeDetailContent(
                 color = colorResource(id = R.color.modal_title_color)
             )
             // -- Elements
-            AccountTradeDetailContentItem(
+            AccountsView_Trades_Detail_Item(
                 titleLabel = stringResource(id = R.string.accounts_view_trade_detail_status),
                 subTitleLabel = AnnotatedString(trade.state?.value ?: "")
             )
-            AccountTradeDetailContentItem(
+            AccountsView_Trades_Detail_Item(
                 titleLabel = stringResource(id = R.string.accounts_view_trade_detail_order_placed),
                 subTitleLabel = fiatAssetValueString
             )
-            AccountTradeDetailContentItem(
+            AccountsView_Trades_Detail_Item(
                 titleLabel = stringResource(id = R.string.accounts_view_trade_detail_order_finalized),
                 subTitleLabel = assetValueString
             )
-            AccountTradeDetailContentItem(
+            AccountsView_Trades_Detail_Item(
                 titleLabel = stringResource(id = R.string.accounts_view_trade_detail_order_date),
                 subTitleLabel = AnnotatedString(tradeDate)
             )
-            AccountTradeDetailContentItem(
+            AccountsView_Trades_Detail_Item(
                 titleLabel = stringResource(id = R.string.accounts_view_trade_detail_order_order_id),
                 subTitleLabel = AnnotatedString(trade.guid ?: "")
             )
@@ -188,7 +185,7 @@ fun AccountTradeDetailContent(
 }
 
 @Composable
-private fun AccountTradeDetailContentItem(
+private fun AccountsView_Trades_Detail_Item(
     titleLabel: String,
     subTitleLabel: AnnotatedString
 ) {

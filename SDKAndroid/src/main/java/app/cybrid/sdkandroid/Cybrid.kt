@@ -1,9 +1,13 @@
 package app.cybrid.sdkandroid
 
+import android.database.Observable
 import app.cybrid.cybrid_api_bank.client.auth.HttpBearerAuth
 import app.cybrid.sdkandroid.listener.CybridSDKEvents
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import okhttp3.OkHttpClient
 
 open class Cybrid {
@@ -14,6 +18,8 @@ open class Cybrid {
     var tag: String = "CybridSDK"
     var invalidToken = false
     var listener: CybridSDKEvents? = null
+
+    var accountsRefreshObservable = MutableStateFlow(false)
 
     fun setBearer(bearer: String) {
 

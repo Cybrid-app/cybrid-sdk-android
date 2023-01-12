@@ -1,10 +1,11 @@
-package app.cybrid.sdkandroid.components.bankTransfer
+package app.cybrid.sdkandroid.components.transfer
 
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.PostQuoteBankModel
+import app.cybrid.cybrid_api_bank.client.models.QuoteBankModel
 import app.cybrid.sdkandroid.Cybrid
-import app.cybrid.sdkandroid.components.BankTransferView
-import app.cybrid.sdkandroid.components.bankTransfer.view.BankTransferViewModel
+import app.cybrid.sdkandroid.components.TransferView
+import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.tools.JSONMock
 import app.cybrid.sdkandroid.tools.TestConstants
@@ -17,7 +18,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-class BankTransferViewModelTest {
+class TransferViewModelTest {
 
     @ExperimentalCoroutinesApi
     private val scope = TestScope()
@@ -42,10 +43,10 @@ class BankTransferViewModelTest {
         return ApiClient(okHttpClientBuilder = clientBuilder)
     }
 
-    private fun createViewModel(): BankTransferViewModel {
+    private fun createViewModel(): TransferViewModel {
 
         Cybrid.instance.invalidToken = false
-        return BankTransferViewModel()
+        return TransferViewModel()
     }
 
     @ExperimentalCoroutinesApi
@@ -127,7 +128,7 @@ class BankTransferViewModelTest {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertTrue(viewModel.externalBankAccounts.isNotEmpty())
-        Assert.assertEquals(viewModel.uiState.value, BankTransferView.ViewState.IN_LIST)
+        Assert.assertEquals(viewModel.uiState.value, TransferView.ViewState.ACCOUNTS)
     }
 
     @ExperimentalCoroutinesApi
@@ -149,7 +150,7 @@ class BankTransferViewModelTest {
         Assert.assertTrue(viewModel.assets!!.isNotEmpty())
         Assert.assertNotNull(viewModel.accounts)
         Assert.assertTrue(viewModel.accounts.isNotEmpty())
-        Assert.assertEquals(viewModel.fiatBalance, "$0.10")
+        Assert.assertEquals(viewModel.fiatBalance.value, "$0.10")
     }
 
     @ExperimentalCoroutinesApi
@@ -167,11 +168,12 @@ class BankTransferViewModelTest {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(viewModel.currentQuote)
+        Assert.assertEquals(viewModel.modalUiState.value, TransferView.ModalViewState.CONFIRM)
     }
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_createTrade() = runTest {
+    fun test_createTransfer() = runTest {
 
         // -- Given
         val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
@@ -180,11 +182,71 @@ class BankTransferViewModelTest {
 
         // -- When
         viewModel.createQuote(PostQuoteBankModel.Side.deposit, BigDecimal(0))
-        viewModel.createTrade()
+        viewModel.createTransfer(TestConstants.externalBankAccount)
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        Assert.assertNotNull(viewModel.currentQuote)
-        Assert.assertNotNull(viewModel.currentTrade)
+        Assert.assertNotNull(viewModel.currentTransfer)
+        Assert.assertEquals(viewModel.modalUiState.value, TransferView.ModalViewState.DETAILS)
+    }
+
+    @Test
+    fun test_transformAmountInBaseBigDecimal() {
+
+        // -- Given
+        val viewModel = createViewModel()
+        viewModel.assets = TestConstants.assets
+
+        // -- When
+        val value = viewModel.transformAmountInBaseBigDecimal("100")
+
+        // -- Then
+        Assert.assertEquals(value, BigDecimal("10000"))
+    }
+
+    @Test
+    fun test_transformAmountInBaseBigDecimal_Currency_MXN() {
+
+        // -- Given
+        val viewModel = createViewModel()
+        viewModel.assets = TestConstants.assets
+        viewModel.currentFiatCurrency = "MXN"
+
+        // -- When
+        val value = viewModel.transformAmountInBaseBigDecimal("100")
+
+        // -- Then
+        Assert.assertEquals(value, BigDecimal("0"))
+    }
+
+    @Test
+    fun test_transformQuoteAmountInLabelString() {
+
+        // -- Given
+        val viewModel = createViewModel()
+        viewModel.assets = TestConstants.assets
+        val quote = QuoteBankModel(deliverAmount = java.math.BigDecimal("10000"))
+
+        // -- When
+        val label = viewModel.transformQuoteAmountInLabelString(quote)
+
+        // -- Then
+        Assert.assertEquals(label, "$100.00")
+    }
+
+    @Test
+    fun test_transformQuoteAmountInLabelString_Currency_MXN() {
+
+        // -- Given
+        val viewModel = createViewModel()
+        viewModel.assets = TestConstants.assets
+        viewModel.currentFiatCurrency = "MXN"
+        val quote = QuoteBankModel(deliverAmount = java.math.BigDecimal("10000"))
+
+        // -- When
+        val label = viewModel.transformQuoteAmountInLabelString(quote)
+
+        // -- Then
+        Assert.assertEquals(label, "0")
     }
 }

@@ -12,7 +12,8 @@ class Constants {
     enum class AccountsViewTestTags(val id: String) {
         Surface("AccountsView_MainSurface"),
         Loading("AccountsView_Loading"),
-        List("AccountsView_List")
+        List("AccountsView_List"),
+        TransferFunds("AccountsView_TransferFunds_Button")
     }
 
     enum class IdentityVerificationView(val id: String) {
@@ -34,17 +35,19 @@ class Constants {
         ErrorView("BankAccountsView_ErrorView")
     }
 
+    enum class TransferView(val id: String) {
+        Surface("TransferView_MainSurface"),
+        LoadingView("TransferView_LoadingView"),
+        AccountsView("TransferView_AccountsView"),
+        ModalLoading("TransferView_Modal_Loading"),
+        ModalContentAmount("TransferView_Modal_Content_Amount"),
+        ModalContentDate("TransferView_Modal_Content_Date"),
+        ModalContentFromTo("TransferView_Modal_Content_From_To")
+    }
+
     companion object {
 
         const val MIN_INTEGER_DIGITS = 0
         const val MIN_FRACTION_DIGITS = 2
-
-        val USD_ASSET: AssetBankModel = AssetBankModel(
-            code = "USD",
-            decimals = BigDecimal(2),
-            name = "American Dollar",
-            symbol = "$",
-            type= AssetBankModel.Type.fiat,
-        )
     }
 }

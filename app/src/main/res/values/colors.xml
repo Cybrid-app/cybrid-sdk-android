@@ -8,7 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="bk_blue">#2443B7</color>
+    <color name="bk_blue">#007AFF</color>
     <color name="trans">#00FFFFFF</color>
 
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#fff</color>

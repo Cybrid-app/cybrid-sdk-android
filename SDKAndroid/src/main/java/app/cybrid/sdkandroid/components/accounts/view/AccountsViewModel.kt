@@ -18,7 +18,6 @@ import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.AssetPipe.AssetPipeTrade
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
-import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
 import app.cybrid.sdkandroid.util.getResult
@@ -121,8 +120,9 @@ class AccountsViewModel : ViewModel() {
         if (this.accounts.isNotEmpty()) {
             val pairAsset = this.accounts[0].pairAsset
             this.accounts.forEach { balance ->
-                total = total.plus(balance.accountBalanceInFiat)
+                total = total.plus(balance.accountBalanceInFiat).setScale(2)
             }
+            total = total
             this.totalBalance = BigDecimalPipe.transform(total, pairAsset) ?: ""
         }
     }

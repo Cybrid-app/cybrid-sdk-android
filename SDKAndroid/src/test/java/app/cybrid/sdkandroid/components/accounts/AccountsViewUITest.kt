@@ -2,7 +2,7 @@ package app.cybrid.sdkandroid.components.accounts
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import app.cybrid.sdkandroid.components.AccountsViewLoading
+import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_Loading
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.core.Constants
@@ -46,7 +46,7 @@ class AccountsViewUITest {
     fun `AccountsView Loader Test`() {
 
         composeTestRule.setContent {
-            AccountsViewLoading()
+            AccountsView_Loading()
         }
 
         composeTestRule.onNodeWithTag(Constants.AccountsViewTestTags.Loading.id).assertIsDisplayed()

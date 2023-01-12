@@ -1,12 +1,13 @@
-package app.cybrid.sdkandroid.components.bankTransfer
+package app.cybrid.sdkandroid.components.transfer
 
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.PostQuoteBankModel
 import app.cybrid.sdkandroid.Cybrid
-import app.cybrid.sdkandroid.components.BankTransferView
-import app.cybrid.sdkandroid.components.bankTransfer.view.BankTransferViewModel
+import app.cybrid.sdkandroid.components.TransferView
+import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.tools.JSONMock
+import app.cybrid.sdkandroid.tools.TestConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
@@ -16,7 +17,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-class BankTransferViewModelTestError {
+class TransferViewModelTestError {
 
     @ExperimentalCoroutinesApi
     private val scope = TestScope()
@@ -41,10 +42,10 @@ class BankTransferViewModelTestError {
         return ApiClient(okHttpClientBuilder = clientBuilder)
     }
 
-    private fun createViewModel(): BankTransferViewModel {
+    private fun createViewModel(): TransferViewModel {
 
         Cybrid.instance.invalidToken = false
-        return BankTransferViewModel()
+        return TransferViewModel()
     }
 
     @Test
@@ -97,7 +98,7 @@ class BankTransferViewModelTestError {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertTrue(viewModel.externalBankAccounts.isEmpty())
-        Assert.assertEquals(viewModel.uiState.value, BankTransferView.ViewState.LOADING)
+        Assert.assertEquals(viewModel.uiState.value, TransferView.ViewState.LOADING)
     }
 
     @ExperimentalCoroutinesApi
@@ -118,7 +119,7 @@ class BankTransferViewModelTestError {
         Assert.assertNull(viewModel.assets)
         Assert.assertNotNull(viewModel.accounts)
         Assert.assertTrue(viewModel.accounts.isEmpty())
-        Assert.assertEquals(viewModel.fiatBalance, "")
+        Assert.assertEquals(viewModel.fiatBalance.value, "")
     }
 
     @ExperimentalCoroutinesApi
@@ -149,11 +150,11 @@ class BankTransferViewModelTestError {
 
         // -- When
         viewModel.createQuote(PostQuoteBankModel.Side.deposit, BigDecimal(0))
-        viewModel.createTrade()
+        viewModel.createTransfer(TestConstants.externalBankAccount)
 
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertNull(viewModel.currentQuote)
-        Assert.assertNull(viewModel.currentTrade)
+        Assert.assertNull(viewModel.currentTransfer)
     }
 }

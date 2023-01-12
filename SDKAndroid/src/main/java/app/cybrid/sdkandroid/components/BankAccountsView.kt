@@ -38,7 +38,7 @@ Component(context, attrs, defStyle) {
 
     init {
 
-        LayoutInflater.from(context).inflate(R.layout.bankaccounts_component, this, true)
+        LayoutInflater.from(context).inflate(R.layout.bank_accounts_component, this, true)
         this.composeView = findViewById(R.id.composeContent)
     }
 

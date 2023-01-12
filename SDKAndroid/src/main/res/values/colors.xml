@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="primary_color">#2443B7</color>
+    <color name="primary_color">#007AFF</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
@@ -20,13 +20,24 @@
     <color name="modal_sub_title_refresh_color">#FF5252</color>
     <color name="modal_divider">#79747E</color>
 
+    <!-- Accounts View -->
     <color name="accounts_view_balance_title">#616161</color>
     <color name="accounts_view_trades_holdings_title">#424242</color>
     <color name="accounts_view_trades_separator">#E0E0E0</color>
     <color name="accounts_view_trades_buy">#4CAF50</color>
     <color name="accounts_view_trades_sell">#757575</color>
     <color name="account_trade_detail_content_item_color">#424242</color>
+    <color name="accounts_balance_available_trade_color">#636366</color>
+    <color name="accounts_pending_deposit_color">#5AC8FA</color>
 
     <color name="accent_blue">#007AFF</color>
-    
+
+    <color name="select_background">#CCEDEDED</color>
+
+    <!-- Transfer View -->
+    <color name="transfer_view_balance_title_color">#636366</color>
+    <color name="transfer_view_accounts_select_title_color">#757575</color>
+    <color name="transfer_view_accounts_input_title_color">#757575</color>
+    <color name="transfer_view_accounts_input_asset_code_color">#757575</color>
+
 </resources>
