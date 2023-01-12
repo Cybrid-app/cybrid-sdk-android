@@ -143,4 +143,30 @@ class BigDecimalPipeTest {
         Assert.assertEquals(transformCAD, "$360.10")
         Assert.assertEquals(transformCAD2, "$201,281.46")
     }
+
+    @Test
+    fun test_transformAnyWithDot() {
+
+        // -- Given
+        val value = BigDecimal("1234.5")
+
+        // -- When
+        val transform = BigDecimalPipe.transformAny(value, TestConstants.USD_ASSET)
+
+        // -- Then
+        Assert.assertEquals(transform, "$1,234.50")
+    }
+
+    @Test
+    fun test_transformAnyWithoutDot() {
+
+        // -- Given
+        val value = BigDecimal("1234")
+
+        // -- When
+        val transform = BigDecimalPipe.transformAny(value, TestConstants.USD_ASSET)
+
+        // -- Then
+        Assert.assertEquals(transform, "$1,234.00")
+    }
 }
