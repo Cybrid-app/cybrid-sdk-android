@@ -188,7 +188,11 @@ private fun TransferView_Modal_Details__Button(
                 transferViewModel?.modalUiState?.value = TransferView.ModalViewState.LOADING
                 transferViewModel?.uiState?.value = TransferView.ViewState.LOADING
                 showDialog.value = false
-                transferViewModel?.notifyAccountsHaveToChange()
+
+                Handler().postDelayed({
+                    GlobalScope.launch { transferViewModel?.fetchAccounts() }
+                }, 4000L)
+                //transferViewModel?.notifyAccountsHaveToChange()
             },
             modifier = Modifier
                 .fillMaxWidth()

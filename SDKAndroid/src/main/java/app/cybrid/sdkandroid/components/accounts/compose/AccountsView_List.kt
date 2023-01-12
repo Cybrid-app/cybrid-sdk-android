@@ -216,7 +216,6 @@ fun AccountsView_List__HeaderItem(
     }
 }
 
-
 @Composable
 fun AccountsView_List__Item(balance: AccountAssetPriceModel,
                        index: Int, selectedIndex: Int,
