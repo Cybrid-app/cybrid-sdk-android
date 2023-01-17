@@ -54,6 +54,7 @@
     <string name="accounts_view_trade_detail_order_account_id">Account ID</string>
     <string name="accounts_view_trade_detail_order_order_id">Order ID</string>
     <string name="accounts_view_trade_detail_order_close_button">Close</string>
+    <string name="accounts_view_no_accounts_title">Customer without accounts</string>
 
     <!-- KYC Component -->
     <string name="kyc_view_loading_text">Checking Identity...</string>

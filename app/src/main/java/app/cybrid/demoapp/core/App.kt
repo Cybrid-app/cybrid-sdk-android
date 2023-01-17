@@ -38,7 +38,9 @@ class App : Application(), CybridSDKEvents {
     fun setupCybridSDK() {
 
         Cybrid.instance.listener = this
-        Cybrid.instance.customerGuid = BuildConfig.CUSTOMER_GUID
+        if (Cybrid.instance.customerGuid == "") {
+            Cybrid.instance.customerGuid = BuildConfig.CUSTOMER_GUID
+        }
     }
 
     override fun onTokenExpired() {
