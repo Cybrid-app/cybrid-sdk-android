@@ -30,7 +30,7 @@ class AccountsViewModel : ViewModel() {
     var currentFiatCurrency = "USD"
 
     var accountsResponse:List<AccountBankModel> by mutableStateOf(listOf())
-    var accounts:List<AccountAssetPriceModel> by mutableStateOf(listOf())
+    var accounts:List<AccountAssetPriceModel>? by mutableStateOf(null)
     var assets: List<AssetBankModel> = listOf()
 
     var totalBalance:String by mutableStateOf("")
@@ -117,9 +117,9 @@ class AccountsViewModel : ViewModel() {
     fun getCalculatedBalance() {
 
         var total = BigDecimal(0)
-        if (this.accounts.isNotEmpty()) {
-            val pairAsset = this.accounts[0].pairAsset
-            this.accounts.forEach { balance ->
+        if (this.accounts != null && this.accounts!!.isNotEmpty()) {
+            val pairAsset = this.accounts!![0].pairAsset
+            this.accounts!!.forEach { balance ->
                 total = total.plus(balance.accountBalanceInFiat).setScale(2)
             }
             total = total
@@ -130,9 +130,9 @@ class AccountsViewModel : ViewModel() {
     fun getCalculatedFiatBalance() {
 
         var total = BigDecimal(0)
-        if (this.accounts.isNotEmpty()) {
+        if (this.accounts != null && this.accounts!!.isNotEmpty()) {
             val counterAsset = assets.find { it.code == currentFiatCurrency }
-            this.accounts.forEach { balance ->
+            this.accounts!!.forEach { balance ->
                 if (balance.accountType == AccountBankModel.Type.fiat) {
                     total = total.plus(BigDecimal(balance.accountBalance))
                 }

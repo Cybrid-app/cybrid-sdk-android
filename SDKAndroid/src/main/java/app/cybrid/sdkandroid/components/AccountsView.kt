@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_List
+import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_List_Empty
 import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_Loading
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.composeViews.AccountsView_Trades
@@ -26,7 +27,7 @@ class AccountsView @JvmOverloads constructor(
     defStyle: Int = 0):
 Component(context, attrs, defStyle) {
 
-    enum class AccountsViewState { LOADING, CONTENT, TRADES }
+    enum class AccountsViewState { LOADING, CONTENT, EMPTY, TRADES }
 
     private var _listPricesViewModel: ListPricesViewModel? = null
     private var _accountsViewModel: AccountsViewModel? = null
@@ -96,6 +97,7 @@ fun AccountsView(
 
     // -- Vars
     val currentRememberState: MutableState<AccountsView.AccountsViewState> = remember { currentState }
+
     if (accountsViewModel?.accountsResponse?.isNotEmpty()!!
         && listPricesViewModel?.prices?.isNotEmpty()!!
         && listPricesViewModel.assets.isNotEmpty()) {
@@ -134,6 +136,10 @@ fun AccountsView(
                     accountsViewModel = accountsViewModel,
                     currentRememberState = currentRememberState
                 )
+            }
+
+            AccountsView.AccountsViewState.EMPTY -> {
+                AccountsView_List_Empty()
             }
 
             AccountsView.AccountsViewState.TRADES -> {

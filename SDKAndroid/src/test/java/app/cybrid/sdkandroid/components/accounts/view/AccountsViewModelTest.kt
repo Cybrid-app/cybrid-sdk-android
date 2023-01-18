@@ -42,7 +42,7 @@ class AccountsViewModelTest {
         Assert.assertNotNull(accountsViewModel)
         Assert.assertEquals(accountsViewModel.currentFiatCurrency, "USD")
         Assert.assertNotNull(accountsViewModel.accountsResponse)
-        Assert.assertNotNull(accountsViewModel.accounts)
+        Assert.assertNull(accountsViewModel.accounts)
         Assert.assertNotNull(accountsViewModel.trades)
         Assert.assertNotNull(listPricesViewModel)
         Assert.assertNotNull(listPricesViewModel.prices)

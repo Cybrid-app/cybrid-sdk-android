@@ -54,6 +54,7 @@
     <string name="accounts_view_trade_detail_order_account_id">Identifiant de compte</string>
     <string name="accounts_view_trade_detail_order_order_id">Numéro de commande</string>
     <string name="accounts_view_trade_detail_order_close_button">Proche</string>
+    <string name="accounts_view_no_accounts_title">Client sans compte</string>
 
     <!-- KYC Component -->
     <string name="kyc_view_loading_text">Checking Identity...</string>
