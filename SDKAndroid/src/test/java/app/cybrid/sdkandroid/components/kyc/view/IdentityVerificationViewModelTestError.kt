@@ -2,7 +2,6 @@ package app.cybrid.sdkandroid.components.kyc.view
 
 import androidx.compose.runtime.mutableStateOf
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
-import app.cybrid.cybrid_api_bank.client.models.IdentityVerificationWithDetailsBankModel
 import app.cybrid.sdkandroid.components.KYCView
 import app.cybrid.sdkandroid.tools.JSONMock
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +33,7 @@ class IdentityVerificationViewModelTestError {
     private fun createViewModel(): IdentityVerificationViewModel {
 
         val viewModel = IdentityVerificationViewModel()
-        viewModel.UIState = mutableStateOf(KYCView.KYCViewState.LOADING)
+        viewModel.uiState = mutableStateOf(KYCView.KYCViewState.LOADING)
         return viewModel
     }
 
@@ -66,7 +65,7 @@ class IdentityVerificationViewModelTestError {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertEquals(viewModel.customerGuid, originalCustomerGuid)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.LOADING)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.LOADING)
     }
 
     @ExperimentalCoroutinesApi

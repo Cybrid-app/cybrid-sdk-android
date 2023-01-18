@@ -1,6 +1,7 @@
 package app.cybrid.sdkandroid.components.kyc.view
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cybrid.sdkandroid.AppModule
@@ -26,7 +27,9 @@ class IdentityVerificationViewModel: ViewModel() {
     var identityJob: Polling? = null
 
     var customerGuid = Cybrid.instance.customerGuid
-    var UIState: MutableState<KYCView.KYCViewState>? = null
+
+    var uiState: MutableState<KYCView.KYCViewState>? = null
+    val viewDismiss: MutableState<Boolean> = mutableStateOf(false)
 
     var latestIdentityVerification: IdentityVerificationWrapper? = null
 
@@ -199,7 +202,7 @@ class IdentityVerificationViewModel: ViewModel() {
 
                 customerJob?.stop()
                 customerJob = null
-                UIState?.value = KYCView.KYCViewState.VERIFIED
+                uiState?.value = KYCView.KYCViewState.VERIFIED
             }
 
             CustomerBankModel.State.unverified -> {
@@ -213,7 +216,7 @@ class IdentityVerificationViewModel: ViewModel() {
 
                 customerJob?.stop()
                 customerJob = null
-                UIState?.value = KYCView.KYCViewState.ERROR
+                uiState?.value = KYCView.KYCViewState.ERROR
             }
         }
     }
@@ -257,7 +260,7 @@ class IdentityVerificationViewModel: ViewModel() {
 
                 identityJob?.stop()
                 identityJob = null
-                UIState?.value = KYCView.KYCViewState.VERIFIED
+                uiState?.value = KYCView.KYCViewState.VERIFIED
             }
 
             else -> {
@@ -275,17 +278,17 @@ class IdentityVerificationViewModel: ViewModel() {
 
             IdentityVerificationWithDetailsBankModel.PersonaState.waiting -> {
 
-                UIState?.value = KYCView.KYCViewState.REQUIRED
+                uiState?.value = KYCView.KYCViewState.REQUIRED
             }
 
             IdentityVerificationWithDetailsBankModel.PersonaState.pending -> {
 
-                UIState?.value = KYCView.KYCViewState.REQUIRED
+                uiState?.value = KYCView.KYCViewState.REQUIRED
             }
 
             IdentityVerificationWithDetailsBankModel.PersonaState.reviewing -> {
 
-                UIState?.value = KYCView.KYCViewState.REVIEWING
+                uiState?.value = KYCView.KYCViewState.REVIEWING
             }
 
             IdentityVerificationWithDetailsBankModel.PersonaState.expired -> {
@@ -294,9 +297,13 @@ class IdentityVerificationViewModel: ViewModel() {
 
             else -> {
 
-                UIState?.value = KYCView.KYCViewState.ERROR
+                uiState?.value = KYCView.KYCViewState.ERROR
             }
         }
+    }
+
+    fun dismissView() {
+        this.viewDismiss.value = true
     }
 
     class IdentityVerificationWrapper(identity: IdentityVerificationBankModel?, details: IdentityVerificationWithDetailsBankModel?) {

@@ -13,8 +13,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import okhttp3.OkHttpClient
 import org.junit.*
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 class IdentityVerificationViewModelTest {
 
@@ -45,7 +43,7 @@ class IdentityVerificationViewModelTest {
 
         Cybrid.instance.invalidToken = false
         val viewModel = IdentityVerificationViewModel()
-        viewModel.UIState = mutableStateOf(KYCView.KYCViewState.LOADING)
+        viewModel.uiState = mutableStateOf(KYCView.KYCViewState.LOADING)
         return viewModel
     }
 
@@ -59,8 +57,9 @@ class IdentityVerificationViewModelTest {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(viewModel.customerGuid)
-        Assert.assertNotNull(viewModel.UIState)
+        Assert.assertNotNull(viewModel.uiState)
         Assert.assertNull(viewModel.latestIdentityVerification)
+        Assert.assertEquals(viewModel.viewDismiss.value, false)
     }
 
     @ExperimentalCoroutinesApi
@@ -75,7 +74,7 @@ class IdentityVerificationViewModelTest {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(viewModel.customerGuid)
-        Assert.assertNotNull(viewModel.UIState)
+        Assert.assertNotNull(viewModel.uiState)
         Assert.assertNull(viewModel.latestIdentityVerification)
     }
 
@@ -95,7 +94,7 @@ class IdentityVerificationViewModelTest {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertNotEquals(viewModel.customerGuid, originalCustomerGuid)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.LOADING)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.LOADING)
     }
 
     @ExperimentalCoroutinesApi
@@ -114,7 +113,7 @@ class IdentityVerificationViewModelTest {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertEquals(viewModel.customerGuid, originalCustomerGuid)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.LOADING)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.LOADING)
     }
 
     @ExperimentalCoroutinesApi
@@ -234,21 +233,21 @@ class IdentityVerificationViewModelTest {
         viewModel.customerJob = Polling {}
         viewModel.checkCustomerStatus(customer.state!!)
         Assert.assertNull(viewModel.customerJob)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.VERIFIED)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.VERIFIED)
 
         // -- state: unverified - UIState: LOADING
         customer = CustomerBankModel(state = CustomerBankModel.State.unverified)
         viewModel.customerJob = Polling {}
         viewModel.checkCustomerStatus(customer.state!!)
         Assert.assertNull(viewModel.customerJob)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.VERIFIED)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.VERIFIED)
 
         // -- state: rejected - UIState: LOADING
         customer = CustomerBankModel(state = CustomerBankModel.State.rejected)
         viewModel.customerJob = Polling {}
         viewModel.checkCustomerStatus(customer.state!!)
         Assert.assertNull(viewModel.customerJob)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.ERROR)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.ERROR)
     }
 
     @Test
@@ -267,7 +266,7 @@ class IdentityVerificationViewModelTest {
         Assert.assertNull(viewModel.identityJob)
         viewModel.checkIdentityRecordStatus(record)
         Assert.assertNotNull(viewModel.identityJob)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.LOADING)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.LOADING)
 
         // -- state: waiting - personaState: completed - UIState: LOADING
         record = IdentityVerificationViewModel.IdentityVerificationWrapper(
@@ -279,7 +278,7 @@ class IdentityVerificationViewModelTest {
         viewModel.identityJob = null
         viewModel.checkIdentityRecordStatus(record)
         Assert.assertNotNull(viewModel.identityJob)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.LOADING)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.LOADING)
 
         // -- state: waiting - personaState: processing - UIState: LOADING
         record = IdentityVerificationViewModel.IdentityVerificationWrapper(
@@ -291,7 +290,7 @@ class IdentityVerificationViewModelTest {
         viewModel.identityJob = null
         viewModel.checkIdentityRecordStatus(record)
         Assert.assertNotNull(viewModel.identityJob)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.LOADING)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.LOADING)
 
         // -- state: waiting - personaState: reviewing - UIState: LOADING
         record = IdentityVerificationViewModel.IdentityVerificationWrapper(
@@ -302,7 +301,7 @@ class IdentityVerificationViewModelTest {
         )
         viewModel.checkIdentityRecordStatus(record)
         Assert.assertNull(viewModel.identityJob)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.REVIEWING)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.REVIEWING)
 
         // -- state: expired - UIState: LOADING
         record = IdentityVerificationViewModel.IdentityVerificationWrapper(
@@ -311,11 +310,11 @@ class IdentityVerificationViewModelTest {
                 state = IdentityVerificationWithDetailsBankModel.State.expired,
                 personaState = null)
         )
-        viewModel.UIState?.value = KYCView.KYCViewState.LOADING
+        viewModel.uiState?.value = KYCView.KYCViewState.LOADING
         viewModel.identityJob = Polling {}
         viewModel.checkIdentityRecordStatus(record)
         Assert.assertNull(viewModel.identityJob)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.LOADING)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.LOADING)
 
         // -- state: completed - UIState: VERIFIED
         record = IdentityVerificationViewModel.IdentityVerificationWrapper(
@@ -324,11 +323,11 @@ class IdentityVerificationViewModelTest {
                 state = IdentityVerificationWithDetailsBankModel.State.completed,
                 personaState = null)
         )
-        viewModel.UIState?.value = KYCView.KYCViewState.LOADING
+        viewModel.uiState?.value = KYCView.KYCViewState.LOADING
         viewModel.identityJob = Polling {}
         viewModel.checkIdentityRecordStatus(record)
         Assert.assertNull(viewModel.identityJob)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.VERIFIED)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.VERIFIED)
     }
 
     @Test
@@ -346,7 +345,7 @@ class IdentityVerificationViewModelTest {
         // -- Persona: waiting - UIState: REQUIRED
         viewModel.checkIdentityPersonaStatus(record)
         Assert.assertEquals(viewModel.latestIdentityVerification, record)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.REQUIRED)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.REQUIRED)
 
         // -- Persona: pending - UIState: REQUIRED
         record = IdentityVerificationViewModel.IdentityVerificationWrapper(
@@ -355,10 +354,10 @@ class IdentityVerificationViewModelTest {
                 personaState = IdentityVerificationWithDetailsBankModel.PersonaState.pending
             )
         )
-        viewModel.UIState?.value = KYCView.KYCViewState.LOADING
+        viewModel.uiState?.value = KYCView.KYCViewState.LOADING
         viewModel.checkIdentityPersonaStatus(record)
         Assert.assertEquals(viewModel.latestIdentityVerification, record)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.REQUIRED)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.REQUIRED)
 
         // -- Persona: reviewing - UIState: REVIEWING
         record = IdentityVerificationViewModel.IdentityVerificationWrapper(
@@ -367,10 +366,10 @@ class IdentityVerificationViewModelTest {
                 personaState = IdentityVerificationWithDetailsBankModel.PersonaState.reviewing
             )
         )
-        viewModel.UIState?.value = KYCView.KYCViewState.LOADING
+        viewModel.uiState?.value = KYCView.KYCViewState.LOADING
         viewModel.checkIdentityPersonaStatus(record)
         Assert.assertEquals(viewModel.latestIdentityVerification, record)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.REVIEWING)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.REVIEWING)
 
         // -- Persona: completed - UIState: ERROR
         record = IdentityVerificationViewModel.IdentityVerificationWrapper(
@@ -379,10 +378,10 @@ class IdentityVerificationViewModelTest {
                 personaState = IdentityVerificationWithDetailsBankModel.PersonaState.completed
             )
         )
-        viewModel.UIState?.value = KYCView.KYCViewState.LOADING
+        viewModel.uiState?.value = KYCView.KYCViewState.LOADING
         viewModel.checkIdentityPersonaStatus(record)
         Assert.assertEquals(viewModel.latestIdentityVerification, record)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.ERROR)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.ERROR)
 
         // -- Persona: expired - UIState: ERROR
         record = IdentityVerificationViewModel.IdentityVerificationWrapper(
@@ -391,10 +390,10 @@ class IdentityVerificationViewModelTest {
                 personaState = IdentityVerificationWithDetailsBankModel.PersonaState.expired
             )
         )
-        viewModel.UIState?.value = KYCView.KYCViewState.LOADING
+        viewModel.uiState?.value = KYCView.KYCViewState.LOADING
         viewModel.checkIdentityPersonaStatus(record)
         Assert.assertEquals(viewModel.latestIdentityVerification, record)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.LOADING)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.LOADING)
 
         // -- Persona: processing - UIState: ERROR
         record = IdentityVerificationViewModel.IdentityVerificationWrapper(
@@ -403,10 +402,10 @@ class IdentityVerificationViewModelTest {
                 personaState = IdentityVerificationWithDetailsBankModel.PersonaState.processing
             )
         )
-        viewModel.UIState?.value = KYCView.KYCViewState.LOADING
+        viewModel.uiState?.value = KYCView.KYCViewState.LOADING
         viewModel.checkIdentityPersonaStatus(record)
         Assert.assertEquals(viewModel.latestIdentityVerification, record)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.ERROR)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.ERROR)
 
         // -- Persona: unknown - UIState: ERROR
         record = IdentityVerificationViewModel.IdentityVerificationWrapper(
@@ -415,9 +414,22 @@ class IdentityVerificationViewModelTest {
                 personaState = IdentityVerificationWithDetailsBankModel.PersonaState.unknown
             )
         )
-        viewModel.UIState?.value = KYCView.KYCViewState.LOADING
+        viewModel.uiState?.value = KYCView.KYCViewState.LOADING
         viewModel.checkIdentityPersonaStatus(record)
         Assert.assertEquals(viewModel.latestIdentityVerification, record)
-        Assert.assertEquals(viewModel.UIState?.value, KYCView.KYCViewState.ERROR)
+        Assert.assertEquals(viewModel.uiState?.value, KYCView.KYCViewState.ERROR)
+    }
+
+    @Test
+    fun test_dismissView() {
+
+        // -- Given
+        val viewModel = createViewModel()
+
+        // -- When
+        viewModel.dismissView()
+
+        // -- Then
+        Assert.assertEquals(viewModel.viewDismiss.value, true)
     }
 }
