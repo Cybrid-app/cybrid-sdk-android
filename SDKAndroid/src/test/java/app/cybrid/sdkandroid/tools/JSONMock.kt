@@ -191,6 +191,13 @@ class JSONMock(private var state: JSONMockState): Interceptor {
                 }
             }
 
+            "prices" -> {
+                when(state) {
+                    JSONMockState.SUCCESS -> { response = TestConstants.FETCH_PRICES_SUCCESS }
+                    else -> {}
+                }
+            }
+
             "transfers" -> {
                 when(method) {
                     "POST" -> {

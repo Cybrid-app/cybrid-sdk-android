@@ -1,12 +1,10 @@
-package app.cybrid.demoapp.ui.tradeFlow
+package app.cybrid.demoapp.ui.tradeComponent
 
 import android.content.res.Resources
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -50,12 +48,13 @@ class TradeFlowActivityTest {
 
         waitUntilViewIsDisplayed(withId(R.id.list))
         onView(withId(R.id.list)).check(matches(isDisplayed()))
-        onView(withText("TradeFlow")).check(matches(isDisplayed())).perform(
+        onView(withText("Trade Component")).check(matches(isDisplayed())).perform(
             click()
         )
 
         compose.waitForIdle()
 
+        compose.onRoot().printToLog("CybridTEST")
         compose.waitUntilExists(hasTestTag("ListPricesView"), 10_000L)
         compose.onNodeWithTag("ListPricesView").assertIsDisplayed()
         compose.onNodeWithText("Search").assertIsDisplayed()
