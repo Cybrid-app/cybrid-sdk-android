@@ -43,6 +43,9 @@ class TradeViewModel: ViewModel() {
 
     var tradeBankModel: TradeBankModel by mutableStateOf(TradeBankModel())
 
+    // -- Warning Modal
+    var showKYCWarningModal: MutableState<Boolean> = mutableStateOf(false)
+
     fun setDataProvider(dataProvider: ApiClient) {
 
         quoteService = dataProvider.createService(QuotesApi::class.java)
@@ -153,13 +156,19 @@ class TradeViewModel: ViewModel() {
 
                         val quoteResult = getResult { quoteService.createQuote(postQuoteBankModel!!) }
                         quoteResult.let {
-                            if (isSuccessful(it.code ?: 500)) {
+
+                            val code = it.code ?: 500
+                            if (isSuccessful(code)) {
 
                                 quoteBankModel = it.data!!
                                 uiModalState.value = TradeView.QuoteModalViewState.CONTENT
                                 if (quotePolling == null && tradeBankModel.guid == null) {
                                     quotePolling = Polling { viewModelScope.launch { createQuote() } }
                                 }
+                            } else if (code == 422) {
+
+                                showKYCWarningModal.value = true
+                                modalBeDismissed()
                             }
                         }
                     }

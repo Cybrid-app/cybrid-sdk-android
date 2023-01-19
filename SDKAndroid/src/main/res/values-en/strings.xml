@@ -65,6 +65,8 @@
     <string name="kyc_view_required_cancel_button">Cancel</string>
     <string name="kyc_view_required_begin_button">Begin</string>
     <string name="kyc_view_required_done_button">Done</string>
+    <string name="kyc_view_modal_warning">In order to purchase crypto you must verify your identity.</string>
+    <string name="kyc_view_modal_warning_begin_button">Begin</string>
 
     <!-- Bank Accounts Component -->
     <string name="bank_accounts_view_loading_text">Checking Bank Accounts</string>

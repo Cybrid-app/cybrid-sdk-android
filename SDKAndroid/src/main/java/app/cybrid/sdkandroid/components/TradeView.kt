@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.kyc.compose.KYCView_Modal_Warning
 import app.cybrid.sdkandroid.components.trade.compose.TradeView_ListPrices
 import app.cybrid.sdkandroid.components.trade.compose.TradeView_Loading
 import app.cybrid.sdkandroid.components.trade.compose.TradeView_QuoteContent
@@ -113,6 +114,13 @@ fun TradeView(
                 asset = tradeViewModel.currentAsset,
                 pairAsset = tradeViewModel.currentPairAsset.value,
                 selectedTabIndex = selectedTabIndex)
+        }
+
+        if (tradeViewModel.showKYCWarningModal.value) {
+            KYCView_Modal_Warning(
+                showDialog = tradeViewModel.showKYCWarningModal,
+                context = context
+            )
         }
     }
 }

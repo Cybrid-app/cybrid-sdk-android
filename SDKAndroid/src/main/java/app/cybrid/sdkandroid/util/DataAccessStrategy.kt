@@ -31,8 +31,6 @@ suspend fun <T> getResult(call: suspend() -> Response<T>): Resource<T> {
             Logger.log(LoggerEvents.AUTH_EXPIRED, "${response.code()} - ${response.message()}")
             return Resource.error(response.message(), code = response.code())
         } else {
-            Logger.log(LoggerEvents.NETWORK_ERROR,
-                "${response.code()} ${response.message()} :: ${response.raw()}")
             return Resource.error(
                 message = response.message(),
                 data = response.body(),
