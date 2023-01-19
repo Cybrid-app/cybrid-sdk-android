@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.quote.view.QuoteViewModel
 import app.cybrid.sdkandroid.components.trade.view.TradeViewModel
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.BigDecimalPipe
@@ -32,9 +31,8 @@ fun TradeView_QuoteModal_Done(
 ) {
 
     // -- Purchase amount
-    val deliverAmountBD = app.cybrid.sdkandroid.core.BigDecimal(
-        tradeViewModel.tradeBankModel.deliverAmount ?: BigDecimal(0)
-    )
+    val amount = if (selectedTabIndex.value == 0) tradeViewModel.quoteBankModel.deliverAmount else tradeViewModel.quoteBankModel.receiveAmount
+    val deliverAmountBD = app.cybrid.sdkandroid.core.BigDecimal(amount ?: BigDecimal(0))
     val purchaseValue = buildAnnotatedString {
         append(BigDecimalPipe.transform(deliverAmountBD, pairAsset!!))
         withStyle(style = SpanStyle(
@@ -47,9 +45,8 @@ fun TradeView_QuoteModal_Done(
     }
 
     // -- Purchase quantity
-    val receiveAmountBD = app.cybrid.sdkandroid.core.BigDecimal(
-        tradeViewModel.tradeBankModel.receiveAmount ?: BigDecimal(0)
-    )
+    val quantity = if (selectedTabIndex.value == 0) tradeViewModel.quoteBankModel.receiveAmount else tradeViewModel.quoteBankModel.deliverAmount
+    val receiveAmountBD = app.cybrid.sdkandroid.core.BigDecimal(quantity ?: BigDecimal(0))
     val receiveValue = buildAnnotatedString {
         append(AssetPipe.transform(receiveAmountBD, asset.value!!, AssetPipe.AssetPipeTrade).toPlainString())
         withStyle(style = SpanStyle(

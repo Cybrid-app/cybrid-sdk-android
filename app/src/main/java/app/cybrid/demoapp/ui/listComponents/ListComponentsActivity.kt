@@ -11,7 +11,6 @@ import app.cybrid.demoapp.ui.listComponents.adapter.ListComponentsAdapter
 import app.cybrid.demoapp.ui.listComponents.entity.Component
 import app.cybrid.demoapp.ui.listPricesComponent.ListPricesAssetsComponentActivity
 import app.cybrid.demoapp.ui.listPricesComponent.ListPricesComponentActivity
-import app.cybrid.demoapp.ui.tradeFlow.TradeFlowActivity
 import app.cybrid.sdkandroid.components.activity.AccountsActivity
 import app.cybrid.sdkandroid.components.activity.KYCActivity
 import app.cybrid.sdkandroid.components.activity.BankAccountsActivity

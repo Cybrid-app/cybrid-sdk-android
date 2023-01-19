@@ -104,10 +104,11 @@ open class ListPricesView @JvmOverloads constructor(
         _handler?.postDelayed(_runnable!!, updateInterval)
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun refreshPrices() {
 
         Logger.log(LoggerEvents.DATA_REFRESHED, "ListPricesView Component data")
-        //_viewModel.let { it?.getPricesList() }
+        _viewModel.let { GlobalScope.launch { it?.getPricesList() } }
         _handler.let {
             _runnable.let { _it ->
                 it?.postDelayed(_it!!, updateInterval)
