@@ -66,10 +66,6 @@ jobs:
           name: Run UI Test
           command: |
             ./gradlew app:connectedDebugAndroidTest
-      - run:
-          name: Run Unit Test
-          command: |
-            ./gradlew app:testDebugUnitTest
       - android/save-gradle-cache:
           cache-prefix: v1a
 

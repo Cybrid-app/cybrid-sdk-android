@@ -50,12 +50,13 @@ class TradeFlowActivityTest {
 
         waitUntilViewIsDisplayed(withId(R.id.list))
         onView(withId(R.id.list)).check(matches(isDisplayed()))
-        onView(withText("TradeFlow")).check(matches(isDisplayed())).perform(
+        onView(withText("Trade Component")).check(matches(isDisplayed())).perform(
             click()
         )
 
         compose.waitForIdle()
 
+        compose.onRoot().printToLog("CybridTEST")
         compose.waitUntilExists(hasTestTag("ListPricesView"), 10_000L)
         compose.onNodeWithTag("ListPricesView").assertIsDisplayed()
         compose.onNodeWithText("Search").assertIsDisplayed()
