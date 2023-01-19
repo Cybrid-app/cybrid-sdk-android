@@ -27,7 +27,7 @@ class TradeViewModel: ViewModel() {
     var uiState: MutableState<TradeView.ViewState> = mutableStateOf(TradeView.ViewState.LOADING)
     var uiModalState: MutableState<TradeView.QuoteModalViewState> = mutableStateOf(TradeView.QuoteModalViewState.LOADING)
 
-    var currentFiatCurrency = "USD"
+    var currentFiatCurrency = ""
     var customerGuid = Cybrid.instance.customerGuid
 
     var listPricesViewModel: ListPricesViewModel? = null
