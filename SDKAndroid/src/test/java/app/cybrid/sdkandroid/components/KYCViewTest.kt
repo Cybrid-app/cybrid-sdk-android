@@ -43,11 +43,11 @@ class KYCViewTest {
         // -- Then
         Assert.assertNotNull(kycView)
         Assert.assertNotNull(kycView.identityViewModel)
-        Assert.assertEquals(kycView.identityViewModel?.UIState?.value, expectState.value)
+        Assert.assertEquals(kycView.identityViewModel?.uiState?.value, expectState.value)
 
         expectState.value = KYCView.KYCViewState.REQUIRED
-        kycView.identityViewModel?.UIState?.value = expectState.value
-        Assert.assertEquals(kycView.identityViewModel?.UIState?.value, expectState.value)
+        kycView.identityViewModel?.uiState?.value = expectState.value
+        Assert.assertEquals(kycView.identityViewModel?.uiState?.value, expectState.value)
     }
 
     companion object {

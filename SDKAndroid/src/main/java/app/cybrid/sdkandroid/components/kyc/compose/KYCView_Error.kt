@@ -25,11 +25,14 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.kyc.view.IdentityVerificationViewModel
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 
 @Composable
-fun KYCView_Error() {
+fun KYCView_Error(
+    viewModel: IdentityVerificationViewModel
+) {
 
     // -- Content
     ConstraintLayout(
@@ -80,11 +83,11 @@ fun KYCView_Error() {
             }
         ) {
 
-            val (cancelButton, beginButton) = createRefs()
+            val (cancelButton) = createRefs()
 
             // -- Done Button
             Button(
-                onClick = {},
+                onClick = { viewModel.dismissView() },
                 modifier = Modifier
                     .constrainAs(cancelButton) {
                         start.linkTo(parent.start, margin = 10.dp)
@@ -115,10 +118,4 @@ fun KYCView_Error() {
             }
         }
     }
-}
-
-@Preview(showBackground = true, widthDp = 200, heightDp = 300)
-@Composable
-fun KYCView_Error_Preview() {
-    KYCView_Error()
 }
