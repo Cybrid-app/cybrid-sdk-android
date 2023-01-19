@@ -187,4 +187,5 @@ object TestConstants {
     const val CREATE_TRADE_SUCCESS = "{\"guid\":\"stringstringstringstringstringst\",\"customer_guid\":\"string\",\"quote_guid\":\"stringstringstringstringstringst\",\"symbol\":\"string\",\"side\":\"buy\",\"state\":\"storing\",\"receive_amount\":0,\"deliver_amount\":0,\"fee\":0,\"created_at\":\"2022-12-15T08:39:22.907Z\"}"
     const val FETCH_ASSETS_SUCCESS = "{\"total\":0,\"page\":0,\"per_page\":0,\"objects\":[{\"type\":\"fiat\",\"code\":\"USD\",\"name\":\"USD\",\"symbol\":\"$\",\"decimals\":2}]}"
     const val CREATE_TRANSFER_SUCCESS = "{\"guid\":\"stringstringstringstringstringst\",\"transfer_type\":\"savings\",\"customer_guid\":\"stringstringstringstringstringst\",\"quote_guid\":\"stringstringstringstringstringst\",\"asset\":\"string\",\"side\":\"deposit\",\"state\":\"storing\",\"amount\":0,\"fee\":0,\"created_at\":\"2023-01-04T03:14:13.471Z\"}"
+    const val FETCH_PRICES_SUCCESS = "[{\"symbol\":\"string\",\"buy_price\":0,\"sell_price\":0,\"buy_price_last_updated_at\":\"2023-01-19T16:17:56.516Z\",\"sell_price_last_updated_at\":\"2023-01-19T16:17:56.516Z\"}]"
 }

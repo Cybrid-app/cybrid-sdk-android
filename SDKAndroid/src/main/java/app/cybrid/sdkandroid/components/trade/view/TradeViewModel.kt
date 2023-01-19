@@ -46,6 +46,7 @@ class TradeViewModel: ViewModel() {
     fun setDataProvider(dataProvider: ApiClient) {
 
         quoteService = dataProvider.createService(QuotesApi::class.java)
+        tradeService = dataProvider.createService(TradesApi::class.java)
     }
 
     suspend fun getPricesList() {

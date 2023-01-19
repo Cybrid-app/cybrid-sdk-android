@@ -7,6 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.apis.PricesApi
 import app.cybrid.cybrid_api_bank.client.apis.AssetsApi
+import app.cybrid.cybrid_api_bank.client.apis.QuotesApi
+import app.cybrid.cybrid_api_bank.client.apis.TradesApi
+import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.AssetListBankModel
 import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
@@ -26,6 +29,12 @@ class ListPricesViewModel : ViewModel() {
 
     var assets:List<AssetBankModel> by mutableStateOf(listOf())
     var prices:List<SymbolPriceBankModel> by mutableStateOf(listOf())
+
+    fun setDataProvider(dataProvider: ApiClient) {
+
+        assetsService = dataProvider.createService(AssetsApi::class.java)
+        pricesService = dataProvider.createService(PricesApi::class.java)
+    }
 
     internal suspend fun fetchAssets(): List<AssetBankModel> {
 
