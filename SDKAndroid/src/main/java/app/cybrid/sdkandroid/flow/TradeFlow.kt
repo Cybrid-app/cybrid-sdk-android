@@ -89,7 +89,6 @@ class TradeFlow @JvmOverloads constructor(
 
         this.listPricesViewModel = viewModel
         this.listPricesView.let {
-            it?.type = ListPricesViewType.Assets
             it?.setViewModel(viewModel)
             it?.onClick = { asset, pairAsset ->
                 initComposePreQuoteComponent(asset, pairAsset)

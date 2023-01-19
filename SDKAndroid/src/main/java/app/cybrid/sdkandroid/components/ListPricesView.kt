@@ -57,7 +57,6 @@ open class ListPricesView @JvmOverloads constructor(
 ) : AbstractComposeView(context, attrs, defStyle) {
 
     var updateInterval = 5000L
-    var type: ListPricesViewType = ListPricesViewType.Normal
     var customStyles = ListPricesViewCustomStyles()
     var onClick: (AssetBankModel, AssetBankModel) -> Unit = { _, _ -> }
 
@@ -94,7 +93,7 @@ open class ListPricesView @JvmOverloads constructor(
     fun setViewModel(viewModel: ListPricesViewModel) {
 
         _viewModel = viewModel
-        _viewModel?.getPricesList()
+       // _viewModel?.getPricesList()
 
         _handler = Handler(Looper.getMainLooper())
         _runnable = Runnable { this.refreshPrices() }
@@ -104,7 +103,7 @@ open class ListPricesView @JvmOverloads constructor(
     private fun refreshPrices() {
 
         Logger.log(LoggerEvents.DATA_REFRESHED, "ListPricesView Component data")
-        _viewModel.let { it?.getPricesList() }
+        //_viewModel.let { it?.getPricesList() }
         _handler.let {
             _runnable.let { _it ->
                 it?.postDelayed(_it!!, updateInterval)
@@ -118,7 +117,6 @@ open class ListPricesView @JvmOverloads constructor(
         _viewModel?.let {
             CryptoList(
                 cryptoList = it.prices,
-                type = type,
                 viewModel = _viewModel,
                 context = context,
                 customStyles = customStyles,
@@ -158,7 +156,6 @@ data class ListPricesViewCustomStyles(
 @Composable
 fun CryptoList(
     cryptoList: List<SymbolPriceBankModel>,
-    type: ListPricesViewType,
     viewModel: ListPricesViewModel? = null,
     context: Context? = null,
     customStyles: ListPricesViewCustomStyles,
@@ -194,25 +191,15 @@ fun CryptoList(
             }
             itemsIndexed(items =  filtered) { index, item ->
 
-                if (type == ListPricesViewType.Assets) {
-                    CryptoAssetItem(
-                        crypto = item,
-                        vm = viewModel!!,
-                        index = index,
-                        selectedIndex = selectedIndex,
-                        context = context,
-                        customStyles = customStyles,
-                        onClick = onClick
-                    )
-                } else {
-                    CryptoItem(
-                        crypto = item,
-                        index = index,
-                        selectedIndex = selectedIndex
-                    ) {
-                        selectedIndex = it
-                    }
-                }
+                CryptoAssetItem(
+                    crypto = item,
+                    vm = viewModel!!,
+                    index = index,
+                    selectedIndex = selectedIndex,
+                    context = context,
+                    customStyles = customStyles,
+                    onClick = onClick
+                )
             }
         }
     }
@@ -278,55 +265,6 @@ fun SearchView(state: MutableState<TextFieldValue>) {
             disabledIndicatorColor = Color.Transparent
         )
     )
-}
-
-@Composable
-fun CryptoItem(crypto: SymbolPriceBankModel,
-               index: Int, selectedIndex: Int,
-               onClick: (Int) -> Unit) {
-
-    val backgroundColor = if (index == selectedIndex) MaterialTheme.colors.primary else MaterialTheme.colors.background
-    Card(
-        modifier = Modifier
-            .padding(15.dp, 10.dp)
-            .fillMaxWidth()
-            .clickable { onClick(index) },
-        shape = RoundedCornerShape(8.dp), elevation = 4.dp
-    ) {
-        Surface(color = backgroundColor) {
-
-            Row(
-                Modifier
-                    .padding(vertical = 10.dp)
-                    .fillMaxSize()
-            ) {
-
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .padding(vertical = 10.dp, horizontal = 20.dp)
-                        .fillMaxHeight()
-                        .weight(0.5f)
-                ) {
-                    Text(
-                        text = crypto.symbol!!,
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 5.dp)
-                    )
-                    Text(
-                        text = "Buy price: ${crypto.buyPrice}",
-                        style = MaterialTheme.typography.body1,
-                        modifier = Modifier.padding(bottom = 5.dp)
-                    )
-                    Text(
-                        text = "Sell price: ${crypto.sellPrice}",
-                        style = MaterialTheme.typography.body1
-                    )
-                }
-            }
-        }
-    }
 }
 
 @Composable
@@ -467,7 +405,6 @@ fun cryptoListPreview() {
 
     CryptoList(
         cryptoList = listOf(),
-        type = ListPricesViewType.Assets,
         customStyles = ListPricesViewCustomStyles(),
         onClick = {_, _ ->})
 }

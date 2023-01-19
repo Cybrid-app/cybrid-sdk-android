@@ -15,6 +15,7 @@ import app.cybrid.demoapp.ui.tradeFlow.TradeFlowActivity
 import app.cybrid.sdkandroid.components.activity.AccountsActivity
 import app.cybrid.sdkandroid.components.activity.KYCActivity
 import app.cybrid.sdkandroid.components.activity.BankAccountsActivity
+import app.cybrid.sdkandroid.components.activity.TradeActivity
 
 class ListComponentsActivity : AppCompatActivity(), ComponentListener {
 
@@ -41,7 +42,7 @@ class ListComponentsActivity : AppCompatActivity(), ComponentListener {
 
             1 -> startActivity(Intent(this, ListPricesComponentActivity::class.java))
             2 -> startActivity(Intent(this, ListPricesAssetsComponentActivity::class.java))
-            3 -> startActivity(Intent(this, TradeFlowActivity::class.java))
+            3 -> startActivity(Intent(this, TradeActivity::class.java))
             4 -> startActivity(Intent(this, AccountsActivity::class.java))
             5 -> startActivity(Intent(this, KYCActivity::class.java))
             6 -> startActivity(Intent(this, BankAccountsActivity::class.java))

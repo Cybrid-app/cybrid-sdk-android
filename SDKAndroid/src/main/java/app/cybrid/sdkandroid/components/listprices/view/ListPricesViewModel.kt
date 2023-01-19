@@ -16,26 +16,51 @@ import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
 import app.cybrid.sdkandroid.util.getResult
 import app.cybrid.sdkandroid.util.isSuccessful
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class ListPricesViewModel : ViewModel() {
 
-    var prices:List<SymbolPriceBankModel> by mutableStateOf(listOf())
-    private var assetsResponse:AssetListBankModel? = null
+    private var assetsService = AppModule.getClient().createService(AssetsApi::class.java)
+    private var pricesService = AppModule.getClient().createService(PricesApi::class.java)
+
     var assets:List<AssetBankModel> by mutableStateOf(listOf())
+    var prices:List<SymbolPriceBankModel> by mutableStateOf(listOf())
 
-    fun getPricesList(symbol: String? = null) {
+    internal suspend fun fetchAssets(): List<AssetBankModel> {
 
-        val pricesService = AppModule.getClient().createService(PricesApi::class.java)
+        var assets: List<AssetBankModel> = listOf()
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
                 viewModelScope.let { scope ->
-                    scope.launch {
+                    val waitFor = scope.async {
+                        val assetsResponse = getResult { assetsService.listAssets() }
+                        assetsResponse.let {
+                            if (isSuccessful(it.code ?: 500)) {
+                                Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
+                                assets = it.data?.objects ?: listOf()
+                                return@async assets
+                            }
+                        }
+                    }
+                    waitFor.await()
+                }
+            }
+        }
+        return assets
+    }
 
-                        // -- Getting assets
-                        if (assetsResponse == null) { getAssetsList() }
+    suspend fun getPricesList(symbol: String? = null) {
 
-                        // -- Getting prices
+        Cybrid.instance.let { cybrid ->
+            if (!cybrid.invalidToken) {
+                viewModelScope.let { scope ->
+                    val waitFor = scope.async {
+
+                        // -- Getting assets if are empty
+                        if (assets.isEmpty()) { assets = fetchAssets() }
+
+                        // -- Getting the prices
                         val pricesResult = getResult { pricesService.listPrices(symbol) }
                         pricesResult.let {
                             prices = if (isSuccessful(it.code ?: 500)) {
@@ -46,28 +71,8 @@ class ListPricesViewModel : ViewModel() {
                             }
                         }
                     }
+                    waitFor.await()
                 }
-            }
-        }
-    }
-
-    private fun getAssetsList() {
-
-        val assetsService = AppModule.getClient().createService(AssetsApi::class.java)
-        viewModelScope.launch {
-
-            val assetsResult = getResult { assetsService.listAssets() }
-            assetsResult.let {
-
-                assetsResponse = if (it.code == 200) {
-                    it.data!!
-                } else {
-                    Logger.log(LoggerEvents.DATA_ERROR, "ListPricesView Component - Assets Data :: {${it.message}}")
-                    null
-                }
-            }
-            assetsResponse?.let {
-                assets = it.objects
             }
         }
     }

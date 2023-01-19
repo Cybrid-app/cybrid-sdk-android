@@ -50,10 +50,10 @@ Component(context, attrs, defStyle) {
         this._accountsViewModel = accountsViewModel
         this.setupCompose()
 
-        this._listPricesViewModel?.getPricesList()
+        //this._listPricesViewModel?.getPricesList()
         this._accountsViewModel?.getAccountsList()
 
-        this.pricesPolling = Polling { this._listPricesViewModel?.getPricesList() }
+        //this.pricesPolling = Polling { this._listPricesViewModel?.getPricesList() }
     }
 
     private fun setupCompose() {

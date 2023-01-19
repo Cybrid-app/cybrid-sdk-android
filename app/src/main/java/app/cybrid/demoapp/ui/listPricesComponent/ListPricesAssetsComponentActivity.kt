@@ -21,6 +21,5 @@ class ListPricesAssetsComponentActivity : AppCompatActivity() {
         val cryptoList = findViewById<ListPricesView>(R.id.list1)
         cryptoList.setViewModel(viewModel)
         cryptoList.updateInterval = 2000L
-        cryptoList.type = ListPricesViewType.Assets
     }
 }
