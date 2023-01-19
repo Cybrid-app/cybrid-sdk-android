@@ -20,6 +20,9 @@ import app.cybrid.sdkandroid.components.composeViews.AccountsView_Trades
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.util.Polling
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class AccountsView @JvmOverloads constructor(
     context: Context,
@@ -41,6 +44,7 @@ Component(context, attrs, defStyle) {
         this.composeView = findViewById(R.id.composeContent)
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun setViewModels(
         listPricesViewModel: ListPricesViewModel,
         accountsViewModel: AccountsViewModel
@@ -50,10 +54,10 @@ Component(context, attrs, defStyle) {
         this._accountsViewModel = accountsViewModel
         this.setupCompose()
 
-        //this._listPricesViewModel?.getPricesList()
+        GlobalScope.launch { _listPricesViewModel?.getPricesList() }
         this._accountsViewModel?.getAccountsList()
 
-        //this.pricesPolling = Polling { this._listPricesViewModel?.getPricesList() }
+        this.pricesPolling = Polling { GlobalScope.launch { _listPricesViewModel?.getPricesList() } }
     }
 
     private fun setupCompose() {

@@ -49,6 +49,9 @@ import app.cybrid.sdkandroid.core.toBigDecimal
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 open class ListPricesView @JvmOverloads constructor(
     context: Context,
@@ -90,10 +93,11 @@ open class ListPricesView @JvmOverloads constructor(
         a.recycle()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun setViewModel(viewModel: ListPricesViewModel) {
 
         _viewModel = viewModel
-       // _viewModel?.getPricesList()
+        GlobalScope.launch { _viewModel?.getPricesList() }
 
         _handler = Handler(Looper.getMainLooper())
         _runnable = Runnable { this.refreshPrices() }
