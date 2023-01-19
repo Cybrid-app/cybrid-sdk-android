@@ -57,16 +57,16 @@
     <string name="accounts_view_no_accounts_title">Cliente sin cuentas</string>
 
     <!-- KYC Component -->
-    <string name="kyc_view_loading_text">Checking Identity...</string>
-    <string name="kyc_view_required_text">Begin identity verification.</string>
-    <string name="kyc_view_verified_text">You have been verified!</string>
-    <string name="kyc_view_error_text">Unable to verify identity.</string>
-    <string name="kyc_view_reviewing_text">Identity being reviewed.</string>
-    <string name="kyc_view_required_cancel_button">Cancel</string>
-    <string name="kyc_view_required_begin_button">Begin</string>
-    <string name="kyc_view_required_done_button">Done</string>
-    <string name="kyc_view_modal_warning">In order to purchase crypto you must verify your identity.</string>
-    <string name="kyc_view_modal_warning_begin_button">Begin</string>
+    <string name="kyc_view_loading_text">Revisando identidad...</string>
+    <string name="kyc_view_required_text">Empezar verificación de identidad.</string>
+    <string name="kyc_view_verified_text">Has sido verificado!</string>
+    <string name="kyc_view_error_text">No se pudo verificar tu identidad.</string>
+    <string name="kyc_view_reviewing_text">Verificiación de identidad en revisión.</string>
+    <string name="kyc_view_required_cancel_button">Cancelar</string>
+    <string name="kyc_view_required_begin_button">Empezar</string>
+    <string name="kyc_view_required_done_button">Completar</string>
+    <string name="kyc_view_modal_warning">Para poder comprar crypto debes verificar tu identidad.</string>
+    <string name="kyc_view_modal_warning_begin_button">Empezar</string>
 
     <!-- Bank Accounts Component -->
     <string name="bank_accounts_view_loading_text">Checando Cuentas Bancarias</string>
