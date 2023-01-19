@@ -61,7 +61,11 @@ fun KYCView_Modal_Warning(
                 )
                 // -- Done Button
                 Button(
-                    onClick = { context.startActivity(Intent(context, KYCActivity::class.java)) },
+                    onClick = {
+
+                        showDialog.value = false
+                        context.startActivity(Intent(context, KYCActivity::class.java))
+                    },
                     modifier = Modifier
                         .padding(top = 25.dp, bottom = 5.dp)
                         .fillMaxWidth()
