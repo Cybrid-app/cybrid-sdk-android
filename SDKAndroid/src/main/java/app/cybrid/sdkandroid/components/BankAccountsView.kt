@@ -15,7 +15,7 @@ import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Done
 import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Error
 import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Loading
-import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Required
+import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Content
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.linkTokenConfiguration
@@ -30,7 +30,7 @@ class BankAccountsView @JvmOverloads constructor(
     defStyle: Int = 0):
 Component(context, attrs, defStyle) {
 
-    enum class BankAccountsViewState { LOADING, REQUIRED, DONE, ERROR }
+    enum class BankAccountsViewState { LOADING, CONTENT, DONE, ERROR }
 
     private var currentState = mutableStateOf(BankAccountsViewState.LOADING)
 
@@ -47,7 +47,11 @@ Component(context, attrs, defStyle) {
         this.bankAccountsViewModel = bankAccountsViewModel
         this.currentState = bankAccountsViewModel.uiState
         this.initComposeView()
-        GlobalScope.launch { bankAccountsViewModel.createWorkflow() }
+        GlobalScope.launch {
+
+            bankAccountsViewModel.fetchExternalBankAccounts()
+            //bankAccountsViewModel.createWorkflow()
+        }
     }
 
     private fun initComposeView() {
@@ -92,8 +96,8 @@ fun BankAccountsView(
                 BankAccountsView_Loading()
             }
 
-            BankAccountsView.BankAccountsViewState.REQUIRED -> {
-                BankAccountsView_Required(viewModel)
+            BankAccountsView.BankAccountsViewState.CONTENT -> {
+                BankAccountsView_Content(viewModel)
             }
 
             BankAccountsView.BankAccountsViewState.DONE -> {

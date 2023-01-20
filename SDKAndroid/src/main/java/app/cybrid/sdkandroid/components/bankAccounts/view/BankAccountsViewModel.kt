@@ -1,7 +1,9 @@
 package app.cybrid.sdkandroid.components.bankAccounts.view
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.apis.BanksApi
@@ -13,6 +15,7 @@ import app.cybrid.cybrid_api_bank.client.models.*
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.BuildConfig
 import app.cybrid.sdkandroid.Cybrid
+import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
 import app.cybrid.sdkandroid.util.*
 import app.cybrid.sdkandroid.components.BankAccountsView.BankAccountsViewState as BankAccountsViewState
 import com.plaid.link.result.LinkAccount
@@ -37,6 +40,8 @@ class BankAccountsViewModel: ViewModel() {
     var workflowJob: Polling? = null
     var latestWorkflow: WorkflowWithDetailsBankModel? = null
 
+    var accounts: List<ExternalBankAccountBankModel>? by mutableStateOf(null)
+
     fun setDataProvider(dataProvider: ApiClient)  {
 
         workflowService = dataProvider.createService(WorkflowsApi::class.java)
@@ -44,6 +49,39 @@ class BankAccountsViewModel: ViewModel() {
         customerService = dataProvider.createService(CustomersApi::class.java)
         bankService = dataProvider.createService(BanksApi::class.java)
     }
+
+    suspend fun fetchExternalBankAccounts() {
+
+        uiState.value = BankAccountsViewState.LOADING
+        Cybrid.instance.let { cybrid ->
+            if (!cybrid.invalidToken) {
+                viewModelScope.let { scope ->
+                    val waitFor = scope.async {
+                        val accountsResult = getResult {
+                            externalBankAccountsService.listExternalBankAccounts()
+                        }
+                        accountsResult.let {
+                            if (isSuccessful(it.code ?: 500)) {
+
+                                Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
+                                accounts = it.data?.objects ?: listOf()
+                                uiState.value = BankAccountsViewState.CONTENT
+
+                            } else {
+                                Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Workflow")
+                            }
+                        }
+                    }
+                    waitFor.await()
+                }
+            }
+        }
+    }
+
+
+
+
+
 
     suspend fun createWorkflow() {
 
@@ -251,7 +289,7 @@ class BankAccountsViewModel: ViewModel() {
             this.workflowJob?.stop()
             this.workflowJob = null
             this.latestWorkflow = workflow
-            this.uiState.value = BankAccountsViewState.REQUIRED
+            this.uiState.value = BankAccountsViewState.CONTENT
         }
     }
 }
