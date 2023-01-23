@@ -32,6 +32,7 @@ Component(context, attrs, defStyle) {
 
     enum class State { LOADING, CONTENT, DONE, ERROR }
     enum class AddAccountButtonState { LOADING, READY }
+    enum class ModalState { LOADING, CONTENT, CONFIRM }
 
     private var currentState = mutableStateOf(State.LOADING)
 
@@ -49,9 +50,7 @@ Component(context, attrs, defStyle) {
         this.currentState = bankAccountsViewModel.uiState
         this.initComposeView()
         GlobalScope.launch {
-
             bankAccountsViewModel.fetchExternalBankAccounts()
-            //bankAccountsViewModel.createWorkflow()
         }
     }
 

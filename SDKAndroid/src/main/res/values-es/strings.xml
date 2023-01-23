@@ -77,6 +77,13 @@
     <string name="bank_accounts_view_done_button">Continuar</string>
     <string name="bank_accounts_view_error_text">Ha ocurrido un error, vuelve a intentarlo.</string>
     <string name="bank_accounts_view_error_button">Listo</string>
+    <string name="bank_accounts_modal_loading_title">Cargando</string>
+    <string name="bank_accounts_modal_content_title">Detalle de la Cuenta</string>
+    <string name="bank_accounts_modal_content_account_name">Nombre de la cuenta</string>
+    <string name="bank_accounts_modal_content_account_status">Status de la cuenta</string>
+    <string name="bank_accounts_modal_content_account_number">Numero de cuenta</string>
+    <string name="bank_accounts_modal_content_cancel">Cancelar</string>
+    <string name="bank_accounts_modal_content_disconnect">Desconectar</string>
 
     <!-- Transfer Component -->
     <string name="transfer_view_component_loading_view_title">Cargando</string>

@@ -38,13 +38,16 @@ class BankAccountsViewModel: ViewModel() {
 
     var uiState: MutableState<BankAccountsView.State> = mutableStateOf(BankAccountsView.State.LOADING)
     var buttonAddAccountsState: MutableState<BankAccountsView.AddAccountButtonState> = mutableStateOf(BankAccountsView.AddAccountButtonState.LOADING)
-    var showAccountDetailModal: MutableState<Boolean> = mutableStateOf(false)
+    var accountDetailState: MutableState<BankAccountsView.ModalState> = mutableStateOf(BankAccountsView.ModalState.CONTENT)
 
     var workflowJob: Polling? = null
     var externalAccountJob: Polling? = null
     var latestWorkflow: WorkflowWithDetailsBankModel? = null
 
     var accounts: List<ExternalBankAccountBankModel>? by mutableStateOf(null)
+
+    var showAccountDetailModal: MutableState<Boolean> = mutableStateOf(false)
+    var currentAccount: ExternalBankAccountBankModel = ExternalBankAccountBankModel()
 
     fun setDataProvider(dataProvider: ApiClient)  {
 
@@ -332,6 +335,15 @@ class BankAccountsViewModel: ViewModel() {
 
     fun showExternalBankAccountDetail(account: ExternalBankAccountBankModel) {
 
+        this.currentAccount = account
+        this.accountDetailState.value = BankAccountsView.ModalState.CONTENT
         this.showAccountDetailModal.value = true
+    }
+
+    fun dismissExternalBankAccountDetail() {
+
+        this.currentAccount = ExternalBankAccountBankModel()
+        this.showAccountDetailModal.value = false
+        this.accountDetailState.value = BankAccountsView.ModalState.CONTENT
     }
 }
