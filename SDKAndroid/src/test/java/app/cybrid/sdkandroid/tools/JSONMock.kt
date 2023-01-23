@@ -125,7 +125,7 @@ class JSONMock(private var state: JSONMockState): Interceptor {
                         when(state) {
                             JSONMockState.SUCCESS -> {
                                 response = if (fetchSingle) {
-                                    TestConstants.FETCH_EXTERNAL_BANK_ACCOUNT
+                                    TestConstants.FETCH_LIST_EXTERNAL_BANK_ACCOUNT
                                 } else {
                                     TestConstants.FETCH_LIST_EXTERNAL_BANK_ACCOUNT
                                 }
