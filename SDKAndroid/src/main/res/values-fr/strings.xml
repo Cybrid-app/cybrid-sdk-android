@@ -84,6 +84,10 @@
     <string name="bank_accounts_modal_content_account_number">Numéro de compte</string>
     <string name="bank_accounts_modal_content_cancel">Annuler</string>
     <string name="bank_accounts_modal_content_disconnect">Déconnecter</string>
+    <string name="bank_accounts_modal_confirm_title">Confirmer la déconnexion</string>
+    <string name="bank_accounts_modal_confirm_text">Veuillez confirmer la suppression de %s. Les dépôts ne seront plus possibles à partir de ce compte.</string>
+    <string name="bank_accounts_modal_confirm_button">Confirmer</string>
+
 
     <!-- Transfer Component -->
     <string name="transfer_view_component_loading_view_title">Chargement</string>

@@ -12,10 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Done
-import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Error
-import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Loading
-import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Content
+import app.cybrid.sdkandroid.components.bankAccounts.compose.*
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.linkTokenConfiguration
@@ -32,7 +29,7 @@ Component(context, attrs, defStyle) {
 
     enum class State { LOADING, CONTENT, DONE, ERROR }
     enum class AddAccountButtonState { LOADING, READY }
-    enum class ModalState { LOADING, CONTENT, CONFIRM }
+    enum class ModalState { CONTENT, CONFIRM }
 
     private var currentState = mutableStateOf(State.LOADING)
 
@@ -108,6 +105,12 @@ fun BankAccountsView(
             BankAccountsView.State.ERROR -> {
                 BankAccountsView_Error()
             }
+        }
+
+        if (viewModel?.showAccountDetailModal?.value == true) {
+            BankAccountsView_Modal(
+                bankAccountsViewModel = viewModel
+            )
         }
     }
 }

@@ -1,6 +1,7 @@
 package app.cybrid.sdkandroid.components.bankAccounts
 
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
+import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.cybrid_api_bank.client.models.WorkflowWithDetailsBankModel
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.BankAccountsView
@@ -81,6 +82,27 @@ class BankAccountsViewModelTest {
 
     @ExperimentalCoroutinesApi
     @Test
+    fun test_fetchExternalBankAccounts() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.LOADING)
+        Assert.assertEquals(viewModel.buttonAddAccountsState.value, BankAccountsView.AddAccountButtonState.LOADING)
+
+        // -- When
+        viewModel.fetchExternalBankAccounts()
+
+        // -- Then
+        Assert.assertFalse(viewModel.accounts?.isEmpty() == true)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.CONTENT)
+        Assert.assertEquals(viewModel.buttonAddAccountsState.value, BankAccountsView.AddAccountButtonState.LOADING)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
     fun test_createWorkflow() = runTest {
 
         // -- Given
@@ -146,7 +168,25 @@ class BankAccountsViewModelTest {
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.DONE)
+        Assert.assertNotNull(viewModel.externalAccountJob)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_fetchExternalBankAccount() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+        viewModel.externalAccountJob = Polling {}
+
+        // -- When
+        viewModel.fetchExternalBankAccount("1234")
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(viewModel.externalAccountJob)
     }
 
     @ExperimentalCoroutinesApi
@@ -234,7 +274,6 @@ class BankAccountsViewModelTest {
         Assert.assertFalse(supported)
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun test_checkWorkflowStatus() {
 
@@ -250,10 +289,8 @@ class BankAccountsViewModelTest {
         Assert.assertNotNull(viewModel)
         Assert.assertNull(viewModel.workflowJob)
         Assert.assertEquals(viewModel.latestWorkflow, workflow)
-        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.REQUIRED)
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun test_checkWorkflowStatus_ContinuePolling() {
 
@@ -269,6 +306,42 @@ class BankAccountsViewModelTest {
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(viewModel.workflowJob)
         Assert.assertNull(viewModel.latestWorkflow)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.LOADING)
+    }
+
+    @Test
+    fun test_checkExternalBankAccountStatus() {
+
+        // -- Given
+        val account = ExternalBankAccountBankModel(state = ExternalBankAccountBankModel.State.completed)
+        val viewModel = createViewModel()
+        viewModel.uiState.value = BankAccountsView.State.LOADING
+        viewModel.externalAccountJob = Polling {}
+
+        // -- When
+        viewModel.checkExternalBankAccountStatus(account)
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNull(viewModel.externalAccountJob)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.DONE)
+    }
+
+    @Test
+    fun test_checkExternalBankAccountStatus_ContinuePolling() {
+
+        // -- Given
+        val account = ExternalBankAccountBankModel(state = ExternalBankAccountBankModel.State.storing)
+        val viewModel = createViewModel()
+        viewModel.uiState.value = BankAccountsView.State.LOADING
+        viewModel.externalAccountJob = Polling {}
+
+        // -- When
+        viewModel.checkExternalBankAccountStatus(account)
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(viewModel.externalAccountJob)
         Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.LOADING)
     }
 }

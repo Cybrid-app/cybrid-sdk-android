@@ -45,7 +45,7 @@ class BankAccountsViewTest {
         Assert.assertNotNull(bankAccountsView.bankAccountsViewModel)
         Assert.assertEquals(bankAccountsView.bankAccountsViewModel?.uiState?.value, expectState.value)
 
-        expectState.value = BankAccountsView.State.REQUIRED
+        expectState.value = BankAccountsView.State.CONTENT
         bankAccountsView.bankAccountsViewModel?.uiState?.value = expectState.value
         Assert.assertEquals(bankAccountsView.bankAccountsViewModel?.uiState?.value, expectState.value)
     }

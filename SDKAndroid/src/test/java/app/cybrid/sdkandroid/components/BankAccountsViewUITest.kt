@@ -53,26 +53,6 @@ class BankAccountsViewUITest {
     }
 
     @Test
-    fun `BankAccounts Required Test`() {
-
-        // -- Given
-        val bankAccountsViewModel = BankAccountsViewModel()
-        val state = mutableStateOf(BankAccountsView.State.REQUIRED)
-
-        // -- When
-        composeTestRule.setContent {
-            BankAccountsView(
-                viewModel = bankAccountsViewModel,
-                currentState = state)
-        }
-
-        // -- Then
-        composeTestRule.onNodeWithTag(Constants.BankAccountsView.RequiredView.id).assertIsDisplayed()
-        composeTestRule.onNodeWithText(resources.getString(R.string.bank_accounts_view_required_text)).assertExists()
-        composeTestRule.onNodeWithText(resources.getString(R.string.bank_accounts_view_required_button)).assertExists()
-    }
-
-    @Test
     fun `BankAccounts Done Test`() {
 
         // -- Given

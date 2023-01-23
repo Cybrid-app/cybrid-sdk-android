@@ -252,18 +252,18 @@ fun BankAccountsView_Content_List_Item(
     // -- Content
     Surface(
         color = Color.Transparent,
-        modifier = Modifier.clickable {
-            bankAccountsViewModel.showExternalBankAccountDetail(account)
-        }
     ) {
 
-        Column {
+        Column(
+            modifier = Modifier.clickable {
+                bankAccountsViewModel.showExternalBankAccountDetail(account)
+            }
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .padding(vertical = 0.dp)
                     .height(50.dp)
-                    .clickable {},
             ) {
 
                 Image(

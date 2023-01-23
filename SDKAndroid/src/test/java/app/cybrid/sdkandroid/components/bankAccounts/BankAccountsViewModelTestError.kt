@@ -48,6 +48,27 @@ class BankAccountsViewModelTestError {
 
     @ExperimentalCoroutinesApi
     @Test
+    fun test_fetchExternalBankAccounts_Error() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.LOADING)
+        Assert.assertEquals(viewModel.buttonAddAccountsState.value, BankAccountsView.AddAccountButtonState.LOADING)
+
+        // -- When
+        viewModel.fetchExternalBankAccounts()
+
+        // -- Then
+        Assert.assertNull(viewModel.accounts)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.LOADING)
+        Assert.assertEquals(viewModel.buttonAddAccountsState.value, BankAccountsView.AddAccountButtonState.LOADING)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
     fun test_createWorkflow_Error() = runTest {
 
         // -- Given
@@ -97,6 +118,24 @@ class BankAccountsViewModelTestError {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.ERROR)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_fetchExternalBankAccount_Error() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+        viewModel.externalAccountJob = Polling {}
+
+        // -- When
+        viewModel.fetchExternalBankAccount("1234")
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(viewModel.externalAccountJob)
     }
 
     @ExperimentalCoroutinesApi

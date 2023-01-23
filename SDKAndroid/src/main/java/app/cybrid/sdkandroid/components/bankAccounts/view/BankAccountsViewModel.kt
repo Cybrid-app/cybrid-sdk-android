@@ -73,11 +73,17 @@ class BankAccountsViewModel: ViewModel() {
                             if (isSuccessful(it.code ?: 500)) {
 
                                 Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - External Bank Accounts")
-                                accounts = it.data?.objects ?: listOf()
+
+                                val accountsList = it.data?.objects ?: listOf()
+                                val accountsFiltered = accountsList.filter { account ->
+                                    account.state != ExternalBankAccountBankModel.State.deleted &&
+                                    account.state != ExternalBankAccountBankModel.State.deleting
+                                }
+                                accounts = accountsFiltered
                                 uiState.value = BankAccountsView.State.CONTENT
 
-                                createWorkflow()
                                 buttonAddAccountsState.value = BankAccountsView.AddAccountButtonState.LOADING
+                                createWorkflow()
 
                             } else {
                                 Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - External Bank Accounts")
@@ -345,5 +351,36 @@ class BankAccountsViewModel: ViewModel() {
         this.currentAccount = ExternalBankAccountBankModel()
         this.showAccountDetailModal.value = false
         this.accountDetailState.value = BankAccountsView.ModalState.CONTENT
+    }
+
+    suspend fun disconnectExternalBankAccountDetail() {
+
+        val currentAccountId = this.currentAccount.guid ?: ""
+        this.dismissExternalBankAccountDetail()
+        uiState.value = BankAccountsViewState.LOADING
+        buttonAddAccountsState.value = BankAccountsView.AddAccountButtonState.LOADING
+
+        Cybrid.instance.let { cybrid ->
+            if (!cybrid.invalidToken) {
+                viewModelScope.let { scope ->
+                    val waitFor = scope.async {
+                        val accountsResult = getResult {
+                            externalBankAccountsService.deleteExternalBankAccount(currentAccountId)
+                        }
+                        accountsResult.let {
+                            if (isSuccessful(it.code ?: 500)) {
+
+                                Logger.log(LoggerEvents.DATA_REFRESHED, "Delete - External Bank Accounts")
+                                fetchExternalBankAccounts()
+
+                            } else {
+                                Logger.log(LoggerEvents.NETWORK_ERROR, "Delete - External Bank Accounts")
+                            }
+                        }
+                    }
+                    waitFor.await()
+                }
+            }
+        }
     }
 }

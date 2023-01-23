@@ -34,11 +34,17 @@ fun BankAccountsView_Modal(
 
             when(bankAccountsViewModel.accountDetailState.value) {
 
-                BankAccountsView.ModalState.LOADING -> {
-                    BankAccountsView_Modal_Loading()
+                BankAccountsView.ModalState.CONTENT -> {
+                    BankAccountsView_Modal_Content(
+                        bankAccountsViewModel = bankAccountsViewModel
+                    )
                 }
 
-                else -> {}
+                BankAccountsView.ModalState.CONFIRM -> {
+                    BankAccountsView_Modal_Confirm(
+                        bankAccountsViewModel = bankAccountsViewModel
+                    )
+                }
             }
         }
     }
