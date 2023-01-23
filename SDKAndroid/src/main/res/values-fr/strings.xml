@@ -69,6 +69,7 @@
     <string name="kyc_view_modal_warning_begin_button">Commencer</string>
 
     <!-- Bank Accounts Component -->
+    <string name="bank_accounts_title">Comptes Bancaires</string>
     <string name="bank_accounts_view_loading_text">Vérification des comptes bancaires</string>
     <string name="bank_accounts_view_required_text">Aucun compte bancaire connecté.</string>
     <string name="bank_accounts_view_required_button">Ajouter un compte</string>

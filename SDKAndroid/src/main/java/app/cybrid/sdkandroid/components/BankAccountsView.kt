@@ -30,9 +30,10 @@ class BankAccountsView @JvmOverloads constructor(
     defStyle: Int = 0):
 Component(context, attrs, defStyle) {
 
-    enum class BankAccountsViewState { LOADING, CONTENT, DONE, ERROR }
+    enum class State { LOADING, CONTENT, DONE, ERROR }
+    enum class AddAccountButtonState { LOADING, READY }
 
-    private var currentState = mutableStateOf(BankAccountsViewState.LOADING)
+    private var currentState = mutableStateOf(State.LOADING)
 
     var bankAccountsViewModel: BankAccountsViewModel? = null
 
@@ -60,7 +61,7 @@ Component(context, attrs, defStyle) {
             compose.setContent {
                 BankAccountsView(
                     currentState = this.currentState,
-                    viewModel = bankAccountsViewModel
+                    viewModel = bankAccountsViewModel,
                 )
             }
         }
@@ -84,27 +85,28 @@ Component(context, attrs, defStyle) {
 
 @Composable
 fun BankAccountsView(
-    currentState: MutableState<BankAccountsView.BankAccountsViewState>,
-    viewModel: BankAccountsViewModel?) {
+    currentState: MutableState<BankAccountsView.State>,
+    viewModel: BankAccountsViewModel?,
+) {
 
     // -- Content
     Surface {
 
         when(currentState.value) {
 
-            BankAccountsView.BankAccountsViewState.LOADING -> {
+            BankAccountsView.State.LOADING -> {
                 BankAccountsView_Loading()
             }
 
-            BankAccountsView.BankAccountsViewState.CONTENT -> {
+            BankAccountsView.State.CONTENT -> {
                 BankAccountsView_Content(viewModel)
             }
 
-            BankAccountsView.BankAccountsViewState.DONE -> {
-                BankAccountsView_Done()
+            BankAccountsView.State.DONE -> {
+                BankAccountsView_Done(viewModel)
             }
 
-            BankAccountsView.BankAccountsViewState.ERROR -> {
+            BankAccountsView.State.ERROR -> {
                 BankAccountsView_Error()
             }
         }

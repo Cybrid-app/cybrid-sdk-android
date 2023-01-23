@@ -2,8 +2,6 @@
 
 package app.cybrid.sdkandroid.components.bankAccounts.compose
 
-import android.content.Intent
-import android.view.Display.Mode
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,10 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,9 +31,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.AccountsView
 import app.cybrid.sdkandroid.components.BankAccountsView
-import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_List__Item
 import app.cybrid.sdkandroid.components.activity.TransferActivity
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.components.getImage
@@ -63,7 +55,7 @@ fun BankAccountsView_Content(bankAccountsViewModel: BankAccountsViewModel?) {
 
                 if (it.metadata.accounts.size == 1) {
 
-                    bankAccountsViewModel?.uiState?.value = BankAccountsView.BankAccountsViewState.LOADING
+                    bankAccountsViewModel?.uiState?.value = BankAccountsView.State.LOADING
                     GlobalScope.launch {
                         bankAccountsViewModel?.createExternalBankAccount(
                             publicToken = it.publicToken,
@@ -71,7 +63,7 @@ fun BankAccountsView_Content(bankAccountsViewModel: BankAccountsViewModel?) {
                     }
                 } else {
                     // -- Log multiple accounts or empty accounts
-                    bankAccountsViewModel?.uiState?.value = BankAccountsView.BankAccountsViewState.ERROR
+                    bankAccountsViewModel?.uiState?.value = BankAccountsView.State.ERROR
                 }
             }
             is LinkExit -> {}
@@ -85,83 +77,123 @@ fun BankAccountsView_Content(bankAccountsViewModel: BankAccountsViewModel?) {
             .testTag(Constants.BankAccountsView.RequiredView.id)
     ) {
 
-        if (bankAccountsViewModel?.accounts != null || bankAccountsViewModel?.accounts?.isNotEmpty() == true) {
+        val (title, listContainer, addExternalAccountButton) = createRefs()
 
-            BankAccountsView_Content_List(
-                bankAccountsViewModel = bankAccountsViewModel
-            )
-
-        } else {
-
-            val (text, buttons) = createRefs()
-            Row(
-                modifier = Modifier.constrainAs(text) {
+        // -- Title Bank Accounts
+        Text(
+            text = stringResource(id = R.string.bank_accounts_title),
+            modifier = Modifier
+                .constrainAs(title) {
                     start.linkTo(parent.start, margin = 0.dp)
-                    top.linkTo(parent.top, margin = 0.dp)
+                    top.linkTo(parent.top, margin = 20.dp)
                     end.linkTo(parent.end, margin = 0.dp)
-                    bottom.linkTo(parent.bottom, margin = 0.dp)
                 },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(id = R.string.bank_accounts_view_required_text),
-                    modifier = Modifier
-                        .padding(start = 10.dp),
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 19.sp,
-                    lineHeight = 32.sp,
-                    color = colorResource(id = R.color.black)
-                )
-            }
-            // -- Buttons
-            ConstraintLayout(
-                Modifier.constrainAs(buttons) {
+            color = Color.Black,
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal,
+            fontSize = 24.sp,
+            letterSpacing = (-0.4).sp
+        )
+
+        // -- List Container
+        Box(
+            modifier = Modifier
+                .constrainAs(listContainer) {
                     start.linkTo(parent.start, margin = 10.dp)
+                    top.linkTo(title.bottom, margin = 40.dp)
                     end.linkTo(parent.end, margin = 10.dp)
-                    bottom.linkTo(parent.bottom, margin = 20.dp)
-                    width = Dimension.fillToConstraints
-                    height = Dimension.value(50.dp)
+                    bottom.linkTo(addExternalAccountButton.top, margin = 10.dp)
+                    height = Dimension.fillToConstraints
                 }
-            ) {
+        ) {
 
-                val (continueButton) = createRefs()
+            if (bankAccountsViewModel?.accounts != null ||
+                bankAccountsViewModel?.accounts?.isNotEmpty() == true) {
 
-                // -- Continue Button
-                Button(
-                    onClick = {
-                        BankAccountsView.openPlaid(
-                            plaidToken = bankAccountsViewModel?.latestWorkflow?.plaidLinkToken!!,
-                            getPlaidResult = getPlaidResult)
-                    },
-                    modifier = Modifier
-                        .constrainAs(continueButton) {
-                            start.linkTo(parent.start, margin = 10.dp)
-                            end.linkTo(parent.end, margin = 10.dp)
-                            top.linkTo(parent.top, margin = 0.dp)
-                            bottom.linkTo(parent.bottom, margin = 0.dp)
-                            width = Dimension.fillToConstraints
-                            height = Dimension.fillToConstraints
-                        },
-                    shape = RoundedCornerShape(10.dp),
-                    elevation = ButtonDefaults.elevation(
-                        defaultElevation = 4.dp,
-                        pressedElevation = 4.dp,
-                        disabledElevation = 0.dp
-                    ),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = colorResource(id = R.color.primary_color),
-                        contentColor = Color.White
-                    )
+                BankAccountsView_Content_List(
+                    bankAccountsViewModel = bankAccountsViewModel
+                )
+
+            } else {
+
+                Row(
+                    modifier = Modifier,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = stringResource(id = R.string.bank_accounts_view_required_button),
-                        color = Color.White,
+                        text = stringResource(id = R.string.bank_accounts_view_required_text),
+                        modifier = Modifier
+                            .padding(start = 10.dp, top = 40.dp),
                         fontFamily = robotoFont,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 19.sp,
+                        lineHeight = 32.sp,
+                        color = colorResource(id = R.color.black)
                     )
                 }
+            }
+        }
+
+        // -- Add External Bank Account Button
+        Button(
+            onClick = {
+
+                if (bankAccountsViewModel?.buttonAddAccountsState?.value ==
+                    BankAccountsView.AddAccountButtonState.READY) {
+
+                    BankAccountsView.openPlaid(
+                        plaidToken = bankAccountsViewModel.latestWorkflow?.plaidLinkToken!!,
+                        getPlaidResult = getPlaidResult)
+                }
+
+            },
+            modifier = Modifier
+                .constrainAs(addExternalAccountButton) {
+                    start.linkTo(parent.start, margin = 10.dp)
+                    end.linkTo(parent.end, margin = 10.dp)
+                    top.linkTo(listContainer.bottom, margin = 0.dp)
+                    bottom.linkTo(parent.bottom, margin = 0.dp)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.value(48.dp)
+                },
+            shape = RoundedCornerShape(10.dp),
+            elevation = ButtonDefaults.elevation(
+                defaultElevation = 4.dp,
+                pressedElevation = 4.dp,
+                disabledElevation = 0.dp
+            ),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = colorResource(id = R.color.primary_color),
+                contentColor = Color.White
+            )
+        ) {
+
+            if (bankAccountsViewModel?.buttonAddAccountsState?.value ==
+                BankAccountsView.AddAccountButtonState.LOADING) {
+
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(20.dp)
+                            .padding(top = 0.dp),
+                        color = colorResource(id = R.color.white)
+                    )
+                }
+
+            } else {
+
+                Text(
+                    text = stringResource(id = R.string.bank_accounts_view_required_button),
+                    color = Color.White,
+                    fontFamily = interFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 18.sp,
+                    letterSpacing = (-0.4).sp
+                )
             }
         }
     }
@@ -176,75 +208,16 @@ fun BankAccountsView_Content_List(
         modifier = Modifier
             .background(Color.Transparent)
             .testTag(Constants.AccountsViewTestTags.List.id)
+            .fillMaxSize()
     ) {
-        ConstraintLayout(
-            Modifier.fillMaxSize()
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
         ) {
-
-            val (title, list, button) = createRefs()
-            val context = LocalContext.current
-
-            Text(
-                text = "Bank Accounts",
-                modifier = Modifier
-                    .constrainAs(title) {
-                        start.linkTo(parent.start, margin = 0.dp)
-                        top.linkTo(parent.top, margin = 30.dp)
-                        end.linkTo(parent.end, margin = 0.dp)
-                    },
-                color = Color.Black,
-                fontFamily = robotoFont,
-                fontWeight = FontWeight.Normal,
-                fontSize = 24.sp,
-                letterSpacing = (-0.4).sp
-            )
-
-            LazyColumn(
-                modifier = Modifier
-                    .constrainAs(list) {
-                        start.linkTo(parent.start, margin = 0.dp)
-                        top.linkTo(title.bottom, margin = 30.dp)
-                    }
-                    .fillMaxWidth()
-            ) {
-                itemsIndexed(items = bankAccountsViewModel?.accounts ?: listOf()) { index, item ->
-                    BankAccountsView_Content_List_Item(
-                        account = item
-                    )
-                }
-            }
-
-            Button(
-                onClick = {
-                    context.startActivity(Intent(context, TransferActivity::class.java))
-                },
-                modifier = Modifier
-                    .constrainAs(button) {
-                        start.linkTo(parent.start, margin = 10.dp)
-                        end.linkTo(parent.end, margin = 10.dp)
-                        bottom.linkTo(parent.bottom, margin = 35.dp)
-                        width = Dimension.fillToConstraints
-                        height = Dimension.value(50.dp)
-                    }
-                    .testTag(Constants.AccountsViewTestTags.TransferFunds.id),
-                shape = RoundedCornerShape(10.dp),
-                elevation = ButtonDefaults.elevation(
-                    defaultElevation = 4.dp,
-                    pressedElevation = 4.dp,
-                    disabledElevation = 0.dp
-                ),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = colorResource(id = R.color.primary_color),
-                    contentColor = Color.White
-                )
-            ) {
-                Text(
-                    text = "Transfer Funds",
-                    color = Color.White,
-                    fontFamily = interFont,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 18.sp,
-                    letterSpacing = (-0.4).sp
+            itemsIndexed(items = bankAccountsViewModel?.accounts ?: listOf()) { index, item ->
+                BankAccountsView_Content_List_Item(
+                    account = item,
+                    bankAccountsViewModel = bankAccountsViewModel!!
                 )
             }
         }
@@ -253,7 +226,8 @@ fun BankAccountsView_Content_List(
 
 @Composable
 fun BankAccountsView_Content_List_Item(
-    account: ExternalBankAccountBankModel
+    account: ExternalBankAccountBankModel,
+    bankAccountsViewModel: BankAccountsViewModel
 ) {
 
     // -- Vars
@@ -276,46 +250,53 @@ fun BankAccountsView_Content_List_Item(
     }
 
     // -- Content
-    Surface(color = Color.Transparent) {
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(vertical = 0.dp)
-                .height(66.dp)
-                .clickable {},
-        ) {
-
-            Image(
-                painter = painterResource(id = imageID),
-                contentDescription = "",
-                modifier = Modifier
-                    .padding(horizontal = 0.dp)
-                    .padding(0.dp)
-                    .size(26.dp),
-                contentScale = ContentScale.Fit
-            )
-            Column(
-                modifier = Modifier
-                    .padding(start = 12.dp)
-            ) {
-                Text(
-                    text = accountNameBuild,
-                    modifier = Modifier,
-                    fontFamily = interFont,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 18.sp,
-                    lineHeight = 20.sp,
-                    color = Color.Black
-                )
-            }
+    Surface(
+        color = Color.Transparent,
+        modifier = Modifier.clickable {
+            bankAccountsViewModel.showExternalBankAccountDetail(account)
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 62.dp)
-                .height(1.dp)
-                .background(colorResource(id = R.color.modal_divider))
-        ) {}
+    ) {
+
+        Column {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(vertical = 0.dp)
+                    .height(50.dp)
+                    .clickable {},
+            ) {
+
+                Image(
+                    painter = painterResource(id = imageID),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .padding(horizontal = 0.dp)
+                        .padding(0.dp)
+                        .size(26.dp),
+                    contentScale = ContentScale.Fit
+                )
+                Column(
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                ) {
+                    Text(
+                        text = accountNameBuild,
+                        modifier = Modifier,
+                        fontFamily = interFont,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.5.sp,
+                        lineHeight = 20.sp,
+                        color = Color.Black
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 3.dp)
+                    .height((0.70).dp)
+                    .background(colorResource(id = R.color.modal_divider))
+            ) {}
+        }
     }
 }

@@ -24,11 +24,16 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun BankAccountsView_Done() {
+fun BankAccountsView_Done(bankAccountsViewModel: BankAccountsViewModel?) {
 
     // -- Content
     ConstraintLayout(
@@ -83,7 +88,9 @@ fun BankAccountsView_Done() {
 
             // -- Continue Button
             Button(
-                onClick = {},
+                onClick = {
+                    GlobalScope.launch { bankAccountsViewModel?.fetchExternalBankAccounts() }
+                },
                 modifier = Modifier
                     .constrainAs(doneButton) {
                         start.linkTo(parent.start, margin = 10.dp)

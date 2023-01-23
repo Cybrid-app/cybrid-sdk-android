@@ -58,7 +58,7 @@ class BankAccountsViewModelTest {
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(viewModel.customerGuid)
         Assert.assertNotNull(viewModel.uiState)
-        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.BankAccountsViewState.LOADING)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.LOADING)
         Assert.assertNull(viewModel.latestWorkflow)
     }
 
@@ -75,7 +75,7 @@ class BankAccountsViewModelTest {
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(viewModel.customerGuid)
         Assert.assertNotNull(viewModel.uiState)
-        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.BankAccountsViewState.LOADING)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.LOADING)
         Assert.assertNull(viewModel.latestWorkflow)
     }
 
@@ -146,7 +146,7 @@ class BankAccountsViewModelTest {
 
         // -- Then
         Assert.assertNotNull(viewModel)
-        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.BankAccountsViewState.DONE)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.DONE)
     }
 
     @ExperimentalCoroutinesApi
@@ -250,7 +250,7 @@ class BankAccountsViewModelTest {
         Assert.assertNotNull(viewModel)
         Assert.assertNull(viewModel.workflowJob)
         Assert.assertEquals(viewModel.latestWorkflow, workflow)
-        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.BankAccountsViewState.REQUIRED)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.REQUIRED)
     }
 
     @ExperimentalCoroutinesApi
@@ -269,6 +269,6 @@ class BankAccountsViewModelTest {
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(viewModel.workflowJob)
         Assert.assertNull(viewModel.latestWorkflow)
-        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.BankAccountsViewState.LOADING)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.LOADING)
     }
 }

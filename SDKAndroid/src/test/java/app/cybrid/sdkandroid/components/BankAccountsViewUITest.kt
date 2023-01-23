@@ -37,7 +37,7 @@ class BankAccountsViewUITest {
 
         // -- Given
         val bankAccountsViewModel = BankAccountsViewModel()
-        val state = mutableStateOf(BankAccountsView.BankAccountsViewState.LOADING)
+        val state = mutableStateOf(BankAccountsView.State.LOADING)
 
         // -- When
         composeTestRule.setContent {
@@ -57,7 +57,7 @@ class BankAccountsViewUITest {
 
         // -- Given
         val bankAccountsViewModel = BankAccountsViewModel()
-        val state = mutableStateOf(BankAccountsView.BankAccountsViewState.REQUIRED)
+        val state = mutableStateOf(BankAccountsView.State.REQUIRED)
 
         // -- When
         composeTestRule.setContent {
@@ -77,7 +77,7 @@ class BankAccountsViewUITest {
 
         // -- Given
         val bankAccountsViewModel = BankAccountsViewModel()
-        val state = mutableStateOf(BankAccountsView.BankAccountsViewState.DONE)
+        val state = mutableStateOf(BankAccountsView.State.DONE)
 
         // -- When
         composeTestRule.setContent {
@@ -97,7 +97,7 @@ class BankAccountsViewUITest {
 
         // -- Given
         val bankAccountsViewModel = BankAccountsViewModel()
-        val state = mutableStateOf(BankAccountsView.BankAccountsViewState.ERROR)
+        val state = mutableStateOf(BankAccountsView.State.ERROR)
 
         // -- When
         composeTestRule.setContent {
