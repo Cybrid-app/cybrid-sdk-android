@@ -11,10 +11,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.compose.*
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
+import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.core.Constants
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -26,11 +28,12 @@ class AccountsView @JvmOverloads constructor(
     defStyle: Int = 0):
 Component(context, attrs, defStyle) {
 
-    enum class ViewState { LOADING, CONTENT, TRADES, TRANSFERS }
+    enum class ViewState { LOADING, CONTENT, TRADES, TRANSFERS, TRANSFER_COMPONENT }
 
     private var currentState = mutableStateOf(ViewState.LOADING)
 
     private var accountsViewModel: AccountsViewModel? = null
+    private var transferViewModel: TransferViewModel? = null
 
     init {
 
@@ -41,11 +44,14 @@ Component(context, attrs, defStyle) {
     @OptIn(DelicateCoroutinesApi::class)
     fun setViewModels(
         listPricesViewModel: ListPricesViewModel,
-        accountsViewModel: AccountsViewModel
+        accountsViewModel: AccountsViewModel,
+        transferViewModel: TransferViewModel
     ) {
 
         this.accountsViewModel = accountsViewModel
         this.accountsViewModel?.listPricesViewModel = listPricesViewModel
+        this.transferViewModel = transferViewModel
+
         this.currentState = accountsViewModel.uiState
         this.initComposeView()
 
@@ -58,7 +64,8 @@ Component(context, attrs, defStyle) {
             compose.setContent {
                 AccountsView(
                     currentState = this.currentState,
-                    accountsViewModel = this.accountsViewModel
+                    accountsViewModel = this.accountsViewModel,
+                    transferViewModel = this.transferViewModel
                 )
             }
         }
@@ -86,7 +93,8 @@ data class AccountsViewStyles(
 @Composable
 fun AccountsView(
     currentState: MutableState<AccountsView.ViewState>,
-    accountsViewModel: AccountsViewModel?
+    accountsViewModel: AccountsViewModel?,
+    transferViewModel: TransferViewModel?
 ) {
 
     // -- Content
@@ -137,7 +145,13 @@ fun AccountsView(
                 )
             }
 
-            else -> {}
+            AccountsView.ViewState.TRANSFER_COMPONENT -> {
+
+                BankTransferView(
+                    currentState = transferViewModel?.uiState!!,
+                    transferViewModel = transferViewModel
+                )
+            }
         }
 
         if (accountsViewModel?.showTradeDetail?.value == true) {

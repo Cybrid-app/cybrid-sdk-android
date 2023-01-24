@@ -39,7 +39,6 @@ import java.time.OffsetDateTime
 @Composable
 fun TransferView_Modal_Details(
     transferViewModel: TransferViewModel?,
-    accountsViewModel: AccountsViewModel? = null,
     externalBankAccount: ExternalBankAccountBankModel?,
     selectedTabIndex: MutableState<Int>,
     showDialog: MutableState<Boolean>
@@ -126,7 +125,6 @@ fun TransferView_Modal_Details(
             // -- Continue Button
             TransferView_Modal_Details__Button(
                 transferViewModel = transferViewModel,
-                accountsViewModel = accountsViewModel,
                 showDialog = showDialog
             )
         }
@@ -179,7 +177,6 @@ private fun TransferView_Modal_Details__Item(
 @Composable
 private fun TransferView_Modal_Details__Button(
     transferViewModel: TransferViewModel?,
-    accountsViewModel: AccountsViewModel? = null,
     showDialog: MutableState<Boolean>
 ) {
 
@@ -194,15 +191,16 @@ private fun TransferView_Modal_Details__Button(
                 transferViewModel?.uiState?.value = TransferView.ViewState.LOADING
                 showDialog.value = false
 
-                if (accountsViewModel != null) {
+                transferViewModel?.notifyAccountsHaveToChange()
 
-                    transferViewModel?.viewDismiss?.value = true
-                    GlobalScope.launch { accountsViewModel.getAccountsList() }
-                } else {
+                //if (fromAccounts) {
+                    /*transferViewModel?.viewDismiss?.value = true
+                    GlobalScope.launch { accountsViewModel.getAccountsList() }*/
+                /*} else {
                     Handler().postDelayed({
                         GlobalScope.launch { transferViewModel?.fetchAccounts() }
                     }, 4000L)
-                }
+                }*/
             },
             modifier = Modifier
                 .fillMaxWidth()

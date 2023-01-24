@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.components.accounts.view
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +46,7 @@ class AccountsViewModel : ViewModel() {
 
     // -- Polls
     internal var listPricesPolling: Polling? = null
+    internal var accountsPolling: Polling? = null
 
     // -- Arrays
     private var accounts: List<AccountBankModel> by mutableStateOf(listOf())
@@ -67,6 +69,15 @@ class AccountsViewModel : ViewModel() {
     var currentFiatCurrency = "USD"
     var customerGuid = Cybrid.instance.customerGuid
 
+    init {
+
+        Cybrid.instance.let { cybrid ->
+            viewModelScope.launch {
+                cybrid.accountsRefreshObservable.collect {}
+            }
+        }
+    }
+
     fun setDataProvider(dataProvider: ApiClient)  {
 
         accountsService = dataProvider.createService(AccountsApi::class.java)
@@ -74,9 +85,9 @@ class AccountsViewModel : ViewModel() {
         transfersService = dataProvider.createService(TransfersApi::class.java)
     }
 
-    suspend fun getAccountsList() {
+    suspend fun getAccountsList(withLoading: Boolean = true) {
 
-        this.uiState.value = AccountsView.ViewState.LOADING
+        if (withLoading) { this.uiState.value = AccountsView.ViewState.LOADING }
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
                 viewModelScope.let { scope ->
@@ -91,7 +102,10 @@ class AccountsViewModel : ViewModel() {
                             if (isSuccessful(it.code ?: 500)) {
 
                                 accounts = it.data?.objects ?: listOf()
-                                getPricesList()
+                                if (accountsPolling == null) {
+                                    getPricesList()
+                                    accountsPolling = Polling { viewModelScope.launch { getAccountsList(false) }}
+                                }
                                 Logger.log(LoggerEvents.DATA_FETCHED, "Accounts")
 
                             } else {
@@ -114,11 +128,13 @@ class AccountsViewModel : ViewModel() {
 
             createAccountsFormatted()
             uiState.value = AccountsView.ViewState.CONTENT
-            listPricesPolling = Polling {
-                viewModelScope.launch {
+            if (listPricesPolling == null) {
+                listPricesPolling = Polling {
+                    viewModelScope.launch {
 
-                    listPricesViewModel?.getPricesList()
-                    createAccountsFormatted()
+                        listPricesViewModel?.getPricesList()
+                        createAccountsFormatted()
+                    }
                 }
             }
         }

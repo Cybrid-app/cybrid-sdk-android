@@ -62,7 +62,7 @@ Component(context, attrs, defStyle) {
             compose.setContent {
                 BankTransferView(
                     currentState = currentState,
-                    transferViewModel = transferViewModel
+                    transferViewModel = transferViewModel,
                 )
 
                 if (transferViewModel?.viewDismiss?.value == true && canDismissView) {
@@ -81,7 +81,6 @@ Component(context, attrs, defStyle) {
 fun BankTransferView(
     currentState: MutableState<TransferView.ViewState>,
     transferViewModel: TransferViewModel?,
-    accountsViewModel: AccountsViewModel? = null
 ) {
 
     // -- Vars for views
@@ -115,7 +114,6 @@ fun BankTransferView(
         if (showDialog.value) {
             TransferView_Modal(
                 transferViewModel = transferViewModel,
-                accountsViewModel = accountsViewModel,
                 externalBankAccount = externalBankAccount,
                 showDialog = showDialog,
                 selectedTabIndex = selectedTabIndex

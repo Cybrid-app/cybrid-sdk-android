@@ -55,9 +55,6 @@ fun AccountsView_Balance(
         }
     }
 
-    val pendingDepositLabel = stringResource(id = R.string.accounts_view_pending_deposit_label)
-    val pendingDepositText = "0 $pendingDepositLabel"
-
     // -- Content
     if (accountsViewModel?.totalBalance != "") {
         Surface(

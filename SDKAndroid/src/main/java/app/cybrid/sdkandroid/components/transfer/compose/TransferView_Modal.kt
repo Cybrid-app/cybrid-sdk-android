@@ -21,7 +21,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 @Composable
 fun TransferView_Modal(
     transferViewModel: TransferViewModel?,
-    accountsViewModel: AccountsViewModel? = null,
     externalBankAccount: MutableState<ExternalBankAccountBankModel?>,
     showDialog: MutableState<Boolean>,
     selectedTabIndex: MutableState<Int>
@@ -62,7 +61,6 @@ fun TransferView_Modal(
                 TransferView.ModalViewState.DETAILS -> {
                     TransferView_Modal_Details(
                         transferViewModel = transferViewModel,
-                        accountsViewModel = accountsViewModel,
                         externalBankAccount = externalBankAccount.value,
                         selectedTabIndex = selectedTabIndex,
                         showDialog = showDialog
