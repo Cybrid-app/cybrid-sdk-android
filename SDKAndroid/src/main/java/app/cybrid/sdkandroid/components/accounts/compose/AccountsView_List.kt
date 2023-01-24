@@ -89,20 +89,16 @@ fun AccountsView_List(
                         accountsViewModel = accountsViewModel
                     )
                 }
-                itemsIndexed(items = accountsViewModel.accountsAssetPrice ?: listOf()) { index, item ->
+                itemsIndexed(items = accountsViewModel.accountsAssetPrice) { index, item ->
 
                     if (item.accountType == AccountBankModel.Type.trading) {
                         AccountsView_List_Trading_Item(
                             balance = item,
-                            index = index,
-                            selectedIndex = selectedIndex,
                             accountsViewModel = accountsViewModel
                         )
                     } else {
                         AccountsView_List_Fiat_Item(
                             balance = item,
-                            index = index,
-                            selectedIndex = selectedIndex,
                             accountsViewModel = accountsViewModel
                         )
                     }
@@ -214,7 +210,6 @@ fun AccountsView_List_Item_Header(
 
 @Composable
 fun AccountsView_List_Trading_Item(balance: AccountAssetPriceModel,
-    index: Int, selectedIndex: Int,
     accountsViewModel: AccountsViewModel,
     customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {
@@ -311,7 +306,6 @@ fun AccountsView_List_Trading_Item(balance: AccountAssetPriceModel,
 
 @Composable
 fun AccountsView_List_Fiat_Item(balance: AccountAssetPriceModel,
-    index: Int, selectedIndex: Int,
     accountsViewModel: AccountsViewModel,
     customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {

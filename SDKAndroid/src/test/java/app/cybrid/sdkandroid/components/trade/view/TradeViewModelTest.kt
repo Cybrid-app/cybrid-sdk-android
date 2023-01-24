@@ -125,6 +125,7 @@ class TradeViewModelTest {
 
     }
 
+    @ExperimentalCoroutinesApi
     @Test
     fun test_createQuote() = runTest {
 
@@ -145,6 +146,7 @@ class TradeViewModelTest {
         Assert.assertNotNull(viewModel.quotePolling)
     }
 
+    @ExperimentalCoroutinesApi
     @Test
     fun test_createTrade() = runTest {
 

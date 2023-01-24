@@ -130,6 +130,8 @@ object TestConstants {
             accountBalanceFormattedString = "2.5",
             accountBalanceInFiat = app.cybrid.sdkandroid.core.BigDecimal(420575.00).setScale(2),
             accountBalanceInFiatFormatted = "$4,205.75",
+            accountAvailable = app.cybrid.sdkandroid.core.BigDecimal(1000),
+            accountAvailableFormattedString = "10.00",
             accountGuid = "5b13ffda9fc47c322af321434818709a",
             accountType = AccountBankModel.Type.trading,
             accountCreated = OffsetDateTime.parse("2022-08-02T10:55:34.039847-05:00"),
@@ -149,6 +151,8 @@ object TestConstants {
             accountBalanceFormattedString = "2",
             accountBalanceInFiat = app.cybrid.sdkandroid.core.BigDecimal(4748200).setScale(2),
             accountBalanceInFiatFormatted = "$47,482.00",
+            accountAvailable = app.cybrid.sdkandroid.core.BigDecimal(1000),
+            accountAvailableFormattedString = "10.00",
             accountGuid = "15d755452f76634df53a88efc06248ec",
             accountType = AccountBankModel.Type.trading,
             accountCreated = OffsetDateTime.parse("2022-08-02T10:55:34.039847-05:00"),
@@ -186,7 +190,9 @@ object TestConstants {
     const val FETCH_ACCOUNTS_LIST_SUCCESS = "{\"total\":2,\"page\":0,\"per_page\":2,\"objects\":[{\"type\":\"fiat\",\"guid\":\"1234\",\"created_at\":\"2022-12-13T16:42:09.956Z\",\"asset\":\"USD\",\"name\":\"test1\",\"bank_guid\":\"1234\",\"customer_guid\":\"1234\",\"platform_balance\":10,\"platform_available\":10,\"state\":\"storing\"},{\"type\":\"fiat\",\"guid\":\"1234\",\"created_at\":\"2022-11-13T16:42:09.956Z\",\"asset\":\"USD\",\"name\":\"test2\",\"bank_guid\":\"1234\",\"customer_guid\":\"1234\",\"platform_balance\":10,\"platform_available\":10,\"state\":\"created\"}]}"
     const val CREATE_QUOTE_SUCCESS = "{\"guid\":\"stringstringstringstringstringst\",\"product_type\":\"trading\",\"customer_guid\":\"stringstringstringstringstringst\",\"symbol\":\"string\",\"side\":\"buy\",\"receive_amount\":0,\"deliver_amount\":0,\"fee\":0,\"issued_at\":\"2022-12-15T08:49:40.526Z\",\"expires_at\":\"2022-12-15T08:49:40.526Z\"}"
     const val CREATE_TRADE_SUCCESS = "{\"guid\":\"stringstringstringstringstringst\",\"customer_guid\":\"string\",\"quote_guid\":\"stringstringstringstringstringst\",\"symbol\":\"string\",\"side\":\"buy\",\"state\":\"storing\",\"receive_amount\":0,\"deliver_amount\":0,\"fee\":0,\"created_at\":\"2022-12-15T08:39:22.907Z\"}"
+    const val FETCH_TRADES_SUCCESS = "{\"total\":1,\"page\":0,\"per_page\":1,\"objects\":[{\"guid\":\"stringstringstringstringstringst\",\"customer_guid\":\"string\",\"quote_guid\":\"stringstringstringstringstringst\",\"symbol\":\"string\",\"side\":\"buy\",\"state\":\"storing\",\"receive_amount\":0,\"deliver_amount\":0,\"fee\":0,\"created_at\":\"2023-01-24T20:29:53.986Z\"}]}"
     const val FETCH_ASSETS_SUCCESS = "{\"total\":0,\"page\":0,\"per_page\":0,\"objects\":[{\"type\":\"fiat\",\"code\":\"USD\",\"name\":\"USD\",\"symbol\":\"$\",\"decimals\":2}]}"
     const val CREATE_TRANSFER_SUCCESS = "{\"guid\":\"stringstringstringstringstringst\",\"transfer_type\":\"savings\",\"customer_guid\":\"stringstringstringstringstringst\",\"quote_guid\":\"stringstringstringstringstringst\",\"asset\":\"string\",\"side\":\"deposit\",\"state\":\"storing\",\"amount\":0,\"fee\":0,\"created_at\":\"2023-01-04T03:14:13.471Z\"}"
+    const val FETCH_TRANSFERS_SUCCESS = "{\"total\":1,\"page\":0,\"per_page\":1,\"objects\":[{\"guid\":\"stringstringstringstringstringst\",\"transfer_type\":\"savings\",\"customer_guid\":\"stringstringstringstringstringst\",\"quote_guid\":\"stringstringstringstringstringst\",\"asset\":\"string\",\"side\":\"deposit\",\"state\":\"storing\",\"amount\":0,\"fee\":0,\"created_at\":\"2023-01-24T16:59:23.606Z\"}]}"
     const val FETCH_PRICES_SUCCESS = "[{\"symbol\":\"string\",\"buy_price\":0,\"sell_price\":0,\"buy_price_last_updated_at\":\"2023-01-19T16:17:56.516Z\",\"sell_price_last_updated_at\":\"2023-01-19T16:17:56.516Z\"}]"
 }

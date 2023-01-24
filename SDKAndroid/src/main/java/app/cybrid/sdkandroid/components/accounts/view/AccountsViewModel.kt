@@ -1,11 +1,9 @@
 package app.cybrid.sdkandroid.components.accounts.view
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.util.packInts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.apis.*
@@ -49,7 +47,7 @@ class AccountsViewModel : ViewModel() {
     internal var accountsPolling: Polling? = null
 
     // -- Arrays
-    private var accounts: List<AccountBankModel> by mutableStateOf(listOf())
+    internal var accounts: List<AccountBankModel> by mutableStateOf(listOf())
     var accountsAssetPrice: List<AccountAssetPriceModel> by mutableStateOf(listOf())
 
     // -- Trades List
@@ -63,7 +61,6 @@ class AccountsViewModel : ViewModel() {
 
     // -- Balances
     var totalBalance:String by mutableStateOf("")
-    var totalFiatBalance:String by mutableStateOf("")
 
     // -- Current currency/customerGUID
     var currentFiatCurrency = "USD"
@@ -121,7 +118,7 @@ class AccountsViewModel : ViewModel() {
         }
     }
 
-    internal suspend fun getPricesList() {
+    private suspend fun getPricesList() {
 
         listPricesViewModel?.getPricesList()
         if (listPricesViewModel?.prices?.isNotEmpty() == true) {
@@ -140,7 +137,7 @@ class AccountsViewModel : ViewModel() {
         }
     }
 
-    fun createAccountsFormatted() {
+    private fun createAccountsFormatted() {
 
         this.accountsAssetPrice = listOf()
         val accountsList = ArrayList<AccountAssetPriceModel>()
@@ -204,7 +201,7 @@ class AccountsViewModel : ViewModel() {
         this.getCalculatedBalance()
     }
 
-    fun getCalculatedBalance() {
+    internal fun getCalculatedBalance() {
 
         var total = BigDecimal(0)
         if (this.accountsAssetPrice.isNotEmpty()) {
@@ -223,7 +220,7 @@ class AccountsViewModel : ViewModel() {
         this.currentAccountSelected = account
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
-                viewModelScope.launch {
+                val waitFor = viewModelScope.async {
 
                     // -- Getting prices
                     val tradesResult = getResult { tradesService.listTrades(accountGuid = account.accountGuid) }
@@ -240,6 +237,7 @@ class AccountsViewModel : ViewModel() {
                         }
                     }
                 }
+                waitFor.await()
             }
         }
     }

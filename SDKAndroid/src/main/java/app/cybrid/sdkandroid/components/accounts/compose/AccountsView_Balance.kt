@@ -42,19 +42,6 @@ fun AccountsView_Balance(
         }
     }
 
-    val balanceFiatFormatted = buildAnnotatedString {
-        append(accountsViewModel?.totalFiatBalance ?: "")
-        withStyle(style = SpanStyle(
-            color = colorResource(id = R.color.list_prices_asset_component_code_color),
-            fontFamily = robotoFont,
-            fontWeight = FontWeight.Normal,
-            fontSize = 17.sp
-        )
-        ) {
-            append(" ${accountsViewModel?.currentFiatCurrency}")
-        }
-    }
-
     // -- Content
     if (accountsViewModel?.totalBalance != "") {
         Surface(
