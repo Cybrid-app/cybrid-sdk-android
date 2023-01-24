@@ -12,12 +12,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_List
-import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_List_Empty
-import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_Loading
-import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_Trades
+import app.cybrid.sdkandroid.components.accounts.compose.*
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
-import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_Trades_Detail
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.core.Constants
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -30,7 +26,7 @@ class AccountsView @JvmOverloads constructor(
     defStyle: Int = 0):
 Component(context, attrs, defStyle) {
 
-    enum class ViewState { LOADING, CONTENT, TRADES, TRANSFER }
+    enum class ViewState { LOADING, CONTENT, TRADES, TRANSFERS }
 
     private var currentState = mutableStateOf(ViewState.LOADING)
 
@@ -99,9 +95,13 @@ fun AccountsView(
             .testTag(Constants.AccountsViewTestTags.Surface.id)
     ) {
         
-        BackHandler(enabled = currentState.value == AccountsView.ViewState.TRADES) {
+        BackHandler(
+            enabled = currentState.value == AccountsView.ViewState.TRADES ||
+                    currentState.value == AccountsView.ViewState.TRANSFERS
+        ) {
 
-            if (currentState.value == AccountsView.ViewState.TRADES) {
+            if (currentState.value == AccountsView.ViewState.TRADES ||
+                currentState.value == AccountsView.ViewState.TRANSFERS) {
                 currentState.value = AccountsView.ViewState.CONTENT
             }
         }
@@ -127,6 +127,13 @@ fun AccountsView(
 
                 AccountsView_Trades(
                     accountsViewModel = accountsViewModel
+                )
+            }
+
+            AccountsView.ViewState.TRANSFERS -> {
+
+                AccountsView_Transfers(
+                    accountsViewModel = accountsViewModel!!
                 )
             }
 

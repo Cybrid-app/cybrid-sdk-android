@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Outbound
 import androidx.compose.runtime.Composable
@@ -22,16 +24,19 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
+import app.cybrid.cybrid_api_bank.client.models.TransferBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.AccountsViewStyles
-import app.cybrid.sdkandroid.components.TradeView
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.getImage
+import app.cybrid.sdkandroid.core.BigDecimal
+import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.getDateInFormat
@@ -39,35 +44,35 @@ import app.cybrid.sdkandroid.util.getSpannableStyle
 import java.time.OffsetDateTime
 
 @Composable
-fun AccountsView_Trades(
-    accountsViewModel: AccountsViewModel?,
+fun AccountsView_Transfers(
+    accountsViewModel: AccountsViewModel,
 ) {
 
     // -- Content
     Column {
 
-        AccountsView_Trades_BalanceAndHoldings(
-            accountsViewModel = accountsViewModel!!
+        AccountsView_Transfers_BalanceAndHoldings(
+            accountsViewModel = accountsViewModel
         )
-        AccountsView_Trades_List(
+        AccountsView_Transfers_List(
             accountsViewModel = accountsViewModel,
         )
     }
 }
 
 @Composable
-fun AccountsView_Trades_BalanceAndHoldings(
+fun AccountsView_Transfers_BalanceAndHoldings(
     accountsViewModel: AccountsViewModel,
     customStyles: AccountsViewStyles = AccountsViewStyles(),
 ) {
 
     // -- Vars
-    val cryptoCode = accountsViewModel.currentAccountSelected?.accountAssetCode ?: ""
-    val imageID = getImage(LocalContext.current, "ic_${cryptoCode.lowercase()}")
-    val cryptoName = accountsViewModel.currentAccountSelected?.assetName ?: ""
+    val fiatCode = accountsViewModel.currentAccountSelected?.accountAssetCode ?: ""
+    val imageID = getImage(LocalContext.current, "ic_${fiatCode.lowercase()}")
+    val fiatName = accountsViewModel.currentAccountSelected?.assetName ?: ""
     val assetBalance = getSpannableStyle(
-        text = accountsViewModel.currentAccountSelected?.accountBalanceFormattedString ?: "",
-        secondaryText = " $cryptoCode",
+        text = accountsViewModel.currentAccountSelected?.accountAvailableFormattedString ?: "",
+        secondaryText = " $fiatCode",
         style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
             fontFamily = robotoFont,
@@ -75,15 +80,12 @@ fun AccountsView_Trades_BalanceAndHoldings(
             fontSize = 19.sp
         )
     )
-    val assetBalanceFiat = getSpannableStyle(
-        text = accountsViewModel.currentAccountSelected?.accountBalanceInFiatFormatted ?: "",
-        secondaryText = " ${accountsViewModel.currentAccountSelected?.pairAsset?.code}",
-        style = SpanStyle(
-            color = colorResource(id = R.color.list_prices_asset_component_code_color),
-            fontFamily = robotoFont,
-            fontWeight = FontWeight.Normal
-        )
-    )
+    
+    val balance = accountsViewModel.currentAccountSelected?.accountBalance ?: java.math.BigDecimal(0)
+    val available = accountsViewModel.currentAccountSelected?.accountAvailable ?: BigDecimal(0)
+    val accountPendingBalance = balance - available.toJavaBigDecimal()
+    var accountPendingBalanceString = BigDecimalPipe.transform(BigDecimal(accountPendingBalance), accountsViewModel.currentAccountSelected?.pairAsset!!)
+    accountPendingBalanceString = "$accountPendingBalanceString ${stringResource(id = R.string.accounts_view_pending_deposit_label)}"
 
     // -- Content
     Row(
@@ -96,7 +98,7 @@ fun AccountsView_Trades_BalanceAndHoldings(
 
         Image(
             painter = painterResource(id = imageID),
-            contentDescription = "{$cryptoName}",
+            contentDescription = "{$fiatName}",
             modifier = Modifier
                 .padding(horizontal = 0.dp)
                 .padding(0.dp)
@@ -104,7 +106,7 @@ fun AccountsView_Trades_BalanceAndHoldings(
             contentScale = ContentScale.Fit
         )
         Text(
-            text = cryptoName,
+            text = fiatName,
             modifier = Modifier
                 .padding(start = 10.dp),
             fontFamily = robotoFont,
@@ -127,7 +129,7 @@ fun AccountsView_Trades_BalanceAndHoldings(
         textAlign = TextAlign.Center
     )
     Text(
-        text = assetBalanceFiat,
+        text = accountPendingBalanceString,
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 4.dp),
@@ -135,14 +137,14 @@ fun AccountsView_Trades_BalanceAndHoldings(
         fontWeight = FontWeight.Normal,
         fontSize = 15.sp,
         lineHeight = 24.sp,
-        color = Color.Black,
+        color = colorResource(id = R.color.accounts_pending_deposit_color),
         textAlign = TextAlign.Center
     )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AccountsView_Trades_List(
+fun AccountsView_Transfers_List(
     accountsViewModel: AccountsViewModel?,
 ) {
 
@@ -151,13 +153,11 @@ fun AccountsView_Trades_List(
             .padding(top = 25.dp, bottom = 20.dp)
     ) {
         stickyHeader {
-            AccountsView_Trades_List_Header(
-                accountsViewModel = accountsViewModel
-            )
+            AccountsView_Transfers_List_Header()
         }
-        itemsIndexed(items = accountsViewModel?.trades ?: listOf()) { index, item ->
-            AccountsView_Trades_List_Item(
-                trade = item,
+        itemsIndexed(items = accountsViewModel?.transfers ?: listOf()) { index, item ->
+            AccountsView_Transfers_List_Item(
+                transfer = item,
                 index = index,
                 accountsViewModel = accountsViewModel,
             )
@@ -166,8 +166,7 @@ fun AccountsView_Trades_List(
 }
 
 @Composable
-fun AccountsView_Trades_List_Header(
-    accountsViewModel: AccountsViewModel?,
+fun AccountsView_Transfers_List_Header(
     styles: AccountsViewStyles = AccountsViewStyles()
 ) {
 
@@ -185,7 +184,7 @@ fun AccountsView_Trades_List_Header(
         ) {
 
             Text(
-                text = stringResource(id = R.string.accounts_view_trades_list_title),
+                text = stringResource(id = R.string.accounts_view_transfers_list_title),
                 fontFamily = robotoFont,
                 fontWeight = FontWeight.Bold,
                 fontSize = styles.headerTextSize,
@@ -196,22 +195,13 @@ fun AccountsView_Trades_List_Header(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(id = R.string.accounts_view_trades_list_sub_title),
+                    text = stringResource(id = R.string.accounts_view_transfers_amount_title),
                     modifier = Modifier.align(Alignment.End),
                     textAlign = TextAlign.End,
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Bold,
                     fontSize = styles.headerTextSize,
                     color = priceColor
-                )
-                Text(
-                    text = accountsViewModel?.currentFiatCurrency ?: "",
-                    modifier = Modifier.align(Alignment.End),
-                    textAlign = TextAlign.End,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = styles.itemsCodeTextSize,
-                    color = styles.itemsCodeTextColor
                 )
             }
             Box(
@@ -225,41 +215,38 @@ fun AccountsView_Trades_List_Header(
 }
 
 @Composable
-fun AccountsView_Trades_List_Item(
-    trade: TradeBankModel, index: Int,
+fun AccountsView_Transfers_List_Item(
+    transfer: TransferBankModel, index: Int,
     accountsViewModel: AccountsViewModel?,
     customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {
 
     // -- Vars
-    var side = stringResource(id = R.string.accounts_view_trades_list_buy)
+    var side = stringResource(id = R.string.accounts_view_transfers_deposit)
     var icon = Icons.Outlined.Outbound
     var iconColor = colorResource(id = R.color.accounts_view_trades_buy)
     var rotate = 90f
-    val code = trade.symbol?.split("-")?.get(0) ?: ""
     val date = getDateInFormat(
-        date = trade.createdAt ?: OffsetDateTime.now()
+        date = transfer.createdAt ?: OffsetDateTime.now()
     )
-
-    val tradeAmount = accountsViewModel?.getTradeAmount(
-        trade = trade
+    val transferFiatAmount = accountsViewModel?.getTransferFiatAmount(
+        transfer = transfer
     )
-    val tradeFiatAmount = accountsViewModel?.getTradeFiatAmount(
-        trade = trade
-    )
-    val tradeAmountFormatted = getSpannableStyle(
-        text = tradeAmount ?: "",
-        secondaryText = " $code",
-        style = SpanStyle(
+    val transferFiatAmountCode = buildAnnotatedString {
+        append(transferFiatAmount ?: "")
+        withStyle(style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
             fontFamily = robotoFont,
             fontWeight = FontWeight.Normal
         )
-    )
+        ) {
+            append(" ${transfer.asset}")
+        }
+    }
     // -- Side Logic
-    if (trade.side == TradeBankModel.Side.sell) {
+    if (transfer.side == TransferBankModel.Side.withdrawal) {
 
-        side = stringResource(id = R.string.accounts_view_trades_list_sell)
+        side = stringResource(id = R.string.accounts_view_transfers_withdraw)
         icon = Icons.Outlined.Outbound
         iconColor = colorResource(id = R.color.accounts_view_trades_sell)
         rotate = 0f
@@ -273,7 +260,7 @@ fun AccountsView_Trades_List_Item(
                 .padding(vertical = 0.dp)
                 .height(66.dp)
                 .clickable {
-                    accountsViewModel?.showTradeDetail(trade)
+                    //accountsViewModel?.showTradeDetail(trade)
                 },
         ) {
 
@@ -301,8 +288,8 @@ fun AccountsView_Trades_List_Item(
                         lineHeight = 20.sp,
                         color = Color.Black
                     )
-                    AccountsView_Trades_List_Item_Chip(
-                        state = trade.state ?: TradeBankModel.State.pending
+                    AccountsView_Transfers_List_Item_Chip(
+                        state = transfer.state ?: TransferBankModel.State.pending
                     )
                 }
                 Text(
@@ -320,7 +307,7 @@ fun AccountsView_Trades_List_Item(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = tradeAmountFormatted,
+                    text =  transferFiatAmountCode,
                     modifier = Modifier.align(Alignment.End),
                     textAlign = TextAlign.End,
                     fontFamily = robotoFont,
@@ -329,15 +316,6 @@ fun AccountsView_Trades_List_Item(
                     lineHeight = 20.sp,
                     color = customStyles.itemsTextColor
                 )
-                Text(
-                    text = tradeFiatAmount ?: "",
-                    modifier = Modifier.align(Alignment.End),
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 15.sp,
-                    lineHeight = 20.sp,
-                    color = customStyles.itemsCodeTextColor
-                )
             }
 
         }
@@ -345,24 +323,24 @@ fun AccountsView_Trades_List_Item(
 }
 
 @Composable
-fun AccountsView_Trades_List_Item_Chip(
-    state: TradeBankModel.State
+fun AccountsView_Transfers_List_Item_Chip(
+    state: TransferBankModel.State
 ) {
 
     var text = stringResource(id = R.string.accounts_view_list_item_failed)
     var backgroundColor = colorResource(id = R.color.accounts_view_list_item_chip_failed)
     var textColor = Color.White
 
-    if (state == TradeBankModel.State.pending || state == TradeBankModel.State.storing) {
+    if (state == TransferBankModel.State.pending || state == TransferBankModel.State.storing) {
 
         backgroundColor = colorResource(id = R.color.accounts_view_list_item_chip_pending)
         textColor = Color.Black
         text = stringResource(id = R.string.accounts_view_list_item_pending)
     }
 
-    if (state == TradeBankModel.State.pending ||
-        state == TradeBankModel.State.storing ||
-        state == TradeBankModel.State.failed) {
+    if (state == TransferBankModel.State.pending ||
+        state == TransferBankModel.State.storing ||
+        state == TransferBankModel.State.failed) {
 
         Text(
             text = text,

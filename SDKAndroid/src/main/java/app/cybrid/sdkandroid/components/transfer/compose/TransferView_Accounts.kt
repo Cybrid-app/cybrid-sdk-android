@@ -165,7 +165,7 @@ fun TransferView_Accounts_Balance(
             fontSize = 17.sp
         )
         ) {
-            append(" ${transferViewModel?.currentFiatCurrency}")
+            append(" ${transferViewModel.currentFiatCurrency}")
         }
     }
 

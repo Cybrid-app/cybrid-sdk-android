@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.util.packInts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.apis.*
@@ -11,6 +12,7 @@ import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.AccountBankModel
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
+import app.cybrid.cybrid_api_bank.client.models.TransferBankModel
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.AccountsView
@@ -30,6 +32,7 @@ class AccountsViewModel : ViewModel() {
     // -- Services
     private var accountsService = AppModule.getClient().createService(AccountsApi::class.java)
     private var tradesService = AppModule.getClient().createService(TradesApi::class.java)
+    private var transfersService = AppModule.getClient().createService(TransfersApi::class.java)
 
     // -- UI States
     var uiState: MutableState<AccountsView.ViewState> = mutableStateOf(AccountsView.ViewState.LOADING)
@@ -48,9 +51,13 @@ class AccountsViewModel : ViewModel() {
     var accountsAssetPrice: List<AccountAssetPriceModel> by mutableStateOf(listOf())
 
     // -- Trades List
-    var trades:List<TradeBankModel> by mutableStateOf(listOf())
+    var trades: List<TradeBankModel> by mutableStateOf(listOf())
     var currentAccountSelected: AccountAssetPriceModel? by mutableStateOf(null)
     var currentTrade: TradeBankModel = TradeBankModel()
+
+    // -- Transfers List
+    var transfers: List<TransferBankModel> by mutableStateOf(listOf())
+    var currentTransfer: TransferBankModel = TransferBankModel()
 
     // -- Balances
     var totalBalance:String by mutableStateOf("")
@@ -64,6 +71,7 @@ class AccountsViewModel : ViewModel() {
 
         accountsService = dataProvider.createService(AccountsApi::class.java)
         tradesService = dataProvider.createService(TradesApi::class.java)
+        transfersService = dataProvider.createService(TransfersApi::class.java)
     }
 
     suspend fun getAccountsList() {
@@ -136,11 +144,19 @@ class AccountsViewModel : ViewModel() {
                 val balanceValueFormatted = AssetPipe.transform(balanceValue, assetDecimals, "trade")
                 val balanceValueFormattedString = balanceValueFormatted.toPlainString()
 
-                val buyPrice = BigDecimal(price?.buyPrice ?: JavaBigDecimal(0))
-                val buyPriceFormatted = BigDecimalPipe.transform(buyPrice, counterAsset!!)
+                val balanceAvailable = BigDecimal(balance.platformAvailable ?: JavaBigDecimal(0))
+                val balanceAvailableFormattedString = BigDecimalPipe.transform(balanceAvailable, counterAsset!!)
 
-                val accountBalanceInFiat = balanceValueFormatted.times(buyPrice).setScale(2)
+                val buyPrice = BigDecimal(price?.buyPrice ?: JavaBigDecimal(0))
+                val buyPriceFormatted = BigDecimalPipe.transform(buyPrice, counterAsset)
+
+                val accountBalanceInFiat = if (balance.type == AccountBankModel.Type.fiat) {
+                    balanceAvailable.setScale(2)
+                } else {
+                    balanceValueFormatted.times(buyPrice).setScale(2)
+                }
                 val accountBalanceInFiatFormatted = BigDecimalPipe.transform(accountBalanceInFiat, counterAsset)
+
 
                 val account = AccountAssetPriceModel(
                     accountAssetCode = code,
@@ -148,7 +164,11 @@ class AccountsViewModel : ViewModel() {
                     accountBalanceFormatted = balanceValueFormatted,
                     accountBalanceFormattedString = balanceValueFormattedString,
                     accountBalanceInFiat = accountBalanceInFiat,
-                    accountBalanceInFiatFormatted = accountBalanceInFiatFormatted ?: "$0.0",
+                    accountBalanceInFiatFormatted = accountBalanceInFiatFormatted,
+
+                    accountAvailable = balanceAvailable,
+                    accountAvailableFormattedString = balanceAvailableFormattedString,
+
                     accountGuid = balance.guid ?: "",
                     accountType = balance.type ?: AccountBankModel.Type.trading,
                     accountCreated = balance.createdAt ?: java.time.OffsetDateTime.now(),
@@ -166,35 +186,18 @@ class AccountsViewModel : ViewModel() {
         }
         this.accountsAssetPrice = accountsList
         this.getCalculatedBalance()
-        this.getCalculatedFiatBalance()
     }
 
     fun getCalculatedBalance() {
 
         var total = BigDecimal(0)
-        if (this.accountsAssetPrice != null && this.accountsAssetPrice!!.isNotEmpty()) {
-            val pairAsset = this.accountsAssetPrice!![0].pairAsset
-            this.accountsAssetPrice!!.forEach { balance ->
+        if (this.accountsAssetPrice.isNotEmpty()) {
+            val pairAsset = this.accountsAssetPrice[0].pairAsset
+            this.accountsAssetPrice.forEach { balance ->
                 total = total.plus(balance.accountBalanceInFiat).setScale(2)
             }
             total = total
             this.totalBalance = BigDecimalPipe.transform(total, pairAsset)
-        }
-    }
-
-    fun getCalculatedFiatBalance() {
-
-        var total = BigDecimal(0)
-        if (this.accountsAssetPrice != null && this.accountsAssetPrice!!.isNotEmpty()) {
-            val counterAsset = listPricesViewModel?.assets?.find { it.code == currentFiatCurrency }
-            this.accountsAssetPrice!!.forEach { balance ->
-                if (balance.accountType == AccountBankModel.Type.fiat) {
-                    total = total.plus(BigDecimal(balance.accountBalance))
-                }
-            }
-            this.totalFiatBalance = if (counterAsset != null) {
-                BigDecimalPipe.transform(total, counterAsset) ?: ""
-            } else { "" }
         }
     }
 
@@ -263,5 +266,39 @@ class AccountsViewModel : ViewModel() {
 
         this.currentTrade = TradeBankModel()
         this.showTradeDetail.value = false
+    }
+
+    suspend fun getTransfersList(account: AccountAssetPriceModel) {
+
+        this.uiState.value = AccountsView.ViewState.LOADING
+        this.currentAccountSelected = account
+        Cybrid.instance.let { cybrid ->
+            if (!cybrid.invalidToken) {
+                viewModelScope.launch {
+
+                    // -- Getting prices
+                    val transfersResult = getResult { transfersService.listTransfers(accountGuid = account.accountGuid) }
+                    transfersResult.let {
+                        if (isSuccessful(it.code ?: 500)) {
+
+                            transfers = it.data?.objects ?: listOf()
+                            uiState.value = AccountsView.ViewState.TRANSFERS
+
+                        } else {
+
+                            Logger.log(LoggerEvents.DATA_ERROR, "Accounts Component - Data :: ${it.message}")
+                            transfers = listOf()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun getTransferFiatAmount(transfer: TransferBankModel) : String {
+
+        val tradeSymbol = transfer.asset
+        val asset = listPricesViewModel?.assets?.find { it.code == tradeSymbol }
+        return BigDecimalPipe.transform(BigDecimal(transfer.amount!!), asset!!)
     }
 }

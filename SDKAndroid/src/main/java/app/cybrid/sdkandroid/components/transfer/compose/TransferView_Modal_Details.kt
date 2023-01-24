@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.sp
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.TransferView
+import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
+import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.getDateInFormat
@@ -37,6 +39,7 @@ import java.time.OffsetDateTime
 @Composable
 fun TransferView_Modal_Details(
     transferViewModel: TransferViewModel?,
+    accountsViewModel: AccountsViewModel? = null,
     externalBankAccount: ExternalBankAccountBankModel?,
     selectedTabIndex: MutableState<Int>,
     showDialog: MutableState<Boolean>
@@ -123,6 +126,7 @@ fun TransferView_Modal_Details(
             // -- Continue Button
             TransferView_Modal_Details__Button(
                 transferViewModel = transferViewModel,
+                accountsViewModel = accountsViewModel,
                 showDialog = showDialog
             )
         }
@@ -175,6 +179,7 @@ private fun TransferView_Modal_Details__Item(
 @Composable
 private fun TransferView_Modal_Details__Button(
     transferViewModel: TransferViewModel?,
+    accountsViewModel: AccountsViewModel? = null,
     showDialog: MutableState<Boolean>
 ) {
 
@@ -189,10 +194,15 @@ private fun TransferView_Modal_Details__Button(
                 transferViewModel?.uiState?.value = TransferView.ViewState.LOADING
                 showDialog.value = false
 
-                Handler().postDelayed({
-                    GlobalScope.launch { transferViewModel?.fetchAccounts() }
-                }, 4000L)
-                //transferViewModel?.notifyAccountsHaveToChange()
+                if (accountsViewModel != null) {
+
+                    transferViewModel?.viewDismiss?.value = true
+                    GlobalScope.launch { accountsViewModel.getAccountsList() }
+                } else {
+                    Handler().postDelayed({
+                        GlobalScope.launch { transferViewModel?.fetchAccounts() }
+                    }, 4000L)
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()

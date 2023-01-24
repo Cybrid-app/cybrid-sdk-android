@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
+import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Accounts
 import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Modal
 import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Loading
@@ -78,7 +80,8 @@ Component(context, attrs, defStyle) {
 @Composable
 fun BankTransferView(
     currentState: MutableState<TransferView.ViewState>,
-    transferViewModel: TransferViewModel?
+    transferViewModel: TransferViewModel?,
+    accountsViewModel: AccountsViewModel? = null
 ) {
 
     // -- Vars for views
@@ -112,6 +115,7 @@ fun BankTransferView(
         if (showDialog.value) {
             TransferView_Modal(
                 transferViewModel = transferViewModel,
+                accountsViewModel = accountsViewModel,
                 externalBankAccount = externalBankAccount,
                 showDialog = showDialog,
                 selectedTabIndex = selectedTabIndex
