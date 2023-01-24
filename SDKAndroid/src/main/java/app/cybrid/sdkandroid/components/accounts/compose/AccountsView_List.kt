@@ -48,26 +48,14 @@ import app.cybrid.sdkandroid.ui.Theme.robotoFont
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AccountsView_List(
-    listPricesViewModel: ListPricesViewModel?,
-    accountsViewModel: AccountsViewModel?,
-    currentRememberState: MutableState<AccountsView.AccountsViewState>
+    accountsViewModel: AccountsViewModel
 ) {
 
     // -- Mutable Vars
-    var selectedIndex by remember { mutableStateOf(-1) }
-
-    // -- Items
-    accountsViewModel?.createAccountsFormatted(
-        prices = listPricesViewModel?.prices!!,
-        assets = listPricesViewModel.assets
-    )
-
-    // -- Get Total balance
-    accountsViewModel?.getCalculatedBalance()
-    accountsViewModel?.getCalculatedFiatBalance()
+    val selectedIndex by remember { mutableStateOf(-1) }
 
     // -- Accounts filtered
-    val accounts = accountsViewModel?.accounts?.filter { it.accountType == AccountBankModel.Type.trading }
+    //val accounts = accountsViewModel?.accounts?.filter { it.accountType == AccountBankModel.Type.trading }
 
     Column(
         modifier = Modifier
@@ -98,17 +86,16 @@ fun AccountsView_List(
                 }
             ) {
                 stickyHeader {
-                    AccountsView_List__HeaderItem(
+                    AccountsView_List_Item_Header(
                         accountsViewModel = accountsViewModel
                     )
                 }
-                itemsIndexed(items = accounts ?: listOf()) { index, item ->
-                    AccountsView_List__Item(
+                itemsIndexed(items = accountsViewModel.accountsAssetPrice ?: listOf()) { index, item ->
+                    AccountsView_List_Item(
                         balance = item,
                         index = index,
                         selectedIndex = selectedIndex,
-                        accountsViewModel = accountsViewModel,
-                        currentRememberState = currentRememberState
+                        accountsViewModel = accountsViewModel
                     )
                 }
             }
@@ -151,9 +138,9 @@ fun AccountsView_List(
 }
 
 @Composable
-fun AccountsView_List__HeaderItem(
+fun AccountsView_List_Item_Header(
     styles: AccountsViewStyles = AccountsViewStyles(),
-    accountsViewModel: AccountsViewModel?,
+    accountsViewModel: AccountsViewModel
 ) {
 
     val priceColor = if (styles.headerTextColor != Color(R.color.list_prices_asset_component_header_color)) {
@@ -203,7 +190,7 @@ fun AccountsView_List__HeaderItem(
                     color = priceColor
                 )
                 Text(
-                    text = accountsViewModel?.currentFiatCurrency ?: "",
+                    text = accountsViewModel.currentFiatCurrency,
                     modifier = Modifier.align(Alignment.End),
                     textAlign = TextAlign.End,
                     fontFamily = robotoFont,
@@ -217,11 +204,10 @@ fun AccountsView_List__HeaderItem(
 }
 
 @Composable
-fun AccountsView_List__Item(balance: AccountAssetPriceModel,
-                       index: Int, selectedIndex: Int,
-                       accountsViewModel: AccountsViewModel?,
-                       currentRememberState: MutableState<AccountsView.AccountsViewState>,
-                       customStyles: AccountsViewStyles = AccountsViewStyles()
+fun AccountsView_List_Item(balance: AccountAssetPriceModel,
+    index: Int, selectedIndex: Int,
+    accountsViewModel: AccountsViewModel,
+    customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {
 
     // -- Vars
@@ -250,8 +236,7 @@ fun AccountsView_List__Item(balance: AccountAssetPriceModel,
                 .height(66.dp)
                 .clickable {
 
-                    currentRememberState.value = AccountsView.AccountsViewState.LOADING
-                    accountsViewModel?.getTradesList(balance)
+                    //accountsViewModel?.getTradesList(balance)
                 },
         ) {
 

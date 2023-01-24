@@ -1,81 +1,130 @@
 package app.cybrid.sdkandroid.components.accounts.view
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.cybrid.cybrid_api_bank.client.apis.AccountsApi
-import app.cybrid.cybrid_api_bank.client.apis.TradesApi
+import app.cybrid.cybrid_api_bank.client.apis.*
+import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.AccountBankModel
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
+import app.cybrid.sdkandroid.components.AccountsView
+import app.cybrid.sdkandroid.components.TradeView
 import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
+import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.AssetPipe.AssetPipeTrade
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
-import app.cybrid.sdkandroid.util.Logger
-import app.cybrid.sdkandroid.util.LoggerEvents
-import app.cybrid.sdkandroid.util.getResult
-import app.cybrid.sdkandroid.util.isSuccessful
+import app.cybrid.sdkandroid.util.*
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.math.BigDecimal as JavaBigDecimal
 
 class AccountsViewModel : ViewModel() {
 
-    var currentFiatCurrency = "USD"
+    // -- Services
+    private var accountsService = AppModule.getClient().createService(AccountsApi::class.java)
 
-    var accountsResponse:List<AccountBankModel> by mutableStateOf(listOf())
-    var accounts:List<AccountAssetPriceModel>? by mutableStateOf(null)
-    var assets: List<AssetBankModel> = listOf()
+    // -- UI States
+    var uiState: MutableState<AccountsView.ViewState> = mutableStateOf(AccountsView.ViewState.LOADING)
 
-    var totalBalance:String by mutableStateOf("")
-    var totalFiatBalance:String by mutableStateOf("")
+    // -- Associated ViewModels
+    var listPricesViewModel: ListPricesViewModel? = null
+
+    // -- Polls
+    internal var listPricesPolling: Polling? = null
+
+    // -- Arrays
+    private var accounts: List<AccountBankModel> by mutableStateOf(listOf())
+    var accountsAssetPrice: List<AccountAssetPriceModel> by mutableStateOf(listOf())
 
     // -- Trades List
     var trades:List<TradeBankModel> by mutableStateOf(listOf())
     private var currentAccountAssetPriceModel:AccountAssetPriceModel? by mutableStateOf(null)
 
-    fun getAccountsList() {
+    // -- Balances
+    var totalBalance:String by mutableStateOf("")
+    var totalFiatBalance:String by mutableStateOf("")
 
-        val accountService = AppModule.getClient().createService(AccountsApi::class.java)
+    // -- Current currency/customerGUID
+    var currentFiatCurrency = "USD"
+    var customerGuid = Cybrid.instance.customerGuid
+
+    fun setDataProvider(dataProvider: ApiClient)  {
+
+        accountsService = dataProvider.createService(AccountsApi::class.java)
+    }
+
+    suspend fun getAccountsList() {
+
+        this.uiState.value = AccountsView.ViewState.LOADING
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
                 viewModelScope.let { scope ->
-                    scope.launch {
-                        val accountsResult = getResult { accountService.listAccounts(customerGuid = Cybrid.instance.customerGuid) }
+                    val waitFor = scope.async {
+
+                        val accountsResult = getResult {
+                            accountsService.listAccounts(
+                                customerGuid = customerGuid
+                            )
+                        }
                         accountsResult.let {
-                            accountsResponse = if (isSuccessful(it.code ?: 500)) {
-                                it.data?.objects ?: listOf()
+                            if (isSuccessful(it.code ?: 500)) {
+
+                                accounts = it.data?.objects ?: listOf()
+                                getPricesList()
+                                Logger.log(LoggerEvents.DATA_FETCHED, "Accounts")
+
                             } else {
-                                Logger.log(LoggerEvents.DATA_ERROR, "Accounts Component - Data :: ${it.message}")
-                                listOf()
+
+                                accounts = listOf()
+                                Logger.log(LoggerEvents.DATA_ERROR, "Accounts :: ${it.message}")
                             }
                         }
                     }
+                    waitFor.await()
                 }
             }
         }
     }
 
-    fun createAccountsFormatted(prices:List<SymbolPriceBankModel>, assets:List<AssetBankModel>) {
+    internal suspend fun getPricesList() {
 
-        this.accounts = listOf()
-        this.assets = assets
+        listPricesViewModel?.getPricesList()
+        if (listPricesViewModel?.prices?.isNotEmpty() == true) {
+
+            createAccountsFormatted()
+            uiState.value = AccountsView.ViewState.CONTENT
+            listPricesPolling = Polling {
+                viewModelScope.launch {
+
+                    listPricesViewModel?.getPricesList()
+                    createAccountsFormatted()
+                }
+            }
+        }
+    }
+
+    fun createAccountsFormatted() {
+
+        this.accountsAssetPrice = listOf()
         val accountsList = ArrayList<AccountAssetPriceModel>()
-        this.accountsResponse.let { balances ->
+        this.accounts.let { balances ->
             balances.forEach { balance ->
 
                 val code = balance.asset ?: "" // BTC
                 val symbol = "$code-$currentFiatCurrency" // BTC-USD
 
-                val asset = assets.find { it.code == code } // BTC
-                val counterAsset = assets.find { it.code == currentFiatCurrency } // USD
-                val price = prices.find { it.symbol ==  symbol } // BTC-USD
+                val asset = listPricesViewModel?.assets?.find { it.code == code } // BTC
+                val counterAsset = listPricesViewModel?.assets?.find { it.code == currentFiatCurrency } // USD
+                val price = listPricesViewModel?.prices?.find { it.symbol ==  symbol } // BTC-USD
 
                 val assetDecimals = BigDecimal(asset?.decimals ?: JavaBigDecimal(0)) // 18
 
@@ -111,28 +160,30 @@ class AccountsViewModel : ViewModel() {
                 accountsList.add(account)
             }
         }
-        this.accounts = accountsList
+        this.accountsAssetPrice = accountsList
+        this.getCalculatedBalance()
+        this.getCalculatedFiatBalance()
     }
 
     fun getCalculatedBalance() {
 
         var total = BigDecimal(0)
-        if (this.accounts != null && this.accounts!!.isNotEmpty()) {
-            val pairAsset = this.accounts!![0].pairAsset
-            this.accounts!!.forEach { balance ->
+        if (this.accountsAssetPrice != null && this.accountsAssetPrice!!.isNotEmpty()) {
+            val pairAsset = this.accountsAssetPrice!![0].pairAsset
+            this.accountsAssetPrice!!.forEach { balance ->
                 total = total.plus(balance.accountBalanceInFiat).setScale(2)
             }
             total = total
-            this.totalBalance = BigDecimalPipe.transform(total, pairAsset) ?: ""
+            this.totalBalance = BigDecimalPipe.transform(total, pairAsset)
         }
     }
 
     fun getCalculatedFiatBalance() {
 
         var total = BigDecimal(0)
-        if (this.accounts != null && this.accounts!!.isNotEmpty()) {
-            val counterAsset = assets.find { it.code == currentFiatCurrency }
-            this.accounts!!.forEach { balance ->
+        if (this.accountsAssetPrice != null && this.accountsAssetPrice!!.isNotEmpty()) {
+            val counterAsset = listPricesViewModel?.assets?.find { it.code == currentFiatCurrency }
+            this.accountsAssetPrice!!.forEach { balance ->
                 if (balance.accountType == AccountBankModel.Type.fiat) {
                     total = total.plus(BigDecimal(balance.accountBalance))
                 }
@@ -142,6 +193,20 @@ class AccountsViewModel : ViewModel() {
             } else { "" }
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     fun getTradesList(balance: AccountAssetPriceModel) {
 

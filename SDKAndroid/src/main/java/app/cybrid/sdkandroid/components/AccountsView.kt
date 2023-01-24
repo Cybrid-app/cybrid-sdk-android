@@ -30,13 +30,11 @@ class AccountsView @JvmOverloads constructor(
     defStyle: Int = 0):
 Component(context, attrs, defStyle) {
 
-    enum class AccountsViewState { LOADING, CONTENT, EMPTY, TRADES }
+    enum class ViewState { LOADING, CONTENT, EMPTY, TRADES, TRANSFER }
 
-    private var _listPricesViewModel: ListPricesViewModel? = null
-    private var _accountsViewModel: AccountsViewModel? = null
-    private var pricesPolling: Polling? = null
+    private var currentState = mutableStateOf(ViewState.LOADING)
 
-    var currentState = mutableStateOf(AccountsViewState.LOADING)
+    private var accountsViewModel: AccountsViewModel? = null
 
     init {
 
@@ -50,24 +48,21 @@ Component(context, attrs, defStyle) {
         accountsViewModel: AccountsViewModel
     ) {
 
-        this._listPricesViewModel = listPricesViewModel
-        this._accountsViewModel = accountsViewModel
-        this.setupCompose()
+        this.accountsViewModel = accountsViewModel
+        this.accountsViewModel?.listPricesViewModel = listPricesViewModel
+        this.currentState = accountsViewModel.uiState
+        this.initComposeView()
 
-        GlobalScope.launch { _listPricesViewModel?.getPricesList() }
-        this._accountsViewModel?.getAccountsList()
-
-        this.pricesPolling = Polling { GlobalScope.launch { _listPricesViewModel?.getPricesList() } }
+        GlobalScope.launch { accountsViewModel.getAccountsList() }
     }
 
-    private fun setupCompose() {
+    private fun initComposeView() {
 
         this.composeView?.let { compose ->
             compose.setContent {
                 AccountsView(
                     currentState = this.currentState,
-                    listPricesViewModel = this._listPricesViewModel,
-                    accountsViewModel = this._accountsViewModel
+                    accountsViewModel = this.accountsViewModel
                 )
             }
         }
@@ -94,24 +89,9 @@ data class AccountsViewStyles(
  * **/
 @Composable
 fun AccountsView(
-    currentState: MutableState<AccountsView.AccountsViewState>,
-    listPricesViewModel: ListPricesViewModel?,
+    currentState: MutableState<AccountsView.ViewState>,
     accountsViewModel: AccountsViewModel?
 ) {
-
-    // -- Vars
-    val currentRememberState: MutableState<AccountsView.AccountsViewState> = remember { currentState }
-
-    if (accountsViewModel?.accountsResponse?.isNotEmpty()!!
-        && listPricesViewModel?.prices?.isNotEmpty()!!
-        && listPricesViewModel.assets.isNotEmpty()) {
-
-        if (accountsViewModel.trades.isEmpty()) {
-            currentRememberState.value = AccountsView.AccountsViewState.CONTENT
-        } else {
-            currentRememberState.value = AccountsView.AccountsViewState.TRADES
-        }
-    }
 
     // -- Content
     Surface(
@@ -119,28 +99,30 @@ fun AccountsView(
             .testTag(Constants.AccountsViewTestTags.Surface.id)
     ) {
         
-        BackHandler(enabled = currentState.value == AccountsView.AccountsViewState.TRADES) {
+        /*BackHandler(enabled = currentState.value == AccountsView.AccountsViewState.TRADES) {
 
             if (currentState.value == AccountsView.AccountsViewState.TRADES) {
 
                 accountsViewModel.cleanTrades()
                 currentRememberState.value = AccountsView.AccountsViewState.CONTENT
             }
-        }
+        }*/
 
-        when(currentRememberState.value) {
+        when(currentState.value) {
 
-            AccountsView.AccountsViewState.LOADING -> {
+            AccountsView.ViewState.LOADING -> {
                 AccountsView_Loading()
             }
 
-            AccountsView.AccountsViewState.CONTENT -> {
+            AccountsView.ViewState.CONTENT -> {
                 AccountsView_List(
-                    listPricesViewModel = listPricesViewModel,
-                    accountsViewModel = accountsViewModel,
-                    currentRememberState = currentRememberState
+                    accountsViewModel = accountsViewModel!!
                 )
             }
+
+            else -> {}
+
+            /*
 
             AccountsView.AccountsViewState.EMPTY -> {
                 AccountsView_List_Empty()
@@ -152,7 +134,7 @@ fun AccountsView(
                     listPricesViewModel = listPricesViewModel,
                     accountsViewModel = accountsViewModel
                 )
-            }
+            }*/
         }
     }
 }

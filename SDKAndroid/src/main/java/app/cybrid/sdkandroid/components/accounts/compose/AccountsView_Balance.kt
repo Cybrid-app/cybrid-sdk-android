@@ -76,7 +76,7 @@ fun AccountsView_Balance(
                     modifier = Modifier,
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Normal,
-                    fontSize = 13.sp,
+                    fontSize = 14.sp,
                     lineHeight = 20.sp,
                     color = colorResource(id = R.color.accounts_view_balance_title)
                 )
@@ -92,6 +92,7 @@ fun AccountsView_Balance(
                     color = Color.Black
                 )
 
+                /*
                 Text(
                     text = stringResource(id = R.string.accounts_view_balance_available_title),
                     modifier = Modifier.padding(top = 30.dp),
@@ -122,6 +123,7 @@ fun AccountsView_Balance(
                     lineHeight = 20.sp,
                     color = colorResource(id = R.color.accounts_pending_deposit_color)
                 )
+                */
             }
         }
     }
