@@ -288,7 +288,7 @@ class AccountsViewModel : ViewModel() {
         this.currentAccountSelected = account
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
-                viewModelScope.launch {
+                val waitFor = viewModelScope.async {
 
                     // -- Getting prices
                     val transfersResult = getResult { transfersService.listTransfers(accountGuid = account.accountGuid) }
@@ -305,6 +305,7 @@ class AccountsViewModel : ViewModel() {
                         }
                     }
                 }
+                waitFor.await()
             }
         }
     }

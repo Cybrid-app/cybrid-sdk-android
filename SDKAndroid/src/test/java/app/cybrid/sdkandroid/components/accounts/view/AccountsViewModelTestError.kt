@@ -87,4 +87,25 @@ class AccountsViewModelTestError {
         Assert.assertTrue(viewModel.trades.isEmpty())
         Assert.assertEquals(viewModel.uiState.value, AccountsView.ViewState.LOADING)
     }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_getTransfersList_Failed() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        val account = TestConstants.accountsFormatted[0]
+
+        // -- When
+        viewModel.uiState.value = AccountsView.ViewState.LOADING
+        viewModel.getTransfersList(account)
+
+        // -- Then
+        Assert.assertEquals(viewModel.currentAccountSelected, account)
+        Assert.assertTrue(viewModel.transfers.isEmpty())
+        Assert.assertEquals(viewModel.uiState.value, AccountsView.ViewState.LOADING)
+    }
 }
