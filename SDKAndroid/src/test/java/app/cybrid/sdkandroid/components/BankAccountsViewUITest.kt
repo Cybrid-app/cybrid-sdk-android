@@ -37,7 +37,7 @@ class BankAccountsViewUITest {
 
         // -- Given
         val bankAccountsViewModel = BankAccountsViewModel()
-        val state = mutableStateOf(BankAccountsView.BankAccountsViewState.LOADING)
+        val state = mutableStateOf(BankAccountsView.State.LOADING)
 
         // -- When
         composeTestRule.setContent {
@@ -53,31 +53,11 @@ class BankAccountsViewUITest {
     }
 
     @Test
-    fun `BankAccounts Required Test`() {
-
-        // -- Given
-        val bankAccountsViewModel = BankAccountsViewModel()
-        val state = mutableStateOf(BankAccountsView.BankAccountsViewState.REQUIRED)
-
-        // -- When
-        composeTestRule.setContent {
-            BankAccountsView(
-                viewModel = bankAccountsViewModel,
-                currentState = state)
-        }
-
-        // -- Then
-        composeTestRule.onNodeWithTag(Constants.BankAccountsView.RequiredView.id).assertIsDisplayed()
-        composeTestRule.onNodeWithText(resources.getString(R.string.bank_accounts_view_required_text)).assertExists()
-        composeTestRule.onNodeWithText(resources.getString(R.string.bank_accounts_view_required_button)).assertExists()
-    }
-
-    @Test
     fun `BankAccounts Done Test`() {
 
         // -- Given
         val bankAccountsViewModel = BankAccountsViewModel()
-        val state = mutableStateOf(BankAccountsView.BankAccountsViewState.DONE)
+        val state = mutableStateOf(BankAccountsView.State.DONE)
 
         // -- When
         composeTestRule.setContent {
@@ -97,7 +77,7 @@ class BankAccountsViewUITest {
 
         // -- Given
         val bankAccountsViewModel = BankAccountsViewModel()
-        val state = mutableStateOf(BankAccountsView.BankAccountsViewState.ERROR)
+        val state = mutableStateOf(BankAccountsView.State.ERROR)
 
         // -- When
         composeTestRule.setContent {

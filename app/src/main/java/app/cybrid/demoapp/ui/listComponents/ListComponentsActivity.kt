@@ -11,10 +11,7 @@ import app.cybrid.demoapp.ui.listComponents.adapter.ListComponentsAdapter
 import app.cybrid.demoapp.ui.listComponents.entity.Component
 import app.cybrid.demoapp.ui.listPricesComponent.ListPricesAssetsComponentActivity
 import app.cybrid.demoapp.ui.listPricesComponent.ListPricesComponentActivity
-import app.cybrid.sdkandroid.components.activity.AccountsActivity
-import app.cybrid.sdkandroid.components.activity.KYCActivity
-import app.cybrid.sdkandroid.components.activity.BankAccountsActivity
-import app.cybrid.sdkandroid.components.activity.TradeActivity
+import app.cybrid.sdkandroid.components.activity.*
 
 class ListComponentsActivity : AppCompatActivity(), ComponentListener {
 
@@ -39,12 +36,11 @@ class ListComponentsActivity : AppCompatActivity(), ComponentListener {
 
         when (component.id) {
 
-            1 -> startActivity(Intent(this, ListPricesComponentActivity::class.java))
-            2 -> startActivity(Intent(this, ListPricesAssetsComponentActivity::class.java))
-            3 -> startActivity(Intent(this, TradeActivity::class.java))
-            4 -> startActivity(Intent(this, AccountsActivity::class.java))
-            5 -> startActivity(Intent(this, KYCActivity::class.java))
-            6 -> startActivity(Intent(this, BankAccountsActivity::class.java))
+            1 -> startActivity(Intent(this, TradeActivity::class.java))
+            2 -> startActivity(Intent(this, TransferActivity::class.java))
+            3 -> startActivity(Intent(this, AccountsActivity::class.java))
+            4 -> startActivity(Intent(this, KYCActivity::class.java))
+            5 -> startActivity(Intent(this, BankAccountsActivity::class.java))
         }
     }
 }

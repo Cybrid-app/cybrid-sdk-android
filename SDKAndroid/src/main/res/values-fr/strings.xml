@@ -69,6 +69,7 @@
     <string name="kyc_view_modal_warning_begin_button">Commencer</string>
 
     <!-- Bank Accounts Component -->
+    <string name="bank_accounts_title">Comptes Bancaires</string>
     <string name="bank_accounts_view_loading_text">Vérification des comptes bancaires</string>
     <string name="bank_accounts_view_required_text">Aucun compte bancaire connecté.</string>
     <string name="bank_accounts_view_required_button">Ajouter un compte</string>
@@ -76,6 +77,17 @@
     <string name="bank_accounts_view_done_button">Continuer</string>
     <string name="bank_accounts_view_error_text">Une erreur s\'est produite, réessayez.</string>
     <string name="bank_accounts_view_error_button">Fait</string>
+    <string name="bank_accounts_modal_loading_title">Chargement</string>
+    <string name="bank_accounts_modal_content_title">Détails du compte</string>
+    <string name="bank_accounts_modal_content_account_name">Nom du compte</string>
+    <string name="bank_accounts_modal_content_account_status">Statut du compte</string>
+    <string name="bank_accounts_modal_content_account_number">Numéro de compte</string>
+    <string name="bank_accounts_modal_content_cancel">Annuler</string>
+    <string name="bank_accounts_modal_content_disconnect">Déconnecter</string>
+    <string name="bank_accounts_modal_confirm_title">Confirmer la déconnexion</string>
+    <string name="bank_accounts_modal_confirm_text">Veuillez confirmer la suppression de %s. Les dépôts ne seront plus possibles à partir de ce compte.</string>
+    <string name="bank_accounts_modal_confirm_button">Confirmer</string>
+
 
     <!-- Transfer Component -->
     <string name="transfer_view_component_loading_view_title">Chargement</string>

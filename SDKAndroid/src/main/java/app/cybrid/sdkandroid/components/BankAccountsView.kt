@@ -12,10 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Done
-import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Error
-import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Loading
-import app.cybrid.sdkandroid.components.bankAccounts.compose.BankAccountsView_Required
+import app.cybrid.sdkandroid.components.bankAccounts.compose.*
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.linkTokenConfiguration
@@ -30,9 +27,11 @@ class BankAccountsView @JvmOverloads constructor(
     defStyle: Int = 0):
 Component(context, attrs, defStyle) {
 
-    enum class BankAccountsViewState { LOADING, REQUIRED, DONE, ERROR }
+    enum class State { LOADING, CONTENT, DONE, ERROR }
+    enum class AddAccountButtonState { LOADING, READY }
+    enum class ModalState { CONTENT, CONFIRM }
 
-    private var currentState = mutableStateOf(BankAccountsViewState.LOADING)
+    private var currentState = mutableStateOf(State.LOADING)
 
     var bankAccountsViewModel: BankAccountsViewModel? = null
 
@@ -47,7 +46,9 @@ Component(context, attrs, defStyle) {
         this.bankAccountsViewModel = bankAccountsViewModel
         this.currentState = bankAccountsViewModel.uiState
         this.initComposeView()
-        GlobalScope.launch { bankAccountsViewModel.createWorkflow() }
+        GlobalScope.launch {
+            bankAccountsViewModel.fetchExternalBankAccounts()
+        }
     }
 
     private fun initComposeView() {
@@ -56,7 +57,7 @@ Component(context, attrs, defStyle) {
             compose.setContent {
                 BankAccountsView(
                     currentState = this.currentState,
-                    viewModel = bankAccountsViewModel
+                    viewModel = bankAccountsViewModel,
                 )
             }
         }
@@ -80,29 +81,36 @@ Component(context, attrs, defStyle) {
 
 @Composable
 fun BankAccountsView(
-    currentState: MutableState<BankAccountsView.BankAccountsViewState>,
-    viewModel: BankAccountsViewModel?) {
+    currentState: MutableState<BankAccountsView.State>,
+    viewModel: BankAccountsViewModel?,
+) {
 
     // -- Content
     Surface {
 
         when(currentState.value) {
 
-            BankAccountsView.BankAccountsViewState.LOADING -> {
+            BankAccountsView.State.LOADING -> {
                 BankAccountsView_Loading()
             }
 
-            BankAccountsView.BankAccountsViewState.REQUIRED -> {
-                BankAccountsView_Required(viewModel)
+            BankAccountsView.State.CONTENT -> {
+                BankAccountsView_Content(viewModel)
             }
 
-            BankAccountsView.BankAccountsViewState.DONE -> {
-                BankAccountsView_Done()
+            BankAccountsView.State.DONE -> {
+                BankAccountsView_Done(viewModel)
             }
 
-            BankAccountsView.BankAccountsViewState.ERROR -> {
+            BankAccountsView.State.ERROR -> {
                 BankAccountsView_Error()
             }
+        }
+
+        if (viewModel?.showAccountDetailModal?.value == true) {
+            BankAccountsView_Modal(
+                bankAccountsViewModel = viewModel
+            )
         }
     }
 }

@@ -35,7 +35,7 @@ class BankAccountsViewTest {
 
         // -- Given
         val bankAccountsViewModel = BankAccountsViewModel()
-        val expectState = mutableStateOf(BankAccountsView.BankAccountsViewState.LOADING)
+        val expectState = mutableStateOf(BankAccountsView.State.LOADING)
 
         // -- When
         bankAccountsView.setViewModel(bankAccountsViewModel = bankAccountsViewModel)
@@ -45,7 +45,7 @@ class BankAccountsViewTest {
         Assert.assertNotNull(bankAccountsView.bankAccountsViewModel)
         Assert.assertEquals(bankAccountsView.bankAccountsViewModel?.uiState?.value, expectState.value)
 
-        expectState.value = BankAccountsView.BankAccountsViewState.REQUIRED
+        expectState.value = BankAccountsView.State.CONTENT
         bankAccountsView.bankAccountsViewModel?.uiState?.value = expectState.value
         Assert.assertEquals(bankAccountsView.bankAccountsViewModel?.uiState?.value, expectState.value)
     }
