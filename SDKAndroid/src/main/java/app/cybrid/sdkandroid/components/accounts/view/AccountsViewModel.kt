@@ -10,12 +10,10 @@ import app.cybrid.cybrid_api_bank.client.apis.*
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.AccountBankModel
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
-import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.AccountsView
-import app.cybrid.sdkandroid.components.TradeView
 import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.core.AssetPipe
@@ -31,9 +29,13 @@ class AccountsViewModel : ViewModel() {
 
     // -- Services
     private var accountsService = AppModule.getClient().createService(AccountsApi::class.java)
+    private var tradesService = AppModule.getClient().createService(TradesApi::class.java)
 
     // -- UI States
     var uiState: MutableState<AccountsView.ViewState> = mutableStateOf(AccountsView.ViewState.LOADING)
+
+    // -- UI Triggers
+    var showTradeDetail: MutableState<Boolean> = mutableStateOf(false)
 
     // -- Associated ViewModels
     var listPricesViewModel: ListPricesViewModel? = null
@@ -47,7 +49,8 @@ class AccountsViewModel : ViewModel() {
 
     // -- Trades List
     var trades:List<TradeBankModel> by mutableStateOf(listOf())
-    private var currentAccountAssetPriceModel:AccountAssetPriceModel? by mutableStateOf(null)
+    var currentAccountSelected: AccountAssetPriceModel? by mutableStateOf(null)
+    var currentTrade: TradeBankModel = TradeBankModel()
 
     // -- Balances
     var totalBalance:String by mutableStateOf("")
@@ -60,6 +63,7 @@ class AccountsViewModel : ViewModel() {
     fun setDataProvider(dataProvider: ApiClient)  {
 
         accountsService = dataProvider.createService(AccountsApi::class.java)
+        tradesService = dataProvider.createService(TradesApi::class.java)
     }
 
     suspend fun getAccountsList() {
@@ -194,36 +198,26 @@ class AccountsViewModel : ViewModel() {
         }
     }
 
+    suspend fun getTradesList(account: AccountAssetPriceModel) {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    fun getTradesList(balance: AccountAssetPriceModel) {
-
-        this.currentAccountAssetPriceModel = balance
-        val tradesService = AppModule.getClient().createService(TradesApi::class.java)
+        this.uiState.value = AccountsView.ViewState.LOADING
+        this.currentAccountSelected = account
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
                 viewModelScope.launch {
 
                     // -- Getting prices
-                    val tradesResult = getResult { tradesService.listTrades(accountGuid = balance.accountGuid) }
+                    val tradesResult = getResult { tradesService.listTrades(accountGuid = account.accountGuid) }
                     tradesResult.let {
-                        trades = if (isSuccessful(it.code ?: 500)) {
-                             it.data?.objects ?: listOf()
+                        if (isSuccessful(it.code ?: 500)) {
+
+                            trades = it.data?.objects ?: listOf()
+                            uiState.value = AccountsView.ViewState.TRADES
+
                         } else {
+
                             Logger.log(LoggerEvents.DATA_ERROR, "Accounts Component - Data :: ${it.message}")
-                            listOf()
+                            trades = listOf()
                         }
                     }
                 }
@@ -231,12 +225,12 @@ class AccountsViewModel : ViewModel() {
         }
     }
 
-    fun getTradeAmount(trade: TradeBankModel, assets:List<AssetBankModel>?) : String {
+    fun getTradeAmount(trade: TradeBankModel) : String {
 
         val tradeSymbol = trade.symbol
         val assetsParts = tradeSymbol?.split("-")
         val assetString = assetsParts!![0]
-        val asset = assets?.find { it.code == assetString }
+        val asset = listPricesViewModel?.assets?.find { it.code == assetString }
         val returnValue = if (trade.side == TradeBankModel.Side.sell) {
             AssetPipe.transform(BigDecimal(trade.deliverAmount!!), asset!!, AssetPipeTrade)
         } else {
@@ -245,12 +239,12 @@ class AccountsViewModel : ViewModel() {
         return returnValue.toPlainString()
     }
 
-    fun getTradeFiatAmount(trade: TradeBankModel, assets:List<AssetBankModel>?) : String? {
+    fun getTradeFiatAmount(trade: TradeBankModel) : String {
 
         val tradeSymbol = trade.symbol
         val assetsParts = tradeSymbol?.split("-")
         val assetString = assetsParts!![1]
-        val asset = assets?.find { it.code == assetString }
+        val asset = listPricesViewModel?.assets?.find { it.code == assetString }
         val returnValue = if (trade.side == TradeBankModel.Side.sell) {
             BigDecimalPipe.transform(BigDecimal(trade.receiveAmount!!), asset!!)
         } else {
@@ -259,13 +253,15 @@ class AccountsViewModel : ViewModel() {
         return returnValue
     }
 
-    fun getCurrentTradeAccount() : AccountAssetPriceModel? {
-        return this.currentAccountAssetPriceModel
+    fun showTradeDetail(trade: TradeBankModel) {
+
+        this.currentTrade = trade
+        this.showTradeDetail.value = true
     }
 
-    fun cleanTrades() {
+    fun dismissTradeDetail() {
 
-        this.trades = listOf()
-        this.currentAccountAssetPriceModel = null
+        this.currentTrade = TradeBankModel()
+        this.showTradeDetail.value = false
     }
 }

@@ -44,6 +44,8 @@ import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -235,8 +237,7 @@ fun AccountsView_List_Item(balance: AccountAssetPriceModel,
                 .padding(vertical = 0.dp)
                 .height(66.dp)
                 .clickable {
-
-                    //accountsViewModel?.getTradesList(balance)
+                    GlobalScope.launch { accountsViewModel.getTradesList(balance) }
                 },
         ) {
 

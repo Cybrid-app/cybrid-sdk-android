@@ -29,6 +29,8 @@
     <color name="account_trade_detail_content_item_color">#424242</color>
     <color name="accounts_balance_available_trade_color">#636366</color>
     <color name="accounts_pending_deposit_color">#5AC8FA</color>
+    <color name="accounts_view_list_item_chip_pending">#FCDA66</color>
+    <color name="accounts_view_list_item_chip_failed">#D45736</color>
 
     <color name="accent_blue">#007AFF</color>
 

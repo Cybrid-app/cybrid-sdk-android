@@ -1,4 +1,4 @@
-package app.cybrid.sdkandroid.components.composeViews
+package app.cybrid.sdkandroid.components.accounts.compose
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -7,15 +7,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Icon
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Outbound
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -33,10 +29,10 @@ import androidx.compose.ui.unit.sp
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.AccountsViewStyles
-import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
+import app.cybrid.sdkandroid.components.TradeView
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.getImage
-import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
+import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.getDateInFormat
 import app.cybrid.sdkandroid.util.getSpannableStyle
@@ -44,39 +40,33 @@ import java.time.OffsetDateTime
 
 @Composable
 fun AccountsView_Trades(
-    listPricesViewModel: ListPricesViewModel?,
     accountsViewModel: AccountsViewModel?,
-    customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {
 
-    // -- Vars
-    val balance = accountsViewModel?.getCurrentTradeAccount()
-
     // -- Content
-    Column() {
+    Column {
 
         AccountsView_Trades_BalanceAndHoldings(
-            balance = balance
+            accountsViewModel = accountsViewModel!!
         )
         AccountsView_Trades_List(
             accountsViewModel = accountsViewModel,
-            listPricesViewModel = listPricesViewModel
         )
     }
 }
 
 @Composable
 fun AccountsView_Trades_BalanceAndHoldings(
-    balance: AccountAssetPriceModel?,
+    accountsViewModel: AccountsViewModel,
     customStyles: AccountsViewStyles = AccountsViewStyles(),
 ) {
 
     // -- Vars
-    val cryptoCode = balance?.accountAssetCode ?: ""
+    val cryptoCode = accountsViewModel.currentAccountSelected?.accountAssetCode ?: ""
     val imageID = getImage(LocalContext.current, "ic_${cryptoCode.lowercase()}")
-    val cryptoName = balance?.assetName ?: ""
+    val cryptoName = accountsViewModel.currentAccountSelected?.assetName ?: ""
     val assetBalance = getSpannableStyle(
-        text = balance?.accountBalanceFormattedString ?: "",
+        text = accountsViewModel.currentAccountSelected?.accountBalanceFormattedString ?: "",
         secondaryText = " $cryptoCode",
         style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
@@ -86,8 +76,8 @@ fun AccountsView_Trades_BalanceAndHoldings(
         )
     )
     val assetBalanceFiat = getSpannableStyle(
-        text = balance?.accountBalanceInFiatFormatted ?: "",
-        secondaryText = " ${balance?.pairAsset?.code}",
+        text = accountsViewModel.currentAccountSelected?.accountBalanceInFiatFormatted ?: "",
+        secondaryText = " ${accountsViewModel.currentAccountSelected?.pairAsset?.code}",
         style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
             fontFamily = robotoFont,
@@ -154,7 +144,6 @@ fun AccountsView_Trades_BalanceAndHoldings(
 @Composable
 fun AccountsView_Trades_List(
     accountsViewModel: AccountsViewModel?,
-    listPricesViewModel: ListPricesViewModel?
 ) {
 
     LazyColumn(
@@ -167,10 +156,9 @@ fun AccountsView_Trades_List(
             )
         }
         itemsIndexed(items = accountsViewModel?.trades ?: listOf()) { index, item ->
-            AccountsView_Trades_List__Item(
+            AccountsView_Trades_List_Item(
                 trade = item,
                 index = index,
-                listPricesViewModel = listPricesViewModel,
                 accountsViewModel = accountsViewModel,
             )
         }
@@ -237,9 +225,8 @@ fun AccountsView_Trades_List_Header(
 }
 
 @Composable
-fun AccountsView_Trades_List__Item(
+fun AccountsView_Trades_List_Item(
     trade: TradeBankModel, index: Int,
-    listPricesViewModel: ListPricesViewModel?,
     accountsViewModel: AccountsViewModel?,
     customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {
@@ -255,12 +242,10 @@ fun AccountsView_Trades_List__Item(
     )
 
     val tradeAmount = accountsViewModel?.getTradeAmount(
-        trade = trade,
-        assets = listPricesViewModel?.assets
+        trade = trade
     )
     val tradeFiatAmount = accountsViewModel?.getTradeFiatAmount(
-        trade = trade,
-        assets = listPricesViewModel?.assets
+        trade = trade
     )
     val tradeAmountFormatted = getSpannableStyle(
         text = tradeAmount ?: "",
@@ -280,17 +265,6 @@ fun AccountsView_Trades_List__Item(
         rotate = 0f
     }
 
-    // -- Modal Logic
-    val showDialog:MutableState<Boolean> = remember { mutableStateOf(false) }
-    if (showDialog.value) {
-        AccountsView_Trades_Detail(
-            showDialog = showDialog,
-            trade = trade,
-            listPricesViewModel = listPricesViewModel,
-            accountsViewModel = accountsViewModel
-        )
-    }
-
     // -- Content
     Surface(color = Color.Transparent) {
         Row(
@@ -299,7 +273,7 @@ fun AccountsView_Trades_List__Item(
                 .padding(vertical = 0.dp)
                 .height(66.dp)
                 .clickable {
-                   showDialog.value = true
+                    accountsViewModel?.showTradeDetail(trade)
                 },
         ) {
 
@@ -317,15 +291,20 @@ fun AccountsView_Trades_List__Item(
                 modifier = Modifier
                     .padding(start = 12.dp)
             ) {
-                Text(
-                    text = side,
-                    modifier = Modifier,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 13.sp,
-                    lineHeight = 20.sp,
-                    color = Color.Black
-                )
+                Row {
+                    Text(
+                        text = side,
+                        modifier = Modifier,
+                        fontFamily = robotoFont,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 13.sp,
+                        lineHeight = 20.sp,
+                        color = Color.Black
+                    )
+                    AccountsView_Trades_List_Item_Chip(
+                        state = trade.state ?: TradeBankModel.State.pending
+                    )
+                }
                 Text(
                     text = date,
                     modifier = Modifier,
@@ -363,4 +342,47 @@ fun AccountsView_Trades_List__Item(
 
         }
     }
+}
+
+@Composable
+fun AccountsView_Trades_List_Item_Chip(
+    state: TradeBankModel.State
+) {
+
+    var text = stringResource(id = R.string.accounts_view_list_item_failed)
+    var backgroundColor = colorResource(id = R.color.accounts_view_list_item_chip_failed)
+    var textColor = Color.White
+
+    if (state == TradeBankModel.State.pending || state == TradeBankModel.State.storing) {
+
+        backgroundColor = colorResource(id = R.color.accounts_view_list_item_chip_failed)
+        textColor = Color.Black
+        text = stringResource(id = R.string.accounts_view_list_item_pending)
+    }
+
+
+
+    if (state == TradeBankModel.State.pending ||
+        state == TradeBankModel.State.storing ||
+        state == TradeBankModel.State.failed) {
+
+        Text(
+            text = text,
+            modifier = Modifier
+                .padding(start = 15.dp)
+                .background(
+                    backgroundColor,
+                    shape = RoundedCornerShape(43.dp)
+                )
+                .width(62.dp)
+                .height(20.dp),
+            textAlign = TextAlign.Center,
+            fontFamily = interFont,
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp,
+            color = textColor
+        )
+    }
+
+
 }

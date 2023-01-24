@@ -15,11 +15,11 @@ import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_List
 import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_List_Empty
 import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_Loading
+import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_Trades
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
-import app.cybrid.sdkandroid.components.composeViews.AccountsView_Trades
+import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_Trades_Detail
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.core.Constants
-import app.cybrid.sdkandroid.util.Polling
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -30,7 +30,7 @@ class AccountsView @JvmOverloads constructor(
     defStyle: Int = 0):
 Component(context, attrs, defStyle) {
 
-    enum class ViewState { LOADING, CONTENT, EMPTY, TRADES, TRANSFER }
+    enum class ViewState { LOADING, CONTENT, TRADES, TRANSFER }
 
     private var currentState = mutableStateOf(ViewState.LOADING)
 
@@ -99,14 +99,12 @@ fun AccountsView(
             .testTag(Constants.AccountsViewTestTags.Surface.id)
     ) {
         
-        /*BackHandler(enabled = currentState.value == AccountsView.AccountsViewState.TRADES) {
+        BackHandler(enabled = currentState.value == AccountsView.ViewState.TRADES) {
 
-            if (currentState.value == AccountsView.AccountsViewState.TRADES) {
-
-                accountsViewModel.cleanTrades()
-                currentRememberState.value = AccountsView.AccountsViewState.CONTENT
+            if (currentState.value == AccountsView.ViewState.TRADES) {
+                currentState.value = AccountsView.ViewState.CONTENT
             }
-        }*/
+        }
 
         when(currentState.value) {
 
@@ -115,26 +113,30 @@ fun AccountsView(
             }
 
             AccountsView.ViewState.CONTENT -> {
-                AccountsView_List(
-                    accountsViewModel = accountsViewModel!!
+
+                if (accountsViewModel?.accountsAssetPrice?.isEmpty() == true) {
+                    AccountsView_List_Empty()
+                } else {
+                    AccountsView_List(
+                        accountsViewModel = accountsViewModel!!
+                    )
+                }
+            }
+
+            AccountsView.ViewState.TRADES -> {
+
+                AccountsView_Trades(
+                    accountsViewModel = accountsViewModel
                 )
             }
 
             else -> {}
+        }
 
-            /*
-
-            AccountsView.AccountsViewState.EMPTY -> {
-                AccountsView_List_Empty()
-            }
-
-            AccountsView.AccountsViewState.TRADES -> {
-
-                AccountsView_Trades(
-                    listPricesViewModel = listPricesViewModel,
-                    accountsViewModel = accountsViewModel
-                )
-            }*/
+        if (accountsViewModel?.showTradeDetail?.value == true) {
+            AccountsView_Trades_Detail(
+                accountsViewModel = accountsViewModel
+            )
         }
     }
 }
