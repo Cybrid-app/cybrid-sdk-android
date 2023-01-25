@@ -48,6 +48,7 @@ class TransferViewModelTestError {
         return TransferViewModel()
     }
 
+    @ExperimentalCoroutinesApi
     @Test
     fun test_fetchAssets_Error() = runTest {
 

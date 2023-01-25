@@ -39,7 +39,7 @@ class AccountsViewUITest {
 
         every { listPricesViewModel.prices } returns TestConstants.prices
         every { listPricesViewModel.assets } returns TestConstants.assets
-        every { accountsViewModel.accountsResponse } returns TestConstants.accounts
+        every { accountsViewModel.accounts } returns TestConstants.accounts
     }
 
     @Test

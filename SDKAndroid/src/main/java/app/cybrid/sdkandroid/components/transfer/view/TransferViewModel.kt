@@ -17,6 +17,7 @@ import app.cybrid.sdkandroid.util.LoggerEvents
 import app.cybrid.sdkandroid.util.getResult
 import app.cybrid.sdkandroid.util.isSuccessful
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.math.BigDecimal as JavaBigDecimal
 
@@ -39,7 +40,9 @@ class TransferViewModel: ViewModel() {
 
     var accounts: List<AccountBankModel> by mutableStateOf(listOf())
     var externalBankAccounts: List<ExternalBankAccountBankModel> by mutableStateOf(listOf())
+
     var fiatBalance: MutableState<String> = mutableStateOf("")
+
     var currentQuote: QuoteBankModel? by mutableStateOf(null)
     var currentTransfer: TransferBankModel? by mutableStateOf(null)
 
@@ -113,13 +116,17 @@ class TransferViewModel: ViewModel() {
                         externalAccountsResponse.let {
                             if (isSuccessful(it.code ?: 500)) {
 
-                                Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
-                                externalBankAccounts = it.data?.objects ?: listOf()
+                                Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - External Accounts")
+                                val accounts = it.data?.objects ?: listOf()
+                                externalBankAccounts = accounts.filter {
+                                        account -> account.state != ExternalBankAccountBankModel.State.deleted &&
+                                                    account.state != ExternalBankAccountBankModel.State.deleting
+                                }
                                 uiState.value = TransferView.ViewState.ACCOUNTS
                                 calculateFiatBalance()
 
                             } else {
-                                Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Workflow")
+                                Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - External Accounts")
                             }
                         }
                     }
@@ -136,7 +143,7 @@ class TransferViewModel: ViewModel() {
         this.accounts.forEach { account ->
             if (account.type == AccountBankModel.Type.fiat &&
                 account.state == AccountBankModel.State.created) {
-                val balance = BigDecimal(account.platformBalance ?: JavaBigDecimal(0))
+                val balance = BigDecimal(account.platformAvailable ?: JavaBigDecimal(0))
                 total = total.plus(balance)
             }
         }

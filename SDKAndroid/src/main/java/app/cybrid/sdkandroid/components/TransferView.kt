@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
+import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Accounts
 import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Modal
 import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Loading
@@ -60,7 +62,7 @@ Component(context, attrs, defStyle) {
             compose.setContent {
                 BankTransferView(
                     currentState = currentState,
-                    transferViewModel = transferViewModel
+                    transferViewModel = transferViewModel,
                 )
 
                 if (transferViewModel?.viewDismiss?.value == true && canDismissView) {
@@ -78,7 +80,7 @@ Component(context, attrs, defStyle) {
 @Composable
 fun BankTransferView(
     currentState: MutableState<TransferView.ViewState>,
-    transferViewModel: TransferViewModel?
+    transferViewModel: TransferViewModel?,
 ) {
 
     // -- Vars for views

@@ -34,7 +34,7 @@ class AccountsViewTest {
         accountsViewModel = spyk(AccountsViewModel())
         every { listPricesViewModel.prices } returns TestConstants.prices
         every { listPricesViewModel.assets } returns TestConstants.assets
-        every { accountsViewModel.accountsResponse } returns TestConstants.accounts
+        every { accountsViewModel.accounts } returns TestConstants.accounts
 
         accountsView = spyk(AccountsView(context))
         every { accountsView.context } returns context

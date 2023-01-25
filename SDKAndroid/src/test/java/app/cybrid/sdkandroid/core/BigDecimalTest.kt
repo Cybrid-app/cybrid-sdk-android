@@ -215,7 +215,7 @@ class BigDecimalTest {
         val bigDecimalNumber = BigDecimal(shaNumber).setScale(100)
 
         // -- When
-        val value = bigDecimalNumber.toDouble()
+        bigDecimalNumber.toDouble()
 
         // -- Then
         Assert.assertTrue(false)
@@ -241,7 +241,7 @@ class BigDecimalTest {
     fun `Given _ when toDouble then _`() {
 
         // When
-        val actualValue = classUnderTest2.toDouble()
+        classUnderTest2.toDouble()
 
         // Then
         ArithmeticException()
@@ -279,7 +279,7 @@ class BigDecimalTest {
         val bigDecimal1 = BigDecimal(1234567891234567891)
 
         // -- When
-        val value = bigDecimal1.toInt()
+        bigDecimal1.toInt()
 
         // -- Then
         Assert.assertTrue(false)
@@ -306,7 +306,7 @@ class BigDecimalTest {
     fun `Given _ when toInt then _`() {
 
         // When
-        val actualValue = classUnderTest2.toInt()
+        classUnderTest2.toInt()
 
         // Then
         ArithmeticException()

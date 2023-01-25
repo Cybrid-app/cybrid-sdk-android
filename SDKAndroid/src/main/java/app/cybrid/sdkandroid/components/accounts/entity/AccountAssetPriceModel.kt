@@ -12,6 +12,10 @@ data class AccountAssetPriceModel (
     var accountBalanceFormattedString:String,
     var accountBalanceInFiat:BigDecimal,
     var accountBalanceInFiatFormatted:String,
+
+    var accountAvailable: BigDecimal,
+    var accountAvailableFormattedString: String,
+
     var accountGuid:String,
     var accountType: AccountBankModel.Type,
     var accountCreated:java.time.OffsetDateTime,

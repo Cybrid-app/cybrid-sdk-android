@@ -11,15 +11,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_List
-import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_List_Empty
-import app.cybrid.sdkandroid.components.accounts.compose.AccountsView_Loading
+import app.cybrid.sdkandroid.components.accounts.compose.*
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
-import app.cybrid.sdkandroid.components.composeViews.AccountsView_Trades
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
+import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.core.Constants
-import app.cybrid.sdkandroid.util.Polling
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -30,13 +28,12 @@ class AccountsView @JvmOverloads constructor(
     defStyle: Int = 0):
 Component(context, attrs, defStyle) {
 
-    enum class AccountsViewState { LOADING, CONTENT, EMPTY, TRADES }
+    enum class ViewState { LOADING, CONTENT, TRADES, TRANSFERS, TRANSFER_COMPONENT }
 
-    private var _listPricesViewModel: ListPricesViewModel? = null
-    private var _accountsViewModel: AccountsViewModel? = null
-    private var pricesPolling: Polling? = null
+    private var currentState = mutableStateOf(ViewState.LOADING)
 
-    var currentState = mutableStateOf(AccountsViewState.LOADING)
+    private var accountsViewModel: AccountsViewModel? = null
+    private var transferViewModel: TransferViewModel? = null
 
     init {
 
@@ -47,27 +44,28 @@ Component(context, attrs, defStyle) {
     @OptIn(DelicateCoroutinesApi::class)
     fun setViewModels(
         listPricesViewModel: ListPricesViewModel,
-        accountsViewModel: AccountsViewModel
+        accountsViewModel: AccountsViewModel,
+        transferViewModel: TransferViewModel
     ) {
 
-        this._listPricesViewModel = listPricesViewModel
-        this._accountsViewModel = accountsViewModel
-        this.setupCompose()
+        this.accountsViewModel = accountsViewModel
+        this.accountsViewModel?.listPricesViewModel = listPricesViewModel
+        this.transferViewModel = transferViewModel
 
-        GlobalScope.launch { _listPricesViewModel?.getPricesList() }
-        this._accountsViewModel?.getAccountsList()
+        this.currentState = accountsViewModel.uiState
+        this.initComposeView()
 
-        this.pricesPolling = Polling { GlobalScope.launch { _listPricesViewModel?.getPricesList() } }
+        GlobalScope.launch { accountsViewModel.getAccountsList() }
     }
 
-    private fun setupCompose() {
+    private fun initComposeView() {
 
         this.composeView?.let { compose ->
             compose.setContent {
                 AccountsView(
                     currentState = this.currentState,
-                    listPricesViewModel = this._listPricesViewModel,
-                    accountsViewModel = this._accountsViewModel
+                    accountsViewModel = this.accountsViewModel,
+                    transferViewModel = this.transferViewModel
                 )
             }
         }
@@ -94,24 +92,10 @@ data class AccountsViewStyles(
  * **/
 @Composable
 fun AccountsView(
-    currentState: MutableState<AccountsView.AccountsViewState>,
-    listPricesViewModel: ListPricesViewModel?,
-    accountsViewModel: AccountsViewModel?
+    currentState: MutableState<AccountsView.ViewState>,
+    accountsViewModel: AccountsViewModel?,
+    transferViewModel: TransferViewModel?
 ) {
-
-    // -- Vars
-    val currentRememberState: MutableState<AccountsView.AccountsViewState> = remember { currentState }
-
-    if (accountsViewModel?.accountsResponse?.isNotEmpty()!!
-        && listPricesViewModel?.prices?.isNotEmpty()!!
-        && listPricesViewModel.assets.isNotEmpty()) {
-
-        if (accountsViewModel.trades.isEmpty()) {
-            currentRememberState.value = AccountsView.AccountsViewState.CONTENT
-        } else {
-            currentRememberState.value = AccountsView.AccountsViewState.TRADES
-        }
-    }
 
     // -- Content
     Surface(
@@ -119,40 +103,61 @@ fun AccountsView(
             .testTag(Constants.AccountsViewTestTags.Surface.id)
     ) {
         
-        BackHandler(enabled = currentState.value == AccountsView.AccountsViewState.TRADES) {
+        BackHandler(
+            enabled = currentState.value == AccountsView.ViewState.TRADES ||
+                    currentState.value == AccountsView.ViewState.TRANSFERS
+        ) {
 
-            if (currentState.value == AccountsView.AccountsViewState.TRADES) {
-
-                accountsViewModel.cleanTrades()
-                currentRememberState.value = AccountsView.AccountsViewState.CONTENT
+            if (currentState.value == AccountsView.ViewState.TRADES ||
+                currentState.value == AccountsView.ViewState.TRANSFERS) {
+                currentState.value = AccountsView.ViewState.CONTENT
             }
         }
 
-        when(currentRememberState.value) {
+        when(currentState.value) {
 
-            AccountsView.AccountsViewState.LOADING -> {
+            AccountsView.ViewState.LOADING -> {
                 AccountsView_Loading()
             }
 
-            AccountsView.AccountsViewState.CONTENT -> {
-                AccountsView_List(
-                    listPricesViewModel = listPricesViewModel,
-                    accountsViewModel = accountsViewModel,
-                    currentRememberState = currentRememberState
-                )
+            AccountsView.ViewState.CONTENT -> {
+
+                if (accountsViewModel?.accountsAssetPrice?.isEmpty() == true) {
+                    AccountsView_List_Empty()
+                } else {
+                    AccountsView_List(
+                        accountsViewModel = accountsViewModel!!
+                    )
+                }
             }
 
-            AccountsView.AccountsViewState.EMPTY -> {
-                AccountsView_List_Empty()
-            }
-
-            AccountsView.AccountsViewState.TRADES -> {
+            AccountsView.ViewState.TRADES -> {
 
                 AccountsView_Trades(
-                    listPricesViewModel = listPricesViewModel,
                     accountsViewModel = accountsViewModel
                 )
             }
+
+            AccountsView.ViewState.TRANSFERS -> {
+
+                AccountsView_Transfers(
+                    accountsViewModel = accountsViewModel!!
+                )
+            }
+
+            AccountsView.ViewState.TRANSFER_COMPONENT -> {
+
+                BankTransferView(
+                    currentState = transferViewModel?.uiState!!,
+                    transferViewModel = transferViewModel
+                )
+            }
+        }
+
+        if (accountsViewModel?.showTradeDetail?.value == true) {
+            AccountsView_Trades_Detail(
+                accountsViewModel = accountsViewModel
+            )
         }
     }
 }

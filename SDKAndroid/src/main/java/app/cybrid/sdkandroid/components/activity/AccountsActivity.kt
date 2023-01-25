@@ -7,6 +7,7 @@ import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.AccountsView
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
+import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 
 class AccountsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,11 +22,13 @@ class AccountsActivity : AppCompatActivity() {
         // -- Get ViewModels
         val listPricesViewModel: ListPricesViewModel by viewModels()
         val accountsViewModel: AccountsViewModel by viewModels()
+        val transferViewModel: TransferViewModel by viewModels()
 
         // -- Adding ViewModels
         accountsView.setViewModels(
             listPricesViewModel = listPricesViewModel,
-            accountsViewModel = accountsViewModel
+            accountsViewModel = accountsViewModel,
+            transferViewModel = transferViewModel
         )
     }
 }

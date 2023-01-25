@@ -34,40 +34,27 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.cybrid.cybrid_api_bank.client.models.AccountBankModel
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.AccountsView
 import app.cybrid.sdkandroid.components.AccountsViewStyles
 import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.activity.TransferActivity
 import app.cybrid.sdkandroid.components.getImage
-import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
+import app.cybrid.sdkandroid.core.BigDecimal
+import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AccountsView_List(
-    listPricesViewModel: ListPricesViewModel?,
-    accountsViewModel: AccountsViewModel?,
-    currentRememberState: MutableState<AccountsView.AccountsViewState>
+    accountsViewModel: AccountsViewModel
 ) {
 
     // -- Mutable Vars
-    var selectedIndex by remember { mutableStateOf(-1) }
-
-    // -- Items
-    accountsViewModel?.createAccountsFormatted(
-        prices = listPricesViewModel?.prices!!,
-        assets = listPricesViewModel.assets
-    )
-
-    // -- Get Total balance
-    accountsViewModel?.getCalculatedBalance()
-    accountsViewModel?.getCalculatedFiatBalance()
-
-    // -- Accounts filtered
-    val accounts = accountsViewModel?.accounts?.filter { it.accountType == AccountBankModel.Type.trading }
+    val selectedIndex by remember { mutableStateOf(-1) }
 
     Column(
         modifier = Modifier
@@ -98,18 +85,23 @@ fun AccountsView_List(
                 }
             ) {
                 stickyHeader {
-                    AccountsView_List__HeaderItem(
+                    AccountsView_List_Item_Header(
                         accountsViewModel = accountsViewModel
                     )
                 }
-                itemsIndexed(items = accounts ?: listOf()) { index, item ->
-                    AccountsView_List__Item(
-                        balance = item,
-                        index = index,
-                        selectedIndex = selectedIndex,
-                        accountsViewModel = accountsViewModel,
-                        currentRememberState = currentRememberState
-                    )
+                itemsIndexed(items = accountsViewModel.accountsAssetPrice) { index, item ->
+
+                    if (item.accountType == AccountBankModel.Type.trading) {
+                        AccountsView_List_Trading_Item(
+                            balance = item,
+                            accountsViewModel = accountsViewModel
+                        )
+                    } else {
+                        AccountsView_List_Fiat_Item(
+                            balance = item,
+                            accountsViewModel = accountsViewModel
+                        )
+                    }
                 }
             }
 
@@ -151,9 +143,9 @@ fun AccountsView_List(
 }
 
 @Composable
-fun AccountsView_List__HeaderItem(
+fun AccountsView_List_Item_Header(
     styles: AccountsViewStyles = AccountsViewStyles(),
-    accountsViewModel: AccountsViewModel?,
+    accountsViewModel: AccountsViewModel
 ) {
 
     val priceColor = if (styles.headerTextColor != Color(R.color.list_prices_asset_component_header_color)) {
@@ -203,7 +195,7 @@ fun AccountsView_List__HeaderItem(
                     color = priceColor
                 )
                 Text(
-                    text = accountsViewModel?.currentFiatCurrency ?: "",
+                    text = accountsViewModel.currentFiatCurrency,
                     modifier = Modifier.align(Alignment.End),
                     textAlign = TextAlign.End,
                     fontFamily = robotoFont,
@@ -217,11 +209,9 @@ fun AccountsView_List__HeaderItem(
 }
 
 @Composable
-fun AccountsView_List__Item(balance: AccountAssetPriceModel,
-                       index: Int, selectedIndex: Int,
-                       accountsViewModel: AccountsViewModel?,
-                       currentRememberState: MutableState<AccountsView.AccountsViewState>,
-                       customStyles: AccountsViewStyles = AccountsViewStyles()
+fun AccountsView_List_Trading_Item(balance: AccountAssetPriceModel,
+    accountsViewModel: AccountsViewModel,
+    customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {
 
     // -- Vars
@@ -249,9 +239,7 @@ fun AccountsView_List__Item(balance: AccountAssetPriceModel,
                 .padding(vertical = 0.dp)
                 .height(66.dp)
                 .clickable {
-
-                    currentRememberState.value = AccountsView.AccountsViewState.LOADING
-                    accountsViewModel?.getTradesList(balance)
+                    GlobalScope.launch { accountsViewModel.getTradesList(balance) }
                 },
         ) {
 
@@ -309,6 +297,98 @@ fun AccountsView_List__Item(balance: AccountAssetPriceModel,
                     fontSize = 15.sp,
                     lineHeight = 20.sp,
                     color = customStyles.itemsCodeTextColor
+                )
+            }
+
+        }
+    }
+}
+
+@Composable
+fun AccountsView_List_Fiat_Item(balance: AccountAssetPriceModel,
+    accountsViewModel: AccountsViewModel,
+    customStyles: AccountsViewStyles = AccountsViewStyles()
+) {
+
+    // -- Vars
+    val fiatCode = balance.accountAssetCode
+    val imageID = getImage(LocalContext.current, "ic_${fiatCode.lowercase()}")
+    val fiatName = balance.assetName
+    val assetNameCode = buildAnnotatedString {
+        append(fiatName)
+        withStyle(style = SpanStyle(
+            color = colorResource(id = R.color.list_prices_asset_component_code_color),
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal
+        )
+        ) {
+            append(" $fiatCode")
+        }
+    }
+
+    val accountBalance = BigDecimalPipe.transform(balance.accountAvailable, balance.pairAsset)
+    val accountPendingBalance = balance.accountBalance - balance.accountAvailable.toJavaBigDecimal()
+    var accountPendingBalanceString = BigDecimalPipe.transform(BigDecimal(accountPendingBalance), balance.pairAsset)
+    accountPendingBalanceString = "$accountPendingBalanceString ${stringResource(id = R.string.accounts_view_pending_deposit_label)}"
+
+    // -- Content
+    Surface(color = Color.Transparent) {
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(vertical = 0.dp)
+                .height(66.dp)
+                .clickable {
+                    GlobalScope.launch { accountsViewModel.getTransfersList(balance) }
+                },
+        ) {
+
+            Image(
+                painter = painterResource(id = imageID),
+                contentDescription = "{$fiatName}",
+                modifier = Modifier
+                    .padding(horizontal = 0.dp)
+                    .padding(0.dp)
+                    .size(22.dp),
+                contentScale = ContentScale.Fit
+            )
+            Column(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+            ) {
+                Text(
+                    text = assetNameCode,
+                    modifier = Modifier,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.5.sp,
+                    lineHeight = 20.sp,
+                    color = customStyles.itemsTextColor
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = accountBalance,
+                    modifier = Modifier.align(Alignment.End),
+                    textAlign = TextAlign.End,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    lineHeight = 20.sp,
+                    color = customStyles.itemsTextColor
+                )
+                Text(
+                    text = accountPendingBalanceString,
+                    modifier = Modifier.align(Alignment.End),
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp,
+                    color = colorResource(id = R.color.accounts_pending_deposit_color)
                 )
             }
 

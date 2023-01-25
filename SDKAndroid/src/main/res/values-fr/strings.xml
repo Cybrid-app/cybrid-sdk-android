@@ -30,13 +30,15 @@
     <string name="trade_flow_confirmation_modal_transaction_id">ID de transaction:</string>
     <string name="trade_flow_confirmation_modal_date">Date:</string>
     <string name="trade_flow_confirmation_modal_button">Acheter plus de crypto</string>
+    <string name="accounts_view_list_item_pending">En attente</string>
+    <string name="accounts_view_list_item_failed">Échoué</string>
 
     <!-- Accounts View Strings -->
     <string name="accounts_view_loading_text">Chargement en cours</string>
     <string name="accounts_view_list_header_asset">Actif</string>
     <string name="accounts_view_balance_title">Valeur du compte</string>
     <string name="accounts_view_balance_available_title">Disponible pour le commerce</string>
-    <string name="accounts_view_pending_deposit_label"> dépôt en attente</string>
+    <string name="accounts_view_pending_deposit_label"> attente</string>
     <string name="accounts_view_list_header_asset_sub">Prix du marché</string>
     <string name="accounts_view_list_header_balance">Solde</string>
     <string name="accounts_view_trades_holding_title">Avoirs</string>
@@ -55,6 +57,10 @@
     <string name="accounts_view_trade_detail_order_order_id">Numéro de commande</string>
     <string name="accounts_view_trade_detail_order_close_button">Proche</string>
     <string name="accounts_view_no_accounts_title">Client sans compte</string>
+    <string name="accounts_view_transfers_list_title">Transferts récents</string>
+    <string name="accounts_view_transfers_amount_title">Montant</string>
+    <string name="accounts_view_transfers_deposit">Dépôt</string>
+    <string name="accounts_view_transfers_withdraw">Retirer</string>
 
     <!-- KYC Component -->
     <string name="kyc_view_loading_text">Vérification de l\'identité...</string>

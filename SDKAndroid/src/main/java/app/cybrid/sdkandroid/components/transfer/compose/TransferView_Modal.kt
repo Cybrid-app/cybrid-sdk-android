@@ -11,6 +11,8 @@ import androidx.compose.ui.unit.dp
 import app.cybrid.cybrid_api_bank.client.models.*
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.TransferView
+import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
+import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
 import kotlinx.coroutines.DelicateCoroutinesApi

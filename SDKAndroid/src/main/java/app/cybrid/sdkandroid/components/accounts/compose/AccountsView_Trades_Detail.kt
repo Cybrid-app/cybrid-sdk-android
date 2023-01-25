@@ -1,4 +1,4 @@
-package app.cybrid.sdkandroid.components.composeViews
+package app.cybrid.sdkandroid.components.accounts.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -7,7 +7,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +24,6 @@ import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.getImage
-import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
 import app.cybrid.sdkandroid.util.getAnnotatedStyle
@@ -35,16 +33,13 @@ import java.time.OffsetDateTime
 
 @Composable
 fun AccountsView_Trades_Detail(
-    showDialog: MutableState<Boolean>,
-    trade: TradeBankModel,
-    listPricesViewModel: ListPricesViewModel?,
-    accountsViewModel: AccountsViewModel?
+    accountsViewModel: AccountsViewModel
 ) {
 
     // -- Content
     BottomSheetDialog(
         onDismissRequest = {
-            showDialog.value = false
+            accountsViewModel.dismissTradeDetail()
         }
     ) {
         Surface(
@@ -55,9 +50,6 @@ fun AccountsView_Trades_Detail(
                 .padding(start = 5.dp, end = 5.dp)
         ) {
             AccountsView_Trades_Detail_Content(
-                showDialog = showDialog,
-                trade = trade,
-                listPricesViewModel = listPricesViewModel,
                 accountsViewModel = accountsViewModel
             )
         }
@@ -66,20 +58,18 @@ fun AccountsView_Trades_Detail(
 
 @Composable
 fun AccountsView_Trades_Detail_Content(
-    showDialog: MutableState<Boolean>,
-    trade: TradeBankModel,
-    listPricesViewModel: ListPricesViewModel?,
-    accountsViewModel: AccountsViewModel?
+    accountsViewModel: AccountsViewModel
 ) {
 
     // -- Vars
-    val assetCode = accountsViewModel?.getCurrentTradeAccount()?.accountAssetCode ?: ""
-    val fiatCode = accountsViewModel?.getCurrentTradeAccount()?.pairAsset?.code ?: ""
-    val assetValue = accountsViewModel?.getTradeAmount(trade, listPricesViewModel?.assets)
-    val fiatValue = accountsViewModel?.getTradeFiatAmount(trade, listPricesViewModel?.assets)
+    val currentTrade = accountsViewModel.currentTrade
+    val assetCode = accountsViewModel.currentAccountSelected?.accountAssetCode ?: ""
+    val fiatCode = accountsViewModel.currentAccountSelected?.pairAsset?.code ?: ""
+    val assetValue = accountsViewModel.getTradeAmount(currentTrade)
+    val fiatValue = accountsViewModel.getTradeFiatAmount(currentTrade)
     val imageID = getImage(LocalContext.current, "ic_${assetCode.lowercase()}")
 
-    val titleType = if (trade.side == TradeBankModel.Side.sell) {
+    val titleType = if (currentTrade.side == TradeBankModel.Side.sell) {
         stringResource(id = R.string.accounts_view_trade_detail_sold)
     } else {
         stringResource(id = R.string.accounts_view_trade_detail_bought)
@@ -98,7 +88,7 @@ fun AccountsView_Trades_Detail_Content(
         style = getAnnotatedStyle(15.sp))
 
     val tradeDate = getDateInFormat(
-        date = trade.createdAt ?: OffsetDateTime.now(),
+        date = currentTrade.createdAt ?: OffsetDateTime.now(),
         pattern = "MMMM dd, YYYY hh:mm a"
     )
 
@@ -146,7 +136,7 @@ fun AccountsView_Trades_Detail_Content(
             // -- Elements
             AccountsView_Trades_Detail_Item(
                 titleLabel = stringResource(id = R.string.accounts_view_trade_detail_status),
-                subTitleLabel = AnnotatedString(trade.state?.value ?: "")
+                subTitleLabel = AnnotatedString(currentTrade.state?.value ?: "")
             )
             AccountsView_Trades_Detail_Item(
                 titleLabel = stringResource(id = R.string.accounts_view_trade_detail_order_placed),
@@ -162,7 +152,7 @@ fun AccountsView_Trades_Detail_Content(
             )
             AccountsView_Trades_Detail_Item(
                 titleLabel = stringResource(id = R.string.accounts_view_trade_detail_order_order_id),
-                subTitleLabel = AnnotatedString(trade.guid ?: "")
+                subTitleLabel = AnnotatedString(currentTrade.guid ?: "")
             )
             // -- Close Button
             Text(
@@ -171,7 +161,7 @@ fun AccountsView_Trades_Detail_Content(
                     .fillMaxWidth()
                     .padding(top = 40.dp, bottom = 30.dp)
                     .clickable {
-                        showDialog.value = false
+                        accountsViewModel.dismissTradeDetail()
                     },
                 lineHeight = 20.sp,
                 color = colorResource(id = R.color.primary_color),
