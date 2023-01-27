@@ -67,7 +67,9 @@ class BankAccountsViewModel: ViewModel() {
                 viewModelScope.let { scope ->
                     val waitFor = scope.async {
                         val accountsResult = getResult {
-                            externalBankAccountsService.listExternalBankAccounts()
+                            externalBankAccountsService.listExternalBankAccounts(
+                                customerGuid = customerGuid
+                            )
                         }
                         accountsResult.let {
                             if (isSuccessful(it.code ?: 500)) {
