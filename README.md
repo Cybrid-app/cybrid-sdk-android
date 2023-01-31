@@ -1,4 +1,4 @@
-![CircleCI](https://circleci.com/gh/Cybrid-app/cybrid-sdk-web.svg?style=svg)
+![CircleCI](https://circleci.com/gh/Cybrid-app/cybrid-sdk-android.svg?style=svg)
 [![codecov](https://codecov.io/gh/Cybrid-app/cybrid-sdk-android/branch/main/graph/badge.svg?token=LTJJFQJWEA)](https://codecov.io/gh/Cybrid-app/cybrid-sdk-android)
 
 # cybrid-android-sdk
