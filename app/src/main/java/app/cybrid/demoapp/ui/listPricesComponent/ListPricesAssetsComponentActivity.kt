@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import app.cybrid.demoapp.R
 import app.cybrid.sdkandroid.components.ListPricesView
-import app.cybrid.sdkandroid.components.ListPricesViewType
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 
 class ListPricesAssetsComponentActivity : AppCompatActivity() {
