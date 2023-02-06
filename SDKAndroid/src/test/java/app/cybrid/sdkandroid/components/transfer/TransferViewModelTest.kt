@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.components.transfer
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.PostQuoteBankModel
 import app.cybrid.cybrid_api_bank.client.models.QuoteBankModel
@@ -11,17 +12,21 @@ import app.cybrid.sdkandroid.tools.JSONMock
 import app.cybrid.sdkandroid.tools.TestConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
 import okhttp3.OkHttpClient
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.*
 
 class TransferViewModelTest {
 
     @ExperimentalCoroutinesApi
     private val scope = TestScope()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val testDispatcher = StandardTestDispatcher()
+
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     @ExperimentalCoroutinesApi
     @Before

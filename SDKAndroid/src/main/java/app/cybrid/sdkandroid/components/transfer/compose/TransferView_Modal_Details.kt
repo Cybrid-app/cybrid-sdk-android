@@ -1,7 +1,5 @@
 package app.cybrid.sdkandroid.components.transfer.compose
 
-import android.os.Handler
-import android.os.Looper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,17 +23,11 @@ import androidx.compose.ui.unit.sp
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.TransferView
-import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
-import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.getDateInFormat
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.time.OffsetDateTime
 
-@DelicateCoroutinesApi
 @Composable
 fun TransferView_Modal_Details(
     transferViewModel: TransferViewModel?,
@@ -81,8 +73,8 @@ fun TransferView_Modal_Details(
     val fromTo = buildAnnotatedString { append( accountNameToDisplay ) }
 
     // -- Content
-    Box() {
-        Column() {
+    Box {
+        Column {
             Text(
                 text = titleText,
                 modifier = Modifier
@@ -173,7 +165,6 @@ private fun TransferView_Modal_Details__Item(
     }
 }
 
-@DelicateCoroutinesApi
 @Composable
 private fun TransferView_Modal_Details__Button(
     transferViewModel: TransferViewModel?,
@@ -192,15 +183,6 @@ private fun TransferView_Modal_Details__Button(
                 showDialog.value = false
 
                 transferViewModel?.notifyAccountsHaveToChange()
-
-                //if (fromAccounts) {
-                    /*transferViewModel?.viewDismiss?.value = true
-                    GlobalScope.launch { accountsViewModel.getAccountsList() }*/
-                /*} else {
-                    Handler().postDelayed({
-                        GlobalScope.launch { transferViewModel?.fetchAccounts() }
-                    }, 4000L)
-                }*/
             },
             modifier = Modifier
                 .fillMaxWidth()

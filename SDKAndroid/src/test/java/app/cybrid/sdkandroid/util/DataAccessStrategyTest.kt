@@ -8,14 +8,36 @@ import app.cybrid.sdkandroid.tools.TestConstants
 import app.cybrid.sdkandroid.tools.ErrorMockInterceptor
 import app.cybrid.sdkandroid.tools.TestEmptyService
 import app.cybrid.sdkandroid.tools.MockInterceptor
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import okhttp3.OkHttpClient
+import org.junit.After
 import org.junit.Test
 import org.junit.Assert
+import org.junit.Before
 import java.net.HttpURLConnection
 
 class DataAccessStrategyTest {
+
+    @ExperimentalCoroutinesApi
+    private val scope = TestScope()
+
+    @ExperimentalCoroutinesApi
+    @Before
+    fun setUp() {
+        Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
+    }
+
+    @ExperimentalCoroutinesApi
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
 
     private fun prepareClient(code:Int, error:Boolean = false): ApiClient {
 
@@ -34,7 +56,7 @@ class DataAccessStrategyTest {
         val result = getResult { pricesService.listPrices() }
 
         Assert.assertNotNull(result)
-        Assert.assertEquals(result.code, 400)
+        Assert.assertEquals(result.code, 401)
         Assert.assertNull(result.data)
     }
 

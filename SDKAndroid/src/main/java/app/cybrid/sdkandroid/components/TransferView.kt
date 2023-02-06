@@ -4,8 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -13,17 +11,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
-import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Accounts
 import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Modal
 import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Loading
 import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.core.Constants
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class TransferView @JvmOverloads constructor(
@@ -45,13 +40,12 @@ Component(context, attrs, defStyle) {
         this.composeView = findViewById(R.id.composeContent)
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun setViewModel(transferViewModel: TransferViewModel) {
 
         this.transferViewModel = transferViewModel
         this.currentState = transferViewModel.uiState
         this.initComposeView()
-        GlobalScope.launch {
+        transferViewModel.viewModelScope.launch {
             transferViewModel.fetchAccounts()
         }
     }

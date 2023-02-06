@@ -287,7 +287,7 @@ class BankAccountsViewModel: ViewModel() {
         } else {
 
             var allowed = false
-            Cybrid.instance.let { cybrid ->
+            Cybrid.instance.let {
                 viewModelScope.let { scope ->
                     val waitFor = scope.async {
 

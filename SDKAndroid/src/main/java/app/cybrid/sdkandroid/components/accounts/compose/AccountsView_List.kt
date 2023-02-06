@@ -21,7 +21,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -32,19 +31,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.models.AccountBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.AccountsViewStyles
 import app.cybrid.sdkandroid.components.accounts.entity.AccountAssetPriceModel
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.activity.TransferActivity
-import app.cybrid.sdkandroid.components.getImage
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
-import kotlinx.coroutines.GlobalScope
+import app.cybrid.sdkandroid.util.getImageUrl
+import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -52,9 +52,6 @@ import kotlinx.coroutines.launch
 fun AccountsView_List(
     accountsViewModel: AccountsViewModel
 ) {
-
-    // -- Mutable Vars
-    val selectedIndex by remember { mutableStateOf(-1) }
 
     Column(
         modifier = Modifier
@@ -89,7 +86,7 @@ fun AccountsView_List(
                         accountsViewModel = accountsViewModel
                     )
                 }
-                itemsIndexed(items = accountsViewModel.accountsAssetPrice) { index, item ->
+                itemsIndexed(items = accountsViewModel.accountsAssetPrice) { _, item ->
 
                     if (item.accountType == AccountBankModel.Type.trading) {
                         AccountsView_List_Trading_Item(
@@ -216,7 +213,7 @@ fun AccountsView_List_Trading_Item(balance: AccountAssetPriceModel,
 
     // -- Vars
     val cryptoCode = balance.accountAssetCode
-    val imageID = getImage(LocalContext.current, "ic_${cryptoCode.lowercase()}")
+    val imagePainter = rememberAsyncImagePainter(getImageUrl(cryptoCode.lowercase()))
     val cryptoName = balance.assetName
     val assetNameCode = buildAnnotatedString {
         append(cryptoName)
@@ -239,12 +236,14 @@ fun AccountsView_List_Trading_Item(balance: AccountAssetPriceModel,
                 .padding(vertical = 0.dp)
                 .height(66.dp)
                 .clickable {
-                    GlobalScope.launch { accountsViewModel.getTradesList(balance) }
+                    accountsViewModel.viewModelScope.launch {
+                        accountsViewModel.getTradesList(balance)
+                    }
                 },
         ) {
 
             Image(
-                painter = painterResource(id = imageID),
+                painter = imagePainter,
                 contentDescription = "{$cryptoName}",
                 modifier = Modifier
                     .padding(horizontal = 0.dp)
@@ -312,7 +311,7 @@ fun AccountsView_List_Fiat_Item(balance: AccountAssetPriceModel,
 
     // -- Vars
     val fiatCode = balance.accountAssetCode
-    val imageID = getImage(LocalContext.current, "ic_${fiatCode.lowercase()}")
+    val imagePainter = rememberAsyncImagePainter(getImageUrl(fiatCode.lowercase()))
     val fiatName = balance.assetName
     val assetNameCode = buildAnnotatedString {
         append(fiatName)
@@ -340,12 +339,14 @@ fun AccountsView_List_Fiat_Item(balance: AccountAssetPriceModel,
                 .padding(vertical = 0.dp)
                 .height(66.dp)
                 .clickable {
-                    GlobalScope.launch { accountsViewModel.getTransfersList(balance) }
+                    accountsViewModel.viewModelScope.launch {
+                        accountsViewModel.getTransfersList(balance)
+                    }
                 },
         ) {
 
             Image(
-                painter = painterResource(id = imageID),
+                painter = imagePainter,
                 contentDescription = "{$fiatName}",
                 modifier = Modifier
                     .padding(horizontal = 0.dp)

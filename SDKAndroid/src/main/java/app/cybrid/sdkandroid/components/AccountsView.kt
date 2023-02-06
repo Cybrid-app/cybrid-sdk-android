@@ -18,8 +18,6 @@ import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.core.Constants
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class AccountsView @JvmOverloads constructor(
@@ -41,7 +39,6 @@ Component(context, attrs, defStyle) {
         this.composeView = findViewById(R.id.composeContent)
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun setViewModels(
         listPricesViewModel: ListPricesViewModel,
         accountsViewModel: AccountsViewModel,
@@ -55,7 +52,9 @@ Component(context, attrs, defStyle) {
         this.currentState = accountsViewModel.uiState
         this.initComposeView()
 
-        GlobalScope.launch { accountsViewModel.getAccountsList() }
+        accountsViewModel.viewModelScope.launch {
+            accountsViewModel.getAccountsList()
+        }
     }
 
     private fun initComposeView() {

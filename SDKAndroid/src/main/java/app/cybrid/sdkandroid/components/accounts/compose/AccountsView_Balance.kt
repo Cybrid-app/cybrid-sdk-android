@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
-import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 
 @Composable

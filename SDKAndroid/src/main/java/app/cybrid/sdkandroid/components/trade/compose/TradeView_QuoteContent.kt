@@ -1,6 +1,5 @@
 package app.cybrid.sdkandroid.components.trade.compose
 
-import android.content.Context
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,11 +43,12 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.PostQuoteBankModel
 import app.cybrid.sdkandroid.R
-import app.cybrid.sdkandroid.components.getImage
 import app.cybrid.sdkandroid.components.trade.view.TradeViewModel
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
+import app.cybrid.sdkandroid.util.getImageUrl
+import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -57,9 +57,7 @@ import java.math.BigDecimal
 @Composable
 fun TradeView_QuoteContent(
     tradeViewModel: TradeViewModel,
-    selectedTabIndex: MutableState<Int>,
-    context: Context
-) {
+    selectedTabIndex: MutableState<Int>) {
 
     // -- Tabs
     val tabs = stringArrayResource(id = R.array.trade_flow_tabs)
@@ -76,9 +74,6 @@ fun TradeView_QuoteContent(
             tradeViewModel.currentPairAsset.value else tradeViewModel.currentAsset.value
         )
     }
-
-    // -- Show Dialog
-    val showDialog = remember { mutableStateOf(false) }
 
     // -- Content
     Column(modifier = Modifier
@@ -97,16 +92,14 @@ fun TradeView_QuoteContent(
             TradeView_QuoteContent__CurrencyInput(
                 currencyState = tradeViewModel.currentAsset,
                 expandedCurrencyInput = expandedCurrencyInput,
-                currencyInputWidth = currencyInputWidth,
-                context = context
+                currencyInputWidth = currencyInputWidth
             )
 
             TradeView_QuoteContent__CurrencyDropDown(
                 currencyState = tradeViewModel.currentAsset,
                 expandedCurrencyInput = expandedCurrencyInput,
                 currencyInputWidth = currencyInputWidth,
-                cryptoList = tradeViewModel.listPricesViewModel?.getCryptoListAsset() ?: listOf(),
-                context = context
+                cryptoList = tradeViewModel.listPricesViewModel?.getCryptoListAsset() ?: listOf()
             )
         }
 
@@ -136,22 +129,9 @@ fun TradeView_QuoteContent(
                     pairAsset = tradeViewModel.currentPairAsset.value,
                     typeOfAmountState = typeOfAmountState,
                     selectedTabIndex = selectedTabIndex,
-                    showDialog = showDialog
                 )
             }
         }
-
-        // -- Show Dialog
-        /*if (showDialog.value) {
-            QuoteConfirmationModal(
-                viewModel = this.quoteViewModel!!,
-                asset = currencyState,
-                pairAsset = pairAsset,
-                showDialog = showDialog,
-                selectedTabIndex = selectedTabIndex,
-                updateInterval = updateInterval
-            )
-        }*/
     }
 }
 
@@ -197,14 +177,16 @@ private fun TradeView_QuoteContent__Tabs(
 private fun TradeView_QuoteContent__CurrencyInput(
     currencyState: MutableState<AssetBankModel?>,
     expandedCurrencyInput: MutableState<Boolean>,
-    currencyInputWidth: MutableState<Size>,
-    context: Context) {
+    currencyInputWidth: MutableState<Size>) {
 
     val icon = if (expandedCurrencyInput.value) {
         Icons.Filled.ArrowDropUp
     } else {
         Icons.Filled.ArrowDropDown
     }
+
+    val imageName = currencyState.value?.code?.lowercase() ?: ""
+    val imagePainter = rememberAsyncImagePainter(getImageUrl(imageName))
 
     // -- Content
     ConstraintLayout {
@@ -250,12 +232,7 @@ private fun TradeView_QuoteContent__CurrencyInput(
                 .clickable { expandedCurrencyInput.value = !expandedCurrencyInput.value }
         ) {
             Image(
-                painter = painterResource(
-                    id = getImageID(
-                        context = context,
-                        name = currencyState.value?.code?.lowercase() ?: "btc"
-                    )
-                ),
+                painter = imagePainter,
                 contentDescription = currencyState.value?.name ?: "",
                 modifier = Modifier
                     .padding(start = 16.dp)
@@ -298,10 +275,10 @@ private fun TradeView_QuoteContent__CurrencyDropDown(
     currencyState: MutableState<AssetBankModel?>,
     expandedCurrencyInput: MutableState<Boolean>,
     currencyInputWidth: MutableState<Size>,
-    cryptoList: List<AssetBankModel>,
-    context: Context
+    cryptoList: List<AssetBankModel>
 ) {
 
+    // -- Content
     DropdownMenu(
         expanded = expandedCurrencyInput.value,
         onDismissRequest = { expandedCurrencyInput.value = false },
@@ -311,10 +288,8 @@ private fun TradeView_QuoteContent__CurrencyDropDown(
     ) {
         cryptoList.forEach { crypto ->
 
-            val imageID = getImageID(
-                context = context,
-                name = crypto.code.lowercase()
-            )
+            val imageName = crypto.code.lowercase()
+            val imagePainter = rememberAsyncImagePainter(getImageUrl(imageName))
             DropdownMenuItem(
                 onClick = {
 
@@ -329,8 +304,8 @@ private fun TradeView_QuoteContent__CurrencyDropDown(
                 ) {
 
                     Image(
-                        painter = painterResource(id = imageID),
-                        contentDescription = "{$imageID}",
+                        painter = imagePainter,
+                        contentDescription = "{${crypto.code}}",
                         modifier = Modifier
                             .padding(horizontal = 0.dp)
                             .padding(0.dp)
@@ -503,7 +478,7 @@ private fun TradeView_QuoteContent__CurrencyValueResult(
             amountAsset.value = currencyState.value
             codeAssetToUse = pairAsset
             val value = app.cybrid.sdkandroid.core.BigDecimal(stateInt).times(buyPriceDecimal)
-            amount =  BigDecimalPipe.transform(value, pairAsset)!!
+            amount =  BigDecimalPipe.transform(value, pairAsset)
         }
 
         AssetBankModel.Type.fiat -> {
@@ -565,8 +540,7 @@ private fun TradeView_QuoteContent__ActionButton(
     amountState: MutableState<String>,
     pairAsset: AssetBankModel?,
     typeOfAmountState: MutableState<AssetBankModel.Type>,
-    selectedTabIndex: MutableState<Int>,
-    showDialog: MutableState<Boolean>
+    selectedTabIndex: MutableState<Int>
 ) {
 
     // -- Side logic
@@ -633,8 +607,4 @@ private fun TradeView_QuoteContent__ActionButton(
             )
         }
     }
-}
-
-private fun getImageID(context: Context, name: String) : Int {
-    return getImage(context, "ic_${name}")
 }

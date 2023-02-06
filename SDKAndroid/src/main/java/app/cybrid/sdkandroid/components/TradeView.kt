@@ -9,10 +9,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringArrayResource
-import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
+import androidx.lifecycle.viewModelScope
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.kyc.compose.KYCView_Modal_Warning
 import app.cybrid.sdkandroid.components.trade.compose.TradeView_ListPrices
@@ -21,8 +19,6 @@ import app.cybrid.sdkandroid.components.trade.compose.TradeView_QuoteContent
 import app.cybrid.sdkandroid.components.trade.compose.TradeView_QuoteModal
 import app.cybrid.sdkandroid.components.trade.view.TradeViewModel
 import app.cybrid.sdkandroid.core.Constants
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class TradeView @JvmOverloads constructor(
@@ -43,12 +39,13 @@ Component(context, attrs, defStyle) {
         this.composeView = findViewById(R.id.composeContent)
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun setViewModel(tradeViewModel: TradeViewModel) {
 
         this.tradeViewModel = tradeViewModel
         this.currentState = this.tradeViewModel?.uiState!!
-        GlobalScope.launch { tradeViewModel.getPricesList() }
+        tradeViewModel.viewModelScope.launch {
+            tradeViewModel.getPricesList()
+        }
         this.initComposeView()
     }
 
@@ -91,7 +88,6 @@ fun TradeView(
             TradeView.ViewState.LIST_PRICES -> {
                 TradeView_ListPrices(
                     tradeViewModel = tradeViewModel,
-                    context = context,
                     onClick = { asset, pairAsset ->
                         tradeViewModel.handlePricesOnClick(asset, pairAsset)
                     }
@@ -101,8 +97,7 @@ fun TradeView(
             TradeView.ViewState.QUOTE_CONTENT -> {
                 TradeView_QuoteContent(
                     tradeViewModel = tradeViewModel,
-                    selectedTabIndex = selectedTabIndex,
-                    context = context
+                    selectedTabIndex = selectedTabIndex
                 )
             }
         }

@@ -6,9 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import app.cybrid.sdkandroid.components.kyc.view.IdentityVerificationViewModel
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.*
 import org.junit.*
 
+@ExperimentalCoroutinesApi
 class KYCViewTest {
 
     @MockK
@@ -19,15 +23,26 @@ class KYCViewTest {
 
     private lateinit var kycView: KYCView
 
+    @ExperimentalCoroutinesApi
+    private val scope = TestScope()
+
+    @ExperimentalCoroutinesApi
     @Before
     fun setup() {
 
+        Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
         MockKAnnotations.init(this, relaxed = true)
 
         every { LayoutInflater.from(context) } returns layoutInflater
         every { layoutInflater.inflate(any<Int>(), any()) } returns mockk()
 
         kycView = KYCView(context)
+    }
+
+    @ExperimentalCoroutinesApi
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test

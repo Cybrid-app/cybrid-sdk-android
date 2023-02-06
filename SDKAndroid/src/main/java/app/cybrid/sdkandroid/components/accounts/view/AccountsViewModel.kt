@@ -191,17 +191,18 @@ class AccountsViewModel : ViewModel() {
                     assetDecimals = asset?.decimals ?: JavaBigDecimal(0),
                     pairAsset = counterAsset,
                     buyPrice = buyPrice,
-                    buyPriceFormatted = buyPriceFormatted ?: "",
+                    buyPriceFormatted = buyPriceFormatted,
                     sellPrice = price?.sellPrice ?: JavaBigDecimal(0)
                 )
                 accountsList.add(account)
             }
         }
+        accountsList.sortByDescending { it.accountType }
         this.accountsAssetPrice = accountsList
         this.getCalculatedBalance()
     }
 
-    internal fun getCalculatedBalance() {
+    private fun getCalculatedBalance() {
 
         var total = BigDecimal(0)
         if (this.accountsAssetPrice.isNotEmpty()) {
@@ -209,7 +210,6 @@ class AccountsViewModel : ViewModel() {
             this.accountsAssetPrice.forEach { balance ->
                 total = total.plus(balance.accountBalanceInFiat).setScale(2)
             }
-            total = total
             this.totalBalance = BigDecimalPipe.transform(total, pairAsset)
         }
     }

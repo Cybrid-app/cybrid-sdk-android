@@ -33,25 +33,6 @@ class UtilsTest {
     }
 
     @Test
-    fun getDateInFormatTest() {
-
-        // -- Given
-        Locale.setDefault(Locale.forLanguageTag("us-EN"))
-        val dateOne = OffsetDateTime.parse("2022-08-02T10:55:34.039847-05:00")
-        val patterOne = "MM,dd,YYYY"
-
-        // -- When
-        val dateFormattedOne = getDateInFormat(dateOne)
-        val dateFormattedTwo = getDateInFormat(dateOne, patterOne)
-        val dateFormattedThree = getDateInFormat(dateOne, "")
-
-        // -- Then
-        Assert.assertEquals(dateFormattedOne, "Aug 02, 2022")
-        Assert.assertEquals(dateFormattedTwo, "08,02,2022")
-        Assert.assertEquals(dateFormattedThree, "")
-    }
-
-    @Test
     fun test_getLanguage() {
 
         // -- EN
@@ -83,5 +64,38 @@ class UtilsTest {
         languageString = "other"
         language = getLanguage(languageString)
         Assert.assertEquals(language.value, "en")
+    }
+
+    @Test
+    fun test_getDateInFormatTest() {
+
+        // -- Given
+        Locale.setDefault(Locale.forLanguageTag("us-EN"))
+        val dateOne = OffsetDateTime.parse("2022-08-02T10:55:34.039847-05:00")
+        val patterOne = "MM,dd,YYYY"
+
+        // -- When
+        val dateFormattedOne = getDateInFormat(dateOne)
+        val dateFormattedTwo = getDateInFormat(dateOne, patterOne)
+        val dateFormattedThree = getDateInFormat(dateOne, "")
+
+        // -- Then
+        Assert.assertEquals(dateFormattedOne, "Aug 02, 2022")
+        Assert.assertEquals(dateFormattedTwo, "08,02,2022")
+        Assert.assertEquals(dateFormattedThree, "")
+    }
+
+    @Test
+    fun test_getImageUrl() {
+
+        // -- Given
+        val imageName = "btc"
+        val nameResult = "https://images.cybrid.xyz/sdk/assets/png/color/btc@2x.png"
+
+        // -- When
+        val imageUrl = getImageUrl(imageName)
+
+        // -- Then
+        Assert.assertEquals(nameResult, imageUrl)
     }
 }

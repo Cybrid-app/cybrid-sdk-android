@@ -6,7 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import app.cybrid.sdkandroid.components.trade.view.TradeViewModel
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.junit.*
 
 class TradeViewTest {
@@ -19,9 +25,14 @@ class TradeViewTest {
 
     private lateinit var tradeView: TradeView
 
+    @ExperimentalCoroutinesApi
+    private val scope = TestScope()
+
+    @ExperimentalCoroutinesApi
     @Before
     fun setup() {
 
+        Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
         MockKAnnotations.init(this, relaxed = true)
 
         every { LayoutInflater.from(context) } returns layoutInflater
@@ -29,6 +40,12 @@ class TradeViewTest {
 
         tradeView = spyk(TradeView(context))
         every { tradeView.context } returns context
+    }
+
+    @ExperimentalCoroutinesApi
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test

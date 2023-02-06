@@ -20,18 +20,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.TransferView
 import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.getDateInFormat
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.time.OffsetDateTime
 
-@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun TransferView_Modal_Confirm(
     transferViewModel: TransferViewModel?,
@@ -76,8 +74,8 @@ fun TransferView_Modal_Confirm(
     val fromTo = buildAnnotatedString { append( accountNameToDisplay ) }
 
     // -- Content
-    Box() {
-        Column() {
+    Box {
+        Column {
             Text(
                 text = titleText,
                 modifier = Modifier
@@ -168,7 +166,6 @@ private fun TransferView_Modal_Confirm__Item(
     }
 }
 
-@DelicateCoroutinesApi
 @Composable
 private fun TransferView_Modal_Confirm__Button(
     transferViewModel: TransferViewModel?,
@@ -183,8 +180,8 @@ private fun TransferView_Modal_Confirm__Button(
             onClick = {
 
                 transferViewModel?.modalUiState?.value = TransferView.ModalViewState.LOADING
-                GlobalScope.launch {
-                    transferViewModel?.createTransfer(externalBankAccount!!)
+                transferViewModel?.viewModelScope?.launch {
+                    transferViewModel.createTransfer(externalBankAccount!!)
                 }
             },
             modifier = Modifier

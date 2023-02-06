@@ -10,7 +10,6 @@ import androidx.compose.ui.unit.dp
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.BankAccountsView
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
-import app.cybrid.sdkandroid.components.trade.compose.TradeView_QuoteModal_Loading
 import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
 
 @Composable
