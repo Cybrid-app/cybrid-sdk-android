@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.components.kyc.view
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.compose.runtime.mutableStateOf
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.CustomerBankModel
@@ -15,6 +16,9 @@ import okhttp3.OkHttpClient
 import org.junit.*
 
 class IdentityVerificationViewModelTest {
+
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     @ExperimentalCoroutinesApi
     private val scope = TestScope()

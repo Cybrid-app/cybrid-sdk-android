@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.components.trade.view
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.TradeView
@@ -9,12 +10,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import okhttp3.OkHttpClient
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.*
 
 class TradeViewModelTestError {
+
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     @ExperimentalCoroutinesApi
     private val scope = TestScope()
