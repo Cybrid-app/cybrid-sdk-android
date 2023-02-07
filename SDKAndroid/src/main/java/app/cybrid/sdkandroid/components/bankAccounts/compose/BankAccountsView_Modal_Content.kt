@@ -15,7 +15,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.BankAccountsView
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
@@ -27,8 +26,8 @@ fun BankAccountsView_Modal_Content(
 ) {
 
     // -- Content
-    Box() {
-        Column() {
+    Box {
+        Column {
             Text(
                 text = stringResource(id = R.string.bank_accounts_modal_content_title),
                 modifier = Modifier

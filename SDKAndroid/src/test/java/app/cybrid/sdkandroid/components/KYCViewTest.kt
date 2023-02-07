@@ -2,13 +2,19 @@ package app.cybrid.sdkandroid.components
 
 import android.content.Context
 import android.view.LayoutInflater
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.compose.runtime.mutableStateOf
 import app.cybrid.sdkandroid.components.kyc.view.IdentityVerificationViewModel
+import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.*
 import org.junit.*
 
+@ExperimentalCoroutinesApi
 class KYCViewTest {
 
     @MockK
@@ -19,6 +25,14 @@ class KYCViewTest {
 
     private lateinit var kycView: KYCView
 
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
+
+    @ExperimentalCoroutinesApi
     @Before
     fun setup() {
 
@@ -29,6 +43,7 @@ class KYCViewTest {
 
         kycView = KYCView(context)
     }
+
 
     @Test
     fun test_init() = runBlocking {

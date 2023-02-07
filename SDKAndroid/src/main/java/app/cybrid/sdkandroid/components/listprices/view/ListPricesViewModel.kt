@@ -7,11 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.apis.PricesApi
 import app.cybrid.cybrid_api_bank.client.apis.AssetsApi
-import app.cybrid.cybrid_api_bank.client.apis.QuotesApi
-import app.cybrid.cybrid_api_bank.client.apis.TradesApi
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
-import app.cybrid.cybrid_api_bank.client.models.AssetListBankModel
 import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
@@ -20,7 +17,6 @@ import app.cybrid.sdkandroid.util.LoggerEvents
 import app.cybrid.sdkandroid.util.getResult
 import app.cybrid.sdkandroid.util.isSuccessful
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 
 class ListPricesViewModel : ViewModel() {
 
@@ -36,7 +32,7 @@ class ListPricesViewModel : ViewModel() {
         pricesService = dataProvider.createService(PricesApi::class.java)
     }
 
-    internal suspend fun fetchAssets(): List<AssetBankModel> {
+    private suspend fun fetchAssets(): List<AssetBankModel> {
 
         var assets: List<AssetBankModel> = listOf()
         Cybrid.instance.let { cybrid ->
@@ -106,8 +102,7 @@ class ListPricesViewModel : ViewModel() {
     }
 
     fun findAsset(symbol: String): AssetBankModel? {
-        val a = assets.find { it.code == symbol }
-        return a
+        return assets.find { it.code == symbol }
     }
 
     fun getBuyPrice(symbol: String): SymbolPriceBankModel {

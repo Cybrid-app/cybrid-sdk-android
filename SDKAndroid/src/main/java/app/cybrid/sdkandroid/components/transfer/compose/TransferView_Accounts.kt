@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.cybrid_api_bank.client.models.PostQuoteBankModel
 import app.cybrid.sdkandroid.R
@@ -49,8 +50,6 @@ import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -506,7 +505,6 @@ fun TransferView_Accounts_Input(
     }
 }
 
-@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun TransferView_Accounts_Button(
     transferViewModel: TransferViewModel?,
@@ -529,7 +527,7 @@ fun TransferView_Accounts_Button(
         Button(
             onClick = {
 
-                GlobalScope.launch {
+                transferViewModel.viewModelScope.launch {
                     transferViewModel.createQuote(side = quoteSide, amount = amount)
                 }
                 showDialog.value = true

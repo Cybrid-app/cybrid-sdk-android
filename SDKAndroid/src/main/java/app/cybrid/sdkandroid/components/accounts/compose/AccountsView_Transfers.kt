@@ -19,9 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -34,13 +32,14 @@ import app.cybrid.cybrid_api_bank.client.models.TransferBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.AccountsViewStyles
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
-import app.cybrid.sdkandroid.components.getImage
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.getDateInFormat
+import app.cybrid.sdkandroid.util.getImageUrl
 import app.cybrid.sdkandroid.util.getSpannableStyle
+import coil.compose.rememberAsyncImagePainter
 import java.time.OffsetDateTime
 
 @Composable
@@ -68,7 +67,7 @@ fun AccountsView_Transfers_BalanceAndHoldings(
 
     // -- Vars
     val fiatCode = accountsViewModel.currentAccountSelected?.accountAssetCode ?: ""
-    val imageID = getImage(LocalContext.current, "ic_${fiatCode.lowercase()}")
+    val imagePainter = rememberAsyncImagePainter(getImageUrl(fiatCode.lowercase()))
     val fiatName = accountsViewModel.currentAccountSelected?.assetName ?: ""
     val assetBalance = getSpannableStyle(
         text = accountsViewModel.currentAccountSelected?.accountAvailableFormattedString ?: "",
@@ -97,7 +96,7 @@ fun AccountsView_Transfers_BalanceAndHoldings(
     ) {
 
         Image(
-            painter = painterResource(id = imageID),
+            painter = imagePainter,
             contentDescription = "{$fiatName}",
             modifier = Modifier
                 .padding(horizontal = 0.dp)
@@ -155,10 +154,9 @@ fun AccountsView_Transfers_List(
         stickyHeader {
             AccountsView_Transfers_List_Header()
         }
-        itemsIndexed(items = accountsViewModel?.transfers ?: listOf()) { index, item ->
+        itemsIndexed(items = accountsViewModel?.transfers ?: listOf()) { _, item ->
             AccountsView_Transfers_List_Item(
                 transfer = item,
-                index = index,
                 accountsViewModel = accountsViewModel,
             )
         }
@@ -216,7 +214,7 @@ fun AccountsView_Transfers_List_Header(
 
 @Composable
 fun AccountsView_Transfers_List_Item(
-    transfer: TransferBankModel, index: Int,
+    transfer: TransferBankModel,
     accountsViewModel: AccountsViewModel?,
     customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {

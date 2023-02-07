@@ -16,12 +16,16 @@ import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
 import app.cybrid.sdkandroid.util.getResult
 import app.cybrid.sdkandroid.util.isSuccessful
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlin.coroutines.EmptyCoroutineContext
 import java.math.BigDecimal as JavaBigDecimal
 
 class TransferViewModel: ViewModel() {
+
+    private var dispatcher: CoroutineDispatcher = Dispatchers.Default
 
     private var assetsService = AppModule.getClient().createService(AssetsApi::class.java)
     private var accountsService = AppModule.getClient().createService(AccountsApi::class.java)
@@ -56,6 +60,10 @@ class TransferViewModel: ViewModel() {
         transferService = dataProvider.createService(TransfersApi::class.java)
     }
 
+    fun setDispatcher(dispatcher: CoroutineDispatcher) {
+        this.dispatcher = dispatcher
+    }
+
     suspend fun fetchAssets(): List<AssetBankModel>? {
 
         var assets: List<AssetBankModel>? = null
@@ -63,7 +71,7 @@ class TransferViewModel: ViewModel() {
             if (!cybrid.invalidToken) {
                 viewModelScope.let { scope ->
                     val waitFor = scope.async {
-                        var assetsResponse = getResult { assetsService.listAssets() }
+                        val assetsResponse = getResult { assetsService.listAssets() }
                         assetsResponse.let {
                             if (isSuccessful(it.code ?: 500)) {
                                 Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
@@ -148,7 +156,7 @@ class TransferViewModel: ViewModel() {
             }
         }
         this.fiatBalance.value = if (counterAsset != null) {
-            BigDecimalPipe.transform(total, counterAsset) ?: ""
+            BigDecimalPipe.transform(total, counterAsset)
         } else { "" }
     }
 
@@ -188,7 +196,7 @@ class TransferViewModel: ViewModel() {
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
                 viewModelScope.let { scope ->
-                    val waitFor = scope.async {
+                    val waitFor = scope.async(dispatcher) {
 
                         val postTransferPostQuoteBankModel = PostTransferBankModel(
                             quoteGuid = currentQuote?.guid!!,
@@ -230,7 +238,7 @@ class TransferViewModel: ViewModel() {
         val counterAsset = assets?.find { it.code == currentFiatCurrency }
         return if (counterAsset != null) {
             val amount = BigDecimal(quote?.deliverAmount ?: JavaBigDecimal(0))
-            BigDecimalPipe.transform(amount, counterAsset) ?: ""
+            BigDecimalPipe.transform(amount, counterAsset)
         } else {
             "0"
         }

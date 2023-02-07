@@ -1,5 +1,3 @@
-@file:OptIn(DelicateCoroutinesApi::class)
-
 package app.cybrid.sdkandroid.components
 
 import android.content.Context
@@ -11,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.bankAccounts.compose.*
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
@@ -18,7 +17,6 @@ import com.plaid.link.configuration.LinkTokenConfiguration
 import com.plaid.link.linkTokenConfiguration
 import com.plaid.link.result.LinkResult
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class BankAccountsView @JvmOverloads constructor(
@@ -46,7 +44,8 @@ Component(context, attrs, defStyle) {
         this.bankAccountsViewModel = bankAccountsViewModel
         this.currentState = bankAccountsViewModel.uiState
         this.initComposeView()
-        GlobalScope.launch {
+
+        bankAccountsViewModel.viewModelScope.launch {
             bankAccountsViewModel.fetchExternalBankAccounts()
         }
     }

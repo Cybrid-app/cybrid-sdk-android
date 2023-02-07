@@ -1,36 +1,27 @@
 package app.cybrid.sdkandroid.components.accounts.view
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.AccountsView
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.tools.JSONMock
+import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import app.cybrid.sdkandroid.tools.TestConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import okhttp3.OkHttpClient
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.*
 
 class AccountsViewModelTestError {
 
     @ExperimentalCoroutinesApi
-    private val scope = TestScope()
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
 
-    @ExperimentalCoroutinesApi
-    @Before
-    fun setUp() {
-        Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
-    }
-
-    @ExperimentalCoroutinesApi
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     private fun prepareClient(state: JSONMock.JSONMockState): ApiClient {
 

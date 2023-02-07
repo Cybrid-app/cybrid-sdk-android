@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.components.kyc.view
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.compose.runtime.mutableStateOf
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.sdkandroid.components.KYCView
@@ -12,12 +13,12 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import okhttp3.OkHttpClient
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.*
 
 class IdentityVerificationViewModelTestError {
+
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     @ExperimentalCoroutinesApi
     private val dispatcher = TestCoroutineDispatcher()

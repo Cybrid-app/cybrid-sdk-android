@@ -3,7 +3,6 @@ package app.cybrid.sdkandroid.components
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.*

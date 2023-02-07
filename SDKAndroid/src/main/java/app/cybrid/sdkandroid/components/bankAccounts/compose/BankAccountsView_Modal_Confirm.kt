@@ -13,10 +13,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -32,8 +32,8 @@ fun BankAccountsView_Modal_Confirm(
     )
 
     // -- Content
-    Box() {
-        Column() {
+    Box {
+        Column {
             Text(
                 text = stringResource(id = R.string.bank_accounts_modal_confirm_title),
                 modifier = Modifier
@@ -95,7 +95,9 @@ private fun BankAccountsView_Modal_Confirm_Buttons(
         // -- Continue Button
         Button(
             onClick = {
-                GlobalScope.launch { bankAccountsViewModel.disconnectExternalBankAccountDetail() }
+                bankAccountsViewModel.viewModelScope.launch {
+                    bankAccountsViewModel.disconnectExternalBankAccountDetail()
+                }
             },
             modifier = Modifier
                 .width(120.dp)

@@ -2,6 +2,7 @@ package app.cybrid.sdkandroid.util
 
 import android.annotation.SuppressLint
 import app.cybrid.cybrid_api_bank.client.models.PostWorkflowBankModel
+import app.cybrid.sdkandroid.Cybrid
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
@@ -27,4 +28,10 @@ fun getDateInFormat(date: OffsetDateTime, pattern:String = "MMM dd, YYYY"): Stri
 
     val formatter = DateTimeFormatter.ofPattern(pattern)
     return date.format(formatter)
+}
+
+fun getImageUrl(name: String): String {
+
+    val cybrid = Cybrid.instance
+    return "${cybrid.imagesUrl}$name${cybrid.imagesSize}"
 }

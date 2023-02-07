@@ -1,7 +1,7 @@
-@file:OptIn(DelicateCoroutinesApi::class)
-
 package app.cybrid.sdkandroid.components.bankAccounts.compose
 
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,20 +29,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.BankAccountsView
-import app.cybrid.sdkandroid.components.activity.TransferActivity
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
-import app.cybrid.sdkandroid.components.getImage
 import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import com.plaid.link.OpenPlaidLink
 import com.plaid.link.result.LinkExit
 import com.plaid.link.result.LinkSuccess
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -56,8 +53,8 @@ fun BankAccountsView_Content(bankAccountsViewModel: BankAccountsViewModel?) {
                 if (it.metadata.accounts.size == 1) {
 
                     bankAccountsViewModel?.uiState?.value = BankAccountsView.State.LOADING
-                    GlobalScope.launch {
-                        bankAccountsViewModel?.createExternalBankAccount(
+                    bankAccountsViewModel?.viewModelScope?.launch {
+                        bankAccountsViewModel.createExternalBankAccount(
                             publicToken = it.publicToken,
                             account = it.metadata.accounts[0])
                     }
@@ -214,7 +211,7 @@ fun BankAccountsView_Content_List(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            itemsIndexed(items = bankAccountsViewModel?.accounts ?: listOf()) { index, item ->
+            itemsIndexed(items = bankAccountsViewModel?.accounts ?: listOf()) { _, item ->
                 BankAccountsView_Content_List_Item(
                     account = item,
                     bankAccountsViewModel = bankAccountsViewModel!!
@@ -231,7 +228,7 @@ fun BankAccountsView_Content_List_Item(
 ) {
 
     // -- Vars
-    val imageID = getImage(LocalContext.current, "test_bank")
+    val imageID = getTestImage(LocalContext.current, "test_bank")
     val accountMask = account.plaidAccountMask
     val accountName = account.plaidAccountName
     val accountID = account.plaidInstitutionId
@@ -299,4 +296,9 @@ fun BankAccountsView_Content_List_Item(
             ) {}
         }
     }
+}
+
+@SuppressLint("DiscouragedApi")
+fun getTestImage(context: Context, name: String): Int {
+    return context.resources.getIdentifier(name, "drawable", context.packageName)
 }

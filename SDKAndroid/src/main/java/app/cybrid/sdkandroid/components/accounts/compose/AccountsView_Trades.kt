@@ -17,9 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -29,13 +27,13 @@ import androidx.compose.ui.unit.sp
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.AccountsViewStyles
-import app.cybrid.sdkandroid.components.TradeView
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
-import app.cybrid.sdkandroid.components.getImage
 import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.getDateInFormat
+import app.cybrid.sdkandroid.util.getImageUrl
 import app.cybrid.sdkandroid.util.getSpannableStyle
+import coil.compose.rememberAsyncImagePainter
 import java.time.OffsetDateTime
 
 @Composable
@@ -63,7 +61,7 @@ fun AccountsView_Trades_BalanceAndHoldings(
 
     // -- Vars
     val cryptoCode = accountsViewModel.currentAccountSelected?.accountAssetCode ?: ""
-    val imageID = getImage(LocalContext.current, "ic_${cryptoCode.lowercase()}")
+    val imagePainter = rememberAsyncImagePainter(getImageUrl(cryptoCode.lowercase()))
     val cryptoName = accountsViewModel.currentAccountSelected?.assetName ?: ""
     val assetBalance = getSpannableStyle(
         text = accountsViewModel.currentAccountSelected?.accountBalanceFormattedString ?: "",
@@ -95,7 +93,7 @@ fun AccountsView_Trades_BalanceAndHoldings(
     ) {
 
         Image(
-            painter = painterResource(id = imageID),
+            painter = imagePainter,
             contentDescription = "{$cryptoName}",
             modifier = Modifier
                 .padding(horizontal = 0.dp)
@@ -155,10 +153,9 @@ fun AccountsView_Trades_List(
                 accountsViewModel = accountsViewModel
             )
         }
-        itemsIndexed(items = accountsViewModel?.trades ?: listOf()) { index, item ->
+        itemsIndexed(items = accountsViewModel?.trades ?: listOf()) { _, item ->
             AccountsView_Trades_List_Item(
                 trade = item,
-                index = index,
                 accountsViewModel = accountsViewModel,
             )
         }
@@ -226,7 +223,7 @@ fun AccountsView_Trades_List_Header(
 
 @Composable
 fun AccountsView_Trades_List_Item(
-    trade: TradeBankModel, index: Int,
+    trade: TradeBankModel,
     accountsViewModel: AccountsViewModel?,
     customStyles: AccountsViewStyles = AccountsViewStyles()
 ) {

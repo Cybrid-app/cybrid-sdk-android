@@ -40,15 +40,21 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.SymbolPriceBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
+import app.cybrid.sdkandroid.components.listprices.view.compose.CryptoList_HeaderItem
+import app.cybrid.sdkandroid.components.listprices.view.compose.CryptoList_Item
+import app.cybrid.sdkandroid.components.listprices.view.compose.CryptoList_SearchView
 import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.core.toBigDecimal
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
+import app.cybrid.sdkandroid.util.getImageUrl
+import coil.compose.rememberAsyncImagePainter
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -93,22 +99,26 @@ open class ListPricesView @JvmOverloads constructor(
         a.recycle()
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun setViewModel(viewModel: ListPricesViewModel) {
 
         _viewModel = viewModel
-        GlobalScope.launch { _viewModel?.getPricesList() }
+        _viewModel?.viewModelScope?.launch {
+            _viewModel?.getPricesList()
+        }
 
         _handler = Handler(Looper.getMainLooper())
         _runnable = Runnable { this.refreshPrices() }
         _handler?.postDelayed(_runnable!!, updateInterval)
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     private fun refreshPrices() {
 
         Logger.log(LoggerEvents.DATA_REFRESHED, "ListPricesView Component data")
-        _viewModel.let { GlobalScope.launch { it?.getPricesList() } }
+        _viewModel.let {
+            it?.viewModelScope?.launch {
+                _viewModel?.getPricesList()
+            }
+        }
         _handler.let {
             _runnable.let { _it ->
                 it?.postDelayed(_it!!, updateInterval)
@@ -123,7 +133,6 @@ open class ListPricesView @JvmOverloads constructor(
             CryptoList(
                 cryptoList = it.prices,
                 viewModel = _viewModel,
-                context = context,
                 customStyles = customStyles,
                 onClick = this.onClick
             ).apply {
@@ -135,11 +144,6 @@ open class ListPricesView @JvmOverloads constructor(
 }
 
 /**
- * ListPricesView Type Enum
- * **/
-enum class ListPricesViewType { Normal, Assets }
-
-/**
  * ListPricesView Custom Styles
  * **/
 data class ListPricesViewCustomStyles(
@@ -147,7 +151,7 @@ data class ListPricesViewCustomStyles(
     var searchBar: Boolean = true,
     var headerTextSize: TextUnit = 16.5.sp,
     var headerTextColor: Color = Color(R.color.list_prices_asset_component_header_color),
-    var itemsTextSize: TextUnit = 16.sp,
+    var itemsTextSize: TextUnit = 17.sp,
     var itemsTextColor: Color = Color.Black,
     var itemsTextPriceSize: TextUnit = 15.sp,
     var itemsCodeTextSize: TextUnit = 14.sp,
@@ -162,12 +166,11 @@ data class ListPricesViewCustomStyles(
 fun CryptoList(
     cryptoList: List<SymbolPriceBankModel>,
     viewModel: ListPricesViewModel? = null,
-    context: Context? = null,
     customStyles: ListPricesViewCustomStyles,
     onClick: (asset: AssetBankModel, pairAsset: AssetBankModel) -> Unit) {
 
     // -- Vars
-    var selectedIndex by remember { mutableStateOf(-1) }
+    val selectedIndex by remember { mutableStateOf(-1) }
     val textState = remember { mutableStateOf(TextFieldValue("")) }
     val topPadding = if (!customStyles.searchBar) { 0.dp } else { 20.dp }
 
@@ -184,7 +187,7 @@ fun CryptoList(
     Column {
 
         if (customStyles.searchBar) {
-            SearchView(state = textState)
+            CryptoList_SearchView(state = textState)
         }
         LazyColumn(modifier = Modifier
             .testTag("ListPricesView")
@@ -192,16 +195,15 @@ fun CryptoList(
             .padding(horizontal = 3.5.dp)) {
 
             stickyHeader {
-                CryptoAssetHeaderItem(customStyles)
+                CryptoList_HeaderItem(customStyles)
             }
             itemsIndexed(items =  filtered) { index, item ->
 
-                CryptoAssetItem(
+                CryptoList_Item(
                     crypto = item,
                     vm = viewModel!!,
                     index = index,
                     selectedIndex = selectedIndex,
-                    context = context,
                     customStyles = customStyles,
                     onClick = onClick
                 )
@@ -210,214 +212,12 @@ fun CryptoList(
     }
 }
 
-@Composable
-fun SearchView(state: MutableState<TextFieldValue>) {
-
-    TextField(
-        value = state.value,
-        onValueChange = { value ->
-            state.value = value
-        },
-        placeholder = { Text(stringResource(id = R.string.list_prices_asset_component_search)) },
-        modifier = Modifier
-            .padding(horizontal = 2.dp)
-            .height(50.dp)
-            .fillMaxWidth()
-            .shadow(5.dp),
-        shape = RoundedCornerShape(4.dp),
-        textStyle = TextStyle(
-            fontFamily = robotoFont,
-            fontWeight = FontWeight.Normal,
-            fontSize = 16.sp
-        ),
-        trailingIcon = {
-
-            val iconSize = 20.dp
-            if (state.value != TextFieldValue("")) {
-                IconButton(
-                    onClick = {
-                        state.value = TextFieldValue("")
-                    }
-                ) {
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = "",
-                        modifier = Modifier
-                            .padding(0.dp)
-                            .size(iconSize)
-                    )
-                }
-            } else {
-
-                Icon(
-                    Icons.Default.Search,
-                    contentDescription = "",
-                    modifier = Modifier
-                        .padding(0.dp)
-                        .size(iconSize)
-                )
-            }
-        },
-        singleLine = true,
-        colors = TextFieldDefaults.textFieldColors(
-            textColor = Color.Black,
-            cursorColor = colorResource(id = R.color.primary_color),
-            leadingIconColor = Color.Black,
-            trailingIconColor = Color.Black,
-            backgroundColor = Color.White,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent
-        )
-    )
-}
-
-@Composable
-fun CryptoAssetItem(crypto: SymbolPriceBankModel,
-                    vm:ListPricesViewModel,
-                    index: Int, selectedIndex: Int,
-                    context: Context? = null,
-                    customStyles: ListPricesViewCustomStyles,
-                    onClick: (asset: AssetBankModel,
-                              pairAsset: AssetBankModel) -> Unit) {
-
-    val backgroundColor = if (index == selectedIndex) MaterialTheme.colors.primary else Color.Transparent
-    if (crypto.symbol != null) {
-
-        val loadingErrorVal = "-1"
-        val asset = vm.findAsset(vm.getSymbol(crypto.symbol!!))
-        val pairAsset = vm.findAsset(vm.getPair(crypto.symbol!!))
-        val imageName = vm.getSymbol(crypto.symbol!!).lowercase()
-        val imageID = getImage(context!!, "ic_${imageName}")
-
-        val name = asset?.name ?: ""
-        val valueString = crypto.buyPrice?.let {
-            if (pairAsset != null) {
-                BigDecimalPipe.transform(it.toBigDecimal(), pairAsset)
-            } else { loadingErrorVal }
-        } ?: loadingErrorVal
-        val value = buildAnnotatedString {
-            append(valueString)
-            withStyle(style = SpanStyle(color = customStyles.itemsCodeTextColor)) {
-                append(" (${pairAsset?.code ?: ""})")
-            }
-        }
-        if (valueString != loadingErrorVal) {
-            Surface(color = backgroundColor) {
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(vertical = 0.dp)
-                        .height(56.dp)
-                        .clickable { onClick(asset!!, pairAsset!!) },
-                ) {
-
-                    Image(
-                        painter = painterResource(id = imageID),
-                        contentDescription = "{$name}",
-                        modifier = Modifier
-                            .padding(horizontal = 0.dp)
-                            .padding(0.dp)
-                            .size(25.dp),
-                        contentScale = ContentScale.Fit
-                    )
-                    Text(
-                        text = name,
-                        modifier = Modifier.padding(start = 16.dp),
-                        fontFamily = robotoFont,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = customStyles.itemsTextSize,
-                        color = customStyles.itemsTextColor
-                    )
-                    Text(
-                        text = asset?.code ?: "",
-                        modifier = Modifier.padding(start = 5.5.dp),
-                        fontFamily = robotoFont,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = customStyles.itemsCodeTextSize,
-                        color = customStyles.itemsCodeTextColor
-                    )
-                    Text(
-                        text = value,
-                        modifier = Modifier
-                            .padding(end = 0.dp)
-                            .weight(1f),
-                        textAlign = TextAlign.End,
-                        fontFamily = robotoFont,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = customStyles.itemsTextPriceSize,
-                        color = customStyles.itemsTextColor
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun CryptoAssetHeaderItem(customStyles: ListPricesViewCustomStyles) {
-
-    val priceColor = if (customStyles.headerTextColor != Color(R.color.list_prices_asset_component_header_color)) {
-        customStyles.headerTextColor
-    } else {
-        Color.Black
-    }
-
-    Surface(color = Color.Transparent) {
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = 16.dp)
-        ) {
-
-            Text(
-                text = stringResource(id = R.string.list_prices_asset_component_header_currency),
-                fontFamily = robotoFont,
-                fontWeight = FontWeight.Bold,
-                fontSize = customStyles.headerTextSize,
-                color = customStyles.headerTextColor
-            )
-            Text(
-                text = stringResource(id = R.string.list_prices_asset_component_header_price),
-                modifier = Modifier
-                    .padding(end = 0.dp)
-                    .weight(1f),
-                textAlign = TextAlign.End,
-                fontFamily = robotoFont,
-                fontWeight = FontWeight.Bold,
-                fontSize = customStyles.headerTextSize,
-                color = priceColor
-            )
-        }
-    }
-}
-
-/**
- * ListPricesView Composable Preview Functions
- * **/
 @Preview(showBackground = true)
 @Composable
-fun SearchViewPreview() {
-
-    val textState = remember { mutableStateOf(TextFieldValue("")) }
-    SearchView(textState)
-}
-
-@Preview(showBackground = true)
-@Composable
-fun cryptoListPreview() {
+fun CryptoList_Preview() {
 
     CryptoList(
         cryptoList = listOf(),
         customStyles = ListPricesViewCustomStyles(),
         onClick = {_, _ ->})
-}
-
-/**
- * ListPricesView Helper fucntions
- * **/
-fun getImage(context:Context, name: String): Int {
-
-    return context.resources.getIdentifier(name, "drawable", context.packageName)
 }

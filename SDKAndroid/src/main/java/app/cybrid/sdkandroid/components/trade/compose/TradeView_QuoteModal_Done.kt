@@ -73,8 +73,8 @@ fun TradeView_QuoteModal_Done(
     }
 
     // -- Content
-    Box() {
-        Column() {
+    Box {
+        Column {
             Text(
                 text = stringResource(id = R.string.trade_flow_confirmation_modal_title),
                 modifier = Modifier

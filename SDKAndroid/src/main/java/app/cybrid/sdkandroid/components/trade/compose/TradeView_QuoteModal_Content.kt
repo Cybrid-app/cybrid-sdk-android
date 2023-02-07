@@ -20,13 +20,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.trade.view.TradeViewModel
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
@@ -57,7 +57,7 @@ fun TradeView_QuoteModal_Content(
     val amountAsset: AssetBankModel = pairAsset!!
     val deliverAmountBD = app.cybrid.sdkandroid.core.BigDecimal(amount ?: BigDecimal(0))
     val purchaseValue = buildAnnotatedString {
-        append(BigDecimalPipe.transform(deliverAmountBD, amountAsset)!!)
+        append(BigDecimalPipe.transform(deliverAmountBD, amountAsset))
         withStyle(style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
             fontFamily = robotoFont
@@ -86,7 +86,7 @@ fun TradeView_QuoteModal_Content(
     val transactionFeeBD =
         app.cybrid.sdkandroid.core.BigDecimal(tradeViewModel.quoteBankModel.fee ?: BigDecimal(0))
     val transactionFeeValue = buildAnnotatedString {
-        append(BigDecimalPipe.transform(transactionFeeBD, pairAsset)!!)
+        append(BigDecimalPipe.transform(transactionFeeBD, pairAsset))
         withStyle(style = SpanStyle(
             color = colorResource(id = R.color.list_prices_asset_component_code_color),
             fontFamily = robotoFont
@@ -233,7 +233,9 @@ private fun TradeView_QuoteModal_Content__Buttons(
         // -- Continue Button
         Button(
             onClick = {
-                GlobalScope.launch { tradeViewModel.createTrade() }
+                tradeViewModel.viewModelScope.launch {
+                    tradeViewModel.createTrade()
+                }
             },
             modifier = Modifier
                 .width(120.dp)

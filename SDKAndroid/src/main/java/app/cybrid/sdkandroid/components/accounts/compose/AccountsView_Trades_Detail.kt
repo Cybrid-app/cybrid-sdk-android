@@ -11,9 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -23,12 +21,13 @@ import androidx.compose.ui.unit.sp
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
-import app.cybrid.sdkandroid.components.getImage
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
 import app.cybrid.sdkandroid.util.getAnnotatedStyle
 import app.cybrid.sdkandroid.util.getDateInFormat
+import app.cybrid.sdkandroid.util.getImageUrl
 import app.cybrid.sdkandroid.util.getSpannableStyle
+import coil.compose.rememberAsyncImagePainter
 import java.time.OffsetDateTime
 
 @Composable
@@ -67,7 +66,7 @@ fun AccountsView_Trades_Detail_Content(
     val fiatCode = accountsViewModel.currentAccountSelected?.pairAsset?.code ?: ""
     val assetValue = accountsViewModel.getTradeAmount(currentTrade)
     val fiatValue = accountsViewModel.getTradeFiatAmount(currentTrade)
-    val imageID = getImage(LocalContext.current, "ic_${assetCode.lowercase()}")
+    val imagePainter = rememberAsyncImagePainter(getImageUrl(assetCode.lowercase()))
 
     val titleType = if (currentTrade.side == TradeBankModel.Side.sell) {
         stringResource(id = R.string.accounts_view_trade_detail_sold)
@@ -104,7 +103,7 @@ fun AccountsView_Trades_Detail_Content(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = painterResource(id = imageID),
+                    painter = imagePainter,
                     contentDescription = assetCode,
                     modifier = Modifier
                         .padding(top = 5.dp)
