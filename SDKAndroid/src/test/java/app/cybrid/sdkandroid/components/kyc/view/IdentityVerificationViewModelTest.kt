@@ -9,6 +9,7 @@ import app.cybrid.cybrid_api_bank.client.models.IdentityVerificationWithDetailsB
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.KYCView
 import app.cybrid.sdkandroid.tools.JSONMock
+import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import app.cybrid.sdkandroid.util.Polling
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
@@ -17,23 +18,12 @@ import org.junit.*
 
 class IdentityVerificationViewModelTest {
 
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
-
-    @ExperimentalCoroutinesApi
-    private val scope = TestScope()
-
-    @ExperimentalCoroutinesApi
-    @Before
-    fun setUp() {
-        Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
-    }
-
-    @ExperimentalCoroutinesApi
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
 
     private fun prepareClient(state: JSONMock.JSONMockState): ApiClient {
 

@@ -1,13 +1,11 @@
 package app.cybrid.sdkandroid.util
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cybrid.cybrid_api_bank.client.apis.PricesApi
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
-import app.cybrid.sdkandroid.tools.TestConstants
-import app.cybrid.sdkandroid.tools.ErrorMockInterceptor
-import app.cybrid.sdkandroid.tools.TestEmptyService
-import app.cybrid.sdkandroid.tools.MockInterceptor
+import app.cybrid.sdkandroid.tools.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -16,28 +14,17 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import okhttp3.OkHttpClient
-import org.junit.After
-import org.junit.Test
-import org.junit.Assert
-import org.junit.Before
+import org.junit.*
 import java.net.HttpURLConnection
 
 class DataAccessStrategyTest {
 
     @ExperimentalCoroutinesApi
-    private val scope = TestScope()
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
 
-    @ExperimentalCoroutinesApi
-    @Before
-    fun setUp() {
-        Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
-    }
-
-    @ExperimentalCoroutinesApi
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     private fun prepareClient(code:Int, error:Boolean = false): ApiClient {
 

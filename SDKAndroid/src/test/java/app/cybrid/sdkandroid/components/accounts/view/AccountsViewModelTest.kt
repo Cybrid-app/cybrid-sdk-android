@@ -9,6 +9,7 @@ import app.cybrid.sdkandroid.components.AccountsView
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.tools.JSONMock
+import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import app.cybrid.sdkandroid.tools.TestConstants
 import app.cybrid.sdkandroid.util.Polling
 import io.mockk.MockKAnnotations
@@ -24,23 +25,12 @@ import java.math.BigDecimal
 
 class AccountsViewModelTest {
 
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
-
-    @ExperimentalCoroutinesApi
-    private val scope = TestScope()
-
-    @ExperimentalCoroutinesApi
-    @Before
-    fun setUp() {
-        Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
-    }
-
-    @ExperimentalCoroutinesApi
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
 
     private fun prepareClient(state: JSONMock.JSONMockState): ApiClient {
 

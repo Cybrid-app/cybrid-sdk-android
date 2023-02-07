@@ -7,6 +7,7 @@ import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.TradeView
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.tools.JSONMock
+import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import app.cybrid.sdkandroid.tools.TestConstants
 import app.cybrid.sdkandroid.util.Polling
 import kotlinx.coroutines.Dispatchers
@@ -18,22 +19,11 @@ import org.junit.*
 class TradeViewModelTest {
 
     @ExperimentalCoroutinesApi
-    private val scope = TestScope()
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
-
-    @ExperimentalCoroutinesApi
-    @Before
-    fun setUp() {
-        Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
-    }
-
-    @ExperimentalCoroutinesApi
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
 
     private fun prepareClient(state: JSONMock.JSONMockState): ApiClient {
 

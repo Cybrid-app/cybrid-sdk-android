@@ -8,6 +8,7 @@ import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.BankAccountsView
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.tools.JSONMock
+import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import app.cybrid.sdkandroid.util.Polling
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,23 +18,12 @@ import org.junit.*
 
 class BankAccountsViewModelTest {
 
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
-
-    @ExperimentalCoroutinesApi
-    private val scope = TestScope()
-
-    @ExperimentalCoroutinesApi
-    @Before
-    fun setUp() {
-        Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
-    }
-
-    @ExperimentalCoroutinesApi
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
 
     private fun prepareClient(state: JSONMock.JSONMockState): ApiClient {
 

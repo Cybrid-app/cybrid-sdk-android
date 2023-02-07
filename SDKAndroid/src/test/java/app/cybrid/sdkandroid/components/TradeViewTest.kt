@@ -2,8 +2,10 @@ package app.cybrid.sdkandroid.components
 
 import android.content.Context
 import android.view.LayoutInflater
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.compose.runtime.mutableStateOf
 import app.cybrid.sdkandroid.components.trade.view.TradeViewModel
+import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +18,13 @@ import kotlinx.coroutines.test.setMain
 import org.junit.*
 
 class TradeViewTest {
+
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     @MockK
     private lateinit var context: Context
@@ -32,7 +41,6 @@ class TradeViewTest {
     @Before
     fun setup() {
 
-        Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
         MockKAnnotations.init(this, relaxed = true)
 
         every { LayoutInflater.from(context) } returns layoutInflater
@@ -40,12 +48,6 @@ class TradeViewTest {
 
         tradeView = spyk(TradeView(context))
         every { tradeView.context } returns context
-    }
-
-    @ExperimentalCoroutinesApi
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
     }
 
     @Test

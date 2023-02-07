@@ -2,8 +2,10 @@ package app.cybrid.sdkandroid.components
 
 import android.content.Context
 import android.view.LayoutInflater
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.compose.runtime.mutableStateOf
 import app.cybrid.sdkandroid.components.kyc.view.IdentityVerificationViewModel
+import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
@@ -24,13 +26,16 @@ class KYCViewTest {
     private lateinit var kycView: KYCView
 
     @ExperimentalCoroutinesApi
-    private val scope = TestScope()
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     @ExperimentalCoroutinesApi
     @Before
     fun setup() {
 
-        Dispatchers.setMain(StandardTestDispatcher(scope.testScheduler))
         MockKAnnotations.init(this, relaxed = true)
 
         every { LayoutInflater.from(context) } returns layoutInflater
@@ -39,11 +44,6 @@ class KYCViewTest {
         kycView = KYCView(context)
     }
 
-    @ExperimentalCoroutinesApi
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
 
     @Test
     fun test_init() = runBlocking {
