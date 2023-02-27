@@ -25,4 +25,23 @@ class AppModuleTest {
         // -- Client works
         assertNotNull(client)
     }
+
+    @Test
+    fun test_getApiUrl() {
+
+        // -- Staging
+        Cybrid.instance.env = CybridEnv.STAGING
+        val stagingURL = AppModule.getApiUrl()
+        assertTrue(stagingURL.contains("staging"))
+
+        // -- Staging
+        Cybrid.instance.env = CybridEnv.SANDBOX
+        val sandboxURL = AppModule.getApiUrl()
+        assertTrue(sandboxURL.contains("sandbox"))
+
+        // -- Production
+        Cybrid.instance.env = CybridEnv.PRODUCTION
+        val productionURL = AppModule.getApiUrl()
+        assertTrue(productionURL.contains("production"))
+    }
 }

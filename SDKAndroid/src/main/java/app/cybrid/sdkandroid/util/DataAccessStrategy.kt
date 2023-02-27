@@ -25,7 +25,6 @@ suspend fun <T> getResult(call: suspend() -> Response<T>): Resource<T> {
                 cybrid.listener.let {
                     cybrid.invalidToken = true
                     it?.onTokenExpired()
-
                 }
             }
             Logger.log(LoggerEvents.AUTH_EXPIRED, "${response.code()} - ${response.message()}")

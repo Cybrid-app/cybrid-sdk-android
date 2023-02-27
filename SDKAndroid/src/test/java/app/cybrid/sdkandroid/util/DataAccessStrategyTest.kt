@@ -131,4 +131,19 @@ class DataAccessStrategyTest {
         Assert.assertEquals(result.code, expectedCode)
         Assert.assertEquals(result, resourceToCheck)
     }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_getResult_Error() = runBlocking {
+
+        val expectedCode = HttpURLConnection.HTTP_INTERNAL_ERROR
+        val apiClient = prepareClient(expectedCode)
+        Cybrid.instance.setBearer(TestConstants.expiredToken)
+
+        val pricesService = apiClient.createService(PricesApi::class.java)
+        val result = getResult { pricesService.listPrices() }
+
+        Assert.assertNotNull(result)
+        Assert.assertEquals(result.code, expectedCode)
+    }
 }

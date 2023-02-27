@@ -13,7 +13,7 @@ object AppModule {
         )
     }
 
-    private fun getApiUrl() : String {
+    internal fun getApiUrl() : String {
 
         val envURL = when(Cybrid.instance.env) {
 
