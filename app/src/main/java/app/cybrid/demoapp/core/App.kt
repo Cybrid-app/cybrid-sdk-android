@@ -90,7 +90,7 @@ class App : Application(), CybridSDKEvents {
 
     companion object {
 
-        const val demoUrl = "https://id.demo.cybrid.app"
+        const val demoUrl = "https://id.staging.cybrid.app"
         const val TAG = "CybridSDKDemo"
 
         @SuppressLint("StaticFieldLeak")
