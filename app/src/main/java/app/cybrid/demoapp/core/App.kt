@@ -15,6 +15,7 @@ import app.cybrid.demoapp.api.auth.entity.TokenResponse
 import app.cybrid.demoapp.api.auth.service.AppService
 import app.cybrid.demoapp.listener.BearerListener
 import app.cybrid.sdkandroid.Cybrid
+import app.cybrid.sdkandroid.CybridEnv
 import app.cybrid.sdkandroid.listener.CybridSDKEvents
 import retrofit2.Call
 import retrofit2.Callback
@@ -38,6 +39,7 @@ class App : Application(), CybridSDKEvents {
     fun setupCybridSDK() {
 
         Cybrid.instance.listener = this
+        Cybrid.instance.env = CybridEnv.STAGING
         if (Cybrid.instance.customerGuid == "") {
             Cybrid.instance.customerGuid = BuildConfig.CUSTOMER_GUID
         }
