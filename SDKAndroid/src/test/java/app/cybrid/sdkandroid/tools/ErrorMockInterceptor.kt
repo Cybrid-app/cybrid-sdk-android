@@ -14,7 +14,7 @@ class ErrorMockInterceptor(code: Int) : Interceptor {
 
             return chain.proceed(chain.request())
                 .newBuilder()
-                .code(403)
+                .code(responseCode)
                 .request(chain.request())
                 .protocol(Protocol.HTTP_2)
                 .build()

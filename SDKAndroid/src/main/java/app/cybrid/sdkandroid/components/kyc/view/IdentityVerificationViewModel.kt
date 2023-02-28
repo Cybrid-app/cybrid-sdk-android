@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.components.kyc.view
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -11,11 +12,8 @@ import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.*
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.KYCView
-import app.cybrid.sdkandroid.util.Logger
-import app.cybrid.sdkandroid.util.LoggerEvents
-import app.cybrid.sdkandroid.util.Polling
+import app.cybrid.sdkandroid.util.*
 import java.math.BigDecimal as JavaBigDecimal
-import app.cybrid.sdkandroid.util.getResult
 import kotlinx.coroutines.*
 
 class IdentityVerificationViewModel: ViewModel() {
@@ -94,9 +92,13 @@ class IdentityVerificationViewModel: ViewModel() {
                             lastVerification = createIdentityVerification()
                         }
 
-                        val lastVerificationWithDetails = fetchIdentityVerificationWithDetailsStatus(guid = lastVerification?.guid!!)
-                        val returnedWrapper = IdentityVerificationWrapper(identity = lastVerification, details = lastVerificationWithDetails)
-                        checkIdentityRecordStatus(returnedWrapper)
+                        if (lastVerification == null) {
+                            uiState?.value = KYCView.KYCViewState.ERROR
+                        } else {
+                            val lastVerificationWithDetails = fetchIdentityVerificationWithDetailsStatus(guid = lastVerification?.guid!!)
+                            val returnedWrapper = IdentityVerificationWrapper(identity = lastVerification, details = lastVerificationWithDetails)
+                            checkIdentityRecordStatus(returnedWrapper)
+                        }
                     }
                 }
             }
@@ -176,9 +178,15 @@ class IdentityVerificationViewModel: ViewModel() {
                                 )
                             )
                         }
-                        Logger.log(LoggerEvents.DATA_FETCHED, "Create - Identity Verification")
-                        verification = recordResponse.data
-                        return@async verification
+                        recordResponse.let {
+                            if (isSuccessful(it.code ?: 500)) {
+                                Logger.log(LoggerEvents.DATA_FETCHED, "Create - Identity Verification")
+                                verification = recordResponse.data
+                                return@async verification
+                            } else {
+                                return@async null
+                            }
+                        }
                     }
                     waitFor.await()
                 }
