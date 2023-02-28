@@ -4,6 +4,8 @@ import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 
 object AppModule {
 
+    private const val baseUrl = "https://bank.%s.cybrid.app"
+
     fun getClient(): ApiClient {
 
         val clientBuilder = Cybrid.instance.getOKHttpClient()
@@ -13,14 +15,7 @@ object AppModule {
         )
     }
 
-    internal fun getApiUrl() : String {
-
-        val envURL = when(Cybrid.instance.env) {
-
-            CybridEnv.STAGING -> "https://bank.staging.cybrid.app"
-            CybridEnv.SANDBOX -> "https://bank.sandbox.cybrid.app"
-            CybridEnv.PRODUCTION -> "https://bank.production.cybrid.app"
-        }
-        return envURL
+    internal fun getApiUrl(): String {
+        return String.format(baseUrl, Cybrid.instance.env.name)
     }
 }
