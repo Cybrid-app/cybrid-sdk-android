@@ -16,6 +16,6 @@ object AppModule {
     }
 
     internal fun getApiUrl(): String {
-        return String.format(baseUrl, Cybrid.instance.env.name)
+        return String.format(baseUrl, Cybrid.instance.env.name.lowercase())
     }
 }
