@@ -184,8 +184,6 @@ class IdentityVerificationViewModel: ViewModel() {
                                 verification = recordResponse.data
                                 return@async verification
                             } else {
-                                Log.d("DXGOP", "ERROR: " + it.message)
-                                Log.d("DXGOP", "ERROR: " + it.raw?.message)
                                 return@async null
                             }
                         }
