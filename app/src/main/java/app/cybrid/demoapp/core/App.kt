@@ -39,7 +39,7 @@ class App : Application(), CybridSDKEvents {
     fun setupCybridSDK() {
 
         Cybrid.instance.listener = this
-        Cybrid.instance.env = CybridEnv.STAGING
+        Cybrid.instance.env = CybridEnv.SANDBOX
         if (Cybrid.instance.customerGuid == "") {
             Cybrid.instance.customerGuid = BuildConfig.CUSTOMER_GUID
         }
@@ -92,7 +92,7 @@ class App : Application(), CybridSDKEvents {
 
     companion object {
 
-        const val demoUrl = "https://id.staging.cybrid.app"
+        const val demoUrl = "https://id.sandbox.cybrid.app"
         const val TAG = "CybridSDKDemo"
 
         @SuppressLint("StaticFieldLeak")

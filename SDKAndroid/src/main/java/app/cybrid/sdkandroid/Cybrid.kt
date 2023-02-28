@@ -17,7 +17,7 @@ open class Cybrid {
     var listener: CybridSDKEvents? = null
     var imagesUrl = "https://images.cybrid.xyz/sdk/assets/png/color/"
     var imagesSize = "@2x.png"
-    var env = CybridEnv.STAGING
+    var env = CybridEnv.SANDBOX
 
     var accountsRefreshObservable = MutableStateFlow(false)
 
