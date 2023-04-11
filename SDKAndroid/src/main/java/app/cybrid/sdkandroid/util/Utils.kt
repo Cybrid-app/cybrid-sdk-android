@@ -1,6 +1,7 @@
 package app.cybrid.sdkandroid.util
 
 import android.annotation.SuppressLint
+import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.PostWorkflowBankModel
 import app.cybrid.sdkandroid.Cybrid
 import java.time.OffsetDateTime
@@ -32,6 +33,16 @@ fun getDateInFormat(date: OffsetDateTime, pattern:String = "MMM dd, YYYY"): Stri
 
 fun getImageUrl(name: String): String {
 
-    val cybrid = Cybrid.instance
+    val cybrid = Cybrid.getInstance()
     return "${cybrid.imagesUrl}$name${cybrid.imagesSize}"
+}
+
+fun getUSD(): AssetBankModel {
+    return AssetBankModel(
+        type = AssetBankModel.Type.fiat,
+        code = "USD",
+        name = "United States Dollar",
+        symbol = "$",
+        decimals = java.math.BigDecimal(2)
+    )
 }

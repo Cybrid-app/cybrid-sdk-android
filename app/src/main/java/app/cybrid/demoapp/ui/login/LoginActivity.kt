@@ -125,7 +125,6 @@ class LoginActivity : AppCompatActivity(), BearerListener {
             startActivity(Intent(this, ListComponentsActivity::class.java))
             finish()
         }, 1000L)
-
     }
 
     override fun onBearerError() {

@@ -23,6 +23,8 @@ import retrofit2.Response
 
 class App : Application(), CybridSDKEvents {
 
+    private val cybrid = Cybrid.getInstance()
+
     private val tokenRequest = TokenRequest(
         client_id = BuildConfig.CLIENT_ID,
         client_secret = BuildConfig.CLIENT_SECRET
@@ -32,16 +34,18 @@ class App : Application(), CybridSDKEvents {
 
         super.onCreate()
         context = applicationContext
-
         setupCybridSDK()
     }
 
     fun setupCybridSDK() {
 
-        Cybrid.instance.listener = this
-        Cybrid.instance.env = demonEnv
-        if (Cybrid.instance.customerGuid == "") {
-            Cybrid.instance.customerGuid = BuildConfig.CUSTOMER_GUID
+        this.cybrid.setup(
+            eventsListener = this,
+            readyListener = null,
+            env = demonEnv
+        )
+        if (this.cybrid.customerGuid == "") {
+            this.cybrid.customerGuid = BuildConfig.CUSTOMER_GUID
         }
     }
 
