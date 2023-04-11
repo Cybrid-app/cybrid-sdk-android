@@ -17,6 +17,7 @@ import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Accounts
 import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Modal
 import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Loading
+import app.cybrid.sdkandroid.components.transfer.compose.TransferView_Warning
 import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.core.Constants
 import kotlinx.coroutines.launch

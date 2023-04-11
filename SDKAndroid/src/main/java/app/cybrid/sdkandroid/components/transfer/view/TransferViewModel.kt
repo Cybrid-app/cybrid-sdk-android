@@ -38,6 +38,8 @@ class TransferViewModel: ViewModel() {
     val modalUiState: MutableState<TransferView.ModalViewState> = mutableStateOf(TransferView.ModalViewState.LOADING)
     val viewDismiss: MutableState<Boolean> = mutableStateOf(false)
 
+    val uiWarning: MutableState<Boolean> = mutableStateOf(false)
+
     var currentFiatCurrency = "USD"
     var customerGuid = Cybrid.instance.customerGuid
     var assets: List<AssetBankModel>? = null
@@ -46,7 +48,6 @@ class TransferViewModel: ViewModel() {
     var externalBankAccounts: List<ExternalBankAccountBankModel> by mutableStateOf(listOf())
 
     var fiatBalance: MutableState<String> = mutableStateOf("")
-
     var currentQuote: QuoteBankModel? by mutableStateOf(null)
     var currentTransfer: TransferBankModel? by mutableStateOf(null)
 
@@ -126,12 +127,7 @@ class TransferViewModel: ViewModel() {
 
                                 Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - External Accounts")
                                 val accounts = it.data?.objects ?: listOf()
-                                externalBankAccounts = accounts.filter {
-                                        account -> account.state != ExternalBankAccountBankModel.State.deleted &&
-                                                    account.state != ExternalBankAccountBankModel.State.deleting
-                                }
-                                uiState.value = TransferView.ViewState.ACCOUNTS
-                                calculateFiatBalance()
+                                checkAccounts(accounts)
 
                             } else {
                                 Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - External Accounts")
@@ -142,6 +138,24 @@ class TransferViewModel: ViewModel() {
                 }
             }
         }
+    }
+
+    private fun checkAccounts(accounts: List<ExternalBankAccountBankModel>) {
+
+        this.externalBankAccounts = accounts.filter {
+                account -> account.state != ExternalBankAccountBankModel.State.deleted &&
+                account.state != ExternalBankAccountBankModel.State.deleting
+        }
+
+        val accountWithRefreshRequired = this.externalBankAccounts.firstOrNull {
+            it.state == ExternalBankAccountBankModel.State.refreshRequired
+        }
+        if (accountWithRefreshRequired != null) {
+            this.uiWarning.value = true
+        }
+
+        this.uiState.value = TransferView.ViewState.ACCOUNTS
+        calculateFiatBalance()
     }
 
     fun calculateFiatBalance() {

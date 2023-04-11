@@ -1,5 +1,7 @@
 package app.cybrid.sdkandroid.components.bankAccounts.compose
 
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,10 +17,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewModelScope
+import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.BankAccountsView
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
+import com.plaid.link.OpenPlaidLink
+import com.plaid.link.result.LinkExit
+import com.plaid.link.result.LinkSuccess
+import kotlinx.coroutines.launch
 
 @Composable
 fun BankAccountsView_Modal_Content(
@@ -116,17 +124,19 @@ private fun BankAccountsView_Modal_Content_Buttons(
 
     Row(
         modifier = Modifier
-            .padding(top = 24.dp, end = 24.dp, bottom = 24.dp)
+            .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 24.dp)
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
 
-        Spacer(modifier = Modifier.weight(1f))
         // -- Cancel Button
         Button(
             onClick = {
                 bankAccountsViewModel.dismissExternalBankAccountDetail()
             },
             modifier = Modifier
-                .padding(end = 18.dp),
+                .weight(1f)
+                .height(44.dp),
             elevation = null,
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color.Transparent,
@@ -141,13 +151,13 @@ private fun BankAccountsView_Modal_Content_Buttons(
                 fontSize = 14.sp,
             )
         }
-        // -- Continue Button
+        // -- Disconnect Button
         Button(
             onClick = {
                 bankAccountsViewModel.accountDetailState.value = BankAccountsView.ModalState.CONFIRM
             },
             modifier = Modifier
-                .width(120.dp)
+                .weight(1f)
                 .height(44.dp),
             shape = RoundedCornerShape(4.dp),
             elevation = ButtonDefaults.elevation(
@@ -167,6 +177,39 @@ private fun BankAccountsView_Modal_Content_Buttons(
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp,
             )
+        }
+
+        // -- Refresh Button
+        if (bankAccountsViewModel.currentAccount.state == ExternalBankAccountBankModel.State.refreshRequired) {
+
+            Button(
+                onClick = {
+                    bankAccountsViewModel.viewModelScope.launch {
+                        bankAccountsViewModel.refreshAccount()
+                    }
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .height(44.dp),
+                shape = RoundedCornerShape(4.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 4.dp,
+                    disabledElevation = 0.dp
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = colorResource(id = R.color.primary_color),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = "Refresh",
+                    color = Color.White,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                )
+            }
         }
     }
 }
