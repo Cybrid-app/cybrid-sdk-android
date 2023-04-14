@@ -203,7 +203,7 @@ private fun BankAccountsView_Modal_Content_Buttons(
                 )
             ) {
                 Text(
-                    text = "Refresh",
+                    text = stringResource(id = R.string.bank_accounts_modal_content_refresh),
                     color = Color.White,
                     fontFamily = robotoFont,
                     fontWeight = FontWeight.Medium,

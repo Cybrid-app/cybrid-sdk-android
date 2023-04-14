@@ -90,6 +90,7 @@
     <string name="bank_accounts_modal_content_account_number">Numero de cuenta</string>
     <string name="bank_accounts_modal_content_cancel">Cancelar</string>
     <string name="bank_accounts_modal_content_disconnect">Desconectar</string>
+    <string name="bank_accounts_modal_content_refresh">Reconectar</string>
     <string name="bank_accounts_modal_confirm_title">Confirmar desconección</string>
     <string name="bank_accounts_modal_confirm_text">Esta acción desconectara %s. Los depositos no estaran disponiles para esta cuenta.</string>
     <string name="bank_accounts_modal_confirm_button">Confirmar</string>
