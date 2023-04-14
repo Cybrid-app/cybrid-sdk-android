@@ -1,7 +1,6 @@
 package app.cybrid.sdkandroid.components.bankAccounts.view
 
 import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,13 +18,10 @@ import app.cybrid.sdkandroid.BuildConfig
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.BankAccountsView
 import app.cybrid.sdkandroid.util.*
-import com.plaid.link.OpenPlaidLink
 import com.plaid.link.configuration.LinkTokenConfiguration
 import app.cybrid.sdkandroid.components.BankAccountsView.State as BankAccountsViewState
 import com.plaid.link.result.LinkAccount
-import com.plaid.link.result.LinkExit
 import com.plaid.link.result.LinkResult
-import com.plaid.link.result.LinkSuccess
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -366,7 +362,7 @@ class BankAccountsViewModel: ViewModel() {
         this.accountDetailState.value = BankAccountsView.ModalState.CONTENT
     }
 
-    suspend fun disconnectExternalBankAccountDetail() {
+    suspend fun disconnectExternalBankAccount() {
 
         val currentAccountId = this.currentAccount.guid ?: ""
         this.dismissExternalBankAccountDetail()
@@ -403,11 +399,11 @@ class BankAccountsViewModel: ViewModel() {
 
         val account = this.currentAccount
         this.accountDetailState.value = BankAccountsView.ModalState.LOADING
-        val workflow =  createUpdateWorkflow(account = account)
+        val workflow = createUpdateWorkflow(account = account)
         this.workflowUpdateJob = Polling { fetchUpdateWorkflow(guid = workflow?.guid!! ) }
     }
 
-    private suspend fun createUpdateWorkflow(account: ExternalBankAccountBankModel): WorkflowBankModel? {
+    internal suspend fun createUpdateWorkflow(account: ExternalBankAccountBankModel): WorkflowBankModel? {
 
         var workflow: WorkflowBankModel? = null
         Cybrid.instance.let { cybrid ->
@@ -432,7 +428,6 @@ class BankAccountsViewModel: ViewModel() {
                         workflowResult.let {
                             if (isSuccessful(it.code ?: 500)) {
                                 Logger.log(LoggerEvents.DATA_FETCHED, "Create - Workflow")
-                                //workflowJob = Polling { fetchWorkflow(guid = workflowResult.data?.guid!!) }
                                 workflow = workflowResult.data
                                 return@async workflow
 
@@ -449,7 +444,7 @@ class BankAccountsViewModel: ViewModel() {
         return workflow
     }
 
-    private fun fetchUpdateWorkflow(guid: String) {
+    internal fun fetchUpdateWorkflow(guid: String) {
 
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
@@ -472,14 +467,16 @@ class BankAccountsViewModel: ViewModel() {
         }
     }
 
-    private fun checkWorkflowUpdateStatus(workflow: WorkflowWithDetailsBankModel) {
+    internal fun checkWorkflowUpdateStatus(workflow: WorkflowWithDetailsBankModel) {
 
         if (workflow.plaidLinkToken != null && workflow.plaidLinkToken != "") {
 
             this.workflowUpdateJob?.stop()
             this.workflowUpdateJob = null
             this.latestWorkflowUpdate = workflow
-            BankAccountsView.openPlaid(latestWorkflowUpdate?.plaidLinkToken!!, getPlaidUpdateResult!!)
+            if (this.getPlaidUpdateResult != null) {
+                BankAccountsView.openPlaid(latestWorkflowUpdate?.plaidLinkToken!!, getPlaidUpdateResult!!)
+            }
         }
     }
 
