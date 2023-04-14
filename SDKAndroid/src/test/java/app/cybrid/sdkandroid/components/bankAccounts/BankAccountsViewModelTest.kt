@@ -335,4 +335,21 @@ class BankAccountsViewModelTest {
         Assert.assertNotNull(viewModel.externalAccountJob)
         Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.LOADING)
     }
+
+    @Test
+    fun test_showExternalBankAccountDetail() {
+
+        // -- Given
+        val workflow = WorkflowWithDetailsBankModel(plaidLinkToken = "1234")
+        val viewModel = createViewModel()
+
+        // -- When
+        viewModel.showExternalBankAccountDetail(account = ExternalBankAccountBankModel())
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(viewModel.currentAccount)
+        Assert.assertEquals(viewModel.accountDetailState.value, BankAccountsView.ModalState.CONTENT)
+        Assert.assertTrue(viewModel.showAccountDetailModal.value)
+    }
 }
