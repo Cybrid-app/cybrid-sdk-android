@@ -27,7 +27,7 @@ Component(context, attrs, defStyle) {
 
     enum class State { LOADING, CONTENT, DONE, ERROR }
     enum class AddAccountButtonState { LOADING, READY }
-    enum class ModalState { CONTENT, CONFIRM }
+    enum class ModalState { CONTENT, CONFIRM, LOADING }
 
     private var currentState = mutableStateOf(State.LOADING)
 

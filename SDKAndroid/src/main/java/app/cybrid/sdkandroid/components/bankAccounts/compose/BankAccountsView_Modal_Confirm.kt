@@ -96,7 +96,7 @@ private fun BankAccountsView_Modal_Confirm_Buttons(
         Button(
             onClick = {
                 bankAccountsViewModel.viewModelScope.launch {
-                    bankAccountsViewModel.disconnectExternalBankAccountDetail()
+                    bankAccountsViewModel.disconnectExternalBankAccount()
                 }
             },
             modifier = Modifier

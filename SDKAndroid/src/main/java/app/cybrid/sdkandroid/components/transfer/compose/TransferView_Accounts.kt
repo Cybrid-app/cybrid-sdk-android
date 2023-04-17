@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
@@ -79,14 +80,27 @@ fun TransferView_Accounts(
             Modifier.fillMaxSize()
         ) {
 
-            val (balance, tabs, select, input, button) = createRefs()
+            val (warning, balance, tabs, select, input, button) = createRefs()
+
+            // -- Warning
+            var topConstraint: Dp = 10.dp
+            if (transferViewModel?.uiWarning?.value == true)  {
+                topConstraint = 50.dp
+                TransferView_Warning(
+                    modifier = Modifier.constrainAs(warning) {
+                        start.linkTo(parent.start, margin = 0.dp)
+                        top.linkTo(parent.top, margin = 0.dp)
+                        end.linkTo(parent.end, margin = 0.dp)
+                    }
+                )
+            }
 
             // -- Compose Content
             TransferView_Accounts_Balance(
                 transferViewModel = transferViewModel,
                 modifier = Modifier.constrainAs(balance) {
                     start.linkTo(parent.start, margin = 0.dp)
-                    top.linkTo(parent.top, margin = 10.dp)
+                    top.linkTo(parent.top, margin = topConstraint)
                     end.linkTo(parent.end, margin = 0.dp)
                 }
             )
@@ -129,7 +143,9 @@ fun TransferView_Accounts(
                 )
             }
 
-            if (amountMutableState.value != "") {
+            if (amountMutableState.value != "" &&
+                externalBankAccount.value?.state != ExternalBankAccountBankModel.State.refreshRequired) {
+
                 TransferView_Accounts_Button(
                     transferViewModel = transferViewModel,
                     showDialog = showDialog,
@@ -300,6 +316,11 @@ fun TransferView_Accounts_Select__Input(
     val accountName = externalBankAccount.value?.plaidAccountName ?: ""
     val accountID = externalBankAccount.value?.plaidInstitutionId ?: ""
     val accountNameToDisplay = "$accountID - $accountName ($accountMask)"
+    val resource = if (externalBankAccount.value?.state == ExternalBankAccountBankModel.State.refreshRequired) {
+        painterResource(id = R.drawable.kyc_error)
+    } else {
+        painterResource(id = R.drawable.test_bank)
+    }
 
     // -- Content
     Row(
@@ -321,7 +342,7 @@ fun TransferView_Accounts_Select__Input(
     ) {
         if (externalBankAccount.value != null) {
             Image(
-                painter = painterResource(id = R.drawable.test_bank),
+                painter = resource,
                 contentDescription = "",
                 modifier = Modifier
                     .padding(start = 16.dp)
@@ -373,6 +394,11 @@ fun TransferView_Accounts_Select__DropDown(
             val accountName = account.plaidAccountName
             val accountID = account.plaidInstitutionId
             val accountNameToDisplay = "$accountID - $accountName ($accountMask)"
+            val resource = if (account.state == ExternalBankAccountBankModel.State.refreshRequired) {
+                painterResource(id = R.drawable.kyc_error)
+            } else {
+                painterResource(id = R.drawable.test_bank)
+            }
 
             DropdownMenuItem(
                 onClick = {
@@ -388,7 +414,7 @@ fun TransferView_Accounts_Select__DropDown(
                 ) {
 
                     Image(
-                        painter = painterResource(id = R.drawable.test_bank),
+                        painter = resource,
                         contentDescription = "",
                         modifier = Modifier
                             .padding(horizontal = 0.dp)

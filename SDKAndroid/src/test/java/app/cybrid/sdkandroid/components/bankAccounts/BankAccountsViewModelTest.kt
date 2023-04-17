@@ -3,6 +3,8 @@ package app.cybrid.sdkandroid.components.bankAccounts
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
+import app.cybrid.cybrid_api_bank.client.models.PatchExternalBankAccountBankModel
+import app.cybrid.cybrid_api_bank.client.models.WorkflowBankModel
 import app.cybrid.cybrid_api_bank.client.models.WorkflowWithDetailsBankModel
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.BankAccountsView
@@ -10,7 +12,6 @@ import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.tools.JSONMock
 import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import app.cybrid.sdkandroid.util.Polling
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import okhttp3.OkHttpClient
@@ -334,5 +335,177 @@ class BankAccountsViewModelTest {
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(viewModel.externalAccountJob)
         Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.LOADING)
+    }
+
+    @Test
+    fun test_showExternalBankAccountDetail() {
+
+        // -- Given
+        val viewModel = createViewModel()
+
+        // -- When
+        viewModel.showExternalBankAccountDetail(account = ExternalBankAccountBankModel(guid = "1234"))
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(viewModel.currentAccount)
+        Assert.assertEquals(viewModel.currentAccount.guid, "1234")
+        Assert.assertEquals(viewModel.accountDetailState.value, BankAccountsView.ModalState.CONTENT)
+        Assert.assertTrue(viewModel.showAccountDetailModal.value)
+    }
+
+    @Test
+    fun test_dismissExternalBankAccountDetail() {
+
+        // -- Given
+        val viewModel = createViewModel()
+
+        // -- When
+        viewModel.dismissExternalBankAccountDetail()
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(viewModel.currentAccount)
+        Assert.assertNull(viewModel.currentAccount.guid)
+        Assert.assertFalse(viewModel.showAccountDetailModal.value)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_disconnectExternalBankAccount() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- When
+        viewModel.showExternalBankAccountDetail(ExternalBankAccountBankModel(guid = "1234"))
+        viewModel.disconnectExternalBankAccount()
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(viewModel.currentAccount)
+        Assert.assertNull(viewModel.currentAccount.guid)
+        Assert.assertFalse(viewModel.showAccountDetailModal.value)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.CONTENT)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_refreshAccount() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- When
+        viewModel.workflowUpdateJob = null
+        viewModel.refreshAccount()
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(viewModel.workflowUpdateJob)
+        Assert.assertEquals(viewModel.accountDetailState.value, BankAccountsView.ModalState.LOADING)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_createUpdateWorkflow() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- When
+        val workflow = viewModel.createUpdateWorkflow(ExternalBankAccountBankModel(guid = "1234"))
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(workflow)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_fetchUpdateWorkflow() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+        viewModel.workflowJob = Polling {}
+
+        // -- When
+        viewModel.fetchUpdateWorkflow("1234")
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(viewModel.workflowJob)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_fetchUpdateWorkflow_Incomplete() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.EMPTY)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+        viewModel.workflowJob = Polling {}
+
+        // -- When
+        viewModel.fetchUpdateWorkflow("1234")
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(viewModel.workflowJob)
+    }
+
+    @Test
+    fun test_checkWorkflowUpdateStatus() {
+
+        // -- Given
+        val viewModel = createViewModel()
+
+        // -- Null
+        viewModel.workflowUpdateJob = Polling {}
+        val workflowWithPlaidTokenNull = WorkflowWithDetailsBankModel(plaidLinkToken = null)
+        viewModel.checkWorkflowUpdateStatus(workflowWithPlaidTokenNull)
+        Assert.assertNotNull(viewModel.workflowUpdateJob)
+        Assert.assertNull(viewModel.latestWorkflowUpdate)
+
+        // -- Empty
+        viewModel.workflowUpdateJob = Polling {}
+        val workflowWithPlaidTokenEmpty = WorkflowWithDetailsBankModel(plaidLinkToken = "")
+        viewModel.checkWorkflowUpdateStatus(workflowWithPlaidTokenEmpty)
+        Assert.assertNotNull(viewModel.workflowUpdateJob)
+        Assert.assertNull(viewModel.latestWorkflowUpdate)
+
+        // -- With Token
+        viewModel.workflowUpdateJob = Polling {}
+        val workflowWithPlaidToken = WorkflowWithDetailsBankModel(plaidLinkToken = "1234")
+        viewModel.checkWorkflowUpdateStatus(workflowWithPlaidToken)
+        Assert.assertNull(viewModel.workflowUpdateJob)
+        Assert.assertNotNull(viewModel.latestWorkflowUpdate)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_updateExternalBankAccount() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- When
+        viewModel.showExternalBankAccountDetail(ExternalBankAccountBankModel(guid = "1234"))
+        viewModel.updateExternalBankAccount(state = PatchExternalBankAccountBankModel.State.completed)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.CONTENT)
+        Assert.assertNotNull(viewModel.currentAccount)
+        Assert.assertNull(viewModel.currentAccount.guid)
+        Assert.assertFalse(viewModel.showAccountDetailModal.value)
     }
 }

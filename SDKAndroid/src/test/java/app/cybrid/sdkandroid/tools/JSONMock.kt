@@ -139,6 +139,22 @@ class JSONMock(private var state: JSONMockState): Interceptor {
                             else -> {}
                         }
                     }
+                    "DELETE" -> {
+                        when(state) {
+                            JSONMockState.SUCCESS -> {
+                                response = TestConstants.DELETE_EXTERNAL_BANK_ACCOUNT
+                            }
+                            else -> {}
+                        }
+                    }
+                    "PATCH" -> {
+                        when(state) {
+                            JSONMockState.SUCCESS -> {
+                                response = TestConstants.PATCH_EXTERNAL_BANK_ACCOUNT
+                            }
+                            else -> {}
+                        }
+                    }
                 }
             }
 

@@ -2,6 +2,8 @@ package app.cybrid.sdkandroid.components.bankAccounts
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
+import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
+import app.cybrid.cybrid_api_bank.client.models.PatchExternalBankAccountBankModel
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.BankAccountsView
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
@@ -178,5 +180,82 @@ class BankAccountsViewModelTestError {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertFalse(supported)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_disconnectExternalBankAccount_Error() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+        viewModel.externalAccountJob = Polling {}
+
+        // -- When
+        viewModel.showExternalBankAccountDetail(ExternalBankAccountBankModel(guid = "1234"))
+        viewModel.disconnectExternalBankAccount()
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.LOADING)
+        Assert.assertEquals(viewModel.buttonAddAccountsState.value, BankAccountsView.AddAccountButtonState.LOADING)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_createUpdateWorkflow_Error() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+
+        // -- When
+        viewModel.createUpdateWorkflow(ExternalBankAccountBankModel(guid = "1234"))
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNull(viewModel.workflowJob)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.ERROR)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_fetchUpdateWorkflow_Error() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+        viewModel.workflowUpdateJob = Polling {}
+
+        // -- When
+        viewModel.fetchUpdateWorkflow("1234")
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertNotNull(viewModel.workflowUpdateJob)
+    }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun test_updateExternalBankAccount_Error() = runTest {
+
+        // -- Given
+        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
+        val viewModel = createViewModel()
+        viewModel.setDataProvider(dataProvider)
+        viewModel.workflowUpdateJob = Polling {}
+
+        // -- When
+        viewModel.showExternalBankAccountDetail(ExternalBankAccountBankModel(guid = "1234"))
+        viewModel.updateExternalBankAccount(state = PatchExternalBankAccountBankModel.State.refreshRequired)
+
+        // -- Then
+        Assert.assertNotNull(viewModel)
+        Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.ERROR)
+        Assert.assertNotNull(viewModel.currentAccount)
+        Assert.assertTrue(viewModel.showAccountDetailModal.value)
     }
 }
