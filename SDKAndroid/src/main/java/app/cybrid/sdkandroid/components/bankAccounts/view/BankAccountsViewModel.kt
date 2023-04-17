@@ -480,7 +480,7 @@ class BankAccountsViewModel: ViewModel() {
         }
     }
 
-    suspend fun updateExternalBankAccount() {
+    suspend fun updateExternalBankAccount(state: PatchExternalBankAccountBankModel.State) {
 
         Cybrid.instance.let { cybrid ->
             if (!cybrid.invalidToken) {
@@ -488,7 +488,7 @@ class BankAccountsViewModel: ViewModel() {
                     val waitFor = scope.async {
 
                         val externalBAnkAccountPatch = PatchExternalBankAccountBankModel(
-                            state = PatchExternalBankAccountBankModel.State.completed
+                            state = state
                         )
 
                         val externalBankAccountResult = getResult {

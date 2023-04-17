@@ -3,6 +3,7 @@ package app.cybrid.sdkandroid.components.bankAccounts
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
+import app.cybrid.cybrid_api_bank.client.models.PatchExternalBankAccountBankModel
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.BankAccountsView
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
@@ -249,7 +250,7 @@ class BankAccountsViewModelTestError {
 
         // -- When
         viewModel.showExternalBankAccountDetail(ExternalBankAccountBankModel(guid = "1234"))
-        viewModel.updateExternalBankAccount()
+        viewModel.updateExternalBankAccount(state = PatchExternalBankAccountBankModel.State.refreshRequired)
 
         // -- Then
         Assert.assertNotNull(viewModel)

@@ -3,6 +3,7 @@ package app.cybrid.sdkandroid.components.bankAccounts
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
+import app.cybrid.cybrid_api_bank.client.models.PatchExternalBankAccountBankModel
 import app.cybrid.cybrid_api_bank.client.models.WorkflowBankModel
 import app.cybrid.cybrid_api_bank.client.models.WorkflowWithDetailsBankModel
 import app.cybrid.sdkandroid.Cybrid
@@ -501,7 +502,7 @@ class BankAccountsViewModelTest {
 
         // -- When
         viewModel.showExternalBankAccountDetail(ExternalBankAccountBankModel(guid = "1234"))
-        viewModel.updateExternalBankAccount()
+        viewModel.updateExternalBankAccount(state = PatchExternalBankAccountBankModel.State.completed)
         Assert.assertEquals(viewModel.uiState.value, BankAccountsView.State.CONTENT)
         Assert.assertNotNull(viewModel.currentAccount)
         Assert.assertNull(viewModel.currentAccount.guid)

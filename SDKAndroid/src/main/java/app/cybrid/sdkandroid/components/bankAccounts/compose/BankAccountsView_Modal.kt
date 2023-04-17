@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewModelScope
+import app.cybrid.cybrid_api_bank.client.models.PatchExternalBankAccountBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.BankAccountsView
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
@@ -30,13 +31,14 @@ fun BankAccountsView_Modal(
         when (it) {
             is LinkSuccess -> {
                 bankAccountsViewModel.viewModelScope.launch {
-                    bankAccountsViewModel.updateExternalBankAccount()
+                    bankAccountsViewModel.updateExternalBankAccount(
+                        state = PatchExternalBankAccountBankModel.State.completed)
                 }
             }
             is LinkExit -> {
-                bankAccountsViewModel.dismissExternalBankAccountDetail()
                 bankAccountsViewModel.viewModelScope.launch {
-                    bankAccountsViewModel.fetchExternalBankAccounts()
+                    bankAccountsViewModel.updateExternalBankAccount(
+                        state = PatchExternalBankAccountBankModel.State.refreshRequired)
                 }
             }
         }
