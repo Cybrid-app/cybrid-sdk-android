@@ -129,6 +129,52 @@ afterEvaluate {
     }
 }
 
+/*publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId 'app.cybrid'
+            artifactId = 'cybrid-android-sdk'
+            version version
+            afterEvaluate {
+                if (project.plugins.findPlugin("com.android.library")) {
+                    components.getByName('release')
+                } else {
+                    components.getByName('debug')
+                }
+            }
+            artifact androidSourcesJar
+            pom {
+                name = 'Cybrid Android SDK'
+                description = 'Android SDK for UI Components'
+                url = 'https://cybrid.xyz'
+                licenses {
+                    license {
+                        name = 'Apache-2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+>>>>>>> 4260f92 (Mega refactor Gradle and Publish)
+                    }
+                    developers {
+                        developer {
+                            id = 'erick-cybrid'
+                            name = 'Erick Sanchez'
+                            email = 'erick.sanchez@cybrid.app'
+                        }
+                    }
+                    scm {
+                        url = 'https://github.com/Cybrid-app/cybrid-sdk-android'
+                    }
+<<<<<<< HEAD
+=======
+                }
+                scm {
+                    url = 'https://github.com/Cybrid-app/cybrid-sdk-android'
+>>>>>>> 4260f92 (Mega refactor Gradle and Publish)
+                }
+            }
+        }
+    }
+}*/
+
 signing {
 
     System.out.println("Publish version ${version}")
