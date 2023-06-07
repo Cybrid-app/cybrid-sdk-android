@@ -95,7 +95,7 @@ class IdentityVerificationViewModel: ViewModel() {
                         if (lastVerification == null) {
                             uiState?.value = KYCView.KYCViewState.ERROR
                         } else {
-                            val lastVerificationWithDetails = fetchIdentityVerificationWithDetailsStatus(guid = lastVerification?.guid!!)
+                            val lastVerificationWithDetails = fetchIdentityVerificationWithDetailsStatus(guid = lastVerification.guid!!)
                             val returnedWrapper = IdentityVerificationWrapper(identity = lastVerification, details = lastVerificationWithDetails)
                             checkIdentityRecordStatus(returnedWrapper)
                         }

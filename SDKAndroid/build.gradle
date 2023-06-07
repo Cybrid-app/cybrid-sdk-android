@@ -27,7 +27,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
-
     buildTypes {
         debug {
             minifyEnabled false
@@ -35,6 +34,17 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
+
+        singleVariant('debug') {
+            withSourcesJar()
+            withJavadocJar()
         }
     }
     compileOptions {
@@ -105,7 +115,42 @@ artifacts {
     archives androidSourcesJar
 }
 
-publishing {
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId 'app.cybrid'
+                artifactId = 'cybrid-android-sdk'
+                version version
+                // artifact androidSourcesJar
+                pom {
+                    name = 'Cybrid Android SDK'
+                    description = 'Android SDK for UI Components'
+                    url = 'https://cybrid.xyz'
+                    licenses {
+                        license {
+                            name = 'Apache-2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'erick-cybrid'
+                            name = 'Erick Sanchez'
+                            email = 'erick.sanchez@cybrid.app'
+                        }
+                    }
+                    scm {
+                        url = 'https://github.com/Cybrid-app/cybrid-sdk-android'
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*publishing {
     publications {
         maven(MavenPublication) {
             groupId 'app.cybrid'
@@ -113,9 +158,9 @@ publishing {
             version version
             afterEvaluate {
                 if (project.plugins.findPlugin("com.android.library")) {
-                    from components.release
+                    components.getByName('release')
                 } else {
-                    from components.java
+                    components.getByName('debug')
                 }
             }
             artifact androidSourcesJar
@@ -137,12 +182,12 @@ publishing {
                     }
                 }
                 scm {
-                    url = 'https://github.com/Cybrid-app/Cybrid-SDK/'
+                    url = 'https://github.com/Cybrid-app/cybrid-sdk-android'
                 }
             }
         }
     }
-}
+}*/
 
 signing {
 
