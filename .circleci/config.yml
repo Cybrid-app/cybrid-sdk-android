@@ -30,16 +30,20 @@ jobs:
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
+          name: Download Dependencies
+          command: |
+            ./gradlew SDKAndroid:androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      - run:
           name: Run SDK Unit Test
           command: |
             ./gradlew koverXmlReport
       - store_artifacts:
           path: SDKAndroid/build/reports/kover/xml/report.xml
           destination: reports
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - codecov/upload:
           file: 'SDKAndroid/build/reports/kover/xml/report.xml'
 
