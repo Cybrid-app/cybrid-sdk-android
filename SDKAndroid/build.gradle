@@ -38,7 +38,10 @@ android {
     }
     publishing {
         singleVariant('release') {}
-        singleVariant('debug') {}
+        singleVariant('debug') {
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
