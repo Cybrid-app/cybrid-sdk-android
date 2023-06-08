@@ -184,13 +184,13 @@ workflows:
             branches:
               only:
                 - main
-      - firebase-robo:
-          requires:
-            - android-e2e
-          filters:
-            branches:
-              only:
-                - main
+      - firebase-robo
+      #    requires:
+      #      - android-e2e
+      #    filters:
+      #      branches:
+      #        only:
+      #          - main
       - demo-app-publish:
           requires:
             - android-e2e
