@@ -71,6 +71,10 @@ android {
     buildToolsVersion '31.0.0'
 }
 
+android.sourceSets.all {
+    kotlin.srcDir("src/$name/kotlin")
+}
+
 tasks.withType(Test) {
     jvmArgs = ["--add-opens", "java.base/java.lang.invoke=ALL-UNNAMED"]
 }
@@ -202,7 +206,7 @@ dependencies {
     implementation 'com.plaid.link:sdk-core:3.10.1'
 
     // -- Project Testing
-    testImplementation 'com.android.support.test:runner:1.0.2'
+    testImplementation 'androidx.test:runner:1.5.2'
     testImplementation "io.mockk:mockk:1.13.3"
     testImplementation 'org.robolectric:robolectric:4.9'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
