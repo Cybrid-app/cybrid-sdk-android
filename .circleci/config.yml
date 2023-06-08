@@ -28,22 +28,21 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "SDKAndroid/build.gradle" }}
       - run:
           name: Download Dependencies
           command: |
             ./gradlew SDKAndroid:androidDependencies
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
           name: Run SDK Unit Test
           command: |
             ./gradlew koverXmlReport
-      - store_artifacts:
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "SDKAndroid/build.gradle" }}
+      - store_test_results:
           path: SDKAndroid/build/reports/kover/xml/report.xml
-          destination: reports
       - codecov/upload:
           file: 'SDKAndroid/build/reports/kover/xml/report.xml'
 
@@ -184,13 +183,13 @@ workflows:
             branches:
               only:
                 - main
-      - firebase-robo
-      #    requires:
-      #      - android-e2e
-      #    filters:
-      #      branches:
-      #        only:
-      #          - main
+      - firebase-robo:
+          requires:
+            - android-e2e
+          filters:
+            branches:
+              only:
+                - main
       - demo-app-publish:
           requires:
             - android-e2e
