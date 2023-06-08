@@ -41,8 +41,6 @@ jobs:
           paths:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "SDKAndroid/build.gradle" }}
-      - store_test_results:
-          path: SDKAndroid/build/reports/kover/xml/report.xml
       - codecov/upload:
           file: 'SDKAndroid/build/reports/kover/xml/report.xml'
 
