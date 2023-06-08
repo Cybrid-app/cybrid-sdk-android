@@ -37,15 +37,8 @@ android {
         }
     }
     publishing {
-        singleVariant('release') {
-            withSourcesJar()
-            withJavadocJar()
-        }
-
-        singleVariant('debug') {
-            withSourcesJar()
-            withJavadocJar()
-        }
+        singleVariant('release') {}
+        singleVariant('debug') {}
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
