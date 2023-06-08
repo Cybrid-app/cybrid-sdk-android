@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   codecov: codecov/codecov@3.2.4
-  android: circleci/android@2.1.2
+  android: circleci/android@2.3.0
 
 parameters:
   GHA_Event:
@@ -22,7 +22,7 @@ jobs:
 
   android-sdk-test:
     docker:
-      - image: cimg/android:2022.09.2
+      - image: cimg/android:2023.06.1
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
@@ -51,7 +51,7 @@ jobs:
     executor:
       name: android/android-machine
       resource-class: large
-      tag: 2021.10.1
+      tag: 2023.06.1
     steps:
       - checkout
       - android/create-avd:
@@ -71,7 +71,7 @@ jobs:
 
   android-sdk-publish:
     docker:
-      - image: cimg/android:2022.09.2
+      - image: cimg/android:2023.06.1
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
@@ -103,7 +103,7 @@ jobs:
 
   firebase-robo:
     docker:
-      - image: cimg/android:2022.09.2
+      - image: cimg/android:2023.06.1
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
@@ -144,7 +144,7 @@ jobs:
 
   demo-app-publish:
     docker:
-      - image: cimg/android:2022.09.2
+      - image: cimg/android:2023.06.1
     environment:
       JVM_OPTS: -Xmx3200m
     steps:

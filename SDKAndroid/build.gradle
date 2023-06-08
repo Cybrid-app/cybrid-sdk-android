@@ -27,7 +27,6 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
-
     buildTypes {
         debug {
             minifyEnabled false
@@ -35,6 +34,13 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    publishing {
+        singleVariant('release') {}
+        singleVariant('debug') {
+            withSourcesJar()
+            withJavadocJar()
         }
     }
     compileOptions {
@@ -48,7 +54,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = '1.3.2'
+        kotlinCompilerExtensionVersion = '1.4.3'
     }
     testOptions {
         unitTests.returnDefaultValues = true
@@ -89,55 +95,34 @@ kover {
     }
 }
 
-task androidSourcesJar(type: Jar) {
-
-    archiveClassifier.set('sources')
-    if (project.plugins.findPlugin("com.android.library")) {
-        from android.sourceSets.main.java.srcDirs
-        from android.sourceSets.main.kotlin.srcDirs
-    } else {
-        from sourceSets.main.java.srcDirs
-        from sourceSets.main.kotlin.srcDirs
-    }
-}
-
-artifacts {
-    archives androidSourcesJar
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId 'app.cybrid'
-            artifactId = 'cybrid-android-sdk'
-            version version
-            afterEvaluate {
-                if (project.plugins.findPlugin("com.android.library")) {
-                    from components.release
-                } else {
-                    from components.java
-                }
-            }
-            artifact androidSourcesJar
-            pom {
-                name = 'Cybrid Android SDK'
-                description = 'Android SDK for UI Components'
-                url = 'https://cybrid.xyz'
-                licenses {
-                    license {
-                        name = 'Apache-2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId 'app.cybrid'
+                artifactId = 'cybrid-android-sdk'
+                version version
+                pom {
+                    name = 'Cybrid Android SDK'
+                    description = 'Android SDK for UI Components'
+                    url = 'https://cybrid.xyz'
+                    licenses {
+                        license {
+                            name = 'Apache-2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
                     }
-                }
-                developers {
-                    developer {
-                        id = 'erick-cybrid'
-                        name = 'Erick Sanchez'
-                        email = 'erick.sanchez@cybrid.app'
+                    developers {
+                        developer {
+                            id = 'erick-cybrid'
+                            name = 'Erick Sanchez'
+                            email = 'erick.sanchez@cybrid.app'
+                        }
                     }
-                }
-                scm {
-                    url = 'https://github.com/Cybrid-app/Cybrid-SDK/'
+                    scm {
+                        url = 'https://github.com/Cybrid-app/cybrid-sdk-android'
+                    }
                 }
             }
         }
@@ -162,12 +147,12 @@ dependencies {
     ext.retrofitVersion = '2.9.0'
 
     implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.8.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
     // -- Cybrid API Bank
-    implementation('app.cybrid:cybrid-api-bank-kotlin:0.68.33') {
+    implementation('app.cybrid:cybrid-api-bank-kotlin:0.71.68') {
         exclude group:'org.apache.oltu.oauth2', module: 'org.apache.oltu.oauth2.common'
     }
 
