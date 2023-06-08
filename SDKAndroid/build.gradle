@@ -146,9 +146,9 @@ dependencies {
     // -- Vars
     ext.retrofitVersion = '2.9.0'
 
-    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
     // -- Cybrid API Bank
@@ -156,6 +156,7 @@ dependencies {
         exclude group:'org.apache.oltu.oauth2', module: 'org.apache.oltu.oauth2.common'
     }
 
+    // -- Network
     implementation 'com.google.code.gson:gson:2.9.1'
     implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.9'
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
@@ -188,6 +189,7 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.6.1'
     implementation 'androidx.fragment:fragment-ktx:1.5.5'
 
+    // -- Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
 
@@ -197,7 +199,7 @@ dependencies {
     // -- Plaid
     implementation 'com.plaid.link:sdk-core:3.10.1'
 
-    // -- SDK Test
+    // -- Testing
     testImplementation 'com.android.support.test:runner:1.0.2'
     testImplementation "io.mockk:mockk:1.13.3"
     testImplementation 'org.robolectric:robolectric:4.9'
