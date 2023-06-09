@@ -87,7 +87,6 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
 
 kover {
 
-    engine = kotlinx.kover.api.DefaultIntellijEngine.INSTANCE
     instrumentation {
         excludeTasks.add "testReleaseUnitTest"
     }
