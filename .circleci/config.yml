@@ -4,19 +4,19 @@ orbs:
   codecov: codecov/codecov@3.2.4
   android: circleci/android@2.3.0
 
-#parameters:
-#  GHA_Event:
-#    type: string
-#    default: ""
-#  GHA_Actor:
-#    type: string
-#    default: ""
-#  GHA_Action:
-#    type: string
-#    default: ""
-#  GHA_Meta:
-#    type: string
-#    default: ""
+parameters:
+  GHA_Event:
+    type: string
+    default: ""
+  GHA_Actor:
+    type: string
+    default: ""
+  GHA_Action:
+    type: string
+    default: ""
+  GHA_Meta:
+    type: string
+    default: ""
 
 jobs:
 
@@ -46,6 +46,34 @@ jobs:
           destination: reports
       - codecov/upload:
           file: 'SDKAndroid/build/reports/kover/xml/report.xml'
+
+  android-e2e-performance:
+    executor:
+      name: android/android-machine
+      resource-class: large
+      tag: 2023.06.1
+    steps:
+      - checkout
+      - android/restore-gradle-cache
+      - run: ./gradlew assembleDebugAndroidTest
+      - android/save-gradle-cache
+      - android/create-avd:
+          avd-name: myavd
+          install: true
+          system-image: system-images;android-29;default;x86
+      - android/start-emulator:
+          avd-name: myavd
+          no-window: true
+          restore-gradle-cache-prefix: v1a
+          post-emulator-launch-assemble-command: ""
+      - run:
+          name: Run UI Test
+          command: |
+            ./gradlew app:connectedDebugAndroidTest $GRADLE_ARGS
+      - android/save-gradle-cache:
+          cache-prefix: v1a
+      - store_test_results:
+          path: ./app/build/outputs/androidTest-results/connected
 
   android-e2e-parallel:
     parallelism: 3
@@ -209,15 +237,15 @@ workflows:
     jobs:
       - android-sdk-test
       - android-e2e
-      - android-e2e-parallel
+      - android-e2e-performance
       - android-sdk-publish:
           requires:
             - android-sdk-test
             - android-e2e
-#          filters:
-#            branches:
-#              only:
-#                - main
+          filters:
+            branches:
+              only:
+                - main
       - firebase-robo:
           requires:
             - android-e2e
