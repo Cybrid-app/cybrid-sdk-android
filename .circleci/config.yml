@@ -41,13 +41,32 @@ jobs:
           name: Run SDK Unit Test
           command: |
             ./gradlew koverXmlReport
-      - store_artifacts:
-          path: SDKAndroid/build/reports/kover/xml/report.xml
-          destination: reports
       - codecov/upload:
           file: 'SDKAndroid/build/reports/kover/xml/report.xml'
 
-  android-e2e-performance:
+  android-e2e:
+    executor:
+      name: android/android-machine
+      resource-class: large
+      tag: 2023.06.1
+    steps:
+      - checkout
+      - android/create-avd:
+          avd-name: myavd
+          install: true
+          system-image: system-images;android-29;default;x86
+      - android/start-emulator:
+          avd-name: myavd
+          no-window: true
+          restore-gradle-cache-prefix: v1a
+      - run:
+          name: Run UI Test
+          command: |
+            ./gradlew app:connectedDebugAndroidTest
+      - android/save-gradle-cache:
+          cache-prefix: v1a
+
+  android-e2e-for-release:
     executor:
       name: android/android-machine
       resource-class: xlarge
@@ -82,69 +101,6 @@ jobs:
       - android/save-gradle-cache:
           cache-prefix: v1a
       - android/save-gradle-cache
-      - store_test_results:
-          path: ./app/build/outputs/androidTest-results/connected
-
-  # Exprimental
-  android-e2e-parallelism:
-    parallelism: 3
-    executor:
-      name: android/android-machine
-      resource-class: xlarge
-      tag: 2023.06.1
-    steps:
-      - checkout
-      - android/restore-gradle-cache
-      - run: ./gradlew assembleDebugAndroidTest
-      - android/save-gradle-cache
-      - run:
-          name: Split Tests
-          command: |
-            cd app/src/androidTest/java
-            CLASSNAMES=$(circleci tests glob "**/*Test.kt" \
-              | sed 's@/@.@g' \
-              | sed 's/.kt//' \
-              | circleci tests split --split-by=timings --timings-type=classname)
-            echo "export GRADLE_ARGS='-Pandroid.testInstrumentationRunnerArguments.class=$(echo $CLASSNAMES | sed -z "s/\n//g; s/ /,/g")'" >> $BASH_ENV
-      - android/create-avd:
-          avd-name: myavd
-          install: true
-          system-image: system-images;android-29;default;x86
-      - android/start-emulator:
-          avd-name: myavd
-          no-window: true
-          restore-gradle-cache-prefix: v1a
-          post-emulator-launch-assemble-command: ""
-      - run:
-          name: Run UI Test
-          command: |
-            ./gradlew app:connectedDebugAndroidTest $GRADLE_ARGS
-      - android/save-gradle-cache:
-          cache-prefix: v1a
-      - store_test_results:
-          path: ./app/build/outputs/androidTest-results/connected
-
-  android-e2e:
-    executor:
-      name: android/android-machine
-      resource-class: large
-      tag: 2023.06.1
-    steps:
-      - checkout
-      - android/create-avd:
-          avd-name: myavd
-          install: true
-          system-image: system-images;android-29;default;x86
-      - android/start-emulator:
-          avd-name: myavd
-          no-window: true
-          restore-gradle-cache-prefix: v1a
-      - run:
-          name: Run UI Test
-          command: |
-            ./gradlew app:connectedDebugAndroidTest
-      - android/save-gradle-cache:
-          cache-prefix: v1a
 
   android-sdk-publish:
     docker:
@@ -235,13 +191,49 @@ jobs:
           name: Compile Debug App
           command: |
               ./gradlew app:assembleDebug
-      - store_artifacts:
-          path: app/build/outputs/apk/debug/app-debug.apk
-          destination: debugAPK
       - run:
           name: Upload app to Appetize
           command: |
               curl --http1.1 https://${APPETIZE_API_TOKEN}@api.appetize.io/v1/apps/${APPETIZE_PUBLIC_API_TOKEN} -F "file=@app/build/outputs/apk/debug/app-debug.apk" -F "platform=android"
+
+  # Exprimental
+  android-e2e-parallelism:
+    parallelism: 3
+    executor:
+      name: android/android-machine
+      resource-class: xlarge
+      tag: 2023.06.1
+    steps:
+      - checkout
+      - android/restore-gradle-cache
+      - run: ./gradlew assembleDebugAndroidTest
+      - android/save-gradle-cache
+      - run:
+          name: Split Tests
+          command: |
+            cd app/src/androidTest/java
+            CLASSNAMES=$(circleci tests glob "**/*Test.kt" \
+              | sed 's@/@.@g' \
+              | sed 's/.kt//' \
+              | circleci tests split --split-by=timings --timings-type=classname)
+            echo "export GRADLE_ARGS='-Pandroid.testInstrumentationRunnerArguments.class=$(echo $CLASSNAMES | sed -z "s/\n//g; s/ /,/g")'" >> $BASH_ENV
+      - android/create-avd:
+          avd-name: myavd
+          install: true
+          system-image: system-images;android-29;default;x86
+      - android/start-emulator:
+          avd-name: myavd
+          no-window: true
+          restore-gradle-cache-prefix: v1a
+          post-emulator-launch-assemble-command: ""
+      - run:
+          name: Run UI Test
+          command: |
+            ./gradlew app:connectedDebugAndroidTest $GRADLE_ARGS
+      - android/save-gradle-cache:
+          cache-prefix: v1a
+      - store_test_results:
+          path: ./app/build/outputs/androidTest-results/connected
 
 workflows:
   android-test:
@@ -251,7 +243,7 @@ workflows:
           filters:
             branches:
               ignore: main
-      - android-e2e-performance:
+      - android-e2e-for-release:
           matrix:
             parameters:
               system-image:
