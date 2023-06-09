@@ -72,6 +72,7 @@ android {
 }
 
 android.sourceSets.all {
+    System.out.println("Name: ${name}")
     kotlin.srcDir("src/$name/kotlin")
 }
 
@@ -95,6 +96,12 @@ kover {
     }
     xmlReport {
         onCheck.set(false)
+    }
+}
+
+koverReport {
+    defaults {
+        mergeWith("debug")
     }
 }
 
