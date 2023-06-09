@@ -20,8 +20,6 @@ parameters:
 
 jobs:
 
-
-
   android-sdk-test:
     docker:
       - image: cimg/android:2023.06.1
@@ -60,6 +58,11 @@ jobs:
             description: |
                 Name of system image e.g. "system-images;android-29;default;x86".
                 It should match the name seen in the "sdkmanager --list" output.
+            type: string
+        tag:
+            default: q(29)
+            description: |
+                Name of Android verion and api level e.g. "q(29)".
             type: string
     steps:
       - checkout
@@ -244,40 +247,56 @@ workflows:
   android-test:
     jobs:
       - android-sdk-test
-      #- android-e2e
+      - android-e2e:
+          filters:
+            branches:
+              ignore: main
       - android-e2e-performance:
           matrix:
             parameters:
               system-image:
-                - system-images;android-33;default;x86_64
-                - system-images;android-32;default;x86_64
-                - system-images;android-31;default;x86_64
-                - system-images;android-30;default;x86_64
+                - system-images;android-33;google_apis;x86_64
+                - system-images;android-32;google_apis;x86_64
+                - system-images;android-31;google_apis;x86_64
+                - system-images;android-30;google_apis;x86
                 - system-images;android-29;default;x86
                 - system-images;android-28;default;x86
                 - system-images;android-27;default;x86
                 - system-images;android-26;default;x86
-          name: ui-tests-<<matrix.system-image>>
-#      - android-sdk-publish:
-#          requires:
-#            - android-sdk-test
-#            - android-e2e
+              tag:
+                - tiramisu(33)
+                - sv2(32)
+                - s(31)
+                - r(30)
+                - q(29)
+                - pie(28)
+                - oreo(27)
+                - oreo(26)
+          name: e2e-<<matrix.tag>>
 #          filters:
 #            branches:
 #              only:
 #                - main
-#      - firebase-robo:
-#          requires:
-#            - android-e2e
-#          filters:
-#            branches:
-#              only:
-#                - main
-#      - demo-app-publish:
-#          requires:
-#            - android-e2e
-#            - firebase-robo
-#          filters:
-#            branches:
-#              only:
-#                - main
+      - android-sdk-publish:
+          requires:
+            - android-sdk-test
+            - android-e2e
+          filters:
+            branches:
+              only:
+                - main
+      - firebase-robo:
+          requires:
+            - android-e2e
+          filters:
+            branches:
+              only:
+                - main
+      - demo-app-publish:
+          requires:
+            - android-e2e
+            - firebase-robo
+          filters:
+            branches:
+              only:
+                - main
