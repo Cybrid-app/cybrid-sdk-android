@@ -20,7 +20,7 @@ import org.junit.Rule
 
 // TODO: Refactor test class to use new Cybrid instance
 //@RunWith(AndroidJUnit4::class)
-class IdentityVerificationActivityTest_ {
+class IdentityVerificationActivityTest {
 
     @JvmField
     @Rule

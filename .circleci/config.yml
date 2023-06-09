@@ -67,20 +67,6 @@ jobs:
       - android/save-gradle-cache:
           cache-prefix: v1a
 
-  android-e2e-assemble:
-    executor:
-      name: android/android-machine
-      resource-class: large
-      tag: 2023.06.1
-    steps:
-      - checkout
-      - android/restore-gradle-cache
-      - run: ./gradlew assembleDebugAndroidTest
-      - android/save-gradle-cache
-      - persist_to_workspace:
-          root: ~/
-          paths: .
-
   android-e2e-for-release:
     executor:
       name: android/android-machine
@@ -103,7 +89,7 @@ jobs:
           system-image: system-images;<<parameters.system-image>>
       - android/start-emulator:
           avd-name: myavd
-          post-emulator-launch-assemble-command: ""
+          no-boot-anim: true
           no-window: true
           no-audio: true
       - run:
@@ -120,7 +106,7 @@ jobs:
       - checkout
       - run: git fetch
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "SDKAndroid/build.gradle" }}
       - run:
           name: Download Dependencies
           command: |
@@ -238,34 +224,31 @@ workflows:
           filters:
             branches:
               ignore: main
-      - android-e2e-assemble
       - android-e2e-for-release:
-          requires:
-            - android-e2e-assemble
           matrix:
             parameters:
               system-image:
-                # - android-33;google_apis;x86_64
-                # - android-32;google_apis;x86_64
-                # - android-31;google_apis;x86_64
-                # - android-30;google_apis;x86
+                - android-33;google_apis;x86_64
+                - android-32;google_apis;x86_64
+                - android-31;google_apis;x86_64
+                - android-30;google_apis;x86
                 - android-29;default;x86
                 - android-28;default;x86
-                # - android-27;default;x86
-                # - android-26;default;x86
+                - android-27;default;x86
+                - android-26;default;x86
           name: e2e-<<matrix.system-image>>
-#          filters:
-#            branches:
-#              only:
-#                - main
+          filters:
+            branches:
+              only:
+                - main
       - android-sdk-publish:
           requires:
             - android-sdk-test
             - android-e2e-for-release
-#          filters:
-#            branches:
-#              only:
-#                - main
+          filters:
+            branches:
+              only:
+                - main
       - firebase-robo:
           requires:
             - android-e2e-for-release

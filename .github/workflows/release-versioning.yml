@@ -1,4 +1,8 @@
 name: release-versioning
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   release-on-push:
