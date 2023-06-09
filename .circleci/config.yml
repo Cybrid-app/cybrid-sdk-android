@@ -50,32 +50,34 @@ jobs:
   android-e2e-performance:
     executor:
       name: android/android-machine
-      resource-class: large
+      resource-class: xlarge
       tag: 2023.06.1
     steps:
       - checkout
       - android/restore-gradle-cache
-      - run: ./gradlew assembleDebugAndroidTest
-      - android/save-gradle-cache
-      - android/create-avd:
-          avd-name: myavd
-          install: true
-          system-image: system-images;android-29;default;x86
-      - android/start-emulator:
-          avd-name: myavd
+      - android/run-ui-tests:
+          test-command: ./gradlew assembleDebugAndroidTest
+          no-audio: true
+          no-boot-anim: true
           no-window: true
-          restore-gradle-cache-prefix: v1a
-          post-emulator-launch-assemble-command: ""
-      - run:
-          name: Run UI Test
-          command: |
-            ./gradlew app:connectedDebugAndroidTest $GRADLE_ARGS
-      - android/save-gradle-cache:
-          cache-prefix: v1a
+          matrix:
+            parameters:
+              system-image:
+                - system-images;android-33;default;x86_64
+                - system-images;android-32;default;x86_64
+                - system-images;android-31;default;x86_64
+                - system-images;android-30;default;x86_64
+                - system-images;android-29;default;x86
+                - system-images;android-28;default;x86
+                - system-images;android-27;default;x86
+                - system-images;android-26;default;x86
+          name: ui-tests-<<matrix.system-image>>
+      - android/save-gradle-cache
       - store_test_results:
           path: ./app/build/outputs/androidTest-results/connected
 
-  android-e2e-parallel:
+  # Exprimental
+  android-e2e-parallelism:
     parallelism: 3
     executor:
       name: android/android-machine
@@ -236,7 +238,7 @@ workflows:
   android-test:
     jobs:
       - android-sdk-test
-      - android-e2e
+      # - android-e2e
       - android-e2e-performance
       - android-sdk-publish:
           requires:
