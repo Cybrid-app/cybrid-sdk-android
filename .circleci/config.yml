@@ -42,7 +42,7 @@ jobs:
           command: |
             ./gradlew SDKAndroid:koverXmlReport
       - codecov/upload:
-          file: 'SDKAndroid/build/reports/kover/xml/report.xml'
+          file: 'SDKAndroid/build/reports/kover/report.xml'
 
   android-e2e:
     executor:
