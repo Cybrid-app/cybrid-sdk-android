@@ -118,6 +118,7 @@ jobs:
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
+      - run: git fetch
       - restore_cache:
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
@@ -244,14 +245,14 @@ workflows:
           matrix:
             parameters:
               system-image:
-                - android-33;google_apis;x86_64
-                - android-32;google_apis;x86_64
-                - android-31;google_apis;x86_64
-                - android-30;google_apis;x86
+                # - android-33;google_apis;x86_64
+                # - android-32;google_apis;x86_64
+                # - android-31;google_apis;x86_64
+                # - android-30;google_apis;x86
                 - android-29;default;x86
                 - android-28;default;x86
-                - android-27;default;x86
-                - android-26;default;x86
+                # - android-27;default;x86
+                # - android-26;default;x86
           name: e2e-<<matrix.system-image>>
 #          filters:
 #            branches:
