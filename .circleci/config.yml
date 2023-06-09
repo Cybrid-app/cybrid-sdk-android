@@ -54,7 +54,7 @@ jobs:
       tag: 2023.06.1
     parameters:
         system-image:
-            default: system-images;android-29;default;x86
+            default: android-29;default;x86
             description: |
                 Name of system image e.g. "system-images;android-29;default;x86".
                 It should match the name seen in the "sdkmanager --list" output.
@@ -70,7 +70,7 @@ jobs:
       - android/create-avd:
           avd-name: myavd
           install: true
-          system-image: <<parameters.system-image>>
+          system-image: system-images;<<parameters.system-image>>
       - android/start-emulator:
           avd-name: myavd
           no-window: true
@@ -255,24 +255,15 @@ workflows:
           matrix:
             parameters:
               system-image:
-                - system-images;android-33;google_apis;x86_64
-                - system-images;android-32;google_apis;x86_64
-                - system-images;android-31;google_apis;x86_64
-                - system-images;android-30;google_apis;x86
-                - system-images;android-29;default;x86
-                - system-images;android-28;default;x86
-                - system-images;android-27;default;x86
-                - system-images;android-26;default;x86
-              tag:
-                - tiramisu(33)
-                - sv2(32)
-                - s(31)
-                - r(30)
-                - q(29)
-                - pie(28)
-                - oreo(27)
-                - oreo(26)
-          name: e2e-<<matrix.tag>>
+                - android-33;google_apis;x86_64
+                - android-32;google_apis;x86_64
+                - android-31;google_apis;x86_64
+                - android-30;google_apis;x86
+                - android-29;default;x86
+                - android-28;default;x86
+                - android-27;default;x86
+                - android-26;default;x86
+          name: e2e-<<matrix.system-image>>
 #          filters:
 #            branches:
 #              only:
