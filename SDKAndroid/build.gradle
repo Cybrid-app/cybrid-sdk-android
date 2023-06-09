@@ -72,7 +72,6 @@ android {
 }
 
 android.sourceSets.all {
-    System.out.println("Name: ${name}")
     kotlin.srcDir("src/$name/kotlin")
 }
 

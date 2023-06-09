@@ -40,7 +40,7 @@ jobs:
       - run:
           name: Run SDK Unit Test
           command: |
-            ./gradlew koverXmlReport
+            ./gradlew SDKAndroid:koverXmlReport
       - codecov/upload:
           file: 'SDKAndroid/build/reports/kover/xml/report.xml'
 
