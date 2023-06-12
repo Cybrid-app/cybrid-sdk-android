@@ -12,12 +12,11 @@ coverage:
         threshold: 0%
 
 ignore:
-  - SDKAndroid/src/main/java/app/cybrid/sdkandroid/components
-  - SDKAndroid/src/main/java/app/cybrid/sdkandroid/flow
-  - SDKAndroid/src/main/java/app/cybrid/sdkandroid/util/DataAccessStrategy.kt
-  - SDKAndroid/src/main/java/app/cybrid/sdkandroid/util/UtilsComposable.kt
-  - SDKAndroid/src/main/java/app/cybrid/sdkandroid/core/Constants.kt
-  - SDKAndroid/src/main/java/app/cybrid/sdkandroid/ui
+  - SDKAndroid/src/main/kotlin/app/cybrid/sdkandroid/components
+  - SDKAndroid/src/main/kotlin/app/cybrid/sdkandroid/flow
+  - SDKAndroid/src/main/kotlin/app/cybrid/sdkandroid/util/UtilsComposable.kt
+  - SDKAndroid/src/main/kotlin/app/cybrid/sdkandroid/core/Constants.kt
+  - SDKAndroid/src/main/kotlin/app/cybrid/sdkandroid/ui
 
 parsers:
   gcov:
