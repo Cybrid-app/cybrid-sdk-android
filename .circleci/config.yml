@@ -28,7 +28,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "SDKAndroid/build.gradle" }}
       - run:
           name: Download Dependencies
           command: |
@@ -36,16 +36,13 @@ jobs:
       - save_cache:
           paths:
             - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "SDKAndroid/build.gradle" }}
       - run:
           name: Run SDK Unit Test
           command: |
-            ./gradlew koverXmlReport
-      - store_artifacts:
-          path: SDKAndroid/build/reports/kover/xml/report.xml
-          destination: reports
+            ./gradlew SDKAndroid:koverXmlReport
       - codecov/upload:
-          file: 'SDKAndroid/build/reports/kover/xml/report.xml'
+          file: 'SDKAndroid/build/reports/kover/report.xml'
 
   android-e2e:
     executor:
@@ -54,6 +51,8 @@ jobs:
       tag: 2023.06.1
     steps:
       - checkout
+      - android/restore-gradle-cache:
+          cache-prefix: v1a
       - android/create-avd:
           avd-name: myavd
           install: true
@@ -61,13 +60,42 @@ jobs:
       - android/start-emulator:
           avd-name: myavd
           no-window: true
-          restore-gradle-cache-prefix: v1a
       - run:
           name: Run UI Test
           command: |
             ./gradlew app:connectedDebugAndroidTest
       - android/save-gradle-cache:
           cache-prefix: v1a
+
+  android-e2e-for-release:
+    executor:
+      name: android/android-machine
+      resource-class: large
+      tag: 2023.06.1
+    parameters:
+        system-image:
+            default: android-29;default;x86
+            description: |
+                Name of system image e.g. "system-images;android-29;default;x86".
+                It should match the name seen in the "sdkmanager --list" output.
+            type: string
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - android/create-avd:
+          avd-name: myavd
+          install: true
+          system-image: system-images;<<parameters.system-image>>
+      - android/start-emulator:
+          avd-name: myavd
+          no-boot-anim: true
+          no-window: true
+          no-audio: true
+      - run:
+          name: Run UI Test
+          command: |
+            ./gradlew app:connectedDebugAndroidTest
 
   android-sdk-publish:
     docker:
@@ -76,30 +104,22 @@ jobs:
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
-      - when:
-          condition:
-            and:
-              - equal: [ main, << pipeline.git.branch >> ]
-          steps:
-            - restore_cache:
-                key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-            - run:
-                name: Download Dependencies
-                command: |
-                  ./gradlew SDKAndroid:androidDependencies
-            - save_cache:
-                paths:
-                  - ~/.gradle
-                key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-            - run:
-                name: Update version tag
-                command: |
-                  export TAG=$(git describe --tags --abbrev=0)
-                  sed -i "s/0.0.0/$TAG/" version.gradle
-            - run:
-                name: Publish Library
-                command: |
-                  ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+      - run: git fetch
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "SDKAndroid/build.gradle" }}
+      - run:
+          name: Download Dependencies
+          command: |
+            ./gradlew SDKAndroid:androidDependencies
+      - run:
+          name: Update version tag
+          command: |
+            export TAG=$(git describe --tags --abbrev=0)
+            sed -i "s/0.0.0/$TAG/" version.gradle
+      - run:
+          name: Publish Library
+          command: |
+            ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
 
   firebase-robo:
     docker:
@@ -114,17 +134,10 @@ jobs:
           name: Download Dependencies
           command: |
               ./gradlew SDKAndroid:androidDependencies
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
           name: Compile Debug App
           command: |
               ./gradlew app:assembleDebug
-      - store_artifacts:
-          path: app/build/outputs/apk/debug/app-debug.apk
-          destination: debugAPK
       - run:
           name: Set Firabse FIREBASE_SERVICE_ACCOUNT_KEY
           command: echo ${FIREBASE_SERVICE_ACCOUNT_KEY} | base64 -di > ${HOME}/client-secret.json
@@ -139,8 +152,8 @@ jobs:
               sudo gcloud firebase test android run \
                --type robo \
                --app app/build/outputs/apk/debug/app-debug.apk \
-               --device model=redfin,version=30,locale=en,orientation=portrait \
-               --timeout 10m
+               --device model=oriole,version=31,locale=en,orientation=portrait \
+               --timeout 15m
 
   demo-app-publish:
     docker:
@@ -155,46 +168,97 @@ jobs:
           name: Download Dependencies
           command: |
               ./gradlew SDKAndroid:androidDependencies
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
           name: Compile Debug App
           command: |
               ./gradlew app:assembleDebug
-      - store_artifacts:
-          path: app/build/outputs/apk/debug/app-debug.apk
-          destination: debugAPK
       - run:
           name: Upload app to Appetize
           command: |
               curl --http1.1 https://${APPETIZE_API_TOKEN}@api.appetize.io/v1/apps/${APPETIZE_PUBLIC_API_TOKEN} -F "file=@app/build/outputs/apk/debug/app-debug.apk" -F "platform=android"
 
+  # Exprimental
+  android-e2e-parallelism:
+    parallelism: 3
+    executor:
+      name: android/android-machine
+      resource-class: xlarge
+      tag: 2023.06.1
+    steps:
+      - checkout
+      - android/restore-gradle-cache
+      - run: ./gradlew assembleDebugAndroidTest
+      - android/save-gradle-cache
+      - run:
+          name: Split Tests
+          command: |
+            cd app/src/androidTest/java
+            CLASSNAMES=$(circleci tests glob "**/*Test.kt" \
+              | sed 's@/@.@g' \
+              | sed 's/.kt//' \
+              | circleci tests split --split-by=timings --timings-type=classname)
+            echo "export GRADLE_ARGS='-Pandroid.testInstrumentationRunnerArguments.class=$(echo $CLASSNAMES | sed -z "s/\n//g; s/ /,/g")'" >> $BASH_ENV
+      - android/create-avd:
+          avd-name: myavd
+          install: true
+          system-image: system-images;android-29;default;x86
+      - android/start-emulator:
+          avd-name: myavd
+          no-window: true
+          restore-gradle-cache-prefix: v1a
+          post-emulator-launch-assemble-command: ""
+      - run:
+          name: Run UI Test
+          command: |
+            ./gradlew app:connectedDebugAndroidTest $GRADLE_ARGS
+      - android/save-gradle-cache:
+          cache-prefix: v1a
+      - store_test_results:
+          path: ./app/build/outputs/androidTest-results/connected
+
 workflows:
   android-test:
     jobs:
       - android-sdk-test
-      - android-e2e
+      - android-e2e:
+          filters:
+            branches:
+              ignore: main
+      - android-e2e-for-release:
+          matrix:
+            parameters:
+              system-image:
+                - android-33;google_apis;x86_64
+                - android-32;google_apis;x86_64
+                - android-31;google_apis;x86_64
+                - android-30;google_apis;x86
+                - android-29;default;x86
+                - android-28;default;x86
+                - android-27;default;x86
+                - android-26;default;x86
+          name: e2e-<<matrix.system-image>>
+          filters:
+            branches:
+              only:
+                - main
       - android-sdk-publish:
           requires:
             - android-sdk-test
-            - android-e2e
+            - android-e2e-for-release
           filters:
             branches:
               only:
                 - main
       - firebase-robo:
           requires:
-            - android-e2e
+            - android-e2e-for-release
           filters:
             branches:
               only:
                 - main
       - demo-app-publish:
           requires:
-            - android-e2e
-            - firebase-robo
+            - android-e2e-for-release
           filters:
             branches:
               only:

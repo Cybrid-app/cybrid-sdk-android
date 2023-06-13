@@ -1,5 +1,6 @@
 package app.cybrid.demoapp.ui.util
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.junit4.ComposeTestRule
 
@@ -15,6 +16,7 @@ fun ComposeTestRule.waitUntilNodeCount(
     }
 }
 
+@OptIn(ExperimentalTestApi::class)
 fun ComposeTestRule.waitUntilExists(
     matcher: SemanticsMatcher,
     timeoutMillis: Long = 3_000L
@@ -22,6 +24,7 @@ fun ComposeTestRule.waitUntilExists(
     return this.waitUntilNodeCount(matcher, 1, timeoutMillis)
 }
 
+@OptIn(ExperimentalTestApi::class)
 fun ComposeTestRule.waitUntilDoesNotExist(
     matcher: SemanticsMatcher,
     timeoutMillis: Long = 3_000L

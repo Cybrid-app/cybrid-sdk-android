@@ -10,18 +10,13 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import app.cybrid.demoapp.R
 import app.cybrid.demoapp.ui.login.LoginActivity
 import app.cybrid.demoapp.ui.util.waitUntilExists
 import app.cybrid.demoapp.ui.util.waitUntilViewIsDisplayed
-import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
 
 // TODO: Refactor test class to use new Cybrid instance
 //@RunWith(AndroidJUnit4::class)
