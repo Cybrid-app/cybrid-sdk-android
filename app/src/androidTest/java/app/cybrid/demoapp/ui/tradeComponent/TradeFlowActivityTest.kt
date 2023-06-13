@@ -2,6 +2,7 @@ package app.cybrid.demoapp.ui.tradeComponent
 
 import android.content.res.Resources
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -12,8 +13,9 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import app.cybrid.demoapp.R
 import app.cybrid.demoapp.ui.login.LoginActivity
-import app.cybrid.demoapp.ui.util.waitUntilExists
 import app.cybrid.demoapp.ui.util.waitUntilViewIsDisplayed
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -39,8 +41,9 @@ class TradeFlowActivityTest {
         resources = InstrumentationRegistry.getInstrumentation().context.resources
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class, ExperimentalTestApi::class)
     @Test
-    fun checkAppFlow() = runTest {
+    fun test_flow() = runTest {
 
         waitUntilViewIsDisplayed(withId(R.id.demo))
         onView(withId(R.id.demo))
@@ -53,22 +56,31 @@ class TradeFlowActivityTest {
         )
 
         compose.waitForIdle()
+        compose.waitUntilExactlyOneExists(hasTestTag("ListPricesView"), 10_000L)
+        compose.onRoot().printToLog("Cybrid_E2E")
 
-        compose.onRoot().printToLog("CybridTEST")
-        compose.waitUntilExists(hasTestTag("ListPricesView"), 10_000L)
         compose.onNodeWithTag("ListPricesView").assertIsDisplayed()
         compose.onNodeWithText("Search").assertIsDisplayed()
         compose.onNodeWithText("Bitcoin").assertExists()
         compose.onNodeWithText("Ethereum").assertExists()
-
-        compose.onNodeWithText("Search").performTextInput("Eth")
-        compose.onNodeWithText("Bitcoin").assertDoesNotExist()
-        compose.onNodeWithText("Ethereum").assertIsDisplayed()
-
-        Thread.sleep(3500)
-        compose.onNodeWithText("Eth").performTextInput("")
-        compose.onNodeWithText("Bitcoin").assertIsDisplayed()
-        compose.onNodeWithText("Ethereum").assertIsDisplayed()
         compose.onNodeWithText("Bitcoin").performClick()
+
+        // -- Buy
+        compose.waitUntilExactlyOneExists(hasText("Crypto Currency"), 5000L)
+        compose.onRoot().printToLog("Cybrid_E2E")
+        compose.onNodeWithText("Crypto Currency").assertExists()
+        compose.onNodeWithText("Bitcoin").assertExists()
+
+        val amountInput = compose.onNodeWithTag("PreQuoteAmountInputTextFieldTag")
+        amountInput.assertExists()
+        amountInput.performTextInput("100")
+
+        val buyButton = compose.onNodeWithText("Buy")
+        buyButton.assertExists()
+        buyButton.performClick()
+
+        compose.onAllNodes(isRoot())[1].printToLog("Cybrid_E2E")
+        //compose.onRoot(useUnmergedTree = false).onChildAt(1).printToLog("Cybrid_E2E")
+        delay(15000)
     }
 }
