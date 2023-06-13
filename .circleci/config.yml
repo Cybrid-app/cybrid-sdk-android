@@ -228,7 +228,6 @@ workflows:
           matrix:
             parameters:
               system-image:
-                - android-33;google_apis;x86_64
                 - android-32;google_apis;x86_64
                 - android-31;google_apis;x86_64
                 - android-30;google_apis;x86
