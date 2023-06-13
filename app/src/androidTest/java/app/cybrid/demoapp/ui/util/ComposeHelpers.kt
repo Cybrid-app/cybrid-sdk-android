@@ -1,12 +1,13 @@
 package app.cybrid.demoapp.ui.util
 
+import android.util.Log
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.junit4.ComposeTestRule
 
 class ComposeHelpers {}
 
-fun ComposeTestRule.waitUntilNodeCount(
+/*fun ComposeTestRule.waitUntilNodeCount(
     matcher: SemanticsMatcher,
     count: Int,
     timeoutMillis: Long = 3_000L
@@ -30,4 +31,4 @@ fun ComposeTestRule.waitUntilDoesNotExist(
     timeoutMillis: Long = 3_000L
 ) {
     return this.waitUntilNodeCount(matcher, 0, timeoutMillis)
-}
+}*/
