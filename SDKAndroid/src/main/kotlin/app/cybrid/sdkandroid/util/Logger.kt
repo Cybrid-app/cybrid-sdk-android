@@ -12,23 +12,24 @@ enum class LoggerEvents(val level:Int, val message:String) {
     DATA_FETCHED(Log.INFO, "Data Fetched"),
     DATA_REFRESHED(Log.INFO, "Refreshing"),
     DATA_ERROR(Log.ERROR, "There was an error fetching"),
+    CONFIG_ERROR(Log.ERROR, "You can only configure the SDK once"),
     ERROR(Log.ERROR, "Error")
 }
 
 object Logger {
 
-    fun log(event:LoggerEvents) {
+    fun log(event: LoggerEvents) {
 
-        Log.println(event.level, Cybrid.instance.tag, event.message)
-        Cybrid.instance.let {
+        Log.println(event.level, Cybrid.getInstance().tag, event.message)
+        Cybrid.getInstance().let {
             it.listener?.onEvent(event.level, event.message)
         }
     }
 
-    fun log(event:LoggerEvents, data:String) {
+    fun log(event: LoggerEvents, data:String) {
 
-        Log.println(event.level, Cybrid.instance.tag, event.message + ": " + data)
-        Cybrid.instance.let {
+        Log.println(event.level, Cybrid.getInstance().tag, event.message + ": " + data)
+        Cybrid.getInstance().let {
             it.listener?.onEvent(event.level, event.message + ": " + data)
         }
     }
