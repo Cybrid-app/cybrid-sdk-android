@@ -15,8 +15,10 @@ open class Cybrid {
 
     private var bearer: String = ""
     var customerGuid: String = ""
+        private set
     var tag: String = "CybridSDK"
     var env = CybridEnvironment.SANDBOX
+        private set
 
     var invalidToken = false
         private set
@@ -31,7 +33,8 @@ open class Cybrid {
     fun setup(sdkConfig: SDKConfig,
               completion: () -> Unit) {
 
-
+        this.bearer = sdkConfig.bearer
+        this.customerGuid = sdkConfig.customerGuid
     }
 
     fun setBearer(bearer: String) {
