@@ -6,6 +6,7 @@ import app.cybrid.sdkandroid.Cybrid
 enum class LoggerEvents(val level:Int, val message:String) {
 
     AUTH_SET(Log.INFO, "Setting auth token"),
+    AUTH_ERROR(Log.ERROR, "Please set a valid token"),
     AUTH_EXPIRED(Log.ERROR, "Session is expired"),
     NETWORK_ERROR(Log.ERROR, "Network error"),
     COMPONENT_INIT(Log.INFO, "Initializing"),
@@ -20,7 +21,7 @@ object Logger {
 
     fun log(event: LoggerEvents) {
 
-        Log.println(event.level, Cybrid.getInstance().tag, event.message)
+        Log.println(event.level, Cybrid.getInstance().logTag, event.message)
         Cybrid.getInstance().let {
             it.listener?.onEvent(event.level, event.message)
         }
@@ -28,7 +29,7 @@ object Logger {
 
     fun log(event: LoggerEvents, data:String) {
 
-        Log.println(event.level, Cybrid.getInstance().tag, event.message + ": " + data)
+        Log.println(event.level, Cybrid.getInstance().logTag, event.message + ": " + data)
         Cybrid.getInstance().let {
             it.listener?.onEvent(event.level, event.message + ": " + data)
         }

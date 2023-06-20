@@ -64,14 +64,11 @@ class AccountsViewModel : ViewModel() {
 
     // -- Current currency/customerGUID
     var currentFiatCurrency = "USD"
-    var customerGuid = Cybrid.instance.customerGuid
+    var customerGuid = Cybrid.getInstance().customerGuid
 
     init {
-
-        Cybrid.instance.let { cybrid ->
-            viewModelScope.launch {
-                cybrid.accountsRefreshObservable.collect {}
-            }
+        viewModelScope.launch {
+            Cybrid.getInstance().accountsRefreshObservable.collect {}
         }
     }
 
@@ -85,35 +82,33 @@ class AccountsViewModel : ViewModel() {
     suspend fun getAccountsList(withLoading: Boolean = true) {
 
         if (withLoading) { this.uiState.value = AccountsView.ViewState.LOADING }
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    val waitFor = scope.async {
+        if (!Cybrid.getInstance().invalidToken) {
+            this.viewModelScope.let { scope ->
+                val waitFor = scope.async {
 
-                        val accountsResult = getResult {
-                            accountsService.listAccounts(
-                                customerGuid = customerGuid
-                            )
-                        }
-                        accountsResult.let {
-                            if (isSuccessful(it.code ?: 500)) {
+                    val accountsResult = getResult {
+                        accountsService.listAccounts(
+                            customerGuid = customerGuid
+                        )
+                    }
+                    accountsResult.let {
+                        if (isSuccessful(it.code ?: 500)) {
 
-                                accounts = it.data?.objects ?: listOf()
-                                if (accountsPolling == null) {
-                                    getPricesList()
-                                    accountsPolling = Polling { viewModelScope.launch { getAccountsList(false) }}
-                                }
-                                Logger.log(LoggerEvents.DATA_FETCHED, "Accounts")
-
-                            } else {
-
-                                accounts = listOf()
-                                Logger.log(LoggerEvents.DATA_ERROR, "Accounts :: ${it.message}")
+                            accounts = it.data?.objects ?: listOf()
+                            if (accountsPolling == null) {
+                                getPricesList()
+                                accountsPolling = Polling { viewModelScope.launch { getAccountsList(false) }}
                             }
+                            Logger.log(LoggerEvents.DATA_FETCHED, "Accounts")
+
+                        } else {
+
+                            accounts = listOf()
+                            Logger.log(LoggerEvents.DATA_ERROR, "Accounts :: ${it.message}")
                         }
                     }
-                    waitFor.await()
                 }
+                waitFor.await()
             }
         }
     }
@@ -218,9 +213,9 @@ class AccountsViewModel : ViewModel() {
 
         this.uiState.value = AccountsView.ViewState.LOADING
         this.currentAccountSelected = account
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                val waitFor = viewModelScope.async {
+        if (!Cybrid.getInstance().invalidToken) {
+            this.viewModelScope.let { scope ->
+                val waitFor = scope.async {
 
                     // -- Getting prices
                     val tradesResult = getResult { tradesService.listTrades(accountGuid = account.accountGuid) }
@@ -286,9 +281,9 @@ class AccountsViewModel : ViewModel() {
 
         this.uiState.value = AccountsView.ViewState.LOADING
         this.currentAccountSelected = account
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                val waitFor = viewModelScope.async {
+        if (!Cybrid.getInstance().invalidToken) {
+            this.viewModelScope.let { scope ->
+                val waitFor = scope.async {
 
                     // -- Getting prices
                     val transfersResult = getResult { transfersService.listTransfers(accountGuid = account.accountGuid) }

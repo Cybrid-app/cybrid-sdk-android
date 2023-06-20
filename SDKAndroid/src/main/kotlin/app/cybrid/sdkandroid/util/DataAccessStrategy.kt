@@ -10,21 +10,22 @@ suspend fun <T> getResult(call: suspend() -> Response<T>): Resource<T> {
 
     try {
 
+        val cybrid = Cybrid.getInstance()
         val response = call.invoke()
         val body = response.body()
         val code = response.code()
 
         if (response.isSuccessful) {
 
-            Log.d(Cybrid.instance.tag, "Data: ${response.code()} - ${response.body()}")
+            Log.d(cybrid.logTag, "Data: ${response.code()} - ${response.body()}")
             return Resource.success(body!!, code)
 
         } else if (response.code() == HTTP_UNAUTHORIZED || response.code() == HTTP_FORBIDDEN) {
 
-            Cybrid.instance.let { cybrid ->
-                cybrid.listener.let {
-                    cybrid.invalidToken = true
-                    it?.onTokenExpired()
+            cybrid.let { cybridInstance ->
+                cybridInstance.listener.let { listener ->
+                    cybridInstance.invalidToken = true
+                    listener?.onTokenExpired()
                 }
             }
             Logger.log(LoggerEvents.AUTH_EXPIRED, "${response.code()} - ${response.message()}")
@@ -38,7 +39,7 @@ suspend fun <T> getResult(call: suspend() -> Response<T>): Resource<T> {
             )
         }
     } catch (e: Exception) {
-        Log.e(Cybrid.instance.tag, "ThrowsError: ${e.message}")
+        Log.e(Cybrid.getInstance().logTag, "ThrowsError: ${e.message}")
         return Resource.error("${e.message.toString()} - ${call.javaClass.name}")
     }
 }

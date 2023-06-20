@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -39,7 +38,7 @@ class App : Application(), CybridSDKEvents {
     fun setupCybridSDK() {
 
         Cybrid.instance.listener = this
-        Cybrid.instance.env = demonEnv
+        Cybrid.instance.environment = demonEnv
         if (Cybrid.instance.customerGuid == "") {
             Cybrid.instance.customerGuid = BuildConfig.CUSTOMER_GUID
         }
