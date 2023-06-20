@@ -29,7 +29,6 @@ class LoginActivity : AppCompatActivity(), BearerListener {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
         this.initViews()
     }
 
@@ -68,6 +67,10 @@ class LoginActivity : AppCompatActivity(), BearerListener {
                     client_id = id.toString(),
                     client_secret = secret.toString()
                 )
+                App().setupCybridSDK()
+
+
+
                 App().getBearer(this, tokenRequest)
                 Cybrid.instance.customerGuid = customerGUID.toString()
                 hideViews()

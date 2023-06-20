@@ -32,6 +32,6 @@ fun getDateInFormat(date: OffsetDateTime, pattern:String = "MMM dd, YYYY"): Stri
 
 fun getImageUrl(name: String): String {
 
-    val cybrid = Cybrid.instance
+    val cybrid = Cybrid.getInstance()
     return "${cybrid.imagesUrl}$name${cybrid.imagesSize}"
 }

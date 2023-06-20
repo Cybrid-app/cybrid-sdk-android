@@ -35,21 +35,19 @@ class ListPricesViewModel : ViewModel() {
     private suspend fun fetchAssets(): List<AssetBankModel> {
 
         var assets: List<AssetBankModel> = listOf()
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    val waitFor = scope.async {
-                        val assetsResponse = getResult { assetsService.listAssets() }
-                        assetsResponse.let {
-                            if (isSuccessful(it.code ?: 500)) {
-                                Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
-                                assets = it.data?.objects ?: listOf()
-                                return@async assets
-                            }
+        if (!Cybrid.getInstance().invalidToken) {
+            this.viewModelScope.let { scope ->
+                val waitFor = scope.async {
+                    val assetsResponse = getResult { assetsService.listAssets() }
+                    assetsResponse.let {
+                        if (isSuccessful(it.code ?: 500)) {
+                            Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
+                            assets = it.data?.objects ?: listOf()
+                            return@async assets
                         }
                     }
-                    waitFor.await()
                 }
+                waitFor.await()
             }
         }
         return assets
@@ -57,27 +55,25 @@ class ListPricesViewModel : ViewModel() {
 
     suspend fun getPricesList(symbol: String? = null) {
 
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    val waitFor = scope.async {
+        if (!Cybrid.getInstance().invalidToken) {
+            viewModelScope.let { scope ->
+                val waitFor = scope.async {
 
-                        // -- Getting assets if are empty
-                        if (assets.isEmpty()) { assets = fetchAssets() }
+                    // -- Getting assets if are empty
+                    if (assets.isEmpty()) { assets = fetchAssets() }
 
-                        // -- Getting the prices
-                        val pricesResult = getResult { pricesService.listPrices(symbol) }
-                        pricesResult.let {
-                            prices = if (isSuccessful(it.code ?: 500)) {
-                                it.data!!
-                            } else {
-                                Logger.log(LoggerEvents.DATA_ERROR, "ListPricesView Component - Prices Data :: ${it.message}")
-                                listOf()
-                            }
+                    // -- Getting the prices
+                    val pricesResult = getResult { pricesService.listPrices(symbol) }
+                    pricesResult.let {
+                        prices = if (isSuccessful(it.code ?: 500)) {
+                            it.data!!
+                        } else {
+                            Logger.log(LoggerEvents.DATA_ERROR, "ListPricesView Component - Prices Data :: ${it.message}")
+                            listOf()
                         }
                     }
-                    waitFor.await()
                 }
+                waitFor.await()
             }
         }
     }

@@ -1,6 +1,5 @@
 package app.cybrid.sdkandroid.components.kyc.view
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -24,7 +23,7 @@ class IdentityVerificationViewModel: ViewModel() {
     var customerJob: Polling? = null
     var identityJob: Polling? = null
 
-    var customerGuid = Cybrid.instance.customerGuid
+    var customerGuid = Cybrid.getInstance().customerGuid
 
     var uiState: MutableState<KYCView.KYCViewState>? = null
     val viewDismiss: MutableState<Boolean> = mutableStateOf(false)
@@ -39,41 +38,37 @@ class IdentityVerificationViewModel: ViewModel() {
 
     suspend fun createCustomerTest() {
 
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    val waitFor = scope.async {
+        if (!Cybrid.getInstance().invalidToken) {
+            this.viewModelScope.let { scope ->
+                val waitFor = scope.async {
 
-                        val customerResult = getResult {
-                            customerService.createCustomer(
-                                postCustomerBankModel = PostCustomerBankModel(
-                                    type = PostCustomerBankModel.Type.individual)
-                            )
-                        }
-                        Logger.log(LoggerEvents.DATA_FETCHED, "Create - Customer")
-                        customerGuid = customerResult.data?.guid ?: customerGuid
-                        getCustomerStatus()
+                    val customerResult = getResult {
+                        customerService.createCustomer(
+                            postCustomerBankModel = PostCustomerBankModel(
+                                type = PostCustomerBankModel.Type.individual)
+                        )
                     }
-                    waitFor.await()
+                    Logger.log(LoggerEvents.DATA_FETCHED, "Create - Customer")
+                    customerGuid = customerResult.data?.guid ?: customerGuid
+                    getCustomerStatus()
                 }
+                waitFor.await()
             }
         }
     }
 
     fun getCustomerStatus() {
 
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    scope.launch {
+        if (!Cybrid.getInstance().invalidToken) {
+            this.viewModelScope.let { scope ->
+                scope.launch {
 
-                        val customerResult = getResult {
-                            customerService.getCustomer(
-                                customerGuid = customerGuid)
-                        }
-                        Logger.log(LoggerEvents.DATA_FETCHED, "Fetch - Customer Status")
-                        checkCustomerStatus(customerResult.data?.state ?: CustomerBankModel.State.storing)
+                    val customerResult = getResult {
+                        customerService.getCustomer(
+                            customerGuid = customerGuid)
                     }
+                    Logger.log(LoggerEvents.DATA_FETCHED, "Fetch - Customer Status")
+                    checkCustomerStatus(customerResult.data?.state ?: CustomerBankModel.State.storing)
                 }
             }
         }
@@ -81,24 +76,22 @@ class IdentityVerificationViewModel: ViewModel() {
 
     fun getIdentityVerificationStatus(identityWrapper: IdentityVerificationWrapper? = null) {
 
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    scope.launch {
+        if (!Cybrid.getInstance().invalidToken) {
+            this.viewModelScope.let { scope ->
+                scope.launch {
 
-                        var lastVerification = identityWrapper?.identityVerification ?: getLastIdentityVerification()
-                        if (lastVerification == null ||
-                            lastVerification.state == IdentityVerificationBankModel.State.expired) {
-                            lastVerification = createIdentityVerification()
-                        }
+                    var lastVerification = identityWrapper?.identityVerification ?: getLastIdentityVerification()
+                    if (lastVerification == null ||
+                        lastVerification.state == IdentityVerificationBankModel.State.expired) {
+                        lastVerification = createIdentityVerification()
+                    }
 
-                        if (lastVerification == null) {
-                            uiState?.value = KYCView.KYCViewState.ERROR
-                        } else {
-                            val lastVerificationWithDetails = fetchIdentityVerificationWithDetailsStatus(guid = lastVerification.guid!!)
-                            val returnedWrapper = IdentityVerificationWrapper(identity = lastVerification, details = lastVerificationWithDetails)
-                            checkIdentityRecordStatus(returnedWrapper)
-                        }
+                    if (lastVerification == null) {
+                        uiState?.value = KYCView.KYCViewState.ERROR
+                    } else {
+                        val lastVerificationWithDetails = fetchIdentityVerificationWithDetailsStatus(guid = lastVerification.guid!!)
+                        val returnedWrapper = IdentityVerificationWrapper(identity = lastVerification, details = lastVerificationWithDetails)
+                        checkIdentityRecordStatus(returnedWrapper)
                     }
                 }
             }
@@ -108,21 +101,19 @@ class IdentityVerificationViewModel: ViewModel() {
     suspend fun fetchIdentityVerificationWithDetailsStatus(guid: String): IdentityVerificationWithDetailsBankModel? {
 
         var identityVerificationDetails: IdentityVerificationWithDetailsBankModel? = null
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    val waitFor = scope.async {
-                        val recordResponse = getResult {
-                            identityService.getIdentityVerification(
-                                identityVerificationGuid = guid
-                            )
-                        }
-                        Logger.log(LoggerEvents.DATA_FETCHED, "Fetch - Identity Verification Status")
-                        identityVerificationDetails = recordResponse.data
-                        return@async identityVerificationDetails
+        if (!Cybrid.getInstance().invalidToken) {
+            this.viewModelScope.let { scope ->
+                val waitFor = scope.async {
+                    val recordResponse = getResult {
+                        identityService.getIdentityVerification(
+                            identityVerificationGuid = guid
+                        )
                     }
-                    waitFor.await()
+                    Logger.log(LoggerEvents.DATA_FETCHED, "Fetch - Identity Verification Status")
+                    identityVerificationDetails = recordResponse.data
+                    return@async identityVerificationDetails
                 }
+                waitFor.await()
             }
         }
         return identityVerificationDetails
@@ -131,30 +122,28 @@ class IdentityVerificationViewModel: ViewModel() {
     suspend fun getLastIdentityVerification(): IdentityVerificationBankModel? {
 
         var verification: IdentityVerificationBankModel? = null
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    val waitFor = scope.async {
+        if (!Cybrid.getInstance().invalidToken) {
+            this.viewModelScope.let { scope ->
+                val waitFor = scope.async {
 
-                        val identityResponse = getResult {
-                            identityService.listIdentityVerifications(
-                                customerGuid = customerGuid,
-                                page = JavaBigDecimal(0),
-                                perPage = JavaBigDecimal(1)
-                            )
-                        }
-                        Logger.log(LoggerEvents.DATA_FETCHED, "Fetch - Identity Verifications List")
-                        val total: JavaBigDecimal = identityResponse.data?.total ?: JavaBigDecimal(0)
-                        if (total > JavaBigDecimal(0)) {
-
-                            val verifications = identityResponse.data?.objects
-                            verifications?.sortedBy { it.createdAt }
-                            verification = verifications?.get(0)
-                        }
-                        return@async verification
+                    val identityResponse = getResult {
+                        identityService.listIdentityVerifications(
+                            customerGuid = customerGuid,
+                            page = JavaBigDecimal(0),
+                            perPage = JavaBigDecimal(1)
+                        )
                     }
-                    waitFor.await()
+                    Logger.log(LoggerEvents.DATA_FETCHED, "Fetch - Identity Verifications List")
+                    val total: JavaBigDecimal = identityResponse.data?.total ?: JavaBigDecimal(0)
+                    if (total > JavaBigDecimal(0)) {
+
+                        val verifications = identityResponse.data?.objects
+                        verifications?.sortedBy { it.createdAt }
+                        verification = verifications?.get(0)
+                    }
+                    return@async verification
                 }
+                waitFor.await()
             }
         }
         return verification
@@ -163,10 +152,8 @@ class IdentityVerificationViewModel: ViewModel() {
     suspend fun createIdentityVerification(): IdentityVerificationBankModel? {
 
         var verification: IdentityVerificationBankModel? = null
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-
-                viewModelScope.let {
+        if (!Cybrid.getInstance().invalidToken) {
+            this.viewModelScope.let {
                     val waitFor = it.async {
 
                         val recordResponse = getResult {
@@ -190,7 +177,6 @@ class IdentityVerificationViewModel: ViewModel() {
                     }
                     waitFor.await()
                 }
-            }
         }
         return verification
     }

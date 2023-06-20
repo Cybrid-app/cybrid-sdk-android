@@ -1,6 +1,9 @@
 package app.cybrid.sdkandroid
 
+import app.cybrid.cybrid_api_bank.client.apis.AssetsApi
 import app.cybrid.cybrid_api_bank.client.auth.HttpBearerAuth
+import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
+import app.cybrid.cybrid_api_bank.client.models.AssetListBankModel
 import app.cybrid.cybrid_api_bank.client.models.BankBankModel
 import app.cybrid.cybrid_api_bank.client.models.CustomerBankModel
 import app.cybrid.sdkandroid.core.CybridEnvironment
@@ -8,8 +11,14 @@ import app.cybrid.sdkandroid.core.SDKConfig
 import app.cybrid.sdkandroid.listener.CybridSDKEvents
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
+import app.cybrid.sdkandroid.util.getResult
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
+import java.math.BigDecimal as JavaBigDecimal
 
 open class Cybrid {
 
@@ -20,11 +29,9 @@ open class Cybrid {
         private set
     var environment = CybridEnvironment.SANDBOX
         private set
-    var customer: CustomerBankModel? = null
-    var bank: BankBankModel? = null
+
     var listener: CybridSDKEvents? = null
         private set
-    private var completion: (() -> Unit)? = null
 
     var invalidToken = false
     var imagesUrl = "https://images.cybrid.xyz/sdk/assets/png/color/"
@@ -32,6 +39,18 @@ open class Cybrid {
     var imagesSize = "@2x.png"
         private set
     var accountsRefreshObservable = MutableStateFlow(false)
+
+    // -- Properties for AutoLoad
+    // -- fiat
+    var customer: CustomerBankModel? = null
+        private set
+    var bank: BankBankModel? = null
+        private set
+    var assets: List<AssetBankModel> = emptyList()
+    var autoLoadComplete = false
+        private set
+    var completion: (() -> Unit)? = null
+        private set
 
     fun setup(sdkConfig: SDKConfig,
               completion: () -> Unit) {
@@ -52,6 +71,7 @@ open class Cybrid {
         this.bank = sdkConfig.bank
         this.listener = sdkConfig.listener
         this.completion = completion
+        this.autoLoad()
     }
 
     fun setBearer(bearer: String) {
@@ -63,6 +83,32 @@ open class Cybrid {
         } else {
             this.invalidToken = false
             Logger.log(LoggerEvents.AUTH_SET)
+        }
+    }
+
+    private fun autoLoad() {
+
+        // -- Fetch assets
+        this.fetchAssets {
+
+            this.autoLoadComplete = true
+            this.completion?.invoke()
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    fun fetchAssets(completion: () -> Unit) {
+
+        val assetsApi = AppModule.getClient().createService(AssetsApi::class.java)
+        GlobalScope.let { scope ->
+            scope.launch {
+                val assetsResponse = getResult {
+                    assetsApi.listAssets(page = JavaBigDecimal(0), perPage = JavaBigDecimal(50))
+                }
+                assets = assetsResponse.data?.objects ?: emptyList()
+                // -- fiat calculate
+                completion()
+            }
         }
     }
 
