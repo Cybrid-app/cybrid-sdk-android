@@ -42,7 +42,7 @@ class App : Application(), CybridSDKEvents {
     fun getSDKConfig(request: TokenRequest? = null, customerGuid: String, completion: (SDKConfig) -> Unit) {
 
         this._sdkConfig.customerGuid = customerGuid
-        val tokenService = Util.getIdpClient().create(AppService::class.java)
+        val tokenService = Util.getIdpSimpleClient().create(AppService::class.java)
         val token = request ?: this.tokenRequest
         tokenService.getBearer(token).enqueue(object : Callback<TokenResponse> {
             override fun onResponse(call: Call<TokenResponse>, response: Response<TokenResponse>) {
@@ -73,7 +73,7 @@ class App : Application(), CybridSDKEvents {
 
     fun getCustomerToken(sdkConfig: SDKConfig, bankBearer: String, completion: (SDKConfig) -> Unit) {
 
-        val tokenService = Util.getIdpClient().create(AppService::class.java)
+        val tokenService = Util.getIdpClient(bankBearer).create(AppService::class.java)
         val token = request ?: this.tokenRequest
         tokenService.getBearer(token).enqueue(object : Callback<TokenResponse> {
             override fun onResponse(call: Call<TokenResponse>, response: Response<TokenResponse>) {
