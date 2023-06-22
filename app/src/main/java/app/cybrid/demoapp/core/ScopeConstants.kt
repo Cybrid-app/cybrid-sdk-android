@@ -15,6 +15,12 @@ object ScopeConstants {
         PostCustomerTokenIdpModel.Scopes.quotesColonExecute,
         PostCustomerTokenIdpModel.Scopes.tradesColonRead,
         PostCustomerTokenIdpModel.Scopes.tradesColonExecute,
-
+        PostCustomerTokenIdpModel.Scopes.transfersColonRead,
+        PostCustomerTokenIdpModel.Scopes.transfersColonExecute,
+        PostCustomerTokenIdpModel.Scopes.externalBankAccountsColonRead,
+        PostCustomerTokenIdpModel.Scopes.externalBankAccountsColonWrite,
+        PostCustomerTokenIdpModel.Scopes.externalBankAccountsColonExecute,
+        PostCustomerTokenIdpModel.Scopes.workflowsColonRead,
+        PostCustomerTokenIdpModel.Scopes.workflowsColonExecute
     )
 }

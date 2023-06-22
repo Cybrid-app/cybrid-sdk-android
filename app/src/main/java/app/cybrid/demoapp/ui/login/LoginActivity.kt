@@ -121,6 +121,11 @@ class LoginActivity : AppCompatActivity(), BearerListener {
         Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
     }
 
+    private fun setupCybridSDK() {
+
+
+    }
+
     override fun onBearerReady() {
 
         App().setupCybridSDK()
