@@ -36,10 +36,6 @@ class App : Application(), CybridSDKEvents {
     private val _sdkConfig = SDKConfig(
         environment = demonEnv
     )
-    private val tokenRequest = TokenRequest(
-        client_id = BuildConfig.CLIENT_ID,
-        client_secret = BuildConfig.CLIENT_SECRET
-    )
 
     override fun onCreate() {
 
@@ -47,12 +43,11 @@ class App : Application(), CybridSDKEvents {
         context = applicationContext
     }
 
-    fun getSDKConfig(request: TokenRequest? = null, customerGuid: String, completion: (SDKConfig) -> Unit) {
+    fun getSDKConfig(request: TokenRequest, customerGuid: String, completion: (SDKConfig) -> Unit) {
 
         this._sdkConfig.customerGuid = customerGuid
         val tokenService = Util.getIdpSimpleClient().create(AppService::class.java)
-        val token = request ?: this.tokenRequest
-        tokenService.getBearer(token).enqueue(object : Callback<TokenResponse> {
+        tokenService.getBearer(request).enqueue(object : Callback<TokenResponse> {
             override fun onResponse(call: Call<TokenResponse>, response: Response<TokenResponse>) {
 
                 if (response.isSuccessful) {
@@ -80,7 +75,7 @@ class App : Application(), CybridSDKEvents {
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun getCustomerToken(sdkConfig: SDKConfig, bankBearer: String, completion: (SDKConfig) -> Unit) {
+    internal fun getCustomerToken(sdkConfig: SDKConfig, bankBearer: String, completion: (SDKConfig) -> Unit) {
 
         val idpApi = Util.getIdpClient(bankBearer).create(CustomerTokensApi::class.java)
         val postCustomerToken = PostCustomerTokenIdpModel(
@@ -99,7 +94,7 @@ class App : Application(), CybridSDKEvents {
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun getCustomer(sdkConfig: SDKConfig, bankBearer: String, completion: (SDKConfig) -> Unit) {
+    internal fun getCustomer(sdkConfig: SDKConfig, bankBearer: String, completion: (SDKConfig) -> Unit) {
 
         val customerApi = Util.getBankClient(bankBearer).create(CustomersApi::class.java)
         GlobalScope.let { scope ->
@@ -114,7 +109,7 @@ class App : Application(), CybridSDKEvents {
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun getBank(sdkConfig: SDKConfig, bankBearer: String, completion: (SDKConfig) -> Unit) {
+    internal fun getBank(sdkConfig: SDKConfig, bankBearer: String, completion: (SDKConfig) -> Unit) {
 
         val bankApi = Util.getBankClient(bankBearer).create(BanksApi::class.java)
         GlobalScope.let { scope ->
@@ -125,20 +120,6 @@ class App : Application(), CybridSDKEvents {
                 sdkConfig.bank = banksResult.data
                 completion.invoke(sdkConfig)
             }
-        }
-    }
-
-    fun setupCybridSDK(customerGuid: String, customer: CustomerBankModel, bank: BankBankModel) {
-
-        val sdkConfig = SDKConfig(
-            environment = demonEnv,
-            customerGuid = if (customerGuid.isEmpty()) customerGuid else BuildConfig.CUSTOMER_GUID,
-            customer = customer,
-            bank = bank,
-            listener = this
-        )
-        Cybrid.getInstance().setup(sdkConfig = sdkConfig) {
-
         }
     }
 

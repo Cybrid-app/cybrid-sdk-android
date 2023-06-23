@@ -97,7 +97,7 @@ open class Cybrid {
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun fetchAssets(completion: () -> Unit) {
+    internal fun fetchAssets(completion: () -> Unit) {
 
         val assetsApi = AppModule.getClient().createService(AssetsApi::class.java)
         GlobalScope.let { scope ->
