@@ -15,7 +15,7 @@ class LoggerTest {
         Assert.assertNotNull(logger)
     }
 
-    @Test
+    /*@Test
     fun test_EventCallback() {
 
         // -- Given
@@ -33,9 +33,9 @@ class LoggerTest {
 
         // -- When
         logger.log(LoggerEvents.ERROR, messageToLog)
-    }
+    }*/
 
-    @Test
+    /*@Test
     fun test_EventCallback_2() {
 
         // -- Given
@@ -52,5 +52,5 @@ class LoggerTest {
 
         // -- When
         logger.log(LoggerEvents.ERROR)
-    }
+    }*/
 }

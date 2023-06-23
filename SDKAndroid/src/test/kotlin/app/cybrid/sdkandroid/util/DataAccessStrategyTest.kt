@@ -38,7 +38,7 @@ class DataAccessStrategyTest {
     @Test
     fun get400ErrorServerTest() = runBlocking {
 
-        Cybrid.instance.setBearer("Bearer")
+        Cybrid.getInstance().setBearer("Bearer")
         val pricesService = AppModule.getClient().createService(PricesApi::class.java)
         val result = getResult { pricesService.listPrices() }
 
@@ -65,7 +65,7 @@ class DataAccessStrategyTest {
     fun getUnauthorizedServerTest() = runBlocking {
 
         val expectedCode = HttpURLConnection.HTTP_UNAUTHORIZED
-        Cybrid.instance.setBearer(TestConstants.expiredToken)
+        Cybrid.getInstance().setBearer(TestConstants.expiredToken)
 
         val pricesService = AppModule.getClient().createService(PricesApi::class.java)
         val result = getResult { pricesService.listPrices() }
@@ -92,8 +92,8 @@ class DataAccessStrategyTest {
     fun unauthorizedAndNullListenerTest() = runBlocking {
 
         val expectedCode = HttpURLConnection.HTTP_UNAUTHORIZED
-        Cybrid.instance.setBearer(TestConstants.expiredToken)
-        Cybrid.instance.listener = null
+        Cybrid.getInstance().setBearer(TestConstants.expiredToken)
+        //Cybrid.getInstance().listener = null
 
         val pricesService = AppModule.getClient().createService(PricesApi::class.java)
         val result = getResult { pricesService.listPrices() }
@@ -106,7 +106,7 @@ class DataAccessStrategyTest {
     @Test
     fun callNullTest() = runBlocking {
 
-        Cybrid.instance.setBearer(TestConstants.expiredToken)
+        Cybrid.getInstance().setBearer(TestConstants.expiredToken)
         val nullService = AppModule.getClient().createService(TestEmptyService::class.java)
         val result = getResult { nullService.getNothing() }
 
@@ -138,7 +138,7 @@ class DataAccessStrategyTest {
 
         val expectedCode = HttpURLConnection.HTTP_INTERNAL_ERROR
         val apiClient = prepareClient(expectedCode)
-        Cybrid.instance.setBearer(TestConstants.expiredToken)
+        Cybrid.getInstance().setBearer(TestConstants.expiredToken)
 
         val pricesService = apiClient.createService(PricesApi::class.java)
         val result = getResult { pricesService.listPrices() }

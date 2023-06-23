@@ -33,7 +33,7 @@ class AccountsViewModelTestError {
 
     private fun createViewModel(): AccountsViewModel {
 
-        Cybrid.instance.invalidToken = false
+        Cybrid.getInstance().invalidToken = false
         val viewModel = AccountsViewModel()
         viewModel.listPricesViewModel = ListPricesViewModel()
         return viewModel

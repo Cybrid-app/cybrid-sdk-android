@@ -36,7 +36,7 @@ class BankAccountsViewModelTest {
 
     private fun createViewModel(): BankAccountsViewModel {
 
-        Cybrid.instance.invalidToken = false
+        Cybrid.getInstance().invalidToken = false
         return BankAccountsViewModel()
     }
 

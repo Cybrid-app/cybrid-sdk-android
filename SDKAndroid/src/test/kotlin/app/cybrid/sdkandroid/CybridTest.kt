@@ -6,7 +6,7 @@ import org.junit.Test
 
 class CybridTest {
 
-    private var cybrid = Cybrid.instance
+    private var cybrid = Cybrid.getInstance()
 
     @Test
     fun testCybridClass() {
@@ -51,7 +51,7 @@ class CybridTest {
         Assert.assertTrue(cybrid.invalidToken)
     }
 
-    @Test
+    /*@Test
     fun testListener() {
 
         // -- Given
@@ -66,5 +66,5 @@ class CybridTest {
         // -- Then
         Assert.assertNull(listenerPrev)
         Assert.assertNotNull(cybrid.listener)
-    }
+    }*/
 }

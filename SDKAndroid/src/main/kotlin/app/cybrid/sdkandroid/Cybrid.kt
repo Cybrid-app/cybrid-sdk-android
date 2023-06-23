@@ -28,7 +28,6 @@ open class Cybrid {
     var customerGuid: String = ""
         private set
     var environment = CybridEnvironment.SANDBOX
-        private set
 
     var listener: CybridSDKEvents? = null
         private set

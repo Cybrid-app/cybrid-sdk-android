@@ -6,10 +6,9 @@ plugins {
     id 'org.jetbrains.kotlinx.kover'
 }
 
-def filesExcluded = [
-        'app.cybrid.sdkandroid.components.*',
-        'app.cybrid.sdkandroid.BuildConfig',
-        'app.cybrid.sdkandroid.core.Constants',
+def classesExcluded = [
+    'app.cybrid.sdkandroid.BuildConfig',
+    'app.cybrid.sdkandroid.core.Constants',
 ]
 
 apply from: '../version.gradle'
@@ -101,6 +100,11 @@ kover {
 koverReport {
     defaults {
         mergeWith("debug")
+    }
+    filters {
+        excludes {
+            classes(classesExcluded)
+        }
     }
 }
 

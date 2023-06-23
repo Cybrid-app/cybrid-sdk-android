@@ -35,7 +35,7 @@ class TradeViewModelTest {
 
     private fun createViewModel(): TradeViewModel {
 
-        Cybrid.instance.invalidToken = false
+        Cybrid.getInstance().invalidToken = false
         val tradeViewModel = TradeViewModel()
         tradeViewModel.listPricesViewModel = ListPricesViewModel()
         return tradeViewModel
