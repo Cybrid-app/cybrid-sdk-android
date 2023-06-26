@@ -32,7 +32,7 @@ open class Cybrid {
     var listener: CybridSDKEvents? = null
         private set
 
-    var invalidToken = false
+    var invalidToken = true
     internal var imagesUrl = "https://images.cybrid.xyz/sdk/assets/png/color/"
         private set
     internal var imagesSize = "@2x.png"
@@ -61,8 +61,6 @@ open class Cybrid {
         }
 
         this.setBearer(sdkConfig.bearer)
-        if (this.bearer.isEmpty()) { return }
-
         this.configured = true
         this.customerGuid = sdkConfig.customerGuid
         this.logTag = sdkConfig.logTag

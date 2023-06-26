@@ -4,12 +4,24 @@ import android.util.Log
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.core.SDKConfig
 import app.cybrid.sdkandroid.listener.CybridSDKEvents
+import io.mockk.MockKAnnotations
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 
 class LoggerTest {
+
+    @Before
+    fun setup() {}
+
+    @After
+    fun teardown() {
+        Cybrid.resetInstance()
+    }
 
     @Test
     fun testLogger() {
