@@ -6,6 +6,7 @@ import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.AssetListBankModel
 import app.cybrid.cybrid_api_bank.client.models.BankBankModel
 import app.cybrid.cybrid_api_bank.client.models.CustomerBankModel
+import app.cybrid.sdkandroid.components.BankAccountsView
 import app.cybrid.sdkandroid.core.CybridEnvironment
 import app.cybrid.sdkandroid.core.SDKConfig
 import app.cybrid.sdkandroid.listener.CybridSDKEvents
@@ -40,6 +41,7 @@ open class Cybrid {
 
     // -- Properties for AutoLoad
     // -- fiat
+    internal lateinit var assetsApi: AssetsApi
     var customer: CustomerBankModel? = null
         private set
     var bank: BankBankModel? = null
@@ -97,14 +99,12 @@ open class Cybrid {
     @OptIn(DelicateCoroutinesApi::class)
     internal fun fetchAssets(completion: () -> Unit) {
 
-        val assetsApi = AppModule.getClient().createService(AssetsApi::class.java)
         GlobalScope.let { scope ->
             scope.launch {
                 val assetsResponse = getResult {
                     assetsApi.listAssets(page = JavaBigDecimal(0), perPage = JavaBigDecimal(50))
                 }
-                assets = assetsResponse.data?.objects!!
-                // -- fiat calculate
+                assets = assetsResponse.data?.objects ?: listOf()
                 completion()
             }
         }
@@ -127,6 +127,7 @@ open class Cybrid {
                 synchronized(this) {
                     if (instance == null) {
                         instance = Cybrid()
+                        instance?.assetsApi = AppModule.getClient().createService(AssetsApi::class.java)
                     }
                 }
             }

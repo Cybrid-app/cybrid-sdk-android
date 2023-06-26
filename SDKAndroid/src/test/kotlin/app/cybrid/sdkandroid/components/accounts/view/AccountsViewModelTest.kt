@@ -7,17 +7,11 @@ import app.cybrid.cybrid_api_bank.client.models.TransferBankModel
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.AccountsView
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
-import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
 import app.cybrid.sdkandroid.tools.JSONMock
 import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import app.cybrid.sdkandroid.tools.TestConstants
 import app.cybrid.sdkandroid.util.Polling
-import io.mockk.MockKAnnotations
-import io.mockk.every
-import io.mockk.spyk
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
 import okhttp3.OkHttpClient
 import org.junit.*

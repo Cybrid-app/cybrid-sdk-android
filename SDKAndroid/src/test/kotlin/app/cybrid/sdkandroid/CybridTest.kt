@@ -1,43 +1,64 @@
 package app.cybrid.sdkandroid
 
 import android.view.LayoutInflater
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cybrid.cybrid_api_bank.client.apis.AssetsApi
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
-import app.cybrid.cybrid_api_bank.client.models.AssetListBankModel
 import app.cybrid.cybrid_api_bank.client.models.BankBankModel
 import app.cybrid.cybrid_api_bank.client.models.CustomerBankModel
 import app.cybrid.sdkandroid.core.CybridEnvironment
 import app.cybrid.sdkandroid.core.SDKConfig
 import app.cybrid.sdkandroid.listener.CybridSDKEvents
 import app.cybrid.sdkandroid.mocks.Mocks
-import app.cybrid.sdkandroid.tools.JSONMock
+import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import io.mockk.spyk
 import io.mockk.unmockkStatic
+import io.mockk.verify
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import okhttp3.OkHttpClient
 import org.junit.After
 import org.junit.AfterClass
 import org.junit.Assert
 import org.junit.Before
 import org.junit.BeforeClass
+import org.junit.Rule
 import org.junit.Test
 import java.math.BigDecimal
 import java.time.OffsetDateTime
 
 class CybridTest {
 
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
+
+    //@MockK
+    //private lateinit var appModule: AppModule
+
+    //@MockK
+    //private lateinit var apiClient: ApiClient
+
+    //@MockK
+    //private lateinit var assetsApi: AssetsApi
+
     @Before
     fun setup() {
 
         MockKAnnotations.init(this, relaxed = true)
+        // every { AppModule } returns appModule
+        // every { AppModule.getClient() } returns mockk()
     }
 
     @After
@@ -140,8 +161,12 @@ class CybridTest {
     @Test
     fun test_getInstance() {
 
-        val cybrid = Cybrid.getInstance()
-        Assert.assertNotNull(cybrid)
+        Assert.assertNotNull(Cybrid.getInstance())
+        Assert.assertNotNull(Cybrid.getInstance().assetsApi)
+
+        Cybrid.resetInstance()
+        Assert.assertNotNull(Cybrid.getInstance())
+        Assert.assertNotNull(Cybrid.getInstance().assetsApi)
     }
 
     @Test
@@ -191,7 +216,7 @@ class CybridTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun test_fetchAssets() = runBlocking {
+    fun test_autoLoad() = runTest {
 
         // -- Given
         val customer = getCustomer()
@@ -199,20 +224,71 @@ class CybridTest {
         val listener = getListener()
         val sdkConfig = getSDKConfig(customer, bank, listener)
         val cybrid = Cybrid.getInstance()
+        val mockAssetsApi = mockk<AssetsApi>()
+        var testNumber = 1
+
+        coEvery { mockAssetsApi.listAssets(page = any(), perPage = any()) } returns Mocks.getAssetsListBankModelMock()
+        cybrid.assetsApi = mockAssetsApi
 
         // -- When
-        val assetsApiMock = mockk<AssetsApi>()
-        coEvery { assetsApiMock.listAssets(page = BigDecimal(0), perPage = BigDecimal(50)) } coAnswers {
-            delay(1000)
-            Mocks.getAssetsListBankModelMock()
+        val completionLatch = CompletableDeferred<Unit>()
+        cybrid.setup(sdkConfig) {
+            completionLatch.complete(Unit)
+            testNumber++
         }
-
-        cybrid.setup(sdkConfig) {}
+        completionLatch.await()
 
         // -- Then
+        coVerify { mockAssetsApi.listAssets(BigDecimal(0), BigDecimal(50)) }
         Assert.assertNotNull(cybrid)
         Assert.assertFalse(cybrid.assets.isEmpty())
+        Assert.assertEquals(cybrid.assets.count(), 6)
+        Assert.assertEquals(testNumber, 2)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_fetchAssets() = runTest {
+
+        // -- Given
+        val cybrid = Cybrid.getInstance()
+        val mockAssetsApi = mockk<AssetsApi>()
+
+        coEvery { mockAssetsApi.listAssets(page = any(), perPage = any()) } returns Mocks.getAssetsListBankModelMock()
+        cybrid.assetsApi = mockAssetsApi
+
+        // -- When
+        val completionLatch = CompletableDeferred<Unit>()
+        cybrid.fetchAssets { completionLatch.complete(Unit) }
+        completionLatch.await()
+
+        // -- Then
+        coVerify { mockAssetsApi.listAssets(BigDecimal(0), BigDecimal(50)) }
+        Assert.assertNotNull(cybrid)
         Assert.assertFalse(cybrid.assets.isEmpty())
+        Assert.assertEquals(cybrid.assets.count(), 6)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_fetchAssets_Data_Null() = runTest {
+
+        // -- Given
+        val cybrid = Cybrid.getInstance()
+        val mockAssetsApi = mockk<AssetsApi>()
+
+        coEvery { mockAssetsApi.listAssets(page = any(), perPage = any()) } returns Mocks.getAssetsListBankModelMock_DataNull()
+        cybrid.assetsApi = mockAssetsApi
+
+        // -- When
+        val completionLatch = CompletableDeferred<Unit>()
+        cybrid.fetchAssets { completionLatch.complete(Unit) }
+        completionLatch.await()
+
+        // -- Then
+        coVerify { mockAssetsApi.listAssets(BigDecimal(0), BigDecimal(50)) }
+        Assert.assertNotNull(cybrid)
+        Assert.assertTrue(cybrid.assets.isEmpty())
     }
 
     /*@Test

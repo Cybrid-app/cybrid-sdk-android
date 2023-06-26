@@ -9,7 +9,14 @@ object AssetBankModelObject {
             AssetBankModel(
                 type = AssetBankModel.Type.fiat,
                 code = "USD",
-                name = "Unitade State Dollar",
+                name = "United States Dollar",
+                symbol = "$",
+                decimals = BigDecimal(2)
+            ),
+            AssetBankModel(
+                type = AssetBankModel.Type.fiat,
+                code = "CAD",
+                name = "Canadian Dollar",
                 symbol = "$",
                 decimals = BigDecimal(2)
             ),
@@ -19,6 +26,27 @@ object AssetBankModelObject {
                 name = "Bitcoin",
                 symbol = "₿",
                 decimals = BigDecimal(8)
+            ),
+            AssetBankModel(
+                type = AssetBankModel.Type.crypto,
+                code = "ETH",
+                name = "Ethereum",
+                symbol = "Ξ",
+                decimals = BigDecimal(18)
+            ),
+            AssetBankModel(
+                type = AssetBankModel.Type.crypto,
+                code = "USDC",
+                name = "USDC (ERC-20)",
+                symbol = "$",
+                decimals = BigDecimal(6)
+            ),
+            AssetBankModel(
+                type = AssetBankModel.Type.crypto,
+                code = "SOL",
+                name = "Solana",
+                symbol = "◎",
+                decimals = BigDecimal(9 )
             )
         )
     }

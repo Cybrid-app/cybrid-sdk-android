@@ -16,4 +16,10 @@ object Mocks {
             )
         )
     }
+
+    fun getAssetsListBankModelMock_DataNull(): Response<AssetListBankModel> {
+        return Response.success(
+            null
+        )
+    }
 }
