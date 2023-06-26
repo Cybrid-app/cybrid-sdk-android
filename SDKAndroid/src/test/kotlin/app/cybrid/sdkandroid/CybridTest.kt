@@ -19,6 +19,7 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import okhttp3.OkHttpClient
@@ -28,6 +29,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
+import java.math.BigDecimal
 import java.time.OffsetDateTime
 
 class CybridTest {
@@ -200,7 +202,10 @@ class CybridTest {
 
         // -- When
         val assetsApiMock = mockk<AssetsApi>()
-        coEvery { assetsApiMock.listAssets() } returns Mocks.getAssetsListBankModelMock()
+        coEvery { assetsApiMock.listAssets(page = BigDecimal(0), perPage = BigDecimal(50)) } coAnswers {
+            delay(1000)
+            Mocks.getAssetsListBankModelMock()
+        }
 
         cybrid.setup(sdkConfig) {}
 
