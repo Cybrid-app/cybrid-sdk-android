@@ -22,22 +22,21 @@ import java.math.BigDecimal as JavaBigDecimal
 
 open class Cybrid {
 
-    private var configured: Boolean = false
-    private var bearer: String = ""
+    internal var configured: Boolean = false
+    internal var bearer: String = ""
     var logTag: String = "CybridSDK"
     var customerGuid: String = ""
         private set
     var environment = CybridEnvironment.SANDBOX
-
     var listener: CybridSDKEvents? = null
         private set
 
     var invalidToken = false
-    var imagesUrl = "https://images.cybrid.xyz/sdk/assets/png/color/"
+    internal var imagesUrl = "https://images.cybrid.xyz/sdk/assets/png/color/"
         private set
-    var imagesSize = "@2x.png"
+    internal var imagesSize = "@2x.png"
         private set
-    var accountsRefreshObservable = MutableStateFlow(false)
+    internal var accountsRefreshObservable = MutableStateFlow(false)
 
     // -- Properties for AutoLoad
     // -- fiat
@@ -104,7 +103,7 @@ open class Cybrid {
                 val assetsResponse = getResult {
                     assetsApi.listAssets(page = JavaBigDecimal(0), perPage = JavaBigDecimal(50))
                 }
-                assets = assetsResponse.data?.objects ?: emptyList()
+                assets = assetsResponse.data?.objects!!
                 // -- fiat calculate
                 completion()
             }
@@ -132,6 +131,10 @@ open class Cybrid {
                 }
             }
             return instance!!
+        }
+
+        fun resetInstance() {
+            instance = null
         }
     }
 }

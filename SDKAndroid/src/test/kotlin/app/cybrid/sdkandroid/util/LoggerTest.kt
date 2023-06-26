@@ -2,7 +2,10 @@ package app.cybrid.sdkandroid.util
 
 import android.util.Log
 import app.cybrid.sdkandroid.Cybrid
+import app.cybrid.sdkandroid.core.SDKConfig
 import app.cybrid.sdkandroid.listener.CybridSDKEvents
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Test
 
@@ -15,42 +18,52 @@ class LoggerTest {
         Assert.assertNotNull(logger)
     }
 
-    /*@Test
-    fun test_EventCallback() {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_EventCallback() = runTest {
 
         // -- Given
         val levelToLog = Log.ERROR
         val messageToLog = "Error."
         val logger = Logger
-        Cybrid.instance.listener = object : CybridSDKEvents {
-            override fun onTokenExpired() {}
-            override fun onEvent(level: Int, message: String) {
+        val sdkConfig = SDKConfig(
+            listener = object : CybridSDKEvents {
+                override fun onTokenExpired() {}
+                override fun onEvent(level: Int, message: String) {
 
-                Assert.assertEquals(level, levelToLog)
-                Assert.assertEquals(message, "Error: Error.")
+                    Assert.assertEquals(level, levelToLog)
+                    Assert.assertEquals(message, "Error: Error.")
+                }
             }
-        }
+        )
 
         // -- When
-        logger.log(LoggerEvents.ERROR, messageToLog)
-    }*/
+        Cybrid.getInstance().setup(sdkConfig) {
+            logger.log(LoggerEvents.ERROR, messageToLog)
+        }
+    }
 
-    /*@Test
-    fun test_EventCallback_2() {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_EventCallback_2() = runTest {
 
         // -- Given
         val levelToLog = Log.ERROR
         val logger = Logger
-        Cybrid.instance.listener = object : CybridSDKEvents {
-            override fun onTokenExpired() {}
-            override fun onEvent(level: Int, message: String) {
+        val sdkConfig = SDKConfig(
+            listener = object : CybridSDKEvents {
+                override fun onTokenExpired() {}
+                override fun onEvent(level: Int, message: String) {
 
-                Assert.assertEquals(level, levelToLog)
-                Assert.assertEquals(message, "Error")
+                    Assert.assertEquals(level, levelToLog)
+                    Assert.assertEquals(message, "__Error")
+                }
             }
-        }
+        )
 
         // -- When
-        logger.log(LoggerEvents.ERROR)
-    }*/
+        Cybrid.getInstance().setup(sdkConfig) {
+            logger.log(LoggerEvents.ERROR)
+        }
+    }
 }
