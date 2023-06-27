@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.Locale
 
 class App : Application(), CybridSDKEvents {
 
@@ -41,6 +42,13 @@ class App : Application(), CybridSDKEvents {
 
         super.onCreate()
         context = applicationContext
+
+        val locale = Locale("en")
+        Locale.setDefault(locale)
+
+        val config = resources.configuration
+        config.setLocale(locale)
+        baseContext.resources.updateConfiguration(config, baseContext.resources.displayMetrics)
     }
 
     fun getSDKConfig(request: TokenRequest, customerGuid: String, completion: (SDKConfig) -> Unit) {
