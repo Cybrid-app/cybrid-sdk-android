@@ -8,19 +8,13 @@ import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.core.SDKConfig
 import app.cybrid.sdkandroid.listener.CybridSDKEvents
-import app.cybrid.sdkandroid.mocks.Mocks
+import app.cybrid.sdkandroid.mock.AssetsApiMock
 import app.cybrid.sdkandroid.tools.*
-import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.mockk
-import io.mockk.unmockkAll
-import kotlinx.coroutines.Dispatchers
+import io.mockk.spyk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import okhttp3.OkHttpClient
 import org.junit.*
 import java.net.HttpURLConnection
@@ -44,16 +38,12 @@ class DataAccessStrategyTest {
 
     private fun prepareSDK(bearer: String, listener: CybridSDKEvents? = null): Cybrid {
 
-        val mockAssetsApi = mockk<AssetsApi>()
-        val cybrid = Cybrid.getInstance()
+        val cybrid = spyk(Cybrid.getInstance())
         val sdkConfig = SDKConfig(
             bearer = bearer,
             listener = listener
         )
-
-        coEvery { mockAssetsApi.listAssets(page = any(), perPage = any()) } returns Mocks.getAssetsListBankModelMock()
-        cybrid.assetsApi = mockAssetsApi
-
+        AssetsApiMock.mockListAssets()
         cybrid.setup(sdkConfig) {}
         return cybrid
     }

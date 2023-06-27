@@ -38,12 +38,9 @@ open class Cybrid {
     internal var imagesUrl = "https://images.cybrid.xyz/sdk/assets/png/color/"
     internal var imagesSize = "@2x.png"
     internal var accountsRefreshObservable = MutableStateFlow(false)
-
-    internal lateinit var assetsApi: AssetsApi
     internal var assets: List<AssetBankModel> = emptyList()
     internal var customer: CustomerBankModel? = null
     internal var bank: BankBankModel? = null
-    internal var completion: (() -> Unit)? = null
     // -- fiat
 
     fun setup(sdkConfig: SDKConfig,
@@ -61,8 +58,7 @@ open class Cybrid {
         this.customer = sdkConfig.customer
         this.bank = sdkConfig.bank
         this.listener = sdkConfig.listener
-        this.completion = completion
-        this.autoLoad()
+        this.autoLoad(completion)
         this.configured = true
     }
 
@@ -78,15 +74,14 @@ open class Cybrid {
         }
     }
 
-    private fun autoLoad() {
-        this.fetchAssets {
-            this.completion?.invoke()
-        }
+    private fun autoLoad(completion: () -> Unit) {
+        this.fetchAssets { completion.invoke() }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
     internal fun fetchAssets(completion: () -> Unit) {
 
+        val assetsApi = AppModule.getClient().createService(AssetsApi::class.java)
         GlobalScope.let { scope ->
             scope.launch {
                 val assetsResponse = getResult {
@@ -115,7 +110,6 @@ open class Cybrid {
                 synchronized(this) {
                     if (instance == null) {
                         instance = Cybrid()
-                        instance?.assetsApi = AppModule.getClient().createService(AssetsApi::class.java)
                     }
                 }
             }

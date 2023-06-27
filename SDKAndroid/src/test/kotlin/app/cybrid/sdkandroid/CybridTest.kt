@@ -1,23 +1,17 @@
 package app.cybrid.sdkandroid
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import app.cybrid.cybrid_api_bank.client.apis.AssetsApi
 import app.cybrid.cybrid_api_bank.client.models.BankBankModel
 import app.cybrid.cybrid_api_bank.client.models.CustomerBankModel
 import app.cybrid.sdkandroid.core.CybridEnvironment
 import app.cybrid.sdkandroid.core.SDKConfig
 import app.cybrid.sdkandroid.listener.CybridSDKEvents
-import app.cybrid.sdkandroid.mocks.Mocks
+import app.cybrid.sdkandroid.mock.AssetsApiMock
 import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import io.mockk.MockKAnnotations
-import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkObject
+import io.mockk.spyk
 import io.mockk.unmockkAll
-import io.mockk.unmockkObject
-import io.mockk.verify
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -109,7 +103,6 @@ class CybridTest {
         Assert.assertNull(cybrid.customer)
         Assert.assertNull(cybrid.bank)
         Assert.assertTrue(cybrid.assets.isEmpty())
-        Assert.assertNull(cybrid.completion)
     }
 
     @Test
@@ -140,7 +133,6 @@ class CybridTest {
         Assert.assertEquals(cybrid.customer, customer)
         Assert.assertEquals(cybrid.bank, bank)
         Assert.assertTrue(cybrid.assets.isEmpty())
-        Assert.assertNotNull(cybrid.completion)
     }
 
     @Test
@@ -170,7 +162,6 @@ class CybridTest {
         Assert.assertEquals(cybrid.customer, customer)
         Assert.assertEquals(cybrid.bank, bank)
         Assert.assertTrue(cybrid.assets.isEmpty())
-        Assert.assertNotNull(cybrid.completion)
 
         // -- When
         val customer2 = CustomerBankModel(guid = "000999")
@@ -216,18 +207,14 @@ class CybridTest {
         Assert.assertEquals(cybrid.customer, customer)
         Assert.assertEquals(cybrid.bank, bank)
         Assert.assertTrue(cybrid.assets.isEmpty())
-        Assert.assertNotNull(cybrid.completion)
     }
 
     @Test
     fun test_getInstance() {
 
         Assert.assertNotNull(Cybrid.getInstance())
-        Assert.assertNotNull(Cybrid.getInstance().assetsApi)
-
         Cybrid.resetInstance()
         Assert.assertNotNull(Cybrid.getInstance())
-        Assert.assertNotNull(Cybrid.getInstance().assetsApi)
     }
 
     @Test
@@ -302,16 +289,14 @@ class CybridTest {
         val bank = getBank()
         val listener = getListener()
         val sdkConfig = getSDKConfig(customer, bank, listener)
-        val cybrid = Cybrid.getInstance()
-        val mockAssetsApi = mockk<AssetsApi>()
         val completionLatch = CompletableDeferred<Unit>()
         val completion: () -> Unit = {
             completionLatch.complete(Unit)
             testNumber++
         }
 
-        coEvery { mockAssetsApi.listAssets(page = any(), perPage = any()) } returns Mocks.getAssetsListBankModelMock()
-        cybrid.assetsApi = mockAssetsApi
+        val cybrid = spyk(Cybrid.getInstance())
+        val mockAssetsApi = AssetsApiMock.mockListAssets()
 
         // -- When
         cybrid.setup(sdkConfig, completion)
@@ -320,7 +305,6 @@ class CybridTest {
         // -- Then
         coVerify { mockAssetsApi.listAssets(BigDecimal(0), BigDecimal(50)) }
         Assert.assertNotNull(cybrid)
-        Assert.assertEquals(cybrid.completion, completion)
         Assert.assertFalse(cybrid.assets.isEmpty())
         Assert.assertEquals(cybrid.assets.count(), 6)
         Assert.assertEquals(testNumber, 2)
@@ -331,11 +315,8 @@ class CybridTest {
     fun test_fetchAssets() = runTest {
 
         // -- Given
-        val cybrid = Cybrid.getInstance()
-        val mockAssetsApi = mockk<AssetsApi>()
-
-        coEvery { mockAssetsApi.listAssets(page = any(), perPage = any()) } returns Mocks.getAssetsListBankModelMock()
-        cybrid.assetsApi = mockAssetsApi
+        val cybrid = spyk(Cybrid.getInstance())
+        val mockAssetsApi = AssetsApiMock.mockListAssets()
 
         // -- When
         val completionLatch = CompletableDeferred<Unit>()
@@ -353,11 +334,8 @@ class CybridTest {
     fun test_fetchAssets_Data_Null() = runBlocking {
 
         // -- Given
-        val cybrid = Cybrid.getInstance()
-        val mockAssetsApi = mockk<AssetsApi>()
-
-        coEvery { mockAssetsApi.listAssets(page = any(), perPage = any()) } returns Mocks.getAssetsListBankModelMock_DataNull()
-        cybrid.assetsApi = mockAssetsApi
+        val cybrid = spyk(Cybrid.getInstance())
+        val mockAssetsApi = AssetsApiMock.mockListAssets(AssetsApiMock.getAssetsListBankModelMock_DataNull())
 
         // -- When
         val completionLatch = CompletableDeferred<Unit>()
@@ -378,7 +356,6 @@ class CybridTest {
         var eventLevel = -98765
         var eventMessage = "no_message_here"
 
-        val mockAssetsApi = mockk<AssetsApi>()
         val completionLatch = CompletableDeferred<Unit>()
         val sdkConfig = SDKConfig(
             listener = object : CybridSDKEvents {
@@ -391,9 +368,8 @@ class CybridTest {
                 }
             }
         )
-        val cybrid = Cybrid.getInstance()
-        coEvery { mockAssetsApi.listAssets(page = any(), perPage = any()) } returns Mocks.getAssetsListBankModelMock()
-        cybrid.assetsApi = mockAssetsApi
+        val cybrid = spyk(Cybrid.getInstance())
+        AssetsApiMock.mockListAssets()
 
         // -- When
         Assert.assertFalse(tokenExpiredCall)
