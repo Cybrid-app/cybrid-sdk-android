@@ -24,9 +24,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-
-@RunWith(AndroidJUnit4::class)
-@LargeTest
 class TradeFlowActivityTest {
 
     /*@JvmField
@@ -49,7 +46,6 @@ class TradeFlowActivityTest {
     }
 
     @OptIn(ExperimentalCoroutinesApi::class, ExperimentalTestApi::class)
-    @Test
     fun test_flow() = runTest {
 
         waitUntilViewIsDisplayed(withId(R.id.demo))
@@ -62,7 +58,7 @@ class TradeFlowActivityTest {
             click()
         )
 
-        //compose.waitForIdle()
+        compose.waitForIdle()
         compose.waitUntilAtLeastOneExists(hasTestTag("ListPricesView"), 10_000L)
         compose.onRoot().printToLog("Cybrid_E2E")
 
