@@ -90,7 +90,6 @@ class CybridTest {
         val cybrid = Cybrid
 
         // -- Then
-        Assert.assertFalse(cybrid.configured)
         Assert.assertEquals(cybrid.bearer, "")
         Assert.assertEquals(cybrid.logTag, "CybridSDK")
         Assert.assertEquals(cybrid.customerGuid, "")
@@ -116,11 +115,11 @@ class CybridTest {
         val cybrid = Cybrid
 
         // -- When
+        Assert.assertFalse(cybrid.isConfigured())
         Assert.assertEquals(cybrid.bearer, "")
         cybrid.setup(sdkConfig) {}
 
         // -- Then
-        Assert.assertTrue(cybrid.configured)
         Assert.assertEquals(cybrid.bearer, "test-bearer")
         Assert.assertEquals(cybrid.logTag, "test-tag")
         Assert.assertEquals(cybrid.customerGuid, "1234")
@@ -133,6 +132,7 @@ class CybridTest {
         Assert.assertEquals(cybrid.customer, customer)
         Assert.assertEquals(cybrid.bank, bank)
         Assert.assertTrue(cybrid.assets.isEmpty())
+        Assert.assertTrue(cybrid.isConfigured())
     }
 
     @Test
@@ -149,7 +149,6 @@ class CybridTest {
         cybrid.setup(sdkConfig) {}
 
         // -- Then
-        Assert.assertTrue(cybrid.configured)
         Assert.assertEquals(cybrid.bearer, "test-bearer")
         Assert.assertEquals(cybrid.logTag, "test-tag")
         Assert.assertEquals(cybrid.customerGuid, "1234")
@@ -194,7 +193,6 @@ class CybridTest {
         cybrid.setup(sdkConfig) {}
 
         // -- Then
-        Assert.assertTrue(cybrid.configured)
         Assert.assertEquals(cybrid.bearer, "")
         Assert.assertEquals(cybrid.logTag, "test-tag")
         Assert.assertEquals(cybrid.customerGuid, "1234")
@@ -382,5 +380,28 @@ class CybridTest {
         Assert.assertNotNull(cybrid.listener)
         Assert.assertEquals(eventLevel, 1)
         Assert.assertEquals(eventMessage, "Success")
+    }
+
+    @Test
+    fun test_change_Customer_Guid() {
+
+        // -- Given
+        val customer = getCustomer()
+        val bank = getBank()
+        val listener = getListener()
+        val sdkConfig = getSDKConfig(customer, bank, listener)
+        val cybrid = Cybrid
+
+        // -- When
+        Assert.assertEquals(cybrid.bearer, "")
+        cybrid.setup(sdkConfig) {}
+
+        // -- Then
+        Assert.assertEquals(cybrid.customerGuid, "1234")
+
+        val oldCustomerGuid = cybrid.customerGuid
+        cybrid.customerGuid = "00098"
+        Assert.assertEquals(cybrid.customerGuid, "00098")
+        Assert.assertNotEquals(oldCustomerGuid, cybrid.customerGuid)
     }
 }

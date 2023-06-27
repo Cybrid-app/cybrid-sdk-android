@@ -30,8 +30,7 @@ object Cybrid {
         internal set
     var invalidToken = true
         internal set
-    var configured: Boolean = false
-        internal set
+    private var configured = false
 
     internal var bearer: String = ""
     internal var listener: CybridSDKEvents? = null
@@ -117,4 +116,6 @@ object Cybrid {
         this.invalidToken = true
         this.accountsRefreshObservable = MutableStateFlow(false)
     }
+
+    fun isConfigured(): Boolean = this.configured
 }
