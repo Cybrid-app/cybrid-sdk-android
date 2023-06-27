@@ -8,7 +8,9 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import app.cybrid.demoapp.R
@@ -22,12 +24,17 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+
 @RunWith(AndroidJUnit4::class)
+@LargeTest
 class TradeFlowActivityTest {
 
-    @JvmField
+    /*@JvmField
     @Rule
-    val rule = ActivityTestRule(LoginActivity::class.java)
+    val rule = ActivityTestRule(LoginActivity::class.java)*/
+
+    @get : Rule
+    var mActivityRule = ActivityScenarioRule(LoginActivity::class.java)
 
     @JvmField
     @Rule
@@ -56,7 +63,7 @@ class TradeFlowActivityTest {
         )
 
         compose.waitForIdle()
-        compose.waitUntilExactlyOneExists(hasTestTag("ListPricesView"), 10_000L)
+        compose.waitUntilAtLeastOneExists(hasTestTag("ListPricesView"), 10_000L)
         compose.onRoot().printToLog("Cybrid_E2E")
 
         compose.onNodeWithTag("ListPricesView").assertIsDisplayed()
