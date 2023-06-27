@@ -8,7 +8,7 @@ object AppModule {
 
     fun getClient(): ApiClient {
 
-        val clientBuilder = Cybrid.getInstance().getOKHttpClient()
+        val clientBuilder = Cybrid.getOKHttpClient()
         return ApiClient(
             baseUrl = getApiUrl(),
             okHttpClientBuilder = clientBuilder
@@ -16,6 +16,6 @@ object AppModule {
     }
 
     internal fun getApiUrl(): String {
-        return String.format(baseUrl, Cybrid.getInstance().environment.name.lowercase())
+        return String.format(baseUrl, Cybrid.environment.name.lowercase())
     }
 }

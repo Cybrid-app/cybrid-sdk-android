@@ -32,7 +32,7 @@ class TradeViewModelTestError {
 
     private fun createViewModel(): TradeViewModel {
 
-        Cybrid.getInstance().invalidToken = false
+        Cybrid.invalidToken = false
         val tradeViewModel = TradeViewModel()
         tradeViewModel.listPricesViewModel = ListPricesViewModel()
         return tradeViewModel

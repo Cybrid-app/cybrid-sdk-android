@@ -37,7 +37,7 @@ class TransferViewModelTest {
 
     private fun createViewModel(): TransferViewModel {
 
-        Cybrid.getInstance().invalidToken = false
+        Cybrid.invalidToken = false
         return TransferViewModel()
     }
 

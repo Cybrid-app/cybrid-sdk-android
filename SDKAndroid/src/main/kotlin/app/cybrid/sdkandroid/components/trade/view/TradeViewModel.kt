@@ -28,7 +28,7 @@ class TradeViewModel: ViewModel() {
     var uiModalState: MutableState<TradeView.QuoteModalViewState> = mutableStateOf(TradeView.QuoteModalViewState.LOADING)
 
     var currentFiatCurrency = ""
-    var customerGuid = Cybrid.getInstance().customerGuid
+    var customerGuid = Cybrid.customerGuid
 
     var listPricesViewModel: ListPricesViewModel? = null
     var listPricesPolling: Polling? = null
@@ -149,7 +149,7 @@ class TradeViewModel: ViewModel() {
 
     suspend fun createQuote() {
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 
@@ -186,7 +186,7 @@ class TradeViewModel: ViewModel() {
             quoteGuid = quoteBankModel.guid ?: ""
         )
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 

@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import java.math.BigDecimal as JavaBigDecimal
 
-open class Cybrid {
+object Cybrid {
 
     var logTag: String = "CybridSDK"
     var customerGuid: String = ""
@@ -87,7 +87,9 @@ open class Cybrid {
                 val assetsResponse = getResult {
                     assetsApi.listAssets(page = JavaBigDecimal(0), perPage = JavaBigDecimal(50))
                 }
-                assets = assetsResponse.data?.objects ?: listOf()
+                if (assetsResponse.data != null) {
+                    assets = assetsResponse.data.objects
+                }
                 completion()
             }
         }
@@ -100,24 +102,19 @@ open class Cybrid {
             .addInterceptor(HttpBearerAuth("Bearer", this.bearer))
     }
 
-    companion object {
+    internal fun reset() {
 
-        @Volatile
-        private var instance: Cybrid? = null
+        this.bearer = ""
+        this.customerGuid = ""
+        this.logTag = "CybridSDK"
+        this.environment = CybridEnvironment.SANDBOX
+        this.customer = null
+        this.bank = null
+        this.listener = null
+        this.assets = emptyList()
+        this.configured = false
 
-        fun getInstance(): Cybrid {
-            if (instance == null) {
-                synchronized(this) {
-                    if (instance == null) {
-                        instance = Cybrid()
-                    }
-                }
-            }
-            return instance!!
-        }
-
-        fun resetInstance() {
-            instance = null
-        }
+        this.invalidToken = true
+        this.accountsRefreshObservable = MutableStateFlow(false)
     }
 }

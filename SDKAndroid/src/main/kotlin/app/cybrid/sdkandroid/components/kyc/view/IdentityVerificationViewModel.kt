@@ -23,7 +23,7 @@ class IdentityVerificationViewModel: ViewModel() {
     var customerJob: Polling? = null
     var identityJob: Polling? = null
 
-    var customerGuid = Cybrid.getInstance().customerGuid
+    var customerGuid = Cybrid.customerGuid
 
     var uiState: MutableState<KYCView.KYCViewState>? = null
     val viewDismiss: MutableState<Boolean> = mutableStateOf(false)
@@ -38,7 +38,7 @@ class IdentityVerificationViewModel: ViewModel() {
 
     suspend fun createCustomerTest() {
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 
@@ -59,7 +59,7 @@ class IdentityVerificationViewModel: ViewModel() {
 
     fun getCustomerStatus() {
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 scope.launch {
 
@@ -76,7 +76,7 @@ class IdentityVerificationViewModel: ViewModel() {
 
     fun getIdentityVerificationStatus(identityWrapper: IdentityVerificationWrapper? = null) {
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 scope.launch {
 
@@ -101,7 +101,7 @@ class IdentityVerificationViewModel: ViewModel() {
     suspend fun fetchIdentityVerificationWithDetailsStatus(guid: String): IdentityVerificationWithDetailsBankModel? {
 
         var identityVerificationDetails: IdentityVerificationWithDetailsBankModel? = null
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
                     val recordResponse = getResult {
@@ -122,7 +122,7 @@ class IdentityVerificationViewModel: ViewModel() {
     suspend fun getLastIdentityVerification(): IdentityVerificationBankModel? {
 
         var verification: IdentityVerificationBankModel? = null
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 
@@ -152,7 +152,7 @@ class IdentityVerificationViewModel: ViewModel() {
     suspend fun createIdentityVerification(): IdentityVerificationBankModel? {
 
         var verification: IdentityVerificationBankModel? = null
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let {
                     val waitFor = it.async {
 

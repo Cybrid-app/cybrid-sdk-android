@@ -21,16 +21,16 @@ object Logger {
 
     fun log(event: LoggerEvents) {
 
-        Log.println(event.level, Cybrid.getInstance().logTag, event.message)
-        Cybrid.getInstance().let {
+        Log.println(event.level, Cybrid.logTag, event.message)
+        Cybrid.let {
             it.listener?.onEvent(event.level, event.message)
         }
     }
 
     fun log(event: LoggerEvents, data:String) {
 
-        Log.println(event.level, Cybrid.getInstance().logTag, event.message + ": " + data)
-        Cybrid.getInstance().let {
+        Log.println(event.level, Cybrid.logTag, event.message + ": " + data)
+        Cybrid.let {
             it.listener?.onEvent(event.level, event.message + ": " + data)
         }
     }

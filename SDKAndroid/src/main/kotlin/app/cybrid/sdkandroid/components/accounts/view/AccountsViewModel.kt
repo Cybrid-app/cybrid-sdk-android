@@ -64,11 +64,11 @@ class AccountsViewModel : ViewModel() {
 
     // -- Current currency/customerGUID
     var currentFiatCurrency = "USD"
-    var customerGuid = Cybrid.getInstance().customerGuid
+    var customerGuid = Cybrid.customerGuid
 
     init {
         viewModelScope.launch {
-            Cybrid.getInstance().accountsRefreshObservable.collect {}
+            Cybrid.accountsRefreshObservable.collect {}
         }
     }
 
@@ -82,7 +82,7 @@ class AccountsViewModel : ViewModel() {
     suspend fun getAccountsList(withLoading: Boolean = true) {
 
         if (withLoading) { this.uiState.value = AccountsView.ViewState.LOADING }
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 
@@ -213,7 +213,7 @@ class AccountsViewModel : ViewModel() {
 
         this.uiState.value = AccountsView.ViewState.LOADING
         this.currentAccountSelected = account
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 
@@ -281,7 +281,7 @@ class AccountsViewModel : ViewModel() {
 
         this.uiState.value = AccountsView.ViewState.LOADING
         this.currentAccountSelected = account
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 

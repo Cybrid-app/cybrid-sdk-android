@@ -20,7 +20,7 @@ class LoggerTest {
 
     @After
     fun teardown() {
-        Cybrid.resetInstance()
+        Cybrid.reset()
     }
 
     @Test
@@ -50,7 +50,7 @@ class LoggerTest {
         )
 
         // -- When
-        Cybrid.getInstance().setup(sdkConfig) {
+        Cybrid.setup(sdkConfig) {
             logger.log(LoggerEvents.ERROR, messageToLog)
         }
     }
@@ -74,7 +74,7 @@ class LoggerTest {
         )
 
         // -- When
-        Cybrid.getInstance().setup(sdkConfig) {
+        Cybrid.setup(sdkConfig) {
             logger.log(LoggerEvents.ERROR)
         }
     }

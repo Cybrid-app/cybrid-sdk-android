@@ -41,7 +41,7 @@ class TransferViewModel: ViewModel() {
     val uiWarning: MutableState<Boolean> = mutableStateOf(false)
 
     var currentFiatCurrency = "USD"
-    var customerGuid = Cybrid.getInstance().customerGuid
+    var customerGuid = Cybrid.customerGuid
     var assets: List<AssetBankModel>? = null
 
     var accounts: List<AccountBankModel> by mutableStateOf(listOf())
@@ -68,7 +68,7 @@ class TransferViewModel: ViewModel() {
     suspend fun fetchAssets(): List<AssetBankModel>? {
 
         var assets: List<AssetBankModel>? = null
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
                     val assetsResponse = getResult { assetsService.listAssets() }
@@ -88,7 +88,7 @@ class TransferViewModel: ViewModel() {
 
     suspend fun fetchAccounts() {
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 
@@ -111,7 +111,7 @@ class TransferViewModel: ViewModel() {
 
     suspend fun fetchExternalAccounts() {
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
                     val externalAccountsResponse = getResult {
@@ -170,7 +170,7 @@ class TransferViewModel: ViewModel() {
 
     suspend fun createQuote(side: PostQuoteBankModel.Side, amount: BigDecimal) {
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 
@@ -199,7 +199,7 @@ class TransferViewModel: ViewModel() {
 
     suspend fun createTransfer(externalBankAccount: ExternalBankAccountBankModel) {
 
-        Cybrid.getInstance().let { cybrid ->
+        Cybrid.let { cybrid ->
             if (!cybrid.invalidToken) {
                 this.viewModelScope.let { scope ->
                     val waitFor = scope.async(dispatcher) {
@@ -252,7 +252,7 @@ class TransferViewModel: ViewModel() {
 
     fun notifyAccountsHaveToChange() {
 
-        Cybrid.getInstance().let { cybrid ->
+        Cybrid.let { cybrid ->
             viewModelScope.launch {
                 cybrid.accountsRefreshObservable.emit(true)
             }

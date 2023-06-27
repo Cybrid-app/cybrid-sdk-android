@@ -35,7 +35,7 @@ class ListPricesViewModel : ViewModel() {
     private suspend fun fetchAssets(): List<AssetBankModel> {
 
         var assets: List<AssetBankModel> = listOf()
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
                     val assetsResponse = getResult { assetsService.listAssets() }
@@ -55,7 +55,7 @@ class ListPricesViewModel : ViewModel() {
 
     suspend fun getPricesList(symbol: String? = null) {
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             viewModelScope.let { scope ->
                 val waitFor = scope.async {
 

@@ -10,7 +10,7 @@ suspend fun <T> getResult(call: suspend() -> Response<T>): Resource<T> {
 
     try {
 
-        val cybrid = Cybrid.getInstance()
+        val cybrid = Cybrid
         val response = call.invoke()
         val body = response.body()
         val code = response.code()
@@ -39,7 +39,7 @@ suspend fun <T> getResult(call: suspend() -> Response<T>): Resource<T> {
             )
         }
     } catch (e: Exception) {
-        Log.e(Cybrid.getInstance().logTag, "ThrowsError: ${e.message}")
+        Log.e(Cybrid.logTag, "ThrowsError: ${e.message}")
         return Resource.error("${e.message.toString()} - ${call.javaClass.name}")
     }
 }

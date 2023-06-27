@@ -37,7 +37,7 @@ class BankAccountsViewModel: ViewModel() {
     private var customerService = AppModule.getClient().createService(CustomersApi::class.java)
     private var bankService = AppModule.getClient().createService(BanksApi::class.java)
 
-    var customerGuid = Cybrid.getInstance().customerGuid
+    var customerGuid = Cybrid.customerGuid
 
     var uiState: MutableState<BankAccountsView.State> = mutableStateOf(BankAccountsView.State.LOADING)
     var buttonAddAccountsState: MutableState<BankAccountsView.AddAccountButtonState> = mutableStateOf(BankAccountsView.AddAccountButtonState.LOADING)
@@ -69,7 +69,7 @@ class BankAccountsViewModel: ViewModel() {
         uiState.value = BankAccountsViewState.LOADING
         buttonAddAccountsState.value = BankAccountsView.AddAccountButtonState.LOADING
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
                     val accountsResult = getResult {
@@ -105,7 +105,7 @@ class BankAccountsViewModel: ViewModel() {
 
     suspend fun createWorkflow() {
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 
@@ -139,7 +139,7 @@ class BankAccountsViewModel: ViewModel() {
 
     fun fetchWorkflow(guid: String) {
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 scope.launch {
                     val workflowResult = getResult {
@@ -160,7 +160,7 @@ class BankAccountsViewModel: ViewModel() {
 
     suspend fun createExternalBankAccount(publicToken: String, account: LinkAccount?) {
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 
@@ -203,7 +203,7 @@ class BankAccountsViewModel: ViewModel() {
 
     internal fun fetchExternalBankAccount(guid: String) {
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 scope.launch {
                     val accountResult = getResult {
@@ -225,7 +225,7 @@ class BankAccountsViewModel: ViewModel() {
     suspend fun getCustomer(): CustomerBankModel? {
 
         var customer: CustomerBankModel? = null
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
                     val customerResult = getResult {
@@ -250,7 +250,7 @@ class BankAccountsViewModel: ViewModel() {
     suspend fun getBank(guid: String): BankBankModel? {
 
         var bank: BankBankModel? = null
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
                     val bankResult = getResult {
@@ -352,7 +352,7 @@ class BankAccountsViewModel: ViewModel() {
         this.dismissExternalBankAccountDetail()
         uiState.value = BankAccountsViewState.LOADING
         buttonAddAccountsState.value = BankAccountsView.AddAccountButtonState.LOADING
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
                     val accountsResult = getResult {
@@ -387,7 +387,7 @@ class BankAccountsViewModel: ViewModel() {
     internal suspend fun createUpdateWorkflow(account: ExternalBankAccountBankModel): WorkflowBankModel? {
 
         var workflow: WorkflowBankModel? = null
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 
@@ -425,7 +425,7 @@ class BankAccountsViewModel: ViewModel() {
 
     internal fun fetchUpdateWorkflow(guid: String) {
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
                 this.viewModelScope.let { scope ->
                     scope.launch {
                         val workflowResult = getResult {
@@ -459,7 +459,7 @@ class BankAccountsViewModel: ViewModel() {
 
     suspend fun updateExternalBankAccount(state: PatchExternalBankAccountBankModel.State) {
 
-        if (!Cybrid.getInstance().invalidToken) {
+        if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 

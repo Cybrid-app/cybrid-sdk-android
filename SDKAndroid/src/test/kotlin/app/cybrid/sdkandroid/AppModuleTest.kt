@@ -31,17 +31,17 @@ class AppModuleTest {
     fun test_getApiUrl() {
 
         // -- Staging
-        Cybrid.getInstance().environment = CybridEnvironment.STAGING
+        Cybrid.environment = CybridEnvironment.STAGING
         val stagingURL = AppModule.getApiUrl()
         assertTrue(stagingURL.contains("staging"))
 
         // -- Staging
-        Cybrid.getInstance().environment = CybridEnvironment.SANDBOX
+        Cybrid.environment = CybridEnvironment.SANDBOX
         val sandboxURL = AppModule.getApiUrl()
         assertTrue(sandboxURL.contains("sandbox"))
 
         // -- Production
-        Cybrid.getInstance().environment = CybridEnvironment.PRODUCTION
+        Cybrid.environment = CybridEnvironment.PRODUCTION
         val productionURL = AppModule.getApiUrl()
         assertTrue(productionURL.contains("production"))
     }
