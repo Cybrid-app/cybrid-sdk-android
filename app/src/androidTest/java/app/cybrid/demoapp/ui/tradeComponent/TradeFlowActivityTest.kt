@@ -62,7 +62,7 @@ class TradeFlowActivityTest {
             click()
         )
 
-        compose.waitForIdle()
+        //compose.waitForIdle()
         compose.waitUntilAtLeastOneExists(hasTestTag("ListPricesView"), 10_000L)
         compose.onRoot().printToLog("Cybrid_E2E")
 
@@ -88,6 +88,5 @@ class TradeFlowActivityTest {
 
         compose.onAllNodes(isRoot())[1].printToLog("Cybrid_E2E")
         //compose.onRoot(useUnmergedTree = false).onChildAt(1).printToLog("Cybrid_E2E")
-        delay(15000)
     }
 }
