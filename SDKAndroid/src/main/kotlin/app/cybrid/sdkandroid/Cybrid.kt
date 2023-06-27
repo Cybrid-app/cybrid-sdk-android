@@ -23,34 +23,28 @@ import java.math.BigDecimal as JavaBigDecimal
 
 open class Cybrid {
 
-    internal var configured: Boolean = false
-    internal var bearer: String = ""
     var logTag: String = "CybridSDK"
     var customerGuid: String = ""
-        private set
+        internal set
     var environment = CybridEnvironment.SANDBOX
-    var listener: CybridSDKEvents? = null
-        private set
-
+        internal set
     var invalidToken = true
+        internal set
+    var configured: Boolean = false
+        internal set
+
+    internal var bearer: String = ""
+    internal var listener: CybridSDKEvents? = null
     internal var imagesUrl = "https://images.cybrid.xyz/sdk/assets/png/color/"
-        private set
     internal var imagesSize = "@2x.png"
-        private set
     internal var accountsRefreshObservable = MutableStateFlow(false)
 
-    // -- Properties for AutoLoad
-    // -- fiat
     internal lateinit var assetsApi: AssetsApi
-    var customer: CustomerBankModel? = null
-        private set
-    var bank: BankBankModel? = null
-        private set
-    var assets: List<AssetBankModel> = emptyList()
-    var autoLoadComplete = false
-        private set
-    var completion: (() -> Unit)? = null
-        private set
+    internal var assets: List<AssetBankModel> = emptyList()
+    internal var customer: CustomerBankModel? = null
+    internal var bank: BankBankModel? = null
+    internal var completion: (() -> Unit)? = null
+    // -- fiat
 
     fun setup(sdkConfig: SDKConfig,
               completion: () -> Unit) {
@@ -61,7 +55,6 @@ open class Cybrid {
         }
 
         this.setBearer(sdkConfig.bearer)
-        this.configured = true
         this.customerGuid = sdkConfig.customerGuid
         this.logTag = sdkConfig.logTag
         this.environment = sdkConfig.environment
@@ -70,6 +63,7 @@ open class Cybrid {
         this.listener = sdkConfig.listener
         this.completion = completion
         this.autoLoad()
+        this.configured = true
     }
 
     fun setBearer(bearer: String) {
@@ -85,11 +79,7 @@ open class Cybrid {
     }
 
     private fun autoLoad() {
-
-        // -- Fetch assets
         this.fetchAssets {
-
-            this.autoLoadComplete = true
             this.completion?.invoke()
         }
     }

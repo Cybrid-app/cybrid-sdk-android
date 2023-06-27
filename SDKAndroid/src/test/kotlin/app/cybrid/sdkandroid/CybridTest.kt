@@ -109,7 +109,6 @@ class CybridTest {
         Assert.assertNull(cybrid.customer)
         Assert.assertNull(cybrid.bank)
         Assert.assertTrue(cybrid.assets.isEmpty())
-        Assert.assertFalse(cybrid.autoLoadComplete)
         Assert.assertNull(cybrid.completion)
     }
 
@@ -141,7 +140,6 @@ class CybridTest {
         Assert.assertEquals(cybrid.customer, customer)
         Assert.assertEquals(cybrid.bank, bank)
         Assert.assertTrue(cybrid.assets.isEmpty())
-        Assert.assertFalse(cybrid.autoLoadComplete)
         Assert.assertNotNull(cybrid.completion)
     }
 
@@ -172,7 +170,6 @@ class CybridTest {
         Assert.assertEquals(cybrid.customer, customer)
         Assert.assertEquals(cybrid.bank, bank)
         Assert.assertTrue(cybrid.assets.isEmpty())
-        Assert.assertFalse(cybrid.autoLoadComplete)
         Assert.assertNotNull(cybrid.completion)
 
         // -- When
@@ -219,7 +216,6 @@ class CybridTest {
         Assert.assertEquals(cybrid.customer, customer)
         Assert.assertEquals(cybrid.bank, bank)
         Assert.assertTrue(cybrid.assets.isEmpty())
-        Assert.assertFalse(cybrid.autoLoadComplete)
         Assert.assertNotNull(cybrid.completion)
     }
 
@@ -353,7 +349,6 @@ class CybridTest {
         Assert.assertEquals(cybrid.assets.count(), 6)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun test_fetchAssets_Data_Null() = runBlocking {
 
@@ -375,35 +370,45 @@ class CybridTest {
         Assert.assertTrue(cybrid.assets.isEmpty())
     }
 
-    /*@Test
-    fun testSetBearer() {
+    @Test
+    fun testListener() = runBlocking {
 
         // -- Given
-        val tokenExpiredPrev = cybrid.invalidToken
+        var tokenExpiredCall = false
+        var eventLevel = -98765
+        var eventMessage = "no_message_here"
+
+        val mockAssetsApi = mockk<AssetsApi>()
+        val completionLatch = CompletableDeferred<Unit>()
+        val sdkConfig = SDKConfig(
+            listener = object : CybridSDKEvents {
+                override fun onTokenExpired() {
+                    tokenExpiredCall = true
+                }
+                override fun onEvent(level: Int, message: String) {
+                    eventLevel = level
+                    eventMessage = message
+                }
+            }
+        )
+        val cybrid = Cybrid.getInstance()
+        coEvery { mockAssetsApi.listAssets(page = any(), perPage = any()) } returns Mocks.getAssetsListBankModelMock()
+        cybrid.assetsApi = mockAssetsApi
 
         // -- When
-        cybrid.setBearer("token")
-        cybrid.invalidToken = true
+        Assert.assertFalse(tokenExpiredCall)
+        Assert.assertEquals(eventLevel, -98765)
+        Assert.assertEquals(eventMessage, "no_message_here")
+
+        cybrid.setup(sdkConfig) { completionLatch.complete(Unit) }
+        completionLatch.await()
+
+        cybrid.listener?.onTokenExpired()
+        cybrid.listener?.onEvent(1, "Success")
 
         // -- Then
-        Assert.assertFalse(tokenExpiredPrev)
-        Assert.assertTrue(cybrid.invalidToken)
-    }*/
-
-    /*@Test
-    fun testListener() {
-
-        // -- Given
-        val listenerPrev = cybrid.listener
-
-        // -- When
-        cybrid.listener = object : CybridSDKEvents {
-            override fun onTokenExpired() {}
-            override fun onEvent(level: Int, message: String) {}
-        }
-
-        // -- Then
-        Assert.assertNull(listenerPrev)
         Assert.assertNotNull(cybrid.listener)
-    }*/
+        Assert.assertEquals(eventLevel, 1)
+        Assert.assertEquals(eventMessage, "Success")
+    }
 }
