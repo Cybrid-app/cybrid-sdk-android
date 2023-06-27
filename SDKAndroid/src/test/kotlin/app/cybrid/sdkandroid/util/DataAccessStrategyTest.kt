@@ -13,6 +13,8 @@ import app.cybrid.sdkandroid.tools.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.spyk
+import io.mockk.unmockkAll
+import io.mockk.unmockkObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
@@ -38,12 +40,11 @@ class DataAccessStrategyTest {
 
     private fun prepareSDK(bearer: String, listener: CybridSDKEvents? = null): Cybrid {
 
-        val cybrid = spyk(Cybrid.getInstance())
+        val cybrid = Cybrid.getInstance()
         val sdkConfig = SDKConfig(
             bearer = bearer,
             listener = listener
         )
-        AssetsApiMock.mockListAssets()
         cybrid.setup(sdkConfig) {}
         return cybrid
     }
