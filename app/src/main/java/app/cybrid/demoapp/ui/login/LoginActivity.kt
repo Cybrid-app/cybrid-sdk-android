@@ -127,7 +127,7 @@ class LoginActivity : AppCompatActivity() {
             client_secret = clientSecret
         )
         App().getSDKConfig(tokenRequest, customerGuid) { config ->
-            Cybrid.getInstance().setup(sdkConfig = config) {
+            Cybrid.setup(sdkConfig = config) {
                 Handler(Looper.getMainLooper()).postDelayed({
                     startActivity(Intent(this, ListComponentsActivity::class.java))
                     finish()
