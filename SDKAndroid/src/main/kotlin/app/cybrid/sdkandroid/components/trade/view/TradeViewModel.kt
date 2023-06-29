@@ -28,7 +28,7 @@ class TradeViewModel: ViewModel() {
     var uiModalState: MutableState<TradeView.QuoteModalViewState> = mutableStateOf(TradeView.QuoteModalViewState.LOADING)
 
     var currentFiatCurrency = ""
-    var customerGuid = Cybrid.instance.customerGuid
+    var customerGuid = Cybrid.customerGuid
 
     var listPricesViewModel: ListPricesViewModel? = null
     var listPricesPolling: Polling? = null
@@ -149,31 +149,29 @@ class TradeViewModel: ViewModel() {
 
     suspend fun createQuote() {
 
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    val waitFor = scope.async {
+        if (!Cybrid.invalidToken) {
+            this.viewModelScope.let { scope ->
+                val waitFor = scope.async {
 
-                        val quoteResult = getResult { quoteService.createQuote(postQuoteBankModel!!) }
-                        quoteResult.let {
+                    val quoteResult = getResult { quoteService.createQuote(postQuoteBankModel!!) }
+                    quoteResult.let {
 
-                            val code = it.code ?: 500
-                            if (isSuccessful(code)) {
+                        val code = it.code ?: 500
+                        if (isSuccessful(code)) {
 
-                                quoteBankModel = it.data!!
-                                uiModalState.value = TradeView.QuoteModalViewState.CONTENT
-                                if (quotePolling == null && tradeBankModel.guid == null) {
-                                    quotePolling = Polling { viewModelScope.launch { createQuote() } }
-                                }
-                            } else if (code == 422) {
-
-                                showKYCWarningModal.value = true
-                                modalBeDismissed()
+                            quoteBankModel = it.data!!
+                            uiModalState.value = TradeView.QuoteModalViewState.CONTENT
+                            if (quotePolling == null && tradeBankModel.guid == null) {
+                                quotePolling = Polling { viewModelScope.launch { createQuote() } }
                             }
+                        } else if (code == 422) {
+
+                            showKYCWarningModal.value = true
+                            modalBeDismissed()
                         }
                     }
-                    waitFor.await()
                 }
+                waitFor.await()
             }
         }
     }
@@ -188,22 +186,20 @@ class TradeViewModel: ViewModel() {
             quoteGuid = quoteBankModel.guid ?: ""
         )
 
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    val waitFor = scope.async {
+        if (!Cybrid.invalidToken) {
+            this.viewModelScope.let { scope ->
+                val waitFor = scope.async {
 
-                        val tradeResult = getResult { tradeService.createTrade(postTradeBankModel) }
-                        tradeResult.let {
-                            if (isSuccessful(it.code ?: 500)) {
+                    val tradeResult = getResult { tradeService.createTrade(postTradeBankModel) }
+                    tradeResult.let {
+                        if (isSuccessful(it.code ?: 500)) {
 
-                                tradeBankModel = it.data!!
-                                uiModalState.value = TradeView.QuoteModalViewState.DONE
-                            }
+                            tradeBankModel = it.data!!
+                            uiModalState.value = TradeView.QuoteModalViewState.DONE
                         }
                     }
-                    waitFor.await()
                 }
+                waitFor.await()
             }
         }
     }

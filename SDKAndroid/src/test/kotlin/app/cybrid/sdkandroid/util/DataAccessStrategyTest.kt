@@ -5,14 +5,11 @@ import app.cybrid.cybrid_api_bank.client.apis.PricesApi
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.Cybrid
+import app.cybrid.sdkandroid.core.SDKConfig
+import app.cybrid.sdkandroid.listener.CybridSDKEvents
 import app.cybrid.sdkandroid.tools.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import okhttp3.OkHttpClient
 import org.junit.*
 import java.net.HttpURLConnection
@@ -34,11 +31,30 @@ class DataAccessStrategyTest {
         return ApiClient(okHttpClientBuilder = clientBuilder)
     }
 
+    private fun prepareSDK(bearer: String, listener: CybridSDKEvents? = null): Cybrid {
+
+        val cybrid = Cybrid
+        val sdkConfig = SDKConfig(
+            bearer = bearer,
+            listener = listener
+        )
+        cybrid.setup(sdkConfig) {}
+        return cybrid
+    }
+
+    @Before
+    fun setup() {}
+
+    @After
+    fun teardown() {
+        Cybrid.reset()
+    }
+
     @ExperimentalCoroutinesApi
     @Test
     fun get400ErrorServerTest() = runBlocking {
 
-        Cybrid.instance.setBearer("Bearer")
+        Cybrid.setBearer("Bearer")
         val pricesService = AppModule.getClient().createService(PricesApi::class.java)
         val result = getResult { pricesService.listPrices() }
 
@@ -64,14 +80,26 @@ class DataAccessStrategyTest {
     @Test
     fun getUnauthorizedServerTest() = runBlocking {
 
+        var onTokenExpiredCalled = false
         val expectedCode = HttpURLConnection.HTTP_UNAUTHORIZED
-        Cybrid.instance.setBearer(TestConstants.expiredToken)
+        val cybrid = prepareSDK(
+            bearer = TestConstants.expiredToken,
+            listener = object : CybridSDKEvents {
+
+                override fun onTokenExpired() {
+                    onTokenExpiredCalled = true
+                }
+
+                override fun onEvent(level: Int, message: String) {}
+            }
+        )
 
         val pricesService = AppModule.getClient().createService(PricesApi::class.java)
         val result = getResult { pricesService.listPrices() }
 
         Assert.assertNotNull(result)
         Assert.assertEquals(result.code, expectedCode)
+        Assert.assertTrue(onTokenExpiredCalled)
     }
 
     @ExperimentalCoroutinesApi
@@ -92,8 +120,11 @@ class DataAccessStrategyTest {
     fun unauthorizedAndNullListenerTest() = runBlocking {
 
         val expectedCode = HttpURLConnection.HTTP_UNAUTHORIZED
-        Cybrid.instance.setBearer(TestConstants.expiredToken)
-        Cybrid.instance.listener = null
+        Cybrid.setBearer(TestConstants.expiredToken)
+        val cybrid = prepareSDK(
+            bearer = TestConstants.expiredToken,
+            listener = null
+        )
 
         val pricesService = AppModule.getClient().createService(PricesApi::class.java)
         val result = getResult { pricesService.listPrices() }
@@ -106,7 +137,7 @@ class DataAccessStrategyTest {
     @Test
     fun callNullTest() = runBlocking {
 
-        Cybrid.instance.setBearer(TestConstants.expiredToken)
+        Cybrid.setBearer(TestConstants.expiredToken)
         val nullService = AppModule.getClient().createService(TestEmptyService::class.java)
         val result = getResult { nullService.getNothing() }
 
@@ -138,7 +169,7 @@ class DataAccessStrategyTest {
 
         val expectedCode = HttpURLConnection.HTTP_INTERNAL_ERROR
         val apiClient = prepareClient(expectedCode)
-        Cybrid.instance.setBearer(TestConstants.expiredToken)
+        Cybrid.setBearer(TestConstants.expiredToken)
 
         val pricesService = apiClient.createService(PricesApi::class.java)
         val result = getResult { pricesService.listPrices() }

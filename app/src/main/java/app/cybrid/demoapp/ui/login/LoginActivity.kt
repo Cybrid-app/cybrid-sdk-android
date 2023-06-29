@@ -23,13 +23,12 @@ import app.cybrid.demoapp.ui.listComponents.ListComponentsActivity
 import app.cybrid.sdkandroid.Cybrid
 import com.google.android.material.textfield.TextInputLayout
 
-class LoginActivity : AppCompatActivity(), BearerListener {
+class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-
         this.initViews()
     }
 
@@ -56,27 +55,30 @@ class LoginActivity : AppCompatActivity(), BearerListener {
 
         login.setOnClickListener {
 
-            val id = findViewById<EditText>(R.id.clientID).text
-            val secret = findViewById<EditText>(R.id.clientSecret).text
-            val customerGUID = findViewById<EditText>(R.id.clientGUID).text
+            val clientId = findViewById<EditText>(R.id.clientID).text
+            val clientSecret = findViewById<EditText>(R.id.clientSecret).text
+            val customerGuid = findViewById<EditText>(R.id.clientGUID).text
 
-            if (id.isEmpty() && secret.isEmpty() && customerGUID.isEmpty()) {
+            if (clientId.isEmpty() && clientSecret.isEmpty() && customerGuid.isEmpty()) {
                 Toast.makeText(this, getString(R.string.login_fill_error), Toast.LENGTH_LONG).show()
             } else {
 
-                val tokenRequest = TokenRequest(
-                    client_id = id.toString(),
-                    client_secret = secret.toString()
+                setupCybridSDK(
+                    clientId = clientId.toString(),
+                    clientSecret = clientSecret.toString(),
+                    customerGuid = customerGuid.toString()
                 )
-                App().getBearer(this, tokenRequest)
-                Cybrid.instance.customerGuid = customerGUID.toString()
                 hideViews()
             }
         }
 
         demo.setOnClickListener {
 
-            App().getBearer(this)
+            setupCybridSDK(
+                clientId = BuildConfig.CLIENT_ID,
+                clientSecret = BuildConfig.CLIENT_SECRET,
+                customerGuid = BuildConfig.CUSTOMER_GUID
+            )
             hideViews()
         }
     }
@@ -118,18 +120,19 @@ class LoginActivity : AppCompatActivity(), BearerListener {
         Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
     }
 
-    override fun onBearerReady() {
+    private fun setupCybridSDK(clientId: String, clientSecret: String, customerGuid: String) {
 
-        App().setupCybridSDK()
-        Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, ListComponentsActivity::class.java))
-            finish()
-        }, 1000L)
-
-    }
-
-    override fun onBearerError() {
-
-        this.showViews(getString(R.string.auth_toast_error))
+        val tokenRequest = TokenRequest(
+            client_id = clientId,
+            client_secret = clientSecret
+        )
+        App().getSDKConfig(tokenRequest, customerGuid) { config ->
+            Cybrid.setup(sdkConfig = config) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    startActivity(Intent(this, ListComponentsActivity::class.java))
+                    finish()
+                }, 1000L)
+            }
+        }
     }
 }

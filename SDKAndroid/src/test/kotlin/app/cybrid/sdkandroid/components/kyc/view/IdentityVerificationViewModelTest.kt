@@ -35,7 +35,7 @@ class IdentityVerificationViewModelTest {
 
     private fun createViewModel(): IdentityVerificationViewModel {
 
-        Cybrid.instance.invalidToken = false
+        Cybrid.invalidToken = false
         val viewModel = IdentityVerificationViewModel()
         viewModel.uiState = mutableStateOf(KYCView.KYCViewState.LOADING)
         return viewModel

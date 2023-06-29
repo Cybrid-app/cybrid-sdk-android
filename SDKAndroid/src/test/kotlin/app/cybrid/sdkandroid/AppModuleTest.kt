@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid
 
+import app.cybrid.sdkandroid.core.CybridEnvironment
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -30,17 +31,17 @@ class AppModuleTest {
     fun test_getApiUrl() {
 
         // -- Staging
-        Cybrid.instance.env = CybridEnv.STAGING
+        Cybrid.environment = CybridEnvironment.STAGING
         val stagingURL = AppModule.getApiUrl()
         assertTrue(stagingURL.contains("staging"))
 
         // -- Staging
-        Cybrid.instance.env = CybridEnv.SANDBOX
+        Cybrid.environment = CybridEnvironment.SANDBOX
         val sandboxURL = AppModule.getApiUrl()
         assertTrue(sandboxURL.contains("sandbox"))
 
         // -- Production
-        Cybrid.instance.env = CybridEnv.PRODUCTION
+        Cybrid.environment = CybridEnvironment.PRODUCTION
         val productionURL = AppModule.getApiUrl()
         assertTrue(productionURL.contains("production"))
     }

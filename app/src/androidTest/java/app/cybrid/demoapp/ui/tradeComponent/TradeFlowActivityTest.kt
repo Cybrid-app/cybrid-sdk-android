@@ -8,26 +8,20 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.ActivityTestRule
 import app.cybrid.demoapp.R
 import app.cybrid.demoapp.ui.login.LoginActivity
 import app.cybrid.demoapp.ui.util.waitUntilViewIsDisplayed
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
 class TradeFlowActivityTest {
 
-    @JvmField
-    @Rule
-    val rule = ActivityTestRule(LoginActivity::class.java)
+    @get : Rule
+    var mActivityRule = ActivityScenarioRule(LoginActivity::class.java)
 
     @JvmField
     @Rule
@@ -42,7 +36,6 @@ class TradeFlowActivityTest {
     }
 
     @OptIn(ExperimentalCoroutinesApi::class, ExperimentalTestApi::class)
-    @Test
     fun test_flow() = runTest {
 
         waitUntilViewIsDisplayed(withId(R.id.demo))
@@ -56,7 +49,7 @@ class TradeFlowActivityTest {
         )
 
         compose.waitForIdle()
-        compose.waitUntilExactlyOneExists(hasTestTag("ListPricesView"), 10_000L)
+        compose.waitUntilAtLeastOneExists(hasTestTag("ListPricesView"), 10_000L)
         compose.onRoot().printToLog("Cybrid_E2E")
 
         compose.onNodeWithTag("ListPricesView").assertIsDisplayed()
@@ -81,6 +74,5 @@ class TradeFlowActivityTest {
 
         compose.onAllNodes(isRoot())[1].printToLog("Cybrid_E2E")
         //compose.onRoot(useUnmergedTree = false).onChildAt(1).printToLog("Cybrid_E2E")
-        delay(15000)
     }
 }

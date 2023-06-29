@@ -6,10 +6,9 @@ plugins {
     id 'org.jetbrains.kotlinx.kover'
 }
 
-def filesExcluded = [
-        'app.cybrid.sdkandroid.components.*',
-        'app.cybrid.sdkandroid.BuildConfig',
-        'app.cybrid.sdkandroid.core.Constants',
+def classesExcluded = [
+    'app.cybrid.sdkandroid.BuildConfig',
+    'app.cybrid.sdkandroid.core.Constants',
 ]
 
 apply from: '../version.gradle'
@@ -102,6 +101,11 @@ koverReport {
     defaults {
         mergeWith("debug")
     }
+    filters {
+        excludes {
+            classes(classesExcluded)
+        }
+    }
 }
 
 afterEvaluate {
@@ -161,7 +165,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
     // -- Cybrid API Bank
-    implementation('app.cybrid:cybrid-api-bank-kotlin:0.71.68') {
+    implementation('app.cybrid:cybrid-api-bank-kotlin:0.73.34') {
         exclude group:'org.apache.oltu.oauth2', module: 'org.apache.oltu.oauth2.common'
     }
 
@@ -198,7 +202,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-common-java8:2.6.1"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.activity:activity-ktx:1.7.2'
-    implementation 'androidx.fragment:fragment-ktx:1.5.7'
+    implementation 'androidx.fragment:fragment-ktx:1.6.0'
 
     // -- Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
@@ -212,7 +216,7 @@ dependencies {
 
     // -- Project Testing
     testImplementation 'androidx.test:runner:1.5.2'
-    testImplementation "io.mockk:mockk:1.13.3"
+    testImplementation "io.mockk:mockk:1.13.5"
     testImplementation 'org.robolectric:robolectric:4.9'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     testImplementation 'androidx.arch.core:core-testing:2.2.0'

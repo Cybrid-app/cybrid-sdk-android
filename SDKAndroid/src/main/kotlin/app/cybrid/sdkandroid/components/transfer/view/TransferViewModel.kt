@@ -41,7 +41,7 @@ class TransferViewModel: ViewModel() {
     val uiWarning: MutableState<Boolean> = mutableStateOf(false)
 
     var currentFiatCurrency = "USD"
-    var customerGuid = Cybrid.instance.customerGuid
+    var customerGuid = Cybrid.customerGuid
     var assets: List<AssetBankModel>? = null
 
     var accounts: List<AccountBankModel> by mutableStateOf(listOf())
@@ -68,21 +68,19 @@ class TransferViewModel: ViewModel() {
     suspend fun fetchAssets(): List<AssetBankModel>? {
 
         var assets: List<AssetBankModel>? = null
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    val waitFor = scope.async {
-                        val assetsResponse = getResult { assetsService.listAssets() }
-                        assetsResponse.let {
-                            if (isSuccessful(it.code ?: 500)) {
-                                Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
-                                assets = it.data?.objects
-                                return@async assets
-                            }
+        if (!Cybrid.invalidToken) {
+            this.viewModelScope.let { scope ->
+                val waitFor = scope.async {
+                    val assetsResponse = getResult { assetsService.listAssets() }
+                    assetsResponse.let {
+                        if (isSuccessful(it.code ?: 500)) {
+                            Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
+                            assets = it.data?.objects
+                            return@async assets
                         }
                     }
-                    waitFor.await()
                 }
+                waitFor.await()
             }
         }
         return assets
@@ -90,52 +88,48 @@ class TransferViewModel: ViewModel() {
 
     suspend fun fetchAccounts() {
 
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    val waitFor = scope.async {
+        if (!Cybrid.invalidToken) {
+            this.viewModelScope.let { scope ->
+                val waitFor = scope.async {
 
-                        assets = fetchAssets()
-                        val accountsResponse = getResult { accountsService.listAccounts(customerGuid = customerGuid) }
-                        accountsResponse.let {
-                            if (isSuccessful(it.code ?: 500)) {
-                                Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
-                                accounts = it.data?.objects ?: listOf()
-                                fetchExternalAccounts()
-                            } else {
-                                Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Workflow")
-                            }
+                    assets = fetchAssets()
+                    val accountsResponse = getResult { accountsService.listAccounts(customerGuid = customerGuid) }
+                    accountsResponse.let {
+                        if (isSuccessful(it.code ?: 500)) {
+                            Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
+                            accounts = it.data?.objects ?: listOf()
+                            fetchExternalAccounts()
+                        } else {
+                            Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Workflow")
                         }
                     }
-                    waitFor.await()
                 }
+                waitFor.await()
             }
         }
     }
 
     suspend fun fetchExternalAccounts() {
 
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    val waitFor = scope.async {
-                        val externalAccountsResponse = getResult {
-                            externalBankAccountsService.listExternalBankAccounts(customerGuid = customerGuid)
-                        }
-                        externalAccountsResponse.let {
-                            if (isSuccessful(it.code ?: 500)) {
+        if (!Cybrid.invalidToken) {
+            this.viewModelScope.let { scope ->
+                val waitFor = scope.async {
+                    val externalAccountsResponse = getResult {
+                        externalBankAccountsService.listExternalBankAccounts(customerGuid = customerGuid)
+                    }
+                    externalAccountsResponse.let {
+                        if (isSuccessful(it.code ?: 500)) {
 
-                                Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - External Accounts")
-                                val accounts = it.data?.objects ?: listOf()
-                                checkAccounts(accounts)
+                            Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - External Accounts")
+                            val accounts = it.data?.objects ?: listOf()
+                            checkAccounts(accounts)
 
-                            } else {
-                                Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - External Accounts")
-                            }
+                        } else {
+                            Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - External Accounts")
                         }
                     }
-                    waitFor.await()
                 }
+                waitFor.await()
             }
         }
     }
@@ -176,40 +170,38 @@ class TransferViewModel: ViewModel() {
 
     suspend fun createQuote(side: PostQuoteBankModel.Side, amount: BigDecimal) {
 
-        Cybrid.instance.let { cybrid ->
-            if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
-                    val waitFor = scope.async {
+        if (!Cybrid.invalidToken) {
+            this.viewModelScope.let { scope ->
+                val waitFor = scope.async {
 
-                        val postQuoteBankModel = PostQuoteBankModel(
-                            side = side,
-                            productType = PostQuoteBankModel.ProductType.funding,
-                            customerGuid = customerGuid,
-                            asset = currentFiatCurrency,
-                            deliverAmount = amount.toJavaBigDecimal()
-                        )
-                        val quoteResponse = getResult { quoteService.createQuote(postQuoteBankModel) }
-                        quoteResponse.let {
-                            if (isSuccessful(it.code ?: 500)) {
-                                Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
-                                currentQuote = it.data
-                                modalUiState.value = TransferView.ModalViewState.CONFIRM
-                            } else {
-                                Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Workflow")
-                            }
+                    val postQuoteBankModel = PostQuoteBankModel(
+                        side = side,
+                        productType = PostQuoteBankModel.ProductType.funding,
+                        customerGuid = customerGuid,
+                        asset = currentFiatCurrency,
+                        deliverAmount = amount.toJavaBigDecimal()
+                    )
+                    val quoteResponse = getResult { quoteService.createQuote(postQuoteBankModel) }
+                    quoteResponse.let {
+                        if (isSuccessful(it.code ?: 500)) {
+                            Logger.log(LoggerEvents.DATA_REFRESHED, "Fetch - Workflow")
+                            currentQuote = it.data
+                            modalUiState.value = TransferView.ModalViewState.CONFIRM
+                        } else {
+                            Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Workflow")
                         }
                     }
-                    waitFor.await()
                 }
+                waitFor.await()
             }
         }
     }
 
     suspend fun createTransfer(externalBankAccount: ExternalBankAccountBankModel) {
 
-        Cybrid.instance.let { cybrid ->
+        Cybrid.let { cybrid ->
             if (!cybrid.invalidToken) {
-                viewModelScope.let { scope ->
+                this.viewModelScope.let { scope ->
                     val waitFor = scope.async(dispatcher) {
 
                         val postTransferPostQuoteBankModel = PostTransferBankModel(
@@ -260,7 +252,7 @@ class TransferViewModel: ViewModel() {
 
     fun notifyAccountsHaveToChange() {
 
-        Cybrid.instance.let { cybrid ->
+        Cybrid.let { cybrid ->
             viewModelScope.launch {
                 cybrid.accountsRefreshObservable.emit(true)
             }
