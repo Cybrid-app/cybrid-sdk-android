@@ -82,6 +82,11 @@ class BigDecimal(internal val value:JavaBigDecimal) : Comparable<BigDecimal> {
     fun format(numberFormat: NumberFormat): String? {
         return numberFormat.format(value)
     }
+
+    companion object {
+
+        fun zero(): BigDecimal = BigDecimal(0)
+    }
 }
 
 fun JavaBigDecimal.toBigDecimal(): BigDecimal {

@@ -202,7 +202,7 @@ class TransferViewModel: ViewModel() {
         Cybrid.let { cybrid ->
             if (!cybrid.invalidToken) {
                 this.viewModelScope.let { scope ->
-                    val waitFor = scope.async(dispatcher) {
+                    val waitFor = scope.async {
 
                         val postTransferPostQuoteBankModel = PostTransferBankModel(
                             quoteGuid = currentQuote?.guid!!,

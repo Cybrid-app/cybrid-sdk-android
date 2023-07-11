@@ -21,7 +21,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(instrumentedPackages = ["androidx.loader.content"])
+@Config(instrumentedPackages = ["androidx.loader.content"], sdk = [29])
 class BankAccountsViewUITest {
 
     @ExperimentalCoroutinesApi
