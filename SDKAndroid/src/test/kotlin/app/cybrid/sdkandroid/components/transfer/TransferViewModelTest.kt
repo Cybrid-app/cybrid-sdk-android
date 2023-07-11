@@ -11,9 +11,7 @@ import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.tools.JSONMock
 import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import app.cybrid.sdkandroid.tools.TestConstants
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
 import okhttp3.OkHttpClient
 import org.junit.*
@@ -169,6 +167,7 @@ class TransferViewModelTest {
 
         // -- When
         viewModel.createQuote(PostQuoteBankModel.Side.deposit, BigDecimal(0))
+        Cybrid.invalidToken = false
         viewModel.createTransfer(TestConstants.externalBankAccount)
 
         // -- Then
