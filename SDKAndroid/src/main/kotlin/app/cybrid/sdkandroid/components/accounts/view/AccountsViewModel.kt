@@ -21,6 +21,7 @@ import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.AssetPipe.AssetPipeTrade
 import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.core.BigDecimalPipe
+import app.cybrid.sdkandroid.core.toBigDecimal
 import app.cybrid.sdkandroid.util.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -309,6 +310,11 @@ class AccountsViewModel : ViewModel() {
 
         val tradeSymbol = transfer.asset
         val asset = listPricesViewModel?.assets?.find { it.code == tradeSymbol }
-        return BigDecimalPipe.transform(BigDecimal(transfer.amount!!), asset!!)
+        val amount = if (transfer.state == TransferBankModel.State.completed) {
+            transfer.amount?.toBigDecimal() ?: BigDecimal.zero()
+        } else {
+            transfer.estimatedAmount?.toBigDecimal() ?: BigDecimal.zero()
+        }
+        return BigDecimalPipe.transform(amount, asset!!)
     }
 }
