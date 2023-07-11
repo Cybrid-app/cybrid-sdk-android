@@ -19,7 +19,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLog
 
 @RunWith(RobolectricTestRunner::class)
-@Config(instrumentedPackages = ["androidx.loader.content"])
+@Config(instrumentedPackages = ["androidx.loader.content"], sdk = [29])
 class AccountsViewUITest {
 
     private lateinit var listPricesViewModel: ListPricesViewModel
