@@ -92,7 +92,3 @@ class BigDecimal(internal val value:JavaBigDecimal) : Comparable<BigDecimal> {
 fun JavaBigDecimal.toBigDecimal(): BigDecimal {
     return BigDecimal(this)
 }
-
-fun JavaBigDecimal.zero(): BigDecimal {
-    return BigDecimal(0)
-}

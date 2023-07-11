@@ -490,4 +490,14 @@ class BigDecimalTest {
         // -- Then
         Assert.assertEquals(value.value.scale(), 0)
     }
+
+    @Test
+    fun test_Companion_zero() {
+
+        // -- Given
+        val zero = BigDecimal.zero()
+
+        // -- Then
+        Assert.assertEquals(zero, BigDecimal(0))
+    }
 }
