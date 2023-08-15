@@ -210,7 +210,7 @@ dependencies {
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
 
     // -- Persona
-    implementation 'com.withpersona.sdk2:inquiry:2.9.1'
+    implementation 'com.withpersona.sdk2:inquiry:2.2.37'
 
     // -- Plaid
     implementation 'com.plaid.link:sdk-core:3.10.1'
