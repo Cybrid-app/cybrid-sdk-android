@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
+
+        <activity
+            android:name=".components.activity.DepositAddressActivity"
+            android:exported="false" />
         <activity
             android:name=".components.activity.TradeActivity"
             android:exported="false">
