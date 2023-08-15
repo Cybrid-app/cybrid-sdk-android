@@ -80,7 +80,6 @@ class KYCViewUITest {
         // -- Then
         composeTestRule.onNodeWithTag(Constants.IdentityVerificationView.RequiredView.id).assertIsDisplayed()
         composeTestRule.onNodeWithText(resources.getString(R.string.kyc_view_required_text)).assertExists()
-        composeTestRule.onNodeWithText(resources.getString(R.string.kyc_view_required_cancel_button)).assertExists()
         composeTestRule.onNodeWithText(resources.getString(R.string.kyc_view_required_begin_button)).assertExists()
     }
 

@@ -2,6 +2,7 @@ package app.cybrid.sdkandroid.util
 
 import android.util.Log
 import app.cybrid.sdkandroid.Cybrid
+import org.json.JSONObject
 import retrofit2.Response
 import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
@@ -31,12 +32,27 @@ suspend fun <T> getResult(call: suspend() -> Response<T>): Resource<T> {
             Logger.log(LoggerEvents.AUTH_EXPIRED, "${response.code()} - ${response.message()}")
             return Resource.error(response.message(), code = response.code())
         } else {
-            return Resource.error(
-                message = response.message(),
-                data = response.body(),
-                code = response.code(),
-                raw = response.raw()
-            )
+
+            val errorBody = response.errorBody()?.string()
+            if (!errorBody.isNullOrEmpty()) {
+                val json = JSONObject(errorBody)
+                val message_code = json.optString("message_code", "Unknown error")
+                val errorStatus = json.optInt("status", response.code())
+
+                return Resource.error(
+                    message = message_code,
+                    data = null,
+                    code = errorStatus,
+                    raw = response.raw()
+                )
+            } else {
+                return Resource.error(
+                    message = response.message(),
+                    data = null,
+                    code = response.code(),
+                    raw = response.raw()
+                )
+            }
         }
     } catch (e: Exception) {
         Log.e(Cybrid.logTag, "ThrowsError: ${e.message}")

@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.components.trade.view
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -165,9 +166,10 @@ class TradeViewModel: ViewModel() {
                                 quotePolling = Polling { viewModelScope.launch { createQuote() } }
                             }
                         } else if (code == 422) {
-
-                            showKYCWarningModal.value = true
-                            modalBeDismissed()
+                            if (it.message == "unverified_customer") {
+                                showKYCWarningModal.value = true
+                                modalBeDismissed()
+                            }
                         }
                     }
                 }
