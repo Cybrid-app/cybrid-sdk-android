@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.components.accounts.compose
 
+import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -24,10 +27,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.AccountsViewStyles
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
+import app.cybrid.sdkandroid.components.activity.DepositAddressActivity
+import app.cybrid.sdkandroid.components.activity.TransferActivity
+import app.cybrid.sdkandroid.core.Constants
 import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.util.getDateInFormat
@@ -43,18 +51,73 @@ fun AccountsView_Trades(
 
     // -- Content
     Column {
+        ConstraintLayout(
+            Modifier.fillMaxSize()
+        ) {
 
-        AccountsView_Trades_BalanceAndHoldings(
-            accountsViewModel = accountsViewModel!!
-        )
-        AccountsView_Trades_List(
-            accountsViewModel = accountsViewModel,
-        )
+            val (holdings, list, button) = createRefs()
+            val context = LocalContext.current
+
+            AccountsView_Trades_BalanceAndHoldings(
+                accountsViewModel = accountsViewModel!!,
+                modifier = Modifier.constrainAs(holdings) {
+                    start.linkTo(parent.start, margin = 0.dp)
+                    top.linkTo(parent.top, margin = 11.dp)
+                    end.linkTo(parent.end, margin = 0.dp)
+                }
+            )
+
+            AccountsView_Trades_List(
+                accountsViewModel = accountsViewModel,
+                modifier = Modifier.constrainAs(list) {
+                    start.linkTo(parent.start, margin = 0.dp)
+                    top.linkTo(holdings.bottom, margin = 25.dp)
+                    end.linkTo(parent.end, margin = 0.dp)
+                    bottom.linkTo(button.top, margin = 12.5.dp)
+                    height = Dimension.fillToConstraints
+                }
+            )
+
+            Button(
+                onClick = {
+                    context.startActivity(Intent(context, DepositAddressActivity::class.java))
+                },
+                modifier = Modifier
+                    .constrainAs(button) {
+                        start.linkTo(parent.start, margin = 10.dp)
+                        end.linkTo(parent.end, margin = 10.dp)
+                        bottom.linkTo(parent.bottom, margin = 15.dp)
+                        width = Dimension.fillToConstraints
+                        height = Dimension.value(48.dp)
+                    }
+                    .testTag(Constants.AccountsViewTestTags.TransferFunds.id),
+                shape = RoundedCornerShape(10.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 4.dp,
+                    disabledElevation = 0.dp
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = colorResource(id = R.color.primary_color),
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = "Get deposit Address",
+                    color = Color.White,
+                    fontFamily = interFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 18.sp,
+                    letterSpacing = (-0.4).sp
+                )
+            }
+        }
     }
 }
 
 @Composable
 fun AccountsView_Trades_BalanceAndHoldings(
+    modifier: Modifier,
     accountsViewModel: AccountsViewModel,
     customStyles: AccountsViewStyles = AccountsViewStyles(),
 ) {
@@ -84,69 +147,73 @@ fun AccountsView_Trades_BalanceAndHoldings(
     )
 
     // -- Content
-    Row(
-        modifier = Modifier
+    Column(
+        modifier = modifier
             .fillMaxWidth()
-            .padding(top = 11.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
     ) {
+        Row(
+            modifier = modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
 
-        Image(
-            painter = imagePainter,
-            contentDescription = "{$cryptoName}",
+            Image(
+                painter = imagePainter,
+                contentDescription = "{$cryptoName}",
+                modifier = Modifier
+                    .padding(horizontal = 0.dp)
+                    .padding(0.dp)
+                    .size(28.dp),
+                contentScale = ContentScale.Fit
+            )
+            Text(
+                text = cryptoName,
+                modifier = Modifier
+                    .padding(start = 10.dp),
+                fontFamily = robotoFont,
+                fontWeight = FontWeight.Bold,
+                fontSize = 17.sp,
+                lineHeight = 28.sp,
+                color = customStyles.itemsTextColor
+            )
+        }
+        Text(
+            text = assetBalance,
             modifier = Modifier
-                .padding(horizontal = 0.dp)
-                .padding(0.dp)
-                .size(28.dp),
-            contentScale = ContentScale.Fit
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal,
+            fontSize = 24.sp,
+            lineHeight = 32.sp,
+            color = Color.Black,
+            textAlign = TextAlign.Center
         )
         Text(
-            text = cryptoName,
+            text = assetBalanceFiat,
             modifier = Modifier
-                .padding(start = 10.dp),
+                .fillMaxWidth()
+                .padding(top = 4.dp),
             fontFamily = robotoFont,
-            fontWeight = FontWeight.Bold,
-            fontSize = 17.sp,
-            lineHeight = 28.sp,
-            color = customStyles.itemsTextColor
+            fontWeight = FontWeight.Normal,
+            fontSize = 15.sp,
+            lineHeight = 24.sp,
+            color = Color.Black,
+            textAlign = TextAlign.Center
         )
     }
-    Text(
-        text = assetBalance,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
-        fontFamily = robotoFont,
-        fontWeight = FontWeight.Normal,
-        fontSize = 24.sp,
-        lineHeight = 32.sp,
-        color = Color.Black,
-        textAlign = TextAlign.Center
-    )
-    Text(
-        text = assetBalanceFiat,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 4.dp),
-        fontFamily = robotoFont,
-        fontWeight = FontWeight.Normal,
-        fontSize = 15.sp,
-        lineHeight = 24.sp,
-        color = Color.Black,
-        textAlign = TextAlign.Center
-    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AccountsView_Trades_List(
     accountsViewModel: AccountsViewModel?,
+    modifier: Modifier,
 ) {
 
     LazyColumn(
-        modifier = Modifier
-            .padding(top = 25.dp, bottom = 20.dp)
+        modifier = modifier
     ) {
         stickyHeader {
             AccountsView_Trades_List_Header(

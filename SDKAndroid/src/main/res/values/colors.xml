@@ -42,4 +42,9 @@
     <color name="transfer_view_accounts_input_title_color">#757575</color>
     <color name="transfer_view_accounts_input_asset_code_color">#757575</color>
 
+    <!-- Deposit Address View -->
+    <color name="deposit_address_view_qr_warning_color">#818181</color>
+    <color name="deposit_address_view_warning_background_color">#33efb90b</color>
+    <color name="deposit_address_view_warning_label_color">#f1b90a</color>
+
 </resources>
