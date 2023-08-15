@@ -17,11 +17,11 @@ group 'app.cybrid'
 version sdk_version
 
 android {
-    compileSdk 34
+    compileSdk 33
 
     defaultConfig {
         minSdk 26
-        targetSdk 34
+        targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -165,7 +165,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
     // -- Cybrid API Bank
-    implementation('app.cybrid:cybrid-api-bank-kotlin:0.76.6') {
+    implementation('app.cybrid:cybrid-api-bank-kotlin:0.84.4') {
         exclude group:'org.apache.oltu.oauth2', module: 'org.apache.oltu.oauth2.common'
     }
 
@@ -188,7 +188,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1'
     implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
     implementation 'androidx.compose.material:material-icons-extended:1.4.3'
-    implementation 'io.coil-kt:coil-compose:2.2.2'
+    implementation 'io.coil-kt:coil-compose:2.4.0'
 
     // -- Compose Testing
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.4.3'
@@ -205,11 +205,12 @@ dependencies {
     implementation 'androidx.fragment:fragment-ktx:1.6.0'
 
     // -- Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
 
     // -- Persona
-    implementation 'com.withpersona.sdk2:inquiry:2.2.37'
+    implementation 'com.withpersona.sdk2:inquiry:2.9.1'
 
     // -- Plaid
     implementation 'com.plaid.link:sdk-core:3.10.1'
@@ -218,7 +219,6 @@ dependencies {
     testImplementation 'androidx.test:runner:1.5.2'
     testImplementation "io.mockk:mockk:1.13.5"
     testImplementation 'org.robolectric:robolectric:4.10.3'
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     testImplementation 'androidx.arch.core:core-testing:2.2.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
