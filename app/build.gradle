@@ -63,10 +63,10 @@ dependencies {
     testImplementation 'androidx.compose.ui:ui-test-junit4:1.3.3'
     debugImplementation 'androidx.compose.ui:ui-test-manifest:1.3.3'
 
-    implementation('app.cybrid:cybrid-api-bank-kotlin:0.73.34') {
+    implementation('app.cybrid:cybrid-api-bank-kotlin:0.84.6') {
         exclude group:'org.apache.oltu.oauth2', module: 'org.apache.oltu.oauth2.common'
     }
-    implementation('app.cybrid:cybrid-api-id-kotlin:0.73.34') {
+    implementation('app.cybrid:cybrid-api-id-kotlin:0.84.6') {
         exclude group:'org.apache.oltu.oauth2', module: 'org.apache.oltu.oauth2.common'
     }
 

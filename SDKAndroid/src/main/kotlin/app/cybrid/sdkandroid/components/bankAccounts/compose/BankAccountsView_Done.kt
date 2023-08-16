@@ -18,7 +18,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -40,22 +43,20 @@ fun BankAccountsView_Done(bankAccountsViewModel: BankAccountsViewModel?) {
             .testTag(Constants.BankAccountsView.DoneView.id)
     ) {
 
-        val (text, buttons) = createRefs()
+        val (text, continueButton) = createRefs()
 
         Row(
             modifier = Modifier.constrainAs(text) {
                 start.linkTo(parent.start, margin = 0.dp)
-                top.linkTo(parent.top, margin = 0.dp)
                 end.linkTo(parent.end, margin = 0.dp)
-                bottom.linkTo(parent.bottom, margin = 0.dp)
-            },
-            verticalAlignment = Alignment.CenterVertically
+                centerVerticallyTo(parent)
+            }
         ) {
             Image(
                 painter = painterResource(id = R.drawable.kyc_verified),
                 contentDescription = "",
                 modifier = Modifier
-                    .padding(top = 5.dp)
+                    .padding(top = 0.dp)
                     .padding(0.dp)
                     .size(26.dp),
                 contentScale = ContentScale.Fit
@@ -64,61 +65,47 @@ fun BankAccountsView_Done(bankAccountsViewModel: BankAccountsViewModel?) {
                 text = stringResource(id = R.string.bank_accounts_view_done_text),
                 modifier = Modifier
                     .padding(start = 10.dp),
-                fontFamily = robotoFont,
-                fontWeight = FontWeight.Medium,
-                fontSize = 19.sp,
-                lineHeight = 32.sp,
-                color = colorResource(id = R.color.black)
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = 18.sp,
+                    lineHeight = 24.sp,
+                    fontFamily = FontFamily(Font(R.font.inter_regular)),
+                    fontWeight = FontWeight(700),
+                    color = colorResource(id = R.color.black)
+                )
             )
         }
-        // -- Buttons
-        ConstraintLayout(
-            Modifier.constrainAs(buttons) {
-                start.linkTo(parent.start, margin = 10.dp)
-                end.linkTo(parent.end, margin = 10.dp)
-                bottom.linkTo(parent.bottom, margin = 20.dp)
-                width = Dimension.fillToConstraints
-                height = Dimension.value(50.dp)
-            }
-        ) {
-
-            val (doneButton) = createRefs()
-
-            // -- Continue Button
-            Button(
-                onClick = {
-                    bankAccountsViewModel?.viewModelScope?.launch {
-                        bankAccountsViewModel.fetchExternalBankAccounts()
-                    }
+        // -- Continue Button
+        Button(
+            onClick = {
+                bankAccountsViewModel?.viewModelScope?.launch {
+                    bankAccountsViewModel.fetchExternalBankAccounts()
+                }
+            },
+            modifier = Modifier
+                .constrainAs(continueButton) {
+                    start.linkTo(parent.start, margin = 5.dp)
+                    end.linkTo(parent.end, margin = 5.dp)
+                    bottom.linkTo(parent.bottom, margin = 7.dp)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.value(48.dp)
                 },
-                modifier = Modifier
-                    .constrainAs(doneButton) {
-                        start.linkTo(parent.start, margin = 10.dp)
-                        end.linkTo(parent.end, margin = 10.dp)
-                        top.linkTo(parent.top, margin = 0.dp)
-                        bottom.linkTo(parent.bottom, margin = 0.dp)
-                        width = Dimension.fillToConstraints
-                        height = Dimension.fillToConstraints
-                    },
-                shape = RoundedCornerShape(10.dp),
-                elevation = ButtonDefaults.elevation(
-                    defaultElevation = 4.dp,
-                    pressedElevation = 4.dp,
-                    disabledElevation = 0.dp
-                ),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = colorResource(id = R.color.primary_color),
-                    contentColor = Color.White
-                )
-            ) {
-                Text(
-                    text = stringResource(id = R.string.bank_accounts_view_done_button),
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = colorResource(id = R.color.primary_color),
+                contentColor = Color.White
+            )
+        ) {
+            Text(
+                text = stringResource(id = R.string.bank_accounts_view_done_button),
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = 17.sp,
+                    lineHeight = 22.sp,
+                    fontFamily = FontFamily(Font(R.font.inter_regular)),
+                    fontWeight = FontWeight(400),
                     color = Color.White,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center,
                 )
-            }
+            )
         }
     }
 }

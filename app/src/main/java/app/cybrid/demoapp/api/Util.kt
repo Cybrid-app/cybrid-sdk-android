@@ -1,6 +1,7 @@
 package app.cybrid.demoapp.api
 
 import app.cybrid.cybrid_api_bank.client.auth.HttpBearerAuth
+import app.cybrid.cybrid_api_bank.client.infrastructure.Serializer
 import app.cybrid.demoapp.core.App
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -37,7 +38,7 @@ class Util {
                 .addInterceptor(HttpBearerAuth("Bearer", bearer))
             return Retrofit.Builder()
                 .baseUrl(App.baseBankApiUrl)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(Serializer.gsonBuilder.create()))
                 .callFactory(okHttpClientBuilder.build())
                 .build()
         }

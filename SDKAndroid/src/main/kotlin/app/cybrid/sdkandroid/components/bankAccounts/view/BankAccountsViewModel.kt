@@ -66,6 +66,7 @@ class BankAccountsViewModel: ViewModel() {
 
     suspend fun fetchExternalBankAccounts() {
 
+        val customer = Cybrid.customer
         uiState.value = BankAccountsViewState.LOADING
         buttonAddAccountsState.value = BankAccountsView.AddAccountButtonState.LOADING
 
@@ -222,56 +223,6 @@ class BankAccountsViewModel: ViewModel() {
         }
     }
 
-    suspend fun getCustomer(): CustomerBankModel? {
-
-        var customer: CustomerBankModel? = null
-        if (!Cybrid.invalidToken) {
-            this.viewModelScope.let { scope ->
-                val waitFor = scope.async {
-                    val customerResult = getResult {
-                        customerService.getCustomer(customerGuid = customerGuid)
-                    }
-                    customerResult.let {
-                        if (isSuccessful(it.code ?: 500)) {
-                            Logger.log(LoggerEvents.DATA_FETCHED, "Fetch - Customer")
-                            customer = it.data
-                            return@async customer
-                        } else {
-                            Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Customer")
-                        }
-                    }
-                }
-                waitFor.await()
-            }
-        }
-        return customer
-    }
-
-    suspend fun getBank(guid: String): BankBankModel? {
-
-        var bank: BankBankModel? = null
-        if (!Cybrid.invalidToken) {
-            this.viewModelScope.let { scope ->
-                val waitFor = scope.async {
-                    val bankResult = getResult {
-                        bankService.getBank(bankGuid = guid)
-                    }
-                    bankResult.let {
-                        if (isSuccessful(it.code ?: 500)) {
-                            Logger.log(LoggerEvents.DATA_FETCHED, "Fetch - Bank")
-                            bank = it.data
-                            return@async bank
-                        } else {
-                            Logger.log(LoggerEvents.NETWORK_ERROR, "Fetch - Bank")
-                        }
-                    }
-                }
-                waitFor.await()
-            }
-        }
-        return bank
-    }
-
     suspend fun assetIsSupported(asset: String?): Boolean {
 
         if (asset == null) {
@@ -283,10 +234,10 @@ class BankAccountsViewModel: ViewModel() {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 
-                    val customer = getCustomer()
+                    val customer = Cybrid.customer
                     if (customer != null) {
                         if (customer.bankGuid != null) {
-                            val bank = getBank(customer.bankGuid!!)
+                            val bank = Cybrid.bank
                             if (bank != null) {
                                 if (bank.supportedFiatAccountAssets != null) {
                                     if (bank.supportedFiatAccountAssets!!.contains(asset)) {
@@ -490,5 +441,9 @@ class BankAccountsViewModel: ViewModel() {
                 waitFor.await()
             }
         }
+    }
+
+    fun showAuthScreen() {
+        this.uiState.value = BankAccountsView.State.AUTH
     }
 }

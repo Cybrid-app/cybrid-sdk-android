@@ -83,6 +83,10 @@
     <string name="bank_accounts_view_done_button">Continuar</string>
     <string name="bank_accounts_view_error_text">Ha ocurrido un error, vuelve a intentarlo.</string>
     <string name="bank_accounts_view_error_button">Listo</string>
+    <string name="bank_accounts_view_auth_title">Autorización de cuenta bancaria</string>
+    <string name="bank_accounts_view_auth_warning">Para continuar conectando una cuenta bancaria, debe aceptar la siguiente autorización de cuenta.</string>
+    <string name="bank_accounts_view_auth_message">Por la presente, autorizo a Cybrid Inc. (la "Plataforma") a iniciar débitos electrónicos únicos en cualquier cuenta que haya conectado a la Plataforma, cuando se lo indique a través de la Plataforma.\n\nEntiendo que mi autorización permanecerá vigente hasta que elimine mi cuenta autorizada de la Plataforma.\n\nPara continuar, haga clic en el botón de autorización para proceder.</string>
+    <string name="bank_accounts_view_auth_continue_button">Autorizar</string>
     <string name="bank_accounts_modal_loading_title">Cargando</string>
     <string name="bank_accounts_modal_content_title">Detalle de la Cuenta</string>
     <string name="bank_accounts_modal_content_account_name">Nombre de la cuenta</string>

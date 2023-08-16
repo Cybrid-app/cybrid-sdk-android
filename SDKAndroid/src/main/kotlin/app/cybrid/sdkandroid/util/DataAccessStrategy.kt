@@ -36,11 +36,11 @@ suspend fun <T> getResult(call: suspend() -> Response<T>): Resource<T> {
             val errorBody = response.errorBody()?.string()
             if (!errorBody.isNullOrEmpty()) {
                 val json = JSONObject(errorBody)
-                val message_code = json.optString("message_code", "Unknown error")
+                val messageCode = json.optString("message_code", "Unknown error")
                 val errorStatus = json.optInt("status", response.code())
 
                 return Resource.error(
-                    message = message_code,
+                    message = messageCode,
                     data = null,
                     code = errorStatus,
                     raw = response.raw()
