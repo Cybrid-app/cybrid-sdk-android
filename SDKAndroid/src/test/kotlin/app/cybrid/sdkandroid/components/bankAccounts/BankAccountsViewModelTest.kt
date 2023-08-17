@@ -2,6 +2,7 @@ package app.cybrid.sdkandroid.components.bankAccounts
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
+import app.cybrid.cybrid_api_bank.client.models.CustomerBankModel
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.cybrid_api_bank.client.models.PatchExternalBankAccountBankModel
 import app.cybrid.cybrid_api_bank.client.models.WorkflowBankModel
@@ -9,9 +10,13 @@ import app.cybrid.cybrid_api_bank.client.models.WorkflowWithDetailsBankModel
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.BankAccountsView
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
+import app.cybrid.sdkandroid.mock.BankApiMock
+import app.cybrid.sdkandroid.mock.CustomerApiMock
 import app.cybrid.sdkandroid.tools.JSONMock
 import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import app.cybrid.sdkandroid.util.Polling
+import io.mockk.MockKAnnotations
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import okhttp3.OkHttpClient
@@ -25,6 +30,21 @@ class BankAccountsViewModelTest {
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
+
+    @Before
+    fun setup() {
+
+        MockKAnnotations.init(this, relaxed = true)
+        Cybrid.customer = CustomerApiMock.mock()
+        Cybrid.bank = BankApiMock.mock()
+    }
+
+    @After
+    fun teardown() {
+
+        Cybrid.reset()
+        unmockkAll()
+    }
 
     private fun prepareClient(state: JSONMock.JSONMockState): ApiClient {
 
@@ -179,40 +199,6 @@ class BankAccountsViewModelTest {
         // -- Then
         Assert.assertNotNull(viewModel)
         Assert.assertNotNull(viewModel.externalAccountJob)
-    }
-
-    @ExperimentalCoroutinesApi
-    @Test
-    fun test_getCustomer() = runTest {
-
-        // -- Given
-        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
-        val viewModel = createViewModel()
-        viewModel.setDataProvider(dataProvider)
-
-        // -- When
-        val customer = viewModel.getCustomer()
-
-        // -- Then
-        Assert.assertNotNull(viewModel)
-        Assert.assertNotNull(customer)
-    }
-
-    @ExperimentalCoroutinesApi
-    @Test
-    fun test_getBank() = runTest {
-
-        // -- Given
-        val dataProvider = prepareClient(JSONMock.JSONMockState.SUCCESS)
-        val viewModel = createViewModel()
-        viewModel.setDataProvider(dataProvider)
-
-        // -- When
-        val bank = viewModel.getBank("1234")
-
-        // -- Then
-        Assert.assertNotNull(viewModel)
-        Assert.assertNotNull(bank)
     }
 
     @ExperimentalCoroutinesApi

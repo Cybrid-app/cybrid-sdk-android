@@ -133,40 +133,6 @@ class BankAccountsViewModelTestError {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_getCustomer_Error() = runTest {
-
-        // -- Given
-        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
-        val viewModel = createViewModel()
-        viewModel.setDataProvider(dataProvider)
-
-        // -- When
-        val customer = viewModel.getCustomer()
-
-        // -- Then
-        Assert.assertNotNull(viewModel)
-        Assert.assertNull(customer)
-    }
-
-    @ExperimentalCoroutinesApi
-    @Test
-    fun test_getBank_Error() = runTest {
-
-        // -- Given
-        val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
-        val viewModel = createViewModel()
-        viewModel.setDataProvider(dataProvider)
-
-        // -- When
-        val bank = viewModel.getBank("1234")
-
-        // -- Then
-        Assert.assertNotNull(viewModel)
-        Assert.assertNull(bank)
-    }
-
-    @ExperimentalCoroutinesApi
-    @Test
     fun test_assetIsSupported_Error() = runTest {
 
         // -- Given

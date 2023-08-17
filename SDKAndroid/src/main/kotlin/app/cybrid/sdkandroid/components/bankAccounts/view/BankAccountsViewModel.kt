@@ -236,24 +236,22 @@ class BankAccountsViewModel: ViewModel() {
 
                     val customer = Cybrid.customer
                     if (customer != null) {
-                        if (customer.bankGuid != null) {
-                            val bank = Cybrid.bank
-                            if (bank != null) {
-                                if (bank.supportedFiatAccountAssets != null) {
-                                    if (bank.supportedFiatAccountAssets!!.contains(asset)) {
-                                        allowed = true
-                                    } else {
-                                        Logger.log(LoggerEvents.ERROR, "Asset is not supported")
-                                    }
+                        val bank = Cybrid.bank
+                        if (bank != null) {
+                            if (bank.supportedFiatAccountAssets != null) {
+                                if (bank.supportedFiatAccountAssets!!.contains(asset)) {
+                                    allowed = true
                                 } else {
-                                    Logger.log(LoggerEvents.ERROR, "Bank don't have fiat assets")
+                                    Logger.log(LoggerEvents.ERROR, "Asset is not supported")
                                 }
                             } else {
-                                Logger.log(LoggerEvents.ERROR, "Bank has a problem")
+                                Logger.log(LoggerEvents.ERROR, "Bank don't have fiat assets")
                             }
+                        } else {
+                            Logger.log(LoggerEvents.ERROR, "You need to set a bank in SDKConfig")
                         }
                     } else {
-                        Logger.log(LoggerEvents.ERROR, "Customer has a problem")
+                        Logger.log(LoggerEvents.ERROR, "You need to set a customer in SDKConfig")
                     }
                 }
                 waitFor.await()
