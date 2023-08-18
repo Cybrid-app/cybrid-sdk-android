@@ -22,8 +22,12 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,28 +49,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun BankAccountsView_Content(bankAccountsViewModel: BankAccountsViewModel?) {
 
-    // -- Activity Result for Plaid
-    val getPlaidResult = rememberLauncherForActivityResult(OpenPlaidLink()) {
-        when (it) {
-            is LinkSuccess -> {
-
-                if (it.metadata.accounts.size == 1) {
-
-                    bankAccountsViewModel?.uiState?.value = BankAccountsView.State.LOADING
-                    bankAccountsViewModel?.viewModelScope?.launch {
-                        bankAccountsViewModel.createExternalBankAccount(
-                            publicToken = it.publicToken,
-                            account = it.metadata.accounts[0])
-                    }
-                } else {
-                    // -- Log multiple accounts or empty accounts
-                    bankAccountsViewModel?.uiState?.value = BankAccountsView.State.ERROR
-                }
-            }
-            is LinkExit -> {}
-        }
-    }
-
     // -- Content
     ConstraintLayout(
         modifier = Modifier
@@ -82,30 +64,33 @@ fun BankAccountsView_Content(bankAccountsViewModel: BankAccountsViewModel?) {
             modifier = Modifier
                 .constrainAs(title) {
                     start.linkTo(parent.start, margin = 0.dp)
-                    top.linkTo(parent.top, margin = 20.dp)
+                    top.linkTo(parent.top, margin = 50.dp)
                     end.linkTo(parent.end, margin = 0.dp)
                 },
-            color = Color.Black,
-            fontFamily = robotoFont,
-            fontWeight = FontWeight.Normal,
-            fontSize = 24.sp,
-            letterSpacing = (-0.4).sp
+            style = TextStyle(
+                fontSize = 23.sp,
+                lineHeight = 32.sp,
+                fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                fontWeight = FontWeight(400),
+                color = Color.Black,
+                textAlign = TextAlign.Center
+            )
         )
 
         // -- List Container
         Box(
             modifier = Modifier
                 .constrainAs(listContainer) {
-                    start.linkTo(parent.start, margin = 10.dp)
+                    start.linkTo(parent.start, margin = 15.dp)
                     top.linkTo(title.bottom, margin = 40.dp)
-                    end.linkTo(parent.end, margin = 10.dp)
+                    end.linkTo(parent.end, margin = 15.dp)
                     bottom.linkTo(addExternalAccountButton.top, margin = 10.dp)
                     height = Dimension.fillToConstraints
                 }
         ) {
 
-            if (bankAccountsViewModel?.accounts != null ||
-                bankAccountsViewModel?.accounts?.isNotEmpty() == true) {
+            if (bankAccountsViewModel?.accounts != null &&
+                bankAccountsViewModel.accounts?.isNotEmpty() == true) {
 
                 BankAccountsView_Content_List(
                     bankAccountsViewModel = bankAccountsViewModel
@@ -134,22 +119,14 @@ fun BankAccountsView_Content(bankAccountsViewModel: BankAccountsViewModel?) {
         // -- Add External Bank Account Button
         Button(
             onClick = {
-
-                if (bankAccountsViewModel?.buttonAddAccountsState?.value ==
-                    BankAccountsView.AddAccountButtonState.READY) {
-
-                    BankAccountsView.openPlaid(
-                        plaidToken = bankAccountsViewModel.latestWorkflow?.plaidLinkToken!!,
-                        getPlaidResult = getPlaidResult)
-                }
-
+                bankAccountsViewModel?.showAuthScreen()
             },
             modifier = Modifier
                 .constrainAs(addExternalAccountButton) {
                     start.linkTo(parent.start, margin = 10.dp)
                     end.linkTo(parent.end, margin = 10.dp)
                     top.linkTo(listContainer.bottom, margin = 0.dp)
-                    bottom.linkTo(parent.bottom, margin = 0.dp)
+                    bottom.linkTo(parent.bottom, margin = 10.dp)
                     width = Dimension.fillToConstraints
                     height = Dimension.value(48.dp)
                 },
@@ -205,6 +182,7 @@ fun BankAccountsView_Content_List(
         modifier = Modifier
             .background(Color.Transparent)
             .testTag(Constants.AccountsViewTestTags.List.id)
+            .padding(start = 18.5.dp, end = 18.5.dp)
             .fillMaxSize()
     ) {
         LazyColumn(
@@ -292,7 +270,7 @@ fun BankAccountsView_Content_List_Item(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 3.dp)
-                    .height((0.70).dp)
+                    .height((0.55).dp)
                     .background(colorResource(id = R.color.modal_divider))
             ) {}
         }

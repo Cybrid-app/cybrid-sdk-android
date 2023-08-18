@@ -491,4 +491,8 @@ class BankAccountsViewModel: ViewModel() {
             }
         }
     }
+
+    fun showAuthScreen() {
+        this.uiState.value = BankAccountsView.State.AUTH
+    }
 }

@@ -33,7 +33,6 @@
     <color name="accounts_view_list_item_chip_failed">#D45736</color>
 
     <color name="accent_blue">#007AFF</color>
-
     <color name="select_background">#CCEDEDED</color>
 
     <!-- Transfer View -->
@@ -41,5 +40,8 @@
     <color name="transfer_view_accounts_select_title_color">#757575</color>
     <color name="transfer_view_accounts_input_title_color">#757575</color>
     <color name="transfer_view_accounts_input_asset_code_color">#757575</color>
+
+    <!-- Bank Accounts -->
+    <color name="bank_accounts_view_auth_warning_container">#FBE493</color>
 
 </resources>
