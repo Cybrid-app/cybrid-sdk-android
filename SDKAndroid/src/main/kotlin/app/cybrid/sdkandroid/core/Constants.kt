@@ -32,7 +32,8 @@ class Constants {
         LoadingViewIndicator("BankAccountsView_LoadingView_Indicator"),
         RequiredView("BankAccountsView_RequiredView"),
         DoneView("BankAccountsView_DoneView"),
-        ErrorView("BankAccountsView_ErrorView")
+        ErrorView("BankAccountsView_ErrorView"),
+        AuthView("BankAccountsView_AuthView")
     }
 
     enum class TransferView(val id: String) {

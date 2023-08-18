@@ -84,6 +84,10 @@
     <string name="bank_accounts_view_done_button">Continue</string>
     <string name="bank_accounts_view_error_text">An error has occurred, try again.</string>
     <string name="bank_accounts_view_error_button">Done</string>
+    <string name="bank_accounts_view_auth_title">Bank Account Authorization</string>
+    <string name="bank_accounts_view_auth_warning">To continue connecting a bank account, you must agree to the following account authorization.</string>
+    <string name="bank_accounts_view_auth_message">I hereby authorize Cybrid Inc. (the “Platform”) to initiate single electronic debits, to any accounts I have connected to the Platform, when I instruct to do so through the Platform.\n\nI understand that my authorization will remain in effect until I remove my authorized account from the Platform.\n\nTo continue, please click the authorize button to proceed.</string>
+    <string name="bank_accounts_view_auth_continue_button">Authorize</string>
     <string name="bank_accounts_modal_loading_title">Loading</string>
     <string name="bank_accounts_modal_content_title">Account Details</string>
     <string name="bank_accounts_modal_content_account_name">Account Name</string>

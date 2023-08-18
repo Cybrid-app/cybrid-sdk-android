@@ -83,6 +83,10 @@
     <string name="bank_accounts_view_done_button">Continuer</string>
     <string name="bank_accounts_view_error_text">Une erreur s\'est produite, réessayez.</string>
     <string name="bank_accounts_view_error_button">Fait</string>
+    <string name="bank_accounts_view_auth_title">Autorisation de compte bancaire</string>
+    <string name="bank_accounts_view_auth_warning">Pour continuer à connecter un compte bancaire, vous devez accepter l\'autorisation de compte suivante.</string>
+    <string name="bank_accounts_view_auth_message">I hereby authorize Cybrid Inc. (the “Platform”) to initiate single electronic debits, to any accounts I have connected to the Platform, when I instruct to do so through the Platform.\n\nI understand that my authorization will remain in effect until I remove my authorized account from the Platform.\n\nTo continue, please click the authorize button to proceed.</string>
+    <string name="bank_accounts_view_auth_continue_button">Autoriser</string>
     <string name="bank_accounts_modal_loading_title">Chargement</string>
     <string name="bank_accounts_modal_content_title">Détails du compte</string>
     <string name="bank_accounts_modal_content_account_name">Nom du compte</string>

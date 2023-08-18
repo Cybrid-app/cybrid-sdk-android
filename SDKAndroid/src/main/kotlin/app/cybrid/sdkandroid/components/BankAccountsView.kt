@@ -25,7 +25,7 @@ class BankAccountsView @JvmOverloads constructor(
     defStyle: Int = 0):
 Component(context, attrs, defStyle) {
 
-    enum class State { LOADING, CONTENT, DONE, ERROR }
+    enum class State { LOADING, CONTENT, DONE, ERROR, AUTH }
     enum class AddAccountButtonState { LOADING, READY }
     enum class ModalState { CONTENT, CONFIRM, LOADING }
 
@@ -103,6 +103,10 @@ fun BankAccountsView(
 
             BankAccountsView.State.ERROR -> {
                 BankAccountsView_Error()
+            }
+
+            BankAccountsView.State.AUTH -> {
+                BankAccountsView_Auth(viewModel)
             }
         }
 
