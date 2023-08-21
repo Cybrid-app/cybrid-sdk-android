@@ -330,8 +330,7 @@ fun AccountsView_Transfers_List_Item_Chip(
     var textColor = Color.White
 
     if (state == TransferBankModel.State.pending ||
-        state == TransferBankModel.State.storing ||
-        state == TransferBankModel.State.initiating) {
+        state == TransferBankModel.State.storing) {
 
         backgroundColor = colorResource(id = R.color.accounts_view_list_item_chip_pending)
         textColor = Color.Black
@@ -340,8 +339,7 @@ fun AccountsView_Transfers_List_Item_Chip(
 
     if (state == TransferBankModel.State.pending ||
         state == TransferBankModel.State.storing ||
-        state == TransferBankModel.State.failed ||
-        state == TransferBankModel.State.initiating) {
+        state == TransferBankModel.State.failed) {
 
         Text(
             text = text,
