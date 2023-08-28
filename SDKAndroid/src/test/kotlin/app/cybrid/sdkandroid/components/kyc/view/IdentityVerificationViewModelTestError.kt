@@ -3,25 +3,23 @@ package app.cybrid.sdkandroid.components.kyc.view
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.compose.runtime.mutableStateOf
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
+import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.KYCView
 import app.cybrid.sdkandroid.tools.JSONMock
-import kotlinx.coroutines.Dispatchers
+import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import okhttp3.OkHttpClient
 import org.junit.*
 
 class IdentityVerificationViewModelTestError {
 
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
-
-    @ExperimentalCoroutinesApi
-    private val dispatcher = TestCoroutineDispatcher()
 
     private fun prepareClient(state: JSONMock.JSONMockState): ApiClient {
 
@@ -33,26 +31,15 @@ class IdentityVerificationViewModelTestError {
 
     private fun createViewModel(): IdentityVerificationViewModel {
 
+        Cybrid.invalidToken = false
         val viewModel = IdentityVerificationViewModel()
         viewModel.uiState = mutableStateOf(KYCView.KYCViewState.LOADING)
         return viewModel
     }
 
     @ExperimentalCoroutinesApi
-    @Before
-    fun setup() {
-        Dispatchers.setMain(dispatcher)
-    }
-
-    @ExperimentalCoroutinesApi
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
-
-    @ExperimentalCoroutinesApi
     @Test
-    fun test_createCustomerTest_Error() = runBlocking {
+    fun test_createCustomerTest_Error() = runTest {
 
         // -- Given
         val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
@@ -87,7 +74,7 @@ class IdentityVerificationViewModelTestError {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_getIdentityVerificationStatus_Error() = runBlocking {
+    fun test_getIdentityVerificationStatus_Error() = runTest {
 
         // -- Given
         val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
@@ -104,7 +91,7 @@ class IdentityVerificationViewModelTestError {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_getLastIdentityVerification_Error() = runBlocking {
+    fun test_getLastIdentityVerification_Error() = runTest {
 
         // -- Given
         val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)
@@ -121,7 +108,7 @@ class IdentityVerificationViewModelTestError {
 
     @ExperimentalCoroutinesApi
     @Test
-    fun test_createIdentityVerification_Error() = runBlocking {
+    fun test_createIdentityVerification_Error() = runTest {
 
         // -- Given
         val dataProvider = prepareClient(JSONMock.JSONMockState.ERROR)

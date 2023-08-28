@@ -2,7 +2,6 @@ package app.cybrid.sdkandroid.tools
 
 import app.cybrid.sdkandroid.BuildConfig
 import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 
 class ErrorMockInterceptor(code: Int) : Interceptor {
 

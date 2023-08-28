@@ -10,9 +10,9 @@ import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 
 @ExperimentalCoroutinesApi
-class MainDispatcherRule(val dispatcher: TestDispatcher = StandardTestDispatcher()): TestWatcher() {
+class MainDispatcherRule(private val dispatcher: TestDispatcher = StandardTestDispatcher()): TestWatcher() {
 
-    override fun starting(description: Description?) = Dispatchers.setMain(dispatcher)
+    override fun starting(description: Description) = Dispatchers.setMain(dispatcher)
 
-    override fun finished(description: Description?) = Dispatchers.resetMain()
+    override fun finished(description: Description) = Dispatchers.resetMain()
 }

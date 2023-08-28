@@ -4,7 +4,6 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cybrid.cybrid_api_bank.client.infrastructure.ApiClient
 import app.cybrid.cybrid_api_bank.client.models.ExternalBankAccountBankModel
 import app.cybrid.cybrid_api_bank.client.models.PatchExternalBankAccountBankModel
-import app.cybrid.cybrid_api_bank.client.models.WorkflowBankModel
 import app.cybrid.cybrid_api_bank.client.models.WorkflowWithDetailsBankModel
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.BankAccountsView

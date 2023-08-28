@@ -4,8 +4,6 @@ import android.util.Log
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.core.SDKConfig
 import app.cybrid.sdkandroid.listener.CybridSDKEvents
-import io.mockk.MockKAnnotations
-import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After

@@ -7,7 +7,6 @@ import app.cybrid.sdkandroid.components.TradeView
 import app.cybrid.sdkandroid.components.listprices.view.ListPricesViewModel
 import app.cybrid.sdkandroid.tools.JSONMock
 import app.cybrid.sdkandroid.tools.MainDispatcherRule
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*
 import okhttp3.OkHttpClient

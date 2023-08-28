@@ -3,7 +3,6 @@ package app.cybrid.sdkandroid.tools
 import app.cybrid.sdkandroid.BuildConfig
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody.Companion.toResponseBody
 
 class MockInterceptor(code: Int) : Interceptor {
