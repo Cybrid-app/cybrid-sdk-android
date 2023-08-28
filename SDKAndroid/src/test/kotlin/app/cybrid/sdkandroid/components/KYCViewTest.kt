@@ -8,10 +8,8 @@ import app.cybrid.sdkandroid.components.kyc.view.IdentityVerificationViewModel
 import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.*
 import org.junit.*
 
 @ExperimentalCoroutinesApi

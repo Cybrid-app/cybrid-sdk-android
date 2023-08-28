@@ -8,13 +8,8 @@ import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
 import app.cybrid.sdkandroid.tools.MainDispatcherRule
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.setMain
 import org.junit.*
 
 class BankAccountsViewTest {

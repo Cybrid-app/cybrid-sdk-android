@@ -82,7 +82,7 @@ class DataAccessStrategyTest {
 
         var onTokenExpiredCalled = false
         val expectedCode = HttpURLConnection.HTTP_UNAUTHORIZED
-        val cybrid = prepareSDK(
+        prepareSDK(
             bearer = TestConstants.expiredToken,
             listener = object : CybridSDKEvents {
 
@@ -121,7 +121,7 @@ class DataAccessStrategyTest {
 
         val expectedCode = HttpURLConnection.HTTP_UNAUTHORIZED
         Cybrid.setBearer(TestConstants.expiredToken)
-        val cybrid = prepareSDK(
+        prepareSDK(
             bearer = TestConstants.expiredToken,
             listener = null
         )
