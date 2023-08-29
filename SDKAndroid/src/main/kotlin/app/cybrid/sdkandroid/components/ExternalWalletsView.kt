@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.viewModelScope
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.wallets.compose.ExternalWalletsView_Loading
+import app.cybrid.sdkandroid.components.wallets.compose.ExternalWalletsView_Wallets
 import app.cybrid.sdkandroid.components.wallets.view.ExternalWalletViewModel
 import app.cybrid.sdkandroid.core.Constants
 import kotlinx.coroutines.launch
@@ -70,6 +71,11 @@ fun ExternalWalletsView(
             ExternalWalletsView.State.LOADING -> {
                 ExternalWalletsView_Loading()
             }
+
+            ExternalWalletsView.State.WALLETS -> {
+                ExternalWalletsView_Wallets()
+            }
+
             else -> {}
         }
     }

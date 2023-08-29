@@ -23,7 +23,7 @@ object AssetsApiMock: Mocker {
         return mockAssetsApi
     }
 
-    fun getAssetsListBankModelMock(): Response<AssetListBankModel> {
+    private fun getAssetsListBankModelMock(): Response<AssetListBankModel> {
         return Response.success(
             AssetListBankModel(
                 total = BigDecimal(4),

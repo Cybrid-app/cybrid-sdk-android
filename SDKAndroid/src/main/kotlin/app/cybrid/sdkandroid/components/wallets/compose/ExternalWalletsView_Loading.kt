@@ -22,7 +22,8 @@ fun ExternalWalletsView_Loading() {
             Modifier.constrainAs(loader) {
                 centerHorizontallyTo(parent)
                 centerVerticallyTo(parent)
-            }
+            },
+            message = "Loading your wallets"
         )
     }
 }
