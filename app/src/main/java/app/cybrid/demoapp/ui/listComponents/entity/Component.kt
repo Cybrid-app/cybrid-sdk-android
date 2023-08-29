@@ -36,6 +36,10 @@ class Component() {
             val bankAccountsComponent = Component(5, "Bank Accounts Component")
             components.add(bankAccountsComponent)
 
+            // -- Bank Accounts Component
+            val externalWalletComponent = Component(6, "External Wallets Component")
+            components.add(externalWalletComponent)
+
             // --
             return components
         }
