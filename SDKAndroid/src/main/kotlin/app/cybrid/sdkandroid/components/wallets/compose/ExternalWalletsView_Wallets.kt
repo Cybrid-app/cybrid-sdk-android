@@ -19,14 +19,5 @@ fun ExternalWalletsView_Wallets() {
 
         // -- Vars
         val (title) = createRefs()
-
-        // -- Content
-        // -- Title
-            /*.constrainAs(depositTitle) {
-                top.linkTo(parent.top, margin = 10.dp)
-                start.linkTo(parent.start, margin = 0.dp)
-                end.linkTo(parent.end, margin = 0.dp)
-                width = Dimension.fillToConstraints
-            }*/
     }
 }

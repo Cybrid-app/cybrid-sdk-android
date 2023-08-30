@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Cybrid Android Demo App</string>
 
     <string name="login_client_id">Client ID</string>
@@ -23,5 +22,4 @@
 
     <string name="activity_list_prices_assets_component_title">Crypto List Component</string>
     <string name="activity_list_prices_assets_component_sub_title">Crypto List Component - Custom Styles</string>
-
 </resources>

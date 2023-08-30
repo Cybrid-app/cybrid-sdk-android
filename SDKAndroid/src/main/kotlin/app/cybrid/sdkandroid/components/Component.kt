@@ -4,10 +4,8 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
-import android.util.Size
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CircularProgressIndicator
@@ -19,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -28,12 +25,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.core.Constants
-import app.cybrid.sdkandroid.ui.Theme.robotoFont
-import org.w3c.dom.Text
 
 open class Component @JvmOverloads constructor(
     context: Context,
@@ -103,7 +97,7 @@ open class Component @JvmOverloads constructor(
                   letterSpacing: TextUnit = 1.sp,
                   align: TextAlign = TextAlign.Left) {
             Text(
-                modifier = Modifier,
+                modifier = modifier,
                 text = message,
                 style = TextStyle(
                     fontSize = fontSize,

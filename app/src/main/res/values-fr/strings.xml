@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Cybrid Android Demo App</string>
 
     <string name="login_client_id">Client ID</string>
@@ -14,14 +13,13 @@
     <string name="auth_toast_error">Are you sure you configure your id and client?</string>
 
     <string name="activity_list_components_title">List of Components</string>
-    <string name="activity_list_components_trade_component">Trade Component</string>
-    <string name="activity_list_components_transfer_component">Transfer Component</string>
-    <string name="activity_list_components_accounts_component">Accounts Component</string>
-    <string name="activity_list_components_kyc_component">KYC Component</string>
-    <string name="activity_list_components_bank_accounts_component">Bank Accounts Component</string>
-    <string name="activity_list_components_external_wallets_component">External Wallets Component</string>
+    <string name="activity_list_components_trade_component">Composante commerciale</string>
+    <string name="activity_list_components_transfer_component">Composant de transfert</string>
+    <string name="activity_list_components_accounts_component">Composant Comptes</string>
+    <string name="activity_list_components_kyc_component">Composant KYC</string>
+    <string name="activity_list_components_bank_accounts_component">Composante comptes bancaires</string>
+    <string name="activity_list_components_external_wallets_component">Composant de portefeuilles externes</string>
 
     <string name="activity_list_prices_assets_component_title">Crypto List Component</string>
     <string name="activity_list_prices_assets_component_sub_title">Crypto List Component - Custom Styles</string>
-
 </resources>

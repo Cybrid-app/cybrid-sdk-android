@@ -4,7 +4,6 @@ import app.cybrid.cybrid_api_bank.client.apis.ExternalWalletsApi
 import app.cybrid.cybrid_api_bank.client.models.ExternalWalletBankModel
 import app.cybrid.cybrid_api_bank.client.models.ExternalWalletListBankModel
 import app.cybrid.sdkandroid.AppModule
-import app.cybrid.sdkandroid.components.wallets.view.ExternalWalletViewModel
 import java.math.BigDecimal as JavaBigDecimal
 import retrofit2.Response
 import io.mockk.coEvery

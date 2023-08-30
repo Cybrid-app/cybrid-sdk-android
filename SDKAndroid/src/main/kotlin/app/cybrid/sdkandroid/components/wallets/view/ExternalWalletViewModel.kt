@@ -35,9 +35,6 @@ class ExternalWalletViewModel: ViewModel() {
     var lastUiState: ExternalWalletsView.State = ExternalWalletsView.State.LOADING
     var serverError = ""
 
-    // -- Constructor
-    init {}
-
     // -- Server Methods
     internal suspend fun fetchExternalWallets() {
 
@@ -96,7 +93,6 @@ class ExternalWalletViewModel: ViewModel() {
                         } else {
 
                             Logger.log(LoggerEvents.DATA_ERROR, "Create Wallet")
-                            // handleError
                             uiState.value = ExternalWalletsView.State.ERROR
                         }
                     }
