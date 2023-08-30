@@ -20,10 +20,6 @@ import kotlinx.coroutines.async
 
 class ExternalWalletViewModel: ViewModel() {
 
-    // -- Private properties
-    private var walletsService = AppModule.getClient().createService(ExternalWalletsApi::class.java)
-    private var transfersService = AppModule.getClient().createService(TransfersApi::class.java)
-
     // -- Internal properties
     internal var customerGuid = Cybrid.customerGuid
     internal var externalWallets: List<ExternalWalletBankModel> = listOf()
@@ -45,6 +41,7 @@ class ExternalWalletViewModel: ViewModel() {
     // -- Server Methods
     internal suspend fun fetchExternalWallets() {
 
+        val walletsService = AppModule.getClient().createService(ExternalWalletsApi::class.java)
         this.uiState.value = ExternalWalletsView.State.LOADING
         if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
@@ -80,6 +77,7 @@ class ExternalWalletViewModel: ViewModel() {
 
     internal suspend fun createWallet(postExternalWalletBankModel: PostExternalWalletBankModel) {
 
+        val walletsService = AppModule.getClient().createService(ExternalWalletsApi::class.java)
         this.uiState.value = this.uiState.value
         this.uiState.value = ExternalWalletsView.State.LOADING
         if (!Cybrid.invalidToken) {
@@ -110,6 +108,7 @@ class ExternalWalletViewModel: ViewModel() {
 
     internal suspend fun deleteExternalWallet() {
 
+        val walletsService = AppModule.getClient().createService(ExternalWalletsApi::class.java)
         this.uiState.value = ExternalWalletsView.State.LOADING
         if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
@@ -146,6 +145,7 @@ class ExternalWalletViewModel: ViewModel() {
 
     internal suspend fun fetchTransfers() {
 
+        val transfersService = AppModule.getClient().createService(TransfersApi::class.java)
         this.transfersUiState.value = ExternalWalletsView.TransfersState.LOADING
         if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
@@ -186,7 +186,7 @@ class ExternalWalletViewModel: ViewModel() {
                 val address = dataComponents[0]
                 val components = dataComponents[1]
                 codeValue = address
-                // find
+                this.findTagInQRData(components)
             } else {
                 codeValue = data
             }
