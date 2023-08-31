@@ -64,7 +64,8 @@ class ExternalWalletViewModelTest: BaseTest() {
         // -- Given
         val customerGuid = Cybrid.customerGuid
         val walletListResponse = ExternalWalletBankModelMock.list(listOf(
-            ExternalWalletBankModelMock.mock_deleted()
+            ExternalWalletBankModelMock.mock_deleted(),
+            ExternalWalletBankModelMock.mock_deleting()
         ))
         val response = Response.success(walletListResponse)
 
@@ -80,7 +81,7 @@ class ExternalWalletViewModelTest: BaseTest() {
 
         // -- Then
         Assert.assertFalse(externalWalletViewModel.externalWallets.isEmpty())
-        Assert.assertEquals(externalWalletViewModel.externalWallets.count(), 1)
+        Assert.assertEquals(externalWalletViewModel.externalWallets.count(), 2)
         Assert.assertTrue(externalWalletViewModel.externalWalletsActive.isEmpty())
         Assert.assertEquals(externalWalletViewModel.externalWalletsActive.count(), 0)
         Assert.assertEquals(externalWalletViewModel.uiState.value, ExternalWalletsView.State.WALLETS)

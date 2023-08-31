@@ -123,4 +123,7 @@
     <string name="transfer_view_component_modal_details_withdraw_title">Withdraw Details</string>
     <string name="transfer_view_component_modal_details_continue">Continue</string>
 
+    <!-- Wallets Component -->
+    <string name="wallets_view_loading_title">Loading your wallets</string>
+
 </resources>

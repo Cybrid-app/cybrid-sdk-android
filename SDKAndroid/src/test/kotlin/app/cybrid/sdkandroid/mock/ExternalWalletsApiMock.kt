@@ -80,7 +80,7 @@ object ExternalWalletBankModelMock {
     fun mock_deleted(): ExternalWalletBankModel {
         return ExternalWalletBankModel(
             guid = "1234",
-            name = "Test",
+            name = "Test Wallet Deleted",
             asset = "BTC",
             environment = ExternalWalletBankModel.Environment.sandbox,
             bankGuid = "1234",
@@ -89,6 +89,22 @@ object ExternalWalletBankModelMock {
             tag = "1234",
             createdAt = java.time.OffsetDateTime.now(),
             state = ExternalWalletBankModel.State.deleted,
+            failureCode = null
+        )
+    }
+
+    fun mock_deleting(): ExternalWalletBankModel {
+        return ExternalWalletBankModel(
+            guid = "1234",
+            name = "Test Wallet Deleting",
+            asset = "BTC",
+            environment = ExternalWalletBankModel.Environment.sandbox,
+            bankGuid = "1234",
+            customerGuid = "1234",
+            address = "0x1234",
+            tag = "1234",
+            createdAt = java.time.OffsetDateTime.now(),
+            state = ExternalWalletBankModel.State.deleting,
             failureCode = null
         )
     }

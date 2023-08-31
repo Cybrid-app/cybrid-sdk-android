@@ -123,4 +123,7 @@
     <string name="transfer_view_component_modal_details_withdraw_title">Detalles del retiro</string>
     <string name="transfer_view_component_modal_details_continue">Continuar</string>
 
+    <!-- Wallets Component -->
+    <string name="wallets_view_loading_title">Cargando tus billeteras digitales</string>
+
 </resources>
