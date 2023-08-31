@@ -41,6 +41,7 @@ class ListComponentsActivity : AppCompatActivity(), ComponentListener {
             3 -> startActivity(Intent(this, AccountsActivity::class.java))
             4 -> startActivity(Intent(this, KYCActivity::class.java))
             5 -> startActivity(Intent(this, BankAccountsActivity::class.java))
+            6 -> startActivity(Intent(this, WalletsActivity::class.java))
         }
     }
 }

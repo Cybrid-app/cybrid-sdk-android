@@ -4,7 +4,7 @@
 
     <string name="login_client_id">Client ID</string>
     <string name="login_client_secret">Client Secret</string>
-    <string name="login_customer_guid">Cutomer GUID</string>
+    <string name="login_customer_guid">Customer GUID</string>
     <string name="login_button">Login con Cybrid</string>
     <string name="login_demo">Acceder en version Demo</string>
     <string name="login_fill_error">Llena todos los campos por favor</string>
@@ -13,6 +13,12 @@
     <string name="auth_toast_error">¿Estas seguro de que configuraste su id y secret?</string>
 
     <string name="activity_list_components_title">Lista de componentes</string>
+    <string name="activity_list_components_trade_component">Componente de intercambio (Trade)</string>
+    <string name="activity_list_components_transfer_component">Componente de transferencias</string>
+    <string name="activity_list_components_accounts_component">Componente de cuentas</string>
+    <string name="activity_list_components_kyc_component">Componente de identidad de verificación</string>
+    <string name="activity_list_components_bank_accounts_component">Componente de cuentas bancarias</string>
+    <string name="activity_list_components_external_wallets_component">Componente de carteras externas</string>
 
     <string name="activity_list_prices_assets_component_title">Componente: Lista Crypto</string>
     <string name="activity_list_prices_assets_component_sub_title">Componente: Lista Crypto - Estilos editables</string>
