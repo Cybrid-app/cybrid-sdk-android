@@ -73,10 +73,16 @@ fun ExternalWalletsView(
             }
 
             ExternalWalletsView.State.WALLETS -> {
-                ExternalWalletsView_Wallets()
+                ExternalWalletsView_Wallets(
+                    externalWalletViewModel = externalWalletViewModel
+                )
             }
 
-            else -> {}
+            else -> {
+                ExternalWalletsView_Wallets(
+                    externalWalletViewModel = externalWalletViewModel
+                )
+            }
         }
     }
 }

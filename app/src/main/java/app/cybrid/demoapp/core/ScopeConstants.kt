@@ -4,7 +4,7 @@ import app.cybrid.cybrid_api_id.client.models.PostCustomerTokenIdpModel
 
 object ScopeConstants {
 
-    const val bankTokenScopes = "banks:read banks:write accounts:read accounts:execute customers:read customers:write customers:execute prices:read quotes:execute trades:execute trades:read workflows:execute workflows:read external_bank_accounts:execute external_bank_accounts:read external_bank_accounts:write transfers:read transfers:execute"
+    const val bankTokenScopes = "banks:read banks:write customers:read customers:write customers:execute"
     val customerTokenScopes: List<PostCustomerTokenIdpModel.Scopes> = listOf(
         PostCustomerTokenIdpModel.Scopes.customersColonRead,
         PostCustomerTokenIdpModel.Scopes.customersColonWrite,
@@ -21,6 +21,8 @@ object ScopeConstants {
         PostCustomerTokenIdpModel.Scopes.externalBankAccountsColonWrite,
         PostCustomerTokenIdpModel.Scopes.externalBankAccountsColonExecute,
         PostCustomerTokenIdpModel.Scopes.workflowsColonRead,
-        PostCustomerTokenIdpModel.Scopes.workflowsColonExecute
+        PostCustomerTokenIdpModel.Scopes.workflowsColonExecute,
+        PostCustomerTokenIdpModel.Scopes.externalWalletsColonRead,
+        PostCustomerTokenIdpModel.Scopes.externalWalletsColonExecute
     )
 }

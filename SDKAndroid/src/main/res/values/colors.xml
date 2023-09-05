@@ -44,4 +44,10 @@
     <!-- Bank Accounts -->
     <color name="bank_accounts_view_auth_warning_container">#FBE493</color>
 
+    <!-- External Wallets Colors -->
+    <color name="external_wallets_view_wallets_item_asset_color">#8a8a8d</color>
+    <color name="external_wallets_view_wallets_item_chip_pending">#FCDA66</color>
+    <color name="external_wallets_view_wallets_item_chip_failed">#D45736</color>
+    <color name="external_wallets_view_wallets_item_chip_completed">#4dae51</color>
+
 </resources>
