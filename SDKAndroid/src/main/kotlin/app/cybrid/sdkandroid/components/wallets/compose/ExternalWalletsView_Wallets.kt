@@ -32,6 +32,7 @@ import app.cybrid.cybrid_api_bank.client.models.TransferBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.wallets.view.ExternalWalletViewModel
 import app.cybrid.sdkandroid.ui.Theme.interFont
+import app.cybrid.sdkandroid.ui.lib.RoundedButton
 import app.cybrid.sdkandroid.util.getImageUrl
 import coil.compose.rememberAsyncImagePainter
 
@@ -46,7 +47,7 @@ fun ExternalWalletsView_Wallets(
     ) {
 
         // -- Vars
-        val (title, walletList) = createRefs()
+        val (title, walletList, addButton) = createRefs()
 
         // -- Content
         // -- Title
@@ -58,10 +59,10 @@ fun ExternalWalletsView_Wallets(
                 },
             text = "My wallets",
             style = TextStyle(
-                fontSize = 24.sp,
+                fontSize = 26.sp,
                 lineHeight = 32.sp,
                 fontFamily = FontFamily(Font(R.font.roboto_regular)),
-                fontWeight = FontWeight(600),
+                fontWeight = FontWeight(700),
                 color = Color.Black,
                 textAlign = TextAlign.Left,
             )
@@ -73,7 +74,8 @@ fun ExternalWalletsView_Wallets(
                 start.linkTo(parent.start, margin = 0.dp)
                 top.linkTo(title.bottom, margin = 30.dp)
                 end.linkTo(parent.end, margin = 0.dp)
-                bottom.linkTo(parent.bottom, margin = 10.dp)
+                bottom.linkTo(addButton.top, margin = 10.dp)
+                width = Dimension.fillToConstraints
                 height = Dimension.fillToConstraints
             }
         ) {
@@ -83,6 +85,19 @@ fun ExternalWalletsView_Wallets(
                 )
             }
         }
+
+        // -- Add button
+        RoundedButton(
+            modifier = Modifier
+                .constrainAs(addButton) {
+                    start.linkTo(parent.start, margin = 0.dp)
+                    end.linkTo(parent.end, margin = 0.dp)
+                    bottom.linkTo(parent.bottom, margin = 12.5.dp)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.value(50.dp)
+                },
+            onClick = {},
+            text = "Add wallet")
     }
 }
 
