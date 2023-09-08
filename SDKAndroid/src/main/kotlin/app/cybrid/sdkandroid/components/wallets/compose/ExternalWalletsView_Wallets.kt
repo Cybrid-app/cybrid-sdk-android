@@ -30,6 +30,7 @@ import androidx.constraintlayout.compose.Dimension
 import app.cybrid.cybrid_api_bank.client.models.ExternalWalletBankModel
 import app.cybrid.cybrid_api_bank.client.models.TransferBankModel
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.ExternalWalletsView
 import app.cybrid.sdkandroid.components.wallets.view.ExternalWalletViewModel
 import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.lib.RoundedButton
@@ -96,7 +97,7 @@ fun ExternalWalletsView_Wallets(
                     width = Dimension.fillToConstraints
                     height = Dimension.value(50.dp)
                 },
-            onClick = {},
+            onClick = { externalWalletViewModel.uiState.value = ExternalWalletsView.State.CREATE },
             text = "Add wallet")
     }
 }

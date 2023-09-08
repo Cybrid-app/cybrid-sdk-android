@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.viewModelScope
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.wallets.compose.ExternalWalletsView_CreateWallet
 import app.cybrid.sdkandroid.components.wallets.compose.ExternalWalletsView_Loading
 import app.cybrid.sdkandroid.components.wallets.compose.ExternalWalletsView_Wallets
 import app.cybrid.sdkandroid.components.wallets.view.ExternalWalletViewModel
@@ -76,6 +77,10 @@ fun ExternalWalletsView(
                 ExternalWalletsView_Wallets(
                     externalWalletViewModel = externalWalletViewModel
                 )
+            }
+
+            ExternalWalletsView.State.CREATE -> {
+                ExternalWalletsView_CreateWallet()
             }
 
             else -> {

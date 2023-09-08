@@ -32,7 +32,7 @@ fun RoundedInput(
     modifier: Modifier,
     inputState: MutableState<TextFieldValue>,
     placeholder: String = "",
-    fontSize: TextUnit = 17.sp,
+    fontSize: TextUnit = 19.sp,
     weight: Int = 400,
     textColor: Color = Color.Black,
     backgroundColor: Color = colorResource(id = R.color.external_wallets_view_add_wallet_input_color),
@@ -49,13 +49,19 @@ fun RoundedInput(
         TextField(
             value = inputState.value,
             onValueChange = { value -> inputState.value = value },
-            placeholder = { Text(text = placeholder) },
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    fontSize = fontSize,
+                    color = colorResource(id = R.color.external_wallets_view_add_wallet_input_placeholder_color)
+                )
+            },
             modifier = Modifier
                 .constrainAs(input) {
-                    start.linkTo(parent.start, margin = 5.dp)
-                    top.linkTo(parent.top, margin = 5.dp)
-                    end.linkTo(icon.start, margin = 10.dp)
-                    bottom.linkTo(parent.bottom, margin = 5.dp)
+                    start.linkTo(parent.start, margin = 2.5.dp)
+                    top.linkTo(parent.top, margin = 1.dp)
+                    end.linkTo(icon.start, margin = 7.5.dp)
+                    bottom.linkTo(parent.bottom, margin = 1.dp)
                     width = Dimension.fillToConstraints
                     height = Dimension.fillToConstraints
                 },
@@ -65,13 +71,13 @@ fun RoundedInput(
                 fontFamily = FontFamily(Font(R.font.inter_regular)),
                 fontWeight = FontWeight(weight),
                 color = textColor,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Left
             ),
             singleLine = true,
             colors = TextFieldDefaults.textFieldColors(
                 textColor = textColor,
                 cursorColor = colorResource(id = R.color.primary_color),
-                backgroundColor = backgroundColor,
+                backgroundColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent
@@ -100,7 +106,7 @@ fun RoundedLabelInput(
     modifier: Modifier,
     titleText: String,
     titleColor: Color = colorResource(id = R.color.external_wallets_view_add_wallet_input_title_color),
-    titleSize: TextUnit = 18.sp,
+    titleSize: TextUnit = 15.5.sp,
     titleWeight: Int = 400,
     inputState: MutableState<TextFieldValue>,
     placeholder: String = "",
@@ -112,10 +118,12 @@ fun RoundedLabelInput(
 
         Text(
             text = titleText,
-            modifier = modifier
+            modifier = Modifier
                 .constrainAs(title) {
                     start.linkTo(parent.start, margin = 0.dp)
+                    end.linkTo(parent.end, margin = 0.dp)
                     top.linkTo(parent.top, margin = 0.dp)
+                    width = Dimension.fillToConstraints
                 },
             style = TextStyle(
                 fontSize = titleSize,
@@ -126,5 +134,17 @@ fun RoundedLabelInput(
                 textAlign = TextAlign.Left
             )
         )
+
+        RoundedInput(
+            modifier = Modifier
+                .constrainAs(input) {
+                    start.linkTo(parent.start, margin = 0.dp)
+                    top.linkTo(title.bottom, margin = 10.dp)
+                    end.linkTo(parent.end, margin = 0.dp)
+                    height = Dimension.value(60.dp)
+                    width = Dimension.fillToConstraints
+                },
+            inputState = inputState,
+            placeholder = placeholder)
     }
 }
