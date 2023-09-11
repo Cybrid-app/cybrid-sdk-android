@@ -54,5 +54,6 @@
     <color name="external_wallets_view_add_wallet_input_color">#F5F5F5</color>
     <color name="external_wallets_view_warning_background_color">#33efb90b</color>
     <color name="external_wallets_view_warning_label_color">#f1b90a</color>
+    <color name="external_wallets_view_wallet_delete_button_color">#ff0000</color>
 
 </resources>
