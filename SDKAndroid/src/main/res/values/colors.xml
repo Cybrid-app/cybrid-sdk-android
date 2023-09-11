@@ -52,5 +52,7 @@
     <color name="external_wallets_view_add_wallet_input_placeholder_color">#bebec0</color>
     <color name="external_wallets_view_add_wallet_input_title_color">#818181</color>
     <color name="external_wallets_view_add_wallet_input_color">#F5F5F5</color>
+    <color name="external_wallets_view_warning_background_color">#33efb90b</color>
+    <color name="external_wallets_view_warning_label_color">#f1b90a</color>
 
 </resources>

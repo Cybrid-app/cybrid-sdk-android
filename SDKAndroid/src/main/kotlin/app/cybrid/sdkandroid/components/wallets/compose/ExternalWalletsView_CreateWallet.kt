@@ -1,6 +1,10 @@
 package app.cybrid.sdkandroid.components.wallets.compose
 
+import android.widget.Toast
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -8,6 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -19,20 +25,37 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
+import app.cybrid.cybrid_api_bank.client.models.PostExternalWalletBankModel
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.ExternalWalletsView
+import app.cybrid.sdkandroid.components.wallets.view.ExternalWalletViewModel
+import app.cybrid.sdkandroid.ui.lib.RoundedButton
 import app.cybrid.sdkandroid.ui.lib.RoundedLabelInput
 import app.cybrid.sdkandroid.ui.lib.RoundedLabelSelect
+import app.cybrid.sdkandroid.ui.lib.WarningView
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
-fun ExternalWalletsView_CreateWallet() {
+fun ExternalWalletsView_CreateWallet(
+    externalWalletViewModel: ExternalWalletViewModel
+) {
 
+    // -- Scroll
+    val scrollMutableState = rememberScrollState()
+
+    // -- Content
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(scrollMutableState)
     ) {
 
         // -- Vars
+        val context = LocalContext.current
         val assets: List<AssetBankModel> =
             Cybrid.assets
                 .filter { it.type == AssetBankModel.Type.crypto }
@@ -47,7 +70,7 @@ fun ExternalWalletsView_CreateWallet() {
         val tagMutableState = remember { mutableStateOf(TextFieldValue("")) }
 
         // -- Refs
-        val (title, asset, name, address, tag) = createRefs()
+        val (title, asset, name, address, tag, warning, addButton) = createRefs()
 
         // -- Content
         // -- Title
@@ -62,7 +85,7 @@ fun ExternalWalletsView_CreateWallet() {
                 fontSize = 26.sp,
                 lineHeight = 32.sp,
                 fontFamily = FontFamily(Font(R.font.roboto_regular)),
-                fontWeight = FontWeight(700),
+                fontWeight = FontWeight(800),
                 color = Color.Black,
                 textAlign = TextAlign.Left,
             )
@@ -116,5 +139,63 @@ fun ExternalWalletsView_CreateWallet() {
             titleText = "Tag",
             inputState = tagMutableState,
             placeholder = "Enter tag")
+
+        // -- Warning
+        val warningTitle = stringResource(id = R.string.wallets_view_warning_title)
+        val warningLabel = stringResource(id = R.string.wallets_view_warning_label)
+        WarningView(
+            text = warningLabel,
+            titleText = warningTitle,
+            modifier = Modifier.constrainAs(warning) {
+                start.linkTo(parent.start, margin = 0.dp)
+                top.linkTo(tag.bottom, margin = 20.dp)
+                end.linkTo(parent.end, margin = 0.dp)
+                width = Dimension.fillToConstraints
+            }
+        )
+
+        // -- Add button
+        RoundedButton(
+            modifier = Modifier
+                .constrainAs(addButton) {
+                    start.linkTo(parent.start, margin = 0.dp)
+                    top.linkTo(warning.bottom, margin = 20.dp)
+                    end.linkTo(parent.end, margin = 0.dp)
+                    bottom.linkTo(parent.bottom, margin = 15.dp)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.value(50.dp)
+                },
+            onClick = {
+
+                if (nameMutableState.value.text == "") {
+                    Toast.makeText(context, "Fill name to continue", Toast.LENGTH_SHORT).show()
+                    GlobalScope.let { it.launch { scrollMutableState.scrollTo(0) } }
+                    return@RoundedButton
+                }
+
+                if (addressMutableState.value.text == "") {
+                    Toast.makeText(context, "Fill address to continue", Toast.LENGTH_SHORT).show()
+                    GlobalScope.let { it.launch { scrollMutableState.scrollTo(0) } }
+                    return@RoundedButton
+                }
+
+                // -- Creating Wallet
+                val tagValue = tagMutableState.value.text
+                val postExternalWalletBankModel = PostExternalWalletBankModel(
+                    name = nameMutableState.value.text,
+                    asset = selectedAssetMutableState.value!!.code,
+                    address = addressMutableState.value.text,
+                    tag = if (tagValue == "") null else tagValue,
+                    customerGuid = externalWalletViewModel.customerGuid
+                )
+
+                // -- Creating
+                GlobalScope.let {
+                    it.launch {
+                        externalWalletViewModel.createWallet(postExternalWalletBankModel)
+                    }
+                }
+            },
+            text = "Add wallet")
     }
 }

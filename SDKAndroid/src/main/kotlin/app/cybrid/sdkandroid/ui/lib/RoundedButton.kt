@@ -23,7 +23,7 @@ fun RoundedButton(
     modifier: Modifier,
     onClick: () -> Unit,
     text: String,
-    fontSize: TextUnit = 17.sp,
+    fontSize: TextUnit = 18.sp,
     weight: Int = 400,
     backgroundColor: Color = colorResource(id = R.color.accent_blue),
     textColor: Color = Color.White

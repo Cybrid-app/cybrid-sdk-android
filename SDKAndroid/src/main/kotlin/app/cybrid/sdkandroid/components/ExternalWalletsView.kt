@@ -80,7 +80,9 @@ fun ExternalWalletsView(
             }
 
             ExternalWalletsView.State.CREATE -> {
-                ExternalWalletsView_CreateWallet()
+                ExternalWalletsView_CreateWallet(
+                    externalWalletViewModel = externalWalletViewModel
+                )
             }
 
             else -> {
