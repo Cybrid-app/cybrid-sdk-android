@@ -125,5 +125,20 @@
 
     <!-- Wallets Component -->
     <string name="wallets_view_loading_title">Loading your wallets</string>
+    <string name="wallets_view_create_title">Add new wallet</string>
+    <string name="wallets_view_create_asset_title">Asset</string>
+    <string name="wallets_view_create_name_title">Name</string>
+    <string name="wallets_view_create_name_placeholder">Enter wallet name</string>
+    <string name="wallets_view_create_address_title">Address</string>
+    <string name="wallets_view_create_address_placeholder">Enter wallet address</string>
+    <string name="wallets_view_create_tag_title">Tag</string>
+    <string name="wallets_view_create_tag_placeholder">Enter tag</string>
+    <string name="wallets_view_create_name_error">Fill name to continue</string>
+    <string name="wallets_view_create_address_error">Fill address to continue</string>
+    <string name="wallets_view_create_add_button">Add wallet</string>
+    <string name="wallets_view_wallet_title">My wallet</string>
+    <string name="wallets_view_wallet_delete_button">Delete</string>
+    <string name="wallets_view_warning_title">Cybrid is not responsible for any loss</string>
+    <string name="wallets_view_warning_label">You are solely responsible for correctly inputting your public wallet address and any associated memo or tag to properly deliver the on-chain crypto assets to your wallet.\n\nYou are solely responsible for implementing all reasonable and appropriate measures for securing access to your private key(s) and Wallet.\n\nTokens are stored on cryptographic wallets (“Wallets”). A private key (for example, a passphrase) is usually necessary to access, control and/or dispose of tokens that are stored in your Wallet. Losing access to the private key(s) associated with your Wallet may result in the permanent loss of your ability to access your tokens.\n\nWE DO NOT HOLD COPIES OF YOUR PRIVATE KEY(S). WE SHALL NOT BE RESPONSIBLE FOR ANY LOSS RESULTING FROM YOUR INABILITY TO ACCESS YOUR WALLET AND/OR PRIVATE KEYS. WE SHALL NOT BE RESPONSIBLE FOR ANY LOSS ONCE CRYPTO ASSETS ARE SENT ON-CHAIN TO THE WALLET YOU HAVE SPECIFIED.</string>
 
 </resources>
