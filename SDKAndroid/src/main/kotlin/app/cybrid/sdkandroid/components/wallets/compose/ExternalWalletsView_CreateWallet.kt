@@ -80,7 +80,7 @@ fun ExternalWalletsView_CreateWallet(
                     start.linkTo(parent.start, margin = 0.dp)
                     top.linkTo(parent.top, margin = 15.dp)
                 },
-            text = "Add new wallet",
+            text = stringResource(id = R.string.wallets_view_create_title),
             style = TextStyle(
                 fontSize = 26.sp,
                 lineHeight = 32.sp,
@@ -101,7 +101,7 @@ fun ExternalWalletsView_CreateWallet(
             },
             selectExpandedMutableState = selectExpandedMutableState,
             selectedAssetMutableState = selectedAssetMutableState,
-            titleText = "Asset",
+            titleText = stringResource(R.string.wallets_view_create_asset_title),
             items = assets)
 
         // -- Name Section
@@ -112,9 +112,9 @@ fun ExternalWalletsView_CreateWallet(
                 end.linkTo(parent.end, margin = 0.dp)
                 width = Dimension.fillToConstraints
             },
-            titleText = "Name",
+            titleText = stringResource(R.string.wallets_view_create_name_title),
             inputState = nameMutableState,
-            placeholder = "Enter wallet name")
+            placeholder = stringResource(R.string.wallets_view_create_name_placeholder))
 
         // -- Address Section
         RoundedLabelInput(
@@ -124,9 +124,9 @@ fun ExternalWalletsView_CreateWallet(
                 end.linkTo(parent.end, margin = 0.dp)
                 width = Dimension.fillToConstraints
             },
-            titleText = "Address",
+            titleText = stringResource(id = R.string.wallets_view_create_address_title),
             inputState = addressMutableState,
-            placeholder = "Enter wallet address")
+            placeholder = stringResource(R.string.wallets_view_create_address_placeholder))
 
         // -- Tag Section
         RoundedLabelInput(
@@ -136,9 +136,9 @@ fun ExternalWalletsView_CreateWallet(
                 end.linkTo(parent.end, margin = 0.dp)
                 width = Dimension.fillToConstraints
             },
-            titleText = "Tag",
+            titleText = stringResource(R.string.wallets_view_create_tag_title),
             inputState = tagMutableState,
-            placeholder = "Enter tag")
+            placeholder = stringResource(R.string.wallets_view_create_tag_placeholder))
 
         // -- Warning
         val warningTitle = stringResource(id = R.string.wallets_view_warning_title)
@@ -155,6 +155,8 @@ fun ExternalWalletsView_CreateWallet(
         )
 
         // -- Add button
+        val nameError = stringResource(R.string.wallets_view_create_name_error)
+        val addressError = stringResource(R.string.wallets_view_create_address_error)
         RoundedButton(
             modifier = Modifier
                 .constrainAs(addButton) {
@@ -168,13 +170,13 @@ fun ExternalWalletsView_CreateWallet(
             onClick = {
 
                 if (nameMutableState.value.text == "") {
-                    Toast.makeText(context, "Fill name to continue", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, nameError, Toast.LENGTH_SHORT).show()
                     GlobalScope.let { it.launch { scrollMutableState.scrollTo(0) } }
                     return@RoundedButton
                 }
 
                 if (addressMutableState.value.text == "") {
-                    Toast.makeText(context, "Fill address to continue", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, addressError, Toast.LENGTH_SHORT).show()
                     GlobalScope.let { it.launch { scrollMutableState.scrollTo(0) } }
                     return@RoundedButton
                 }
@@ -196,6 +198,6 @@ fun ExternalWalletsView_CreateWallet(
                     }
                 }
             },
-            text = "Add wallet")
+            text = stringResource(R.string.wallets_view_create_add_button))
     }
 }

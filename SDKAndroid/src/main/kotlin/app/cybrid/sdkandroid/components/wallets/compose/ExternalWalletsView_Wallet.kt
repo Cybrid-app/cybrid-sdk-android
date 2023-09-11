@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
+import app.cybrid.cybrid_api_bank.client.models.ExternalWalletBankModel
 import app.cybrid.cybrid_api_bank.client.models.PostExternalWalletBankModel
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.R
@@ -26,7 +28,11 @@ import app.cybrid.sdkandroid.components.wallets.view.ExternalWalletViewModel
 import app.cybrid.sdkandroid.ui.lib.AssetLabelView
 import app.cybrid.sdkandroid.ui.lib.AssetView
 import app.cybrid.sdkandroid.ui.lib.RoundedButton
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
+@OptIn(DelicateCoroutinesApi::class)
 @Composable
 fun ExternalWalletsView_Wallet(
     externalWalletViewModel: ExternalWalletViewModel
@@ -42,7 +48,7 @@ fun ExternalWalletsView_Wallet(
         val wallet = externalWalletViewModel.currentWallet!!
 
         // -- Refs
-        val (title, asset, name, address, tag, deleteButton) = createRefs()
+        val (title, status, asset, name, address, tag, deleteButton) = createRefs()
 
         // -- Content
         // -- Title
@@ -52,7 +58,7 @@ fun ExternalWalletsView_Wallet(
                     start.linkTo(parent.start, margin = 0.dp)
                     top.linkTo(parent.top, margin = 15.dp)
                 },
-            text = "My wallet",
+            text = stringResource(R.string.wallets_view_wallet_title),
             style = TextStyle(
                 fontSize = 26.sp,
                 lineHeight = 32.sp,
@@ -63,6 +69,18 @@ fun ExternalWalletsView_Wallet(
             )
         )
 
+        // -- Wallet Chip
+        ExternalWalletsView_Wallets_Item_Chip(
+            state = wallet.state ?: ExternalWalletBankModel.State.pending,
+            modifier = Modifier
+                .constrainAs(status) {
+                    top.linkTo(parent.top, margin = 25.dp)
+                    end.linkTo(parent.end, margin = 0.dp)
+                    width = Dimension.value(80.dp)
+                    height = Dimension.value(26.dp)
+                }
+        )
+
         // -- Asset
         AssetLabelView(
             modifier = Modifier.constrainAs(asset) {
@@ -71,7 +89,7 @@ fun ExternalWalletsView_Wallet(
                 end.linkTo(parent.end, margin = 0.dp)
                 width = Dimension.fillToConstraints
             },
-            titleText = "Asset",
+            titleText = stringResource(R.string.wallets_view_create_asset_title),
             asset = assets.first { it.code == wallet.asset }
         )
 
@@ -84,7 +102,7 @@ fun ExternalWalletsView_Wallet(
                     end.linkTo(parent.end, margin = 0.dp)
                     width = Dimension.fillToConstraints
                 },
-            titleText = "Name",
+            titleText = stringResource(R.string.wallets_view_create_name_title),
             labelText = wallet.name ?: ""
         )
 
@@ -97,7 +115,7 @@ fun ExternalWalletsView_Wallet(
                     end.linkTo(parent.end, margin = 0.dp)
                     width = Dimension.fillToConstraints
                 },
-            titleText = "Address",
+            titleText = stringResource(R.string.wallets_view_create_address_title),
             labelText = wallet.address ?: ""
         )
 
@@ -110,7 +128,7 @@ fun ExternalWalletsView_Wallet(
                     end.linkTo(parent.end, margin = 0.dp)
                     width = Dimension.fillToConstraints
                 },
-            titleText = "Tag",
+            titleText = stringResource(R.string.wallets_view_create_tag_title),
             labelText = wallet.tag ?: ""
         )
 
@@ -124,9 +142,11 @@ fun ExternalWalletsView_Wallet(
                     width = Dimension.fillToConstraints
                     height = Dimension.value(50.dp)
                 },
-            onClick = {},
+            onClick = {
+                GlobalScope.let { it.launch { externalWalletViewModel.deleteExternalWallet() } }
+            },
             backgroundColor = colorResource(id = R.color.external_wallets_view_wallet_delete_button_color),
-            text = "Delete"
+            text = stringResource(id = R.string.wallets_view_wallet_delete_button)
         )
     }
 }
