@@ -60,7 +60,7 @@ fun RoundedInput(
                 .constrainAs(input) {
                     start.linkTo(parent.start, margin = 2.5.dp)
                     top.linkTo(parent.top, margin = 1.dp)
-                    end.linkTo(icon.start, margin = 7.5.dp)
+                    end.linkTo(icon.start, margin = 2.5.dp)
                     bottom.linkTo(parent.bottom, margin = 1.dp)
                     width = Dimension.fillToConstraints
                     height = Dimension.fillToConstraints
@@ -88,7 +88,7 @@ fun RoundedInput(
             onClick = rightIconClick,
             modifier = Modifier
                 .constrainAs(icon) {
-                    end.linkTo(parent.end, margin = 5.dp)
+                    end.linkTo(parent.end, margin = 15.dp)
                     centerVerticallyTo(parent)
                     width = Dimension.value( if (rightIcon == 0) 0.dp else 25.dp )
                     height = Dimension.value( if (rightIcon == 0) 0.dp else 25.dp )
@@ -110,6 +110,8 @@ fun RoundedLabelInput(
     titleWeight: Int = 400,
     inputState: MutableState<TextFieldValue>,
     placeholder: String = "",
+    rightIcon: Int = 0,
+    rightIconClick: () -> Unit = {}
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -145,6 +147,8 @@ fun RoundedLabelInput(
                     width = Dimension.fillToConstraints
                 },
             inputState = inputState,
-            placeholder = placeholder)
+            placeholder = placeholder,
+            rightIcon = rightIcon,
+            rightIconClick = rightIconClick)
     }
 }

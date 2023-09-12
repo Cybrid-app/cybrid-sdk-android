@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -126,7 +127,10 @@ fun ExternalWalletsView_CreateWallet(
             },
             titleText = stringResource(id = R.string.wallets_view_create_address_title),
             inputState = addressMutableState,
-            placeholder = stringResource(R.string.wallets_view_create_address_placeholder))
+            placeholder = stringResource(R.string.wallets_view_create_address_placeholder),
+            rightIcon = R.drawable.ic_scan,
+            rightIconClick = {}
+        )
 
         // -- Tag Section
         RoundedLabelInput(

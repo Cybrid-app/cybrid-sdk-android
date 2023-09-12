@@ -82,7 +82,7 @@ fun WarningView(
                 lineHeight = 22.sp,
                 fontFamily = FontFamily(Font(R.font.inter_regular)),
                 fontWeight = FontWeight(400),
-                color = colorResource(id = R.color.external_wallets_view_warning_label_color),
+                color = colorResource(id = R.color.external_wallets_view_add_wallet_input_title_color),
                 textAlign = TextAlign.Justify
             )
         )

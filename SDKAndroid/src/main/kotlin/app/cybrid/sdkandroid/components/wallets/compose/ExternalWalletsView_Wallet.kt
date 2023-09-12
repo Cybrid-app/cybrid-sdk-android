@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.components.wallets.compose
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -8,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -48,7 +50,9 @@ fun ExternalWalletsView_Wallet(
         val wallet = externalWalletViewModel.currentWallet!!
 
         // -- Refs
-        val (title, status, asset, name, address, tag, deleteButton) = createRefs()
+        val (title, status, asset, name,
+            address, tag, recentTransfersTitle,
+            recentTransfers, deleteButton) = createRefs()
 
         // -- Content
         // -- Title
@@ -132,12 +136,40 @@ fun ExternalWalletsView_Wallet(
             labelText = wallet.tag ?: ""
         )
 
+        // -- Recent transfers
+        Text(
+            text = stringResource(id = R.string.wallets_view_wallet_recent_transfers_title),
+            modifier = Modifier
+                .constrainAs(recentTransfersTitle) {
+                    start.linkTo(parent.start, margin = 0.dp)
+                    top.linkTo(tag.bottom, margin = 25.dp)
+                    end.linkTo(parent.end, margin = 0.dp)
+                    width = Dimension.fillToConstraints
+                },
+            style = TextStyle(
+                fontSize = 15.5.sp,
+                lineHeight = 22.sp,
+                fontFamily = FontFamily(Font(R.font.inter_regular)),
+                fontWeight = FontWeight(400),
+                color = colorResource(id = R.color.external_wallets_view_add_wallet_input_title_color),
+                textAlign = TextAlign.Left
+            )
+        )
+        ExternalWalletsView_Wallet_Empty_Transfers(
+            modifier = Modifier.constrainAs(recentTransfers) {
+                start.linkTo(parent.start, margin = 0.dp)
+                top.linkTo(recentTransfersTitle.bottom, margin = 25.dp)
+                end.linkTo(parent.end, margin = 0.dp)
+                width = Dimension.fillToConstraints
+            }
+        )
+
         // -- Delete Button
         RoundedButton(
             modifier = Modifier
                 .constrainAs(deleteButton) {
                     start.linkTo(parent.start, margin = 0.dp)
-                    top.linkTo(tag.bottom, margin = 25.dp)
+                    top.linkTo(recentTransfers.bottom, margin = 25.dp)
                     end.linkTo(parent.end, margin = 0.dp)
                     width = Dimension.fillToConstraints
                     height = Dimension.value(50.dp)
@@ -197,6 +229,49 @@ fun ExternalWalletsView_Wallet_Item(
                 fontWeight = FontWeight(500),
                 color = Color.Black,
                 textAlign = TextAlign.Left
+            )
+        )
+    }
+}
+
+@Composable
+fun ExternalWalletsView_Wallet_Empty_Transfers(
+    modifier: Modifier
+) {
+    ConstraintLayout(
+        modifier = modifier
+    ) {
+
+        // -- Refs
+        val (icon, label) = createRefs()
+
+        // -- Content
+        Image(
+            painter = painterResource(id = R.drawable.ic_empty),
+            contentDescription = "iconDesc",
+            modifier = Modifier.constrainAs(icon) {
+                centerHorizontallyTo(parent)
+                top.linkTo(parent.top, margin = 15.dp)
+                width = Dimension.value(45.dp)
+                height = Dimension.value(45.dp)
+            }
+        )
+        Text(
+            text = stringResource(id = R.string.wallets_view_wallet_recent_transfers_empty_label),
+            modifier = Modifier
+                .constrainAs(label) {
+                    start.linkTo(parent.start, margin = 10.dp)
+                    top.linkTo(icon.bottom, margin = 15.dp)
+                    end.linkTo(parent.end, margin = 10.dp)
+                    width = Dimension.fillToConstraints
+                },
+            style = TextStyle(
+                fontSize = 15.5.sp,
+                lineHeight = 22.sp,
+                fontFamily = FontFamily(Font(R.font.inter_regular)),
+                fontWeight = FontWeight(400),
+                color = colorResource(id = R.color.external_wallets_view_add_wallet_input_title_color),
+                textAlign = TextAlign.Center
             )
         )
     }
