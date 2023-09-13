@@ -124,6 +124,23 @@
     <string name="transfer_view_component_modal_details_continue">Continuar</string>
 
     <!-- Wallets Component -->
-    <string name="wallets_view_loading_title">Cargando tus billeteras digitales</string>
+    <string name="wallets_view_loading_title">Cargando tus cartera</string>
+    <string name="wallets_view_create_title">Agregar nueva cartera</string>
+    <string name="wallets_view_create_asset_title">Asset</string>
+    <string name="wallets_view_create_name_title">Nombre</string>
+    <string name="wallets_view_create_name_placeholder">Escribe el nombre de la cartera</string>
+    <string name="wallets_view_create_address_title">Dirección</string>
+    <string name="wallets_view_create_address_placeholder">Escribe la dirección de la billetera</string>
+    <string name="wallets_view_create_tag_title">Tag</string>
+    <string name="wallets_view_create_tag_placeholder">Escribe el tag</string>
+    <string name="wallets_view_create_name_error">Llena el nombre para continiar</string>
+    <string name="wallets_view_create_address_error">Llena la dirección para continiar</string>
+    <string name="wallets_view_create_add_button">Agregar cartera</string>
+    <string name="wallets_view_wallet_title">Mi cartera</string>
+    <string name="wallets_view_wallet_delete_button">Borrar</string>
+    <string name="wallets_view_wallet_recent_transfers_title">Transferencias recientes</string>
+    <string name="wallets_view_wallet_recent_transfers_empty_label">No hay transferencias ejecutadas.</string>
+    <string name="wallets_view_warning_title">Cybrid no es responsable de ninguna pérdida</string>
+    <string name="wallets_view_warning_label">Usted es el único responsable de ingresar correctamente la dirección de su billetera pública y cualquier nota o etiqueta asociada para entregar correctamente los criptoactivos en cadena a su billetera.\n\nUsted es el único responsable de implementar todas las medidas razonables y apropiadas para asegurar el acceso a su información privada. clave(s) y Monedero.\n\nLos tokens se almacenan en monederos criptográficos (“Monederos”). Generalmente se necesita una clave privada (por ejemplo, una frase de contraseña) para acceder, controlar y/o eliminar los tokens almacenados en su Wallet. Perder el acceso a las claves privadas asociadas con su Wallet puede resultar en la pérdida permanente de su capacidad para acceder a sus tokens.\n\nNO TENEMOS COPIAS DE SUS LLAVES PRIVADAS. NO SEREMOS RESPONSABLES DE NINGUNA PÉRDIDA QUE RESULTE DE SU INCAPACIDAD DE ACCEDER A SU MONEDERO Y/O LLAVES PRIVADAS. NO SEREMOS RESPONSABLES DE NINGUNA PÉRDIDA UNA VEZ QUE LOS ACTIVOS CRYPTO SE ENVÍEN EN CADENA A LA BILLETERA QUE HA ESPECIFICADO.</string>
 
 </resources>

@@ -2,121 +2,106 @@ package app.cybrid.sdkandroid.ui.lib
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.util.getImageUrl
+import coil.compose.rememberAsyncImagePainter
 
 @Composable
-fun RoundedInput(
+fun AssetView(
+    asset: AssetBankModel,
     modifier: Modifier,
-    inputState: MutableState<TextFieldValue>,
-    placeholder: String = "",
+    backgroundColor: Color = colorResource(id = R.color.external_wallets_view_add_wallet_input_color),
     fontSize: TextUnit = 19.sp,
     weight: Int = 400,
-    textColor: Color = Color.Black,
-    backgroundColor: Color = colorResource(id = R.color.external_wallets_view_add_wallet_input_color),
-    rightIcon: Int = 0,
-    rightIconClick: () -> Unit = {}
+    textColor: Color = Color.Black
 ) {
+
+    // -- Content
     ConstraintLayout(
         modifier = modifier
+            .fillMaxWidth()
+            .height(60.dp)
             .clip(shape = RoundedCornerShape(10))
             .background(backgroundColor)
     ) {
-        val (input, icon) = createRefs()
 
-        TextField(
-            value = inputState.value,
-            onValueChange = { value -> inputState.value = value },
-            placeholder = {
-                Text(
-                    text = placeholder,
-                    fontSize = fontSize,
-                    color = colorResource(id = R.color.external_wallets_view_add_wallet_input_placeholder_color)
-                )
-            },
+        // -- vars
+        val (icon, text) = createRefs()
+
+        // -- Content
+        // -- Icon Image
+        val imagePainter = rememberAsyncImagePainter(getImageUrl( asset.code.lowercase()))
+        Image(
+            painter = imagePainter,
+            contentDescription = "imageDesc",
             modifier = Modifier
-                .constrainAs(input) {
-                    start.linkTo(parent.start, margin = 2.5.dp)
-                    top.linkTo(parent.top, margin = 1.dp)
-                    end.linkTo(icon.start, margin = 2.5.dp)
-                    bottom.linkTo(parent.bottom, margin = 1.dp)
+                .constrainAs(icon) {
+                    start.linkTo(parent.start, margin = 15.dp)
+                    centerVerticallyTo(parent)
+                    width = Dimension.value(25.dp)
+                    height = Dimension.value(25.dp)
+                }
+        )
+
+        // -- Text
+        Text(
+            text = asset.name,
+            modifier = Modifier
+                .constrainAs(text) {
+                    start.linkTo(parent.start, margin = 55.dp)
+                    end.linkTo(parent.end, margin = 0.dp)
+                    centerVerticallyTo(parent)
                     width = Dimension.fillToConstraints
-                    height = Dimension.fillToConstraints
                 },
-            textStyle = TextStyle(
+            style = TextStyle(
                 fontSize = fontSize,
                 lineHeight = 22.sp,
                 fontFamily = FontFamily(Font(R.font.inter_regular)),
                 fontWeight = FontWeight(weight),
                 color = textColor,
                 textAlign = TextAlign.Left
-            ),
-            singleLine = true,
-            colors = TextFieldDefaults.textFieldColors(
-                textColor = textColor,
-                cursorColor = colorResource(id = R.color.primary_color),
-                backgroundColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
             )
         )
-
-        IconButton(
-            onClick = rightIconClick,
-            modifier = Modifier
-                .constrainAs(icon) {
-                    end.linkTo(parent.end, margin = 15.dp)
-                    centerVerticallyTo(parent)
-                    width = Dimension.value( if (rightIcon == 0) 0.dp else 25.dp )
-                    height = Dimension.value( if (rightIcon == 0) 0.dp else 25.dp )
-                }
-        ) {
-            if (rightIcon != 0) {
-                Image(painter = painterResource(id = rightIcon), contentDescription = "iconDesc")
-            }
-        }
     }
 }
 
 @Composable
-fun RoundedLabelInput(
+fun AssetLabelView(
     modifier: Modifier,
     titleText: String,
     titleColor: Color = colorResource(id = R.color.external_wallets_view_add_wallet_input_title_color),
     titleSize: TextUnit = 15.5.sp,
     titleWeight: Int = 400,
-    inputState: MutableState<TextFieldValue>,
-    placeholder: String = "",
-    rightIcon: Int = 0,
-    rightIconClick: () -> Unit = {}
+    asset: AssetBankModel,
+    backgroundColor: Color = colorResource(id = R.color.external_wallets_view_add_wallet_input_color),
+    fontSize: TextUnit = 19.sp,
+    weight: Int = 400,
+    textColor: Color = Color.Black
 ) {
     ConstraintLayout(
         modifier = modifier
     ) {
-        val (title, input) = createRefs()
+        val (title, select) = createRefs()
 
         Text(
             text = titleText,
@@ -137,18 +122,20 @@ fun RoundedLabelInput(
             )
         )
 
-        RoundedInput(
+        AssetView(
+            asset = asset,
             modifier = Modifier
-                .constrainAs(input) {
+                .constrainAs(select) {
                     start.linkTo(parent.start, margin = 0.dp)
                     top.linkTo(title.bottom, margin = 10.dp)
                     end.linkTo(parent.end, margin = 0.dp)
                     height = Dimension.value(60.dp)
                     width = Dimension.fillToConstraints
                 },
-            inputState = inputState,
-            placeholder = placeholder,
-            rightIcon = rightIcon,
-            rightIconClick = rightIconClick)
+            backgroundColor = backgroundColor,
+            fontSize = fontSize,
+            weight = weight,
+            textColor = textColor
+        )
     }
 }

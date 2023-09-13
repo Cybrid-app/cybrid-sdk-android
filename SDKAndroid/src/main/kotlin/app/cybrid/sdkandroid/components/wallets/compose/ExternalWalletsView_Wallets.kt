@@ -2,6 +2,7 @@ package app.cybrid.sdkandroid.components.wallets.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.models.ExternalWalletBankModel
 import app.cybrid.cybrid_api_bank.client.models.TransferBankModel
 import app.cybrid.sdkandroid.R
@@ -36,6 +38,7 @@ import app.cybrid.sdkandroid.ui.Theme.interFont
 import app.cybrid.sdkandroid.ui.lib.RoundedButton
 import app.cybrid.sdkandroid.util.getImageUrl
 import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.launch
 
 @Composable
 fun ExternalWalletsView_Wallets(
@@ -82,6 +85,7 @@ fun ExternalWalletsView_Wallets(
         ) {
             itemsIndexed(items = externalWalletViewModel.externalWalletsActive) { _, item ->
                 ExternalWalletsView_Wallets_Item(
+                    externalWalletViewModel = externalWalletViewModel,
                     wallet = item
                 )
             }
@@ -104,6 +108,7 @@ fun ExternalWalletsView_Wallets(
 
 @Composable
 fun ExternalWalletsView_Wallets_Item(
+    externalWalletViewModel: ExternalWalletViewModel,
     wallet: ExternalWalletBankModel
 ) {
 
@@ -116,7 +121,10 @@ fun ExternalWalletsView_Wallets_Item(
     // -- Content
     Surface(
         modifier = Modifier
-            .height(55.dp),
+            .height(55.dp)
+            .clickable {
+                externalWalletViewModel.goToWalletDetail(wallet)
+            },
         color = Color.Transparent
     ) {
         ConstraintLayout(modifier = Modifier.fillMaxSize()) {

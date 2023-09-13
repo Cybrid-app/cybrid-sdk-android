@@ -3,9 +3,14 @@ package app.cybrid.sdkandroid.ui.lib
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -16,11 +21,16 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -30,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.toSize
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
@@ -49,23 +60,23 @@ fun RoundedSelect(
     weight: Int = 400,
     textColor: Color = Color.Black,
 ) {
-    ConstraintLayout(
+    Box(
         modifier = modifier
     ) {
 
         // -- Vars
-        val (inputLayout, dropdown) = createRefs()
+        val currencyInputWidth = remember { mutableStateOf(Size.Zero) }
 
         // -- Content
         ConstraintLayout(
             modifier = Modifier
-                .constrainAs(inputLayout) {
-                    start.linkTo(parent.start, margin = 0.dp)
-                    top.linkTo(parent.top, margin = 0.dp)
-                    end.linkTo(parent.end, margin = 0.dp)
-                }
+                .fillMaxWidth()
+                .height(60.dp)
                 .clip(shape = RoundedCornerShape(10))
                 .background(backgroundColor)
+                .onGloballyPositioned { coordinates ->
+                    currencyInputWidth.value = coordinates.size.toSize()
+                }
                 .clickable { selectExpandedMutableState.value = !selectExpandedMutableState.value }
         ) {
 
@@ -80,39 +91,43 @@ fun RoundedSelect(
             // -- Content
             if (items.isNotEmpty()) {
 
-                // -- Icon Image
-                val imagePainter = rememberAsyncImagePainter(getImageUrl( items[0].code.lowercase()))
-                Image(
-                    painter = imagePainter,
-                    contentDescription = "imageDesc",
-                    modifier = Modifier
-                        .constrainAs(icon) {
-                            start.linkTo(parent.start, margin = 15.dp)
-                            centerVerticallyTo(parent)
-                            width = Dimension.value(25.dp)
-                            height = Dimension.value(25.dp)
-                        }
-                )
+                selectedAssetMutableState.value?.let {
 
-                // -- Text
-                Text(
-                    text = items[0].name,
-                    modifier = Modifier
-                        .constrainAs(text) {
-                            start.linkTo(parent.start, margin = 55.dp)
-                            end.linkTo(parent.end, margin = 0.dp)
-                            centerVerticallyTo(parent)
-                            width = Dimension.fillToConstraints
-                        },
-                    style = TextStyle(
-                        fontSize = fontSize,
-                        lineHeight = 22.sp,
-                        fontFamily = FontFamily(Font(R.font.inter_regular)),
-                        fontWeight = FontWeight(weight),
-                        color = textColor,
-                        textAlign = TextAlign.Left
+                    // -- Icon Image
+                    val imagePainter = rememberAsyncImagePainter(getImageUrl( it.code.lowercase()))
+                    Image(
+                        painter = imagePainter,
+                        contentDescription = "imageDesc",
+                        modifier = Modifier
+                            .constrainAs(icon) {
+                                start.linkTo(parent.start, margin = 15.dp)
+                                centerVerticallyTo(parent)
+                                width = Dimension.value(25.dp)
+                                height = Dimension.value(25.dp)
+                            }
                     )
-                )
+
+                    // -- Text
+                    Text(
+                        text = it.name,
+                        modifier = Modifier
+                            .constrainAs(text) {
+                                start.linkTo(parent.start, margin = 55.dp)
+                                end.linkTo(parent.end, margin = 0.dp)
+                                centerVerticallyTo(parent)
+                                width = Dimension.fillToConstraints
+                            },
+                        style = TextStyle(
+                            fontSize = fontSize,
+                            lineHeight = 22.sp,
+                            fontFamily = FontFamily(Font(R.font.inter_regular)),
+                            fontWeight = FontWeight(weight),
+                            color = textColor,
+                            textAlign = TextAlign.Left
+                        )
+                    )
+
+                }
 
                 // -- Open/Close Icon
                 Icon(
@@ -125,67 +140,72 @@ fun RoundedSelect(
                             width = Dimension.value(25.dp)
                             height = Dimension.value(25.dp)
                         }
-                        .clickable { selectExpandedMutableState.value = !selectExpandedMutableState.value }
+                        .clickable {
+                            selectExpandedMutableState.value = !selectExpandedMutableState.value
+                        }
                 )
             }
         }
 
+        // -- Dropdown
+        val itemsToUse = if (selectedAssetMutableState.value == null) items
+        else items.filter { it.code != selectedAssetMutableState.value!!.code }
         DropdownMenu(
             expanded = selectExpandedMutableState.value,
             onDismissRequest = { selectExpandedMutableState.value = false },
             modifier = Modifier
-                .constrainAs(dropdown) {
-                    start.linkTo(parent.start, margin = 1.dp)
-                    top.linkTo(inputLayout.bottom, margin = 5.dp)
-                    end.linkTo(parent.end, margin = 1.dp)
-                    width = Dimension.fillToConstraints
-                    height = Dimension.value(150.dp)
-                }
+                .padding(top = 5.dp)
+                .width(with(LocalDensity.current) { currencyInputWidth.value.width.toDp() })
         ) {
-            items.forEach { crypto ->
+            itemsToUse.forEach { asset ->
 
-                val imageName = crypto.code.lowercase()
-                val imagePainter = rememberAsyncImagePainter(getImageUrl(imageName))
                 DropdownMenuItem(
                     onClick = {
+
+                        selectedAssetMutableState.value = asset
                         selectExpandedMutableState.value = false
                     }
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(vertical = 0.dp)
-                    ) {
-
-                        Image(
-                            painter = imagePainter,
-                            contentDescription = "{${crypto.code}}",
-                            modifier = Modifier
-                                .padding(horizontal = 0.dp)
-                                .padding(0.dp)
-                                .size(25.dp),
-                            contentScale = ContentScale.Fit
-                        )
-                        Text(
-                            text = crypto.name,
-                            modifier = Modifier.padding(start = 16.dp),
-                            fontFamily = robotoFont,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp,
-                            color = Color.Black
-                        )
-                        Text(
-                            text = crypto.code,
-                            modifier = Modifier.padding(start = 5.5.dp),
-                            fontFamily = robotoFont,
-                            fontWeight = FontWeight.Normal,
-                            fontSize = 16.sp,
-                            color = colorResource(id = R.color.list_prices_asset_component_code_color)
-                        )
-                    }
+                    RoundedSelect__Item(
+                        asset = asset
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+fun RoundedSelect__Item(
+    asset: AssetBankModel,
+    fontSize: TextUnit = 19.sp,
+    weight: Int = 400,
+    textColor: Color = Color.Black
+) {
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        // -- Icon Image
+        val imagePainter = rememberAsyncImagePainter(getImageUrl( asset.code.lowercase()))
+        Image(
+            painter = imagePainter,
+            contentDescription = "imageDesc",
+            modifier = Modifier.size(25.dp)
+        )
+        // -- Name
+        Text(
+            text = asset.name,
+            modifier = Modifier.padding(start = 15.dp),
+            style = TextStyle(
+                fontSize = fontSize,
+                lineHeight = 22.sp,
+                fontFamily = FontFamily(Font(R.font.inter_regular)),
+                fontWeight = FontWeight(weight),
+                color = textColor,
+                textAlign = TextAlign.Left
+            )
+        )
     }
 }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="list_prices_asset_component_search">Chercher</string>
     <string name="list_prices_asset_component_header_currency">Devise</string>
     <string name="list_prices_asset_component_header_price">Le prix</string>
@@ -63,7 +63,7 @@
     <string name="accounts_view_transfers_withdraw">Retirer</string>
 
     <!-- KYC Component -->
-    <string name="kyc_view_loading_text">Vérification de l\'identité...</string>
+    <string name="kyc_view_loading_text" tools:ignore="TypographyEllipsis">Vérification de l\'identité...</string>
     <string name="kyc_view_required_text">Commencez la vérification d\'identité.</string>
     <string name="kyc_view_verified_text">Vous avez été vérifié!</string>
     <string name="kyc_view_error_text">Impossible de vérifier l\'identité.</string>
@@ -125,5 +125,22 @@
 
     <!-- Wallets Component -->
     <string name="wallets_view_loading_title">Charger vos portefeuilles</string>
+    <string name="wallets_view_create_title">Ajouter un nouveau portefeuille</string>
+    <string name="wallets_view_create_asset_title">Actif</string>
+    <string name="wallets_view_create_name_title">Nom</string>
+    <string name="wallets_view_create_name_placeholder">Entrez le nom du portefeuille</string>
+    <string name="wallets_view_create_address_title">Adresse</string>
+    <string name="wallets_view_create_address_placeholder">Entrez l\'adresse du portefeuille</string>
+    <string name="wallets_view_create_tag_title">Étiqueter</string>
+    <string name="wallets_view_create_tag_placeholder">Saisir la balise</string>
+    <string name="wallets_view_create_name_error">Remplissez le nom pour continuer</string>
+    <string name="wallets_view_create_address_error">Remplissez l\'adresse pour continuer</string>
+    <string name="wallets_view_create_add_button">Ajouter un portefeuille</string>
+    <string name="wallets_view_wallet_title">Mon portefeuille</string>
+    <string name="wallets_view_wallet_delete_button">Supprimer</string>
+    <string name="wallets_view_wallet_recent_transfers_title">Transferts récents</string>
+    <string name="wallets_view_wallet_recent_transfers_empty_label">Aucun transfert n\'a été exécuté.</string>
+    <string name="wallets_view_warning_title">Cybrid n\'est pas responsable de toute perte</string>
+    <string name="wallets_view_warning_label">Vous êtes seul responsable de la saisie correcte de l\'adresse de votre portefeuille public et de tout mémo ou tag associé pour transmettre correctement les actifs cryptographiques en chaîne à votre portefeuille.\n\nVous êtes seul responsable de la mise en uvre de toutes les mesures raisonnables et appropriées pour sécuriser l\'accès à votre portefeuille privé. clé(s) et portefeuille.\n\nLes jetons sont stockés sur des portefeuilles cryptographiques (Portefeuilles). Une clé privée (par exemple, une phrase secrète) est généralement nécessaire pour accéder, contrôler et/ou éliminer les jetons stockés dans votre portefeuille. La perte de l\'accès à la ou aux clés privées associées à votre portefeuille peut entraîner la perte permanente de votre capacité à accéder à vos jetons.\n\nNOUS NE TENONS PAS DE COPIES DE VOTRE OU DE VOS CLÉS PRIVÉES. NOUS NE SERONS PAS RESPONSABLES DE TOUTE PERTE RÉSULTANT DE VOTRE INCAPACITÉ D\'ACCÉDER À VOTRE PORTEFEUILLE ET/OU À VOTRE CLÉ PRIVÉE. NOUS NE SERONS PAS RESPONSABLES DE TOUTE PERTE UNE FOIS LES ACTIFS CRYPTO SONT ENVOYÉS EN CHAÎNE AU PORTEFEUILLE QUE VOUS AVEZ SPÉCIFIÉ.</string>
 
 </resources>
