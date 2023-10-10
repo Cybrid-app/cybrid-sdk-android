@@ -4,6 +4,7 @@ import app.cybrid.cybrid_api_bank.client.apis.ExternalWalletsApi
 import app.cybrid.cybrid_api_bank.client.models.ExternalWalletBankModel
 import app.cybrid.cybrid_api_bank.client.models.ExternalWalletListBankModel
 import app.cybrid.sdkandroid.AppModule
+import app.cybrid.sdkandroid.Mocker
 import java.math.BigDecimal as JavaBigDecimal
 import retrofit2.Response
 import io.mockk.coEvery
@@ -12,9 +13,9 @@ import io.mockk.mockk
 
 object ExternalWalletsApiMock: Mocker {
 
-    fun mock_listExternalWallets(response: Response<ExternalWalletListBankModel>): ExternalWalletsApi {
+    fun mock_listExternalWallets(response: Response<ExternalWalletListBankModel>, init: Boolean = true): ExternalWalletsApi {
 
-        this.init()
+        if (init) { this.init() }
         val mockExternalWalletsApi = mockk<ExternalWalletsApi>()
         coEvery { mockExternalWalletsApi.listExternalWallets(customerGuid = any()) } returns response
         every { AppModule.getClient().createService(ExternalWalletsApi::class.java) } returns mockExternalWalletsApi

@@ -501,7 +501,7 @@ class BigDecimalTest {
         Assert.assertEquals(zero, BigDecimal(0))
     }
 
-    @Test
+    @Test(expected = Exception::class)
     fun test_init_With_Empty() {
 
         // -- Given

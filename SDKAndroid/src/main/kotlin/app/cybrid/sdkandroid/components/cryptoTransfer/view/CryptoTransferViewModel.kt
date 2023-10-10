@@ -1,6 +1,7 @@
 package app.cybrid.sdkandroid.components.cryptoTransfer.view
 
 import android.accounts.Account
+import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -36,9 +37,6 @@ import java.math.BigDecimal as JavaBigDecimal
 
 class CryptoTransferViewModel: ViewModel() {
 
-    // -- Private properties
-    private val modalIsOpen: MutableState<Boolean> = mutableStateOf(false)
-
     // -- Internal properties
     internal val customerGuid = Cybrid.customerGuid
     internal var accounts: List<AccountBankModel> = listOf()
@@ -47,7 +45,6 @@ class CryptoTransferViewModel: ViewModel() {
     internal var pricesPolling: Polling? = null
 
     internal val currentAccount: MutableState<AccountBankModel?> = mutableStateOf(null)
-    internal var currentAsset: AssetBankModel? = null
     internal var currentWallet: ExternalWalletBankModel? = null
     internal val currentQuote: MutableState<QuoteBankModel?> = mutableStateOf(null)
     internal val currentTransfer: MutableState<TransferBankModel?> = mutableStateOf(null)
@@ -62,6 +59,8 @@ class CryptoTransferViewModel: ViewModel() {
     val uiState: MutableState<CryptoTransferView.State> = mutableStateOf(CryptoTransferView.State.LOADING)
     val modalUiState: MutableState<CryptoTransferView.ModalState> = mutableStateOf(
         CryptoTransferView.ModalState.LOADING)
+    val modalIsOpen: MutableState<Boolean> = mutableStateOf(false)
+    var modalErrorString: String = ""
 
     // -- Init method
     fun initComponent() {
@@ -110,7 +109,7 @@ class CryptoTransferViewModel: ViewModel() {
                 val waitFor = scope.async {
 
                     val walletsResponse = getResult {
-                        walletsService.listExternalWallets(perPage = JavaBigDecimal(50), customerGuid = customerGuid)
+                        walletsService.listExternalWallets(customerGuid = customerGuid)
                     }
                     walletsResponse.let { response ->
                         if (isSuccessful(response.code ?: 500)) {
@@ -256,13 +255,6 @@ class CryptoTransferViewModel: ViewModel() {
         return accountValue
     }
 
-    internal fun changeCurrentAccount(account: AccountBankModel) {
-
-        val assetCode = account.asset ?: ""
-        val asset = Cybrid.assets.find { it.code == assetCode }
-        this.currentAsset = asset
-    }
-
     // -- Quote Methods
     internal fun createPostQuoteBankModel(amount: String): PostQuoteBankModel? {
 
@@ -287,27 +279,30 @@ class CryptoTransferViewModel: ViewModel() {
     internal fun calculatePreQuote() {
 
         this.amountWithPriceErrorObservable.value = false
+
         val assetCode = this.currentAccount.value?.asset
+        val asset = Cybrid.assets.find { it.code == assetCode }
+        if (asset == null) {
+            this.amountWithPriceObservable.value = "0"
+            this.modalErrorString = CryptoTransferViewModelErrors.assetNotFoundError()
+            return
+        }
         val counterAsset = Cybrid.assets.find { it.code == "USD" }
-        val symbol = "${assetCode}-${counterAsset?.code}"
+        val symbol = "${asset.code}-${counterAsset!!.code}"
+
         try {
 
             val amount = BigDecimal(this.currentAmountInput)
-            val assetToUse = if (isTransferInFiat.value) counterAsset else this.currentAsset
-            if (assetToUse == null) {
-                this.amountWithPriceObservable.value = "0"
-                return
-            }
 
-            val assetToConvert = if (isTransferInFiat.value) this.currentAsset else counterAsset
-            if (assetToConvert == null) {
-                this.amountWithPriceObservable.value = "0"
-                return
-            }
+            // -- Assets
+            val assetToUse = if (isTransferInFiat.value) counterAsset else asset
+            val assetToConvert = if (isTransferInFiat.value) asset else counterAsset
 
+            // -- Buy Price
             val buyPrice = this.getPrice(symbol).buyPrice
             if (buyPrice == null) {
                 this.amountWithPriceObservable.value = "0"
+                this.modalErrorString = CryptoTransferViewModelErrors.buyPriceError()
                 return
             }
 
@@ -317,10 +312,6 @@ class CryptoTransferViewModel: ViewModel() {
                 buyPrice.toBigDecimal(),
                 if (isTransferInFiat.value) AssetBankModel.Type.fiat else AssetBankModel.Type.crypto
             )
-            if (tradeValue == BigDecimal.zero()) {
-                this.amountWithPriceObservable.value = "0"
-                return
-            }
 
             val accountBalance = this.currentAccount.value?.platformBalance?.toBigDecimal() ?: BigDecimal.zero()
 
@@ -341,6 +332,7 @@ class CryptoTransferViewModel: ViewModel() {
 
         } catch(e: Exception) {
             this.amountWithPriceObservable.value = "0"
+            this.modalErrorString = CryptoTransferViewModelErrors.amountError()
         }
     }
 
@@ -352,7 +344,7 @@ class CryptoTransferViewModel: ViewModel() {
         return PostTransferBankModel(
             quoteGuid = currentQuote.guid!!,
             transferType = PostTransferBankModel.TransferType.crypto,
-            externalBankAccountGuid = currentWallet.guid!!
+            externalWalletGuid = currentWallet.guid!!
         )
     }
 
@@ -384,4 +376,11 @@ class CryptoTransferViewModel: ViewModel() {
     internal fun resetAmountInput(amount: String = "") {
         this.amountInputObservable.value = amount
     }
+}
+
+internal object CryptoTransferViewModelErrors {
+
+    fun assetNotFoundError(): String { return "Asset not found" }
+    fun amountError(): String { return "Amount has to be numeric" }
+    fun buyPriceError(): String { return "No price data at this moment" }
 }

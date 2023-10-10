@@ -4,6 +4,7 @@ import app.cybrid.cybrid_api_bank.client.apis.TransfersApi
 import app.cybrid.cybrid_api_bank.client.models.TransferBankModel
 import app.cybrid.cybrid_api_bank.client.models.TransferListBankModel
 import app.cybrid.sdkandroid.AppModule
+import app.cybrid.sdkandroid.Mocker
 import java.math.BigDecimal as JavaBigDecimal
 import io.mockk.coEvery
 import io.mockk.every

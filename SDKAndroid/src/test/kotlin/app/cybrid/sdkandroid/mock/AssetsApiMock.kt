@@ -4,6 +4,7 @@ import app.cybrid.cybrid_api_bank.client.apis.AssetsApi
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.AssetListBankModel
 import app.cybrid.sdkandroid.AppModule
+import app.cybrid.sdkandroid.Mocker
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
