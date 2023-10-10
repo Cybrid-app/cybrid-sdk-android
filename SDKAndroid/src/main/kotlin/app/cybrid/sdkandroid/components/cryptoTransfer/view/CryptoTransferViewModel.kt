@@ -23,6 +23,7 @@ import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.CryptoTransferView
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.core.BigDecimal
+import app.cybrid.sdkandroid.core.BigDecimalPipe
 import app.cybrid.sdkandroid.core.toBigDecimal
 import app.cybrid.sdkandroid.util.Logger
 import app.cybrid.sdkandroid.util.LoggerEvents
@@ -287,11 +288,60 @@ class CryptoTransferViewModel: ViewModel() {
 
         this.amountWithPriceErrorObservable.value = false
         val assetCode = this.currentAccount.value?.asset
-        val counterAssetCode = "USD"
-        val symbol = "${assetCode}-${counterAssetCode}"
-        val amount = BigDecimal(this.currentAmountInput)
+        val counterAsset = Cybrid.assets.find { it.code == "USD" }
+        val symbol = "${assetCode}-${counterAsset?.code}"
+        try {
 
-        //if (amount.value) {}
+            val amount = BigDecimal(this.currentAmountInput)
+            val assetToUse = if (isTransferInFiat.value) counterAsset else this.currentAsset
+            if (assetToUse == null) {
+                this.amountWithPriceObservable.value = "0"
+                return
+            }
+
+            val assetToConvert = if (isTransferInFiat.value) this.currentAsset else counterAsset
+            if (assetToConvert == null) {
+                this.amountWithPriceObservable.value = "0"
+                return
+            }
+
+            val buyPrice = this.getPrice(symbol).buyPrice
+            if (buyPrice == null) {
+                this.amountWithPriceObservable.value = "0"
+                return
+            }
+
+            val amountFromInput = AssetPipe.transform(amount, assetToUse, AssetPipe.AssetPipeBase)
+            val tradeValue = AssetPipe.trade(
+                amountFromInput,
+                buyPrice.toBigDecimal(),
+                if (isTransferInFiat.value) AssetBankModel.Type.fiat else AssetBankModel.Type.crypto
+            )
+            if (tradeValue == BigDecimal.zero()) {
+                this.amountWithPriceObservable.value = "0"
+                return
+            }
+
+            val accountBalance = this.currentAccount.value?.platformBalance?.toBigDecimal() ?: BigDecimal.zero()
+
+            // -- Validation of balance
+            if (this.isTransferInFiat.value) {
+                if (tradeValue > accountBalance) {
+                    this.amountWithPriceErrorObservable.value = true
+                }
+            } else {
+                if (amountFromInput > accountBalance) {
+                    this.amountWithPriceErrorObservable.value = true
+                }
+            }
+
+            // -- Values to show
+            val tradeValueFormatted = BigDecimalPipe.transform(tradeValue, assetToConvert)
+            this.amountWithPriceObservable.value = tradeValueFormatted
+
+        } catch(e: Exception) {
+            this.amountWithPriceObservable.value = "0"
+        }
     }
 
     // -- Transfer Methods
