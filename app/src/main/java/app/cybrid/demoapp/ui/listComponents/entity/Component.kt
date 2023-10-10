@@ -50,6 +50,11 @@ class Component() {
             val externalWalletComponent = Component(6, externalWalletsTitle ?: "")
             components.add(externalWalletComponent)
 
+            // -- Crypto Transfer Component
+            val cryptoTransferTitle = App.context?.getString(R.string.activity_list_components_crypto_transfer_component)
+            val cryptoTransferComponent = Component(7, cryptoTransferTitle ?: "")
+            components.add(cryptoTransferComponent)
+
             // --
             return components
         }
