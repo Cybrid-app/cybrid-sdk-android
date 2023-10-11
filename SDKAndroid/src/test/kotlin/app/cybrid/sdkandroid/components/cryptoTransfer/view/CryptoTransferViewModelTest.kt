@@ -51,10 +51,6 @@ class CryptoTransferViewModelTest: BaseTest() {
         // -- When
         cryptoTransferViewModel.fetchAccounts()
 
-        // -- Verify
-        //coVerify { mockAccountsApi.listAccounts(perPage = JavaBigDecimal(50), customerGuid = customerGuid) }
-        //coVerify { mockWalletsApi.listExternalWallets(customerGuid = customerGuid) }
-
         // -- Then
         Assert.assertFalse(cryptoTransferViewModel.accounts.isEmpty())
         Assert.assertFalse(cryptoTransferViewModel.wallets.isEmpty())
@@ -347,7 +343,6 @@ class CryptoTransferViewModelTest: BaseTest() {
     fun test_createPostTransferBankModel() {
 
         // -- Given
-        val customerGuid = Cybrid.customerGuid
         val cryptoTransferViewModel = CryptoTransferViewModel()
 
         // -- Case: Current Quote is null
@@ -369,5 +364,103 @@ class CryptoTransferViewModelTest: BaseTest() {
         Assert.assertEquals(postTransferBankModel?.quoteGuid, "12345")
         Assert.assertEquals(postTransferBankModel?.transferType, PostTransferBankModel.TransferType.crypto)
         Assert.assertEquals(postTransferBankModel?.externalWalletGuid, "1234")
+    }
+
+    // -- Prices Methods
+    @Test
+    fun test_getPrice() {
+
+        // -- Given
+        val cryptoTransferViewModel = CryptoTransferViewModel()
+
+        // -- Case: prices are empty
+        cryptoTransferViewModel.prices.value = listOf()
+        val priceOne = cryptoTransferViewModel.getPrice("BTC-USD")
+        Assert.assertNull(priceOne.symbol)
+
+        // -- Case: prices doesn't contains MXN
+        cryptoTransferViewModel.prices.value = CryptoTransferApiMockModel.pricesList()
+        val priceTwo = cryptoTransferViewModel.getPrice("BTC-MXN")
+        Assert.assertNull(priceTwo.symbol)
+
+        // -- Case: Good
+        cryptoTransferViewModel.prices.value = CryptoTransferApiMockModel.pricesList()
+        val price = cryptoTransferViewModel.getPrice("BTC-USD")
+        Assert.assertNotNull(price.symbol)
+    }
+
+    // -- View Methods
+    @Test
+    fun test_openModal() {
+
+        // -- Given
+        val cryptoTransferViewModel = CryptoTransferViewModel()
+        cryptoTransferViewModel.modalIsOpen.value = false
+        cryptoTransferViewModel.modalUiState.value = CryptoTransferView.ModalState.ERROR
+
+        // -- When
+        cryptoTransferViewModel.openModal()
+
+        // -- Then
+        Assert.assertTrue(cryptoTransferViewModel.modalIsOpen.value)
+        Assert.assertEquals(cryptoTransferViewModel.modalUiState.value, CryptoTransferView.ModalState.LOADING)
+    }
+
+    @Test
+    fun test_closeModal() {
+
+        // -- Given
+        val cryptoTransferViewModel = CryptoTransferViewModel()
+        cryptoTransferViewModel.modalIsOpen.value = true
+        cryptoTransferViewModel.modalUiState.value = CryptoTransferView.ModalState.ERROR
+
+        // -- When
+        cryptoTransferViewModel.closeModal()
+
+        // -- Then
+        Assert.assertFalse(cryptoTransferViewModel.modalIsOpen.value)
+        Assert.assertEquals(cryptoTransferViewModel.modalUiState.value, CryptoTransferView.ModalState.LOADING)
+    }
+
+    @Test
+    fun test_switchActionHandler() {
+
+        // -- Given
+        val cryptoTransferViewModel = CryptoTransferViewModel()
+        cryptoTransferViewModel.isTransferInFiat.value = true
+
+        // -- When
+        cryptoTransferViewModel.switchActionHandler()
+
+        // -- Then
+        Assert.assertFalse(cryptoTransferViewModel.isTransferInFiat.value)
+    }
+
+    @Test
+    fun test_maxButtonClickHandler() {
+
+        // -- Given
+        val cryptoTransferViewModel = CryptoTransferViewModel()
+        cryptoTransferViewModel.currentAccount.value = CryptoTransferApiMockModel.accountBTC()
+
+        // -- When
+        cryptoTransferViewModel.maxButtonClickHandler()
+
+        // -- Then
+        Assert.assertEquals(cryptoTransferViewModel.amountInputObservable.value, "10000000000000")
+    }
+
+    @Test
+    fun test_resetAmountInput() {
+
+        // -- Given
+        val cryptoTransferViewModel = CryptoTransferViewModel()
+        cryptoTransferViewModel.amountInputObservable.value = "123"
+
+        // -- When
+        cryptoTransferViewModel.resetAmountInput("555")
+
+        // -- Then
+        Assert.assertEquals(cryptoTransferViewModel.amountInputObservable.value, "555")
     }
 }

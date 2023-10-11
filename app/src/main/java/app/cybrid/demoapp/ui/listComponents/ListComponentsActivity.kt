@@ -9,9 +9,7 @@ import app.cybrid.demoapp.core.App
 import app.cybrid.demoapp.listener.ComponentListener
 import app.cybrid.demoapp.ui.listComponents.adapter.ListComponentsAdapter
 import app.cybrid.demoapp.ui.listComponents.entity.Component
-import app.cybrid.demoapp.ui.listPricesComponent.ListPricesAssetsComponentActivity
-import app.cybrid.demoapp.ui.listPricesComponent.ListPricesComponentActivity
-import app.cybrid.sdkandroid.CryptoTransferActivity
+import app.cybrid.sdkandroid.components.activity.CryptoTransferActivity
 import app.cybrid.sdkandroid.components.activity.*
 
 class ListComponentsActivity : AppCompatActivity(), ComponentListener {

@@ -1,8 +1,9 @@
-package app.cybrid.sdkandroid
+package app.cybrid.sdkandroid.components.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
+import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.CryptoTransferView
 import app.cybrid.sdkandroid.components.cryptoTransfer.view.CryptoTransferViewModel
 

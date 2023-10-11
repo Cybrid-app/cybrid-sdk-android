@@ -62,7 +62,7 @@ object AssetPipe {
      *      (input BTC * $n USD) / 1 BTC
      * fiat:
      *      1 BTC - $n USD
-     *      ?     - input USD
+     *      ?     - input USD (formatted)
      *      (input USD * 1 BTC) / $n USD
      * **/
     fun trade(input: BigDecimal, price: BigDecimal, base: AssetBankModel.Type, decimals: BigDecimal = BigDecimal(2)): BigDecimal {
