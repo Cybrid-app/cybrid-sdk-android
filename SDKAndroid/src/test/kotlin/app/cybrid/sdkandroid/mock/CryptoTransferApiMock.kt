@@ -150,8 +150,8 @@ object CryptoTransferApiMockModel {
     fun btcUsdPrice(): SymbolPriceBankModel {
         return SymbolPriceBankModel(
             symbol = "BTC-USD",
-            buyPrice = JavaBigDecimal(1000000),
-            sellPrice = JavaBigDecimal(2000000)
+            buyPrice = JavaBigDecimal(2738635),
+            sellPrice = JavaBigDecimal(2738635)
         )
     }
 
@@ -166,8 +166,8 @@ object CryptoTransferApiMockModel {
     fun ethUsdPrice(): SymbolPriceBankModel {
         return SymbolPriceBankModel(
             symbol = "ETH-USD",
-            buyPrice = JavaBigDecimal(100000),
-            sellPrice = JavaBigDecimal(2000000)
+            buyPrice = JavaBigDecimal(155729),
+            sellPrice = JavaBigDecimal(155729)
         )
     }
 

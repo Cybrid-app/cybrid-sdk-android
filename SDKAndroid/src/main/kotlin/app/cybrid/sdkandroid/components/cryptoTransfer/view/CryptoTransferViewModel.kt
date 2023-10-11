@@ -299,36 +299,45 @@ class CryptoTransferViewModel: ViewModel() {
             val assetToConvert = if (isTransferInFiat.value) asset else counterAsset
 
             // -- Buy Price
-            val buyPrice = this.getPrice(symbol).buyPrice
-            if (buyPrice == null) {
+            val sellPrice = this.getPrice(symbol).sellPrice
+            if (sellPrice == null) {
                 this.amountWithPriceObservable.value = "0"
                 this.modalErrorString = CryptoTransferViewModelErrors.buyPriceError()
                 return
             }
 
-            val amountFromInput = AssetPipe.transform(amount, assetToUse, AssetPipe.AssetPipeBase)
-            val tradeValue = AssetPipe.trade(
-                amountFromInput,
-                buyPrice.toBigDecimal(),
-                if (isTransferInFiat.value) AssetBankModel.Type.fiat else AssetBankModel.Type.crypto
-            )
+            // -- Trade Value
+            val amountFromInput = if (isTransferInFiat.value) {
+                AssetPipe.transform(amount, counterAsset, AssetPipe.AssetPipeBase)
+            } else {
+                amount
+            }
 
+            val tradeValue = AssetPipe.trade(
+                input = amountFromInput,
+                price = sellPrice.toBigDecimal(),
+                base = if (isTransferInFiat.value) AssetBankModel.Type.fiat else AssetBankModel.Type.crypto,
+                decimals = assetToConvert.decimals.toBigDecimal()
+            )
             val accountBalance = this.currentAccount.value?.platformBalance?.toBigDecimal() ?: BigDecimal.zero()
 
             // -- Validation of balance
-            if (this.isTransferInFiat.value) {
-                if (tradeValue > accountBalance) {
-                    this.amountWithPriceErrorObservable.value = true
-                }
-            } else {
+            if (this.isTransferInFiat.value) { // Input example: 1 USD
+
+                this.amountWithPriceObservable.value = tradeValue.toPlainString()
                 if (amountFromInput > accountBalance) {
                     this.amountWithPriceErrorObservable.value = true
                 }
-            }
 
-            // -- Values to show
-            val tradeValueFormatted = BigDecimalPipe.transform(tradeValue, assetToConvert)
-            this.amountWithPriceObservable.value = tradeValueFormatted
+            } else { // Input example: 1 BTC
+
+                val tradeValueFormatted = BigDecimalPipe.transform(tradeValue, assetToConvert)
+                this.amountWithPriceObservable.value = tradeValueFormatted
+                val amountFromInputInFormat = AssetPipe.transform(amountFromInput, asset, AssetPipe.AssetPipeBase)
+                if (amountFromInputInFormat > accountBalance) {
+                    this.amountWithPriceErrorObservable.value = true
+                }
+            }
 
         } catch(e: Exception) {
             this.amountWithPriceObservable.value = "0"

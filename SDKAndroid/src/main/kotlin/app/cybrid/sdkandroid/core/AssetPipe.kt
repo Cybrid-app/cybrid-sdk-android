@@ -65,14 +65,14 @@ object AssetPipe {
      *      ?     - input USD
      *      (input USD * 1 BTC) / $n USD
      * **/
-    fun trade(input: BigDecimal, price: BigDecimal, base: AssetBankModel.Type): BigDecimal {
+    fun trade(input: BigDecimal, price: BigDecimal, base: AssetBankModel.Type, decimals: BigDecimal = BigDecimal(2)): BigDecimal {
 
         var result = BigDecimal(0)
         if (base == AssetBankModel.Type.crypto) {
             result = input.times(price)
         } else {
             if (price != BigDecimal.zero()) {
-                result = input.divL(price)
+                result = input.divL(price).setScale(decimals.toInt())
             }
         }
         return result
