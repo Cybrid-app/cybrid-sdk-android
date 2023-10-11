@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.cryptoTransfer.compose.CryptoTransferView_Content
 import app.cybrid.sdkandroid.components.cryptoTransfer.compose.CryptoTransferView_Loading
 import app.cybrid.sdkandroid.components.cryptoTransfer.view.CryptoTransferViewModel
 import app.cybrid.sdkandroid.components.wallets.compose.ExternalWalletsView_CreateWallet
@@ -38,9 +39,7 @@ class CryptoTransferView @JvmOverloads constructor(
 
         this.cryptoTransferViewModel = cryptoTransferViewModel
         this.initComposeView()
-        /*this.externalWalletViewModel?.viewModelScope?.launch {
-            externalWalletViewModel.fetchExternalWallets()
-        }*/
+        this.cryptoTransferViewModel?.initComponent()
     }
 
     private fun initComposeView() {
@@ -68,6 +67,12 @@ fun CryptoTransferView(
 
             CryptoTransferView.State.LOADING -> {
                 CryptoTransferView_Loading()
+            }
+
+            CryptoTransferView.State.CONTENT -> {
+                CryptoTransferView_Content(
+                    cryptoTransferViewModel = cryptoTransferViewModel
+                )
             }
 
             else -> {

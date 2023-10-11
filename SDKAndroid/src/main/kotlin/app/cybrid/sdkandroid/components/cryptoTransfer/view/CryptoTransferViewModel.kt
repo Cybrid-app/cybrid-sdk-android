@@ -138,7 +138,6 @@ class CryptoTransferViewModel: ViewModel() {
     internal suspend fun fetchPrices() {
 
         val pricesService = AppModule.getClient().createService(PricesApi::class.java)
-        this.uiState.value = CryptoTransferView.State.LOADING
         if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
@@ -156,7 +155,6 @@ class CryptoTransferViewModel: ViewModel() {
 
                             Logger.log(LoggerEvents.DATA_ERROR, "Crypto Transfer Component - Prices")
                             prices.value = listOf()
-                            uiState.value = CryptoTransferView.State.ERROR
                         }
                     }
                 }
