@@ -57,7 +57,8 @@ fun RoundedWalletSelector(
     selectExpandedMutableState: MutableState<Boolean>,
     selectedWalletMutableState: MutableState<ExternalWalletBankModel?>,
     backgroundColor: Color = colorResource(id = R.color.external_wallets_view_add_wallet_input_color),
-    items: List<ExternalWalletBankModel>
+    items: MutableState<List<ExternalWalletBankModel>>,
+    onClick: (wallet: ExternalWalletBankModel) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -88,7 +89,7 @@ fun RoundedWalletSelector(
             }
 
             // -- Content
-            if (items.isNotEmpty()) {
+            if (items.value.isNotEmpty()) {
 
                 selectedWalletMutableState.value?.let {
 
@@ -121,8 +122,8 @@ fun RoundedWalletSelector(
         }
 
         // -- Dropdown
-        val itemsToUse = if (selectedWalletMutableState.value == null) items
-        else items.filter { it.guid != selectedWalletMutableState.value!!.guid }
+        val itemsToUse = if (selectedWalletMutableState.value == null) items.value
+        else items.value.filter { it.guid != selectedWalletMutableState.value!!.guid }
         DropdownMenu(
             expanded = selectExpandedMutableState.value,
             onDismissRequest = { selectExpandedMutableState.value = false },
@@ -134,8 +135,7 @@ fun RoundedWalletSelector(
 
                 DropdownMenuItem(
                     onClick = {
-
-                        selectedWalletMutableState.value = wallet
+                        onClick(wallet)
                         selectExpandedMutableState.value = false
                     }
                 ) {
@@ -199,7 +199,8 @@ fun RoundedWalletSelectorLabelSelector(
     titleColor: Color = colorResource(id = R.color.external_wallets_view_add_wallet_input_title_color),
     titleSize: TextUnit = 15.5.sp,
     titleWeight: Int = 400,
-    items: List<ExternalWalletBankModel>
+    items: MutableState<List<ExternalWalletBankModel>>,
+    onClick: (wallet: ExternalWalletBankModel) -> Unit
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -236,7 +237,8 @@ fun RoundedWalletSelectorLabelSelector(
                 },
             selectExpandedMutableState = selectExpandedMutableState,
             selectedWalletMutableState = selectedWalletMutableState,
-            items = items
+            items = items,
+            onClick = onClick
         )
     }
 }

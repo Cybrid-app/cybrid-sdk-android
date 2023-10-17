@@ -1,7 +1,5 @@
 package app.cybrid.sdkandroid.components.cryptoTransfer.view
 
-import android.accounts.Account
-import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -39,21 +37,23 @@ class CryptoTransferViewModel: ViewModel() {
 
     // -- Internal properties
     internal val customerGuid = Cybrid.customerGuid
+    internal val fiat = Cybrid.assets.find { it.code == "USD" }
     internal var accounts: List<AccountBankModel> = listOf()
     internal var wallets: List<ExternalWalletBankModel> = listOf()
     internal val prices: MutableState<List<SymbolPriceBankModel>> = mutableStateOf(listOf())
     internal var pricesPolling: Polling? = null
 
     internal val currentAccount: MutableState<AccountBankModel?> = mutableStateOf(null)
-    internal var currentWallet: ExternalWalletBankModel? = null
+    internal val currentWallets: MutableState<List<ExternalWalletBankModel>> = mutableStateOf(listOf())
+    internal val currentAsset: MutableState<AssetBankModel?> = mutableStateOf(null)
+    internal var currentWallet: MutableState<ExternalWalletBankModel?> = mutableStateOf(null)
+    internal var currentAmountInput: MutableState<String> = mutableStateOf("")
+    internal val isTransferInFiat: MutableState<Boolean> = mutableStateOf(false)
+    internal val preQuoteValueState: MutableState<String> = mutableStateOf("")
+    internal val preQuoteValueHasErrorState: MutableState<Boolean> = mutableStateOf(false)
+
     internal val currentQuote: MutableState<QuoteBankModel?> = mutableStateOf(null)
     internal val currentTransfer: MutableState<TransferBankModel?> = mutableStateOf(null)
-
-    internal val isTransferInFiat: MutableState<Boolean> = mutableStateOf(false)
-    internal var currentAmountInput: String = ""
-    internal val amountInputObservable: MutableState<String> = mutableStateOf("")
-    internal val amountWithPriceObservable: MutableState<String> = mutableStateOf("")
-    internal val amountWithPriceErrorObservable: MutableState<Boolean> = mutableStateOf(false)
 
     // -- Public properties
     val uiState: MutableState<CryptoTransferView.State> = mutableStateOf(CryptoTransferView.State.LOADING)
@@ -83,8 +83,18 @@ class CryptoTransferViewModel: ViewModel() {
                     accountsResponse.let { response ->
                         if (isSuccessful(response.code ?: 500)) {
 
+                            // -- Log
                             Logger.log(LoggerEvents.DATA_FETCHED, "Crypto Transfer Component - Accounts")
+
+                            // -- Set accounts (Only trading accounts)
                             accounts = response.data?.objects ?: listOf()
+                            accounts = accounts.filter { it.type == AccountBankModel.Type.trading }
+                                .sortedBy { it.asset }
+
+                            // -- Choosing first account
+                            if (accounts.isNotEmpty()) { changeCurrentAccount(accounts.first()) }
+
+                            // -- Fetch External Wallets
                             fetchExternalWallets()
 
                         } else {
@@ -114,12 +124,16 @@ class CryptoTransferViewModel: ViewModel() {
                     walletsResponse.let { response ->
                         if (isSuccessful(response.code ?: 500)) {
 
+                            // -- Log
                             Logger.log(LoggerEvents.DATA_FETCHED, "Crypto Transfer Component - Wallets")
+
+                            // -- Wallets set (Only active wallets)
                             val allWallets = response.data?.objects ?: listOf()
                             wallets = allWallets.filter {
                                 it.state != ExternalWalletBankModel.State.deleting &&
                                 it.state != ExternalWalletBankModel.State.deleted
-                            }
+                            }.sortedBy { it.name }
+                            if (currentAccount.value != null) { changeCurrentAccount(currentAccount.value!!) }
                             uiState.value = CryptoTransferView.State.CONTENT
 
                         } else {
@@ -242,6 +256,23 @@ class CryptoTransferViewModel: ViewModel() {
     }
 
     // -- Accounts Methods
+    internal fun changeCurrentAccount(account: AccountBankModel) {
+
+        this.currentAccount.value = account
+        val assetCode = this.currentAccount.value?.asset ?: ""
+
+        // -- Changing current wallets
+        this.currentWallets.value = this.wallets.filter { it.asset == assetCode }
+        this.currentWallet.value = if (this.currentWallets.value.isEmpty()) null
+        else this.currentWallets.value.first()
+
+        // -- Changing current asset
+        this.currentAsset.value = Cybrid.assets.find { it.code == assetCode }
+
+        // -- Setting as no fiat
+        this.isTransferInFiat.value = false
+    }
+
     internal fun getMaxAmountOfAccount(): String {
 
         var accountValue = "0"
@@ -249,7 +280,7 @@ class CryptoTransferViewModel: ViewModel() {
         val assetCode = account.asset ?: return accountValue
         val asset = Cybrid.assets.find { it.code == assetCode } ?: return accountValue
         val accountBalance = account.platformBalance ?: return accountValue
-        accountValue = AssetPipe.transform(accountBalance.toBigDecimal(), asset, AssetPipe.AssetPipeBase).toPlainString()
+        accountValue = AssetPipe.transform(accountBalance.toBigDecimal(), asset, AssetPipe.AssetPipeTrade).toPlainString()
         return accountValue
     }
 
@@ -276,12 +307,12 @@ class CryptoTransferViewModel: ViewModel() {
 
     internal fun calculatePreQuote() {
 
-        this.amountWithPriceErrorObservable.value = false
+        this.preQuoteValueHasErrorState.value = false
 
         val assetCode = this.currentAccount.value?.asset
-        val asset = Cybrid.assets.find { it.code == assetCode }
+        val asset = this.currentAsset.value
         if (asset == null) {
-            this.amountWithPriceObservable.value = "0"
+            this.preQuoteValueState.value = "0"
             this.modalErrorString = CryptoTransferViewModelErrors.assetNotFoundError()
             return
         }
@@ -290,7 +321,7 @@ class CryptoTransferViewModel: ViewModel() {
 
         try {
 
-            val amount = BigDecimal(this.currentAmountInput)
+            val amount = BigDecimal(this.currentAmountInput.value)
 
             // -- Assets
             val assetToUse = if (isTransferInFiat.value) counterAsset else asset
@@ -299,7 +330,7 @@ class CryptoTransferViewModel: ViewModel() {
             // -- Buy Price
             val sellPrice = this.getPrice(symbol).sellPrice
             if (sellPrice == null) {
-                this.amountWithPriceObservable.value = "0"
+                this.preQuoteValueState.value = "0"
                 this.modalErrorString = CryptoTransferViewModelErrors.buyPriceError()
                 return
             }
@@ -322,23 +353,27 @@ class CryptoTransferViewModel: ViewModel() {
             // -- Validation of balance
             if (this.isTransferInFiat.value) { // Input example: 1 USD
 
-                this.amountWithPriceObservable.value = tradeValue.toPlainString()
-                if (amountFromInput > accountBalance) {
-                    this.amountWithPriceErrorObservable.value = true
+                this.preQuoteValueState.value = tradeValue.toPlainString()
+
+                val accountBalanceInFormat = AssetPipe.transform(accountBalance, asset, AssetPipe.AssetPipeTrade)
+                if (tradeValue > accountBalanceInFormat) {
+                    this.preQuoteValueHasErrorState.value = true
                 }
 
             } else { // Input example: 1 BTC
 
-                val tradeValueFormatted = BigDecimalPipe.transform(tradeValue, assetToConvert)
-                this.amountWithPriceObservable.value = tradeValueFormatted
+                var tradeValueFormatted = BigDecimalPipe.transform(tradeValue, assetToConvert)
+                tradeValueFormatted += " ${assetToConvert.code}"
+                this.preQuoteValueState.value = tradeValueFormatted
+
                 val amountFromInputInFormat = AssetPipe.transform(amountFromInput, asset, AssetPipe.AssetPipeBase)
                 if (amountFromInputInFormat > accountBalance) {
-                    this.amountWithPriceErrorObservable.value = true
+                    this.preQuoteValueHasErrorState.value = true
                 }
             }
 
         } catch(e: Exception) {
-            this.amountWithPriceObservable.value = "0"
+            this.preQuoteValueState.value = "0"
             this.modalErrorString = CryptoTransferViewModelErrors.amountError()
         }
     }
@@ -351,7 +386,7 @@ class CryptoTransferViewModel: ViewModel() {
         return PostTransferBankModel(
             quoteGuid = currentQuote.guid!!,
             transferType = PostTransferBankModel.TransferType.crypto,
-            externalWalletGuid = currentWallet.guid!!
+            externalWalletGuid = currentWallet.value?.guid!!
         )
     }
 
@@ -371,17 +406,13 @@ class CryptoTransferViewModel: ViewModel() {
         this.modalUiState.value = CryptoTransferView.ModalState.LOADING
     }
 
-    fun switchActionHandler() {
-        this.isTransferInFiat.value = !this.isTransferInFiat.value
-    }
-
     fun maxButtonClickHandler() {
         val amount = this.getMaxAmountOfAccount()
         this.resetAmountInput(amount)
     }
 
     internal fun resetAmountInput(amount: String = "") {
-        this.amountInputObservable.value = amount
+        this.currentAmountInput.value = amount
     }
 }
 

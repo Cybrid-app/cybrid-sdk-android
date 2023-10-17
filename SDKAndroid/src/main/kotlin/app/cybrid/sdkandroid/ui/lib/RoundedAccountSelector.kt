@@ -57,7 +57,8 @@ fun RoundedAccountSelector(
     selectExpandedMutableState: MutableState<Boolean>,
     selectedAccountMutableState: MutableState<AccountBankModel?>,
     backgroundColor: Color = colorResource(id = R.color.external_wallets_view_add_wallet_input_color),
-    items: List<AccountBankModel>
+    items: List<AccountBankModel>,
+    onClick: (account: AccountBankModel) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -134,9 +135,8 @@ fun RoundedAccountSelector(
 
                 DropdownMenuItem(
                     onClick = {
-
-                        selectedAccountMutableState.value = account
                         selectExpandedMutableState.value = false
+                        onClick(account)
                     }
                 ) {
                     RoundedAccountSelector__Item(
@@ -218,7 +218,8 @@ fun RoundedAccountLabelSelector(
     titleColor: Color = colorResource(id = R.color.external_wallets_view_add_wallet_input_title_color),
     titleSize: TextUnit = 15.5.sp,
     titleWeight: Int = 400,
-    items: List<AccountBankModel>
+    items: List<AccountBankModel>,
+    onClick: (account: AccountBankModel) -> Unit
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -255,7 +256,8 @@ fun RoundedAccountLabelSelector(
                 },
             selectExpandedMutableState = selectExpandedMutableState,
             selectedAccountMutableState = selectedAccountMutableState,
-            items = items
+            items = items,
+            onClick = onClick
         )
     }
 }
