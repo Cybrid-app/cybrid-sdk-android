@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.viewModelScope
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.cryptoTransfer.view.CryptoTransferViewModel
@@ -29,6 +30,7 @@ import app.cybrid.sdkandroid.ui.lib.RoundedAccountLabelSelector
 import app.cybrid.sdkandroid.ui.lib.RoundedWalletSelectorLabelSelector
 import app.cybrid.sdkandroid.util.getImageUrl
 import coil.compose.rememberAsyncImagePainter
+import kotlinx.coroutines.launch
 
 @Composable
 fun CryptoTransferView_Content(cryptoTransferViewModel: CryptoTransferViewModel) {
@@ -155,7 +157,8 @@ fun CryptoTransferView_Content(cryptoTransferViewModel: CryptoTransferViewModel)
             }
 
             // -- Continue Button
-            if (!cryptoTransferViewModel.preQuoteValueHasErrorState.value) {
+            if (!cryptoTransferViewModel.preQuoteValueHasErrorState.value &&
+                cryptoTransferViewModel.currentAmountInput.value.isNotEmpty()) {
                 ContinueButton(
                     modifier = Modifier
                         .constrainAs(continueButton) {
@@ -165,7 +168,15 @@ fun CryptoTransferView_Content(cryptoTransferViewModel: CryptoTransferViewModel)
                             width = Dimension.fillToConstraints
                             height = Dimension.value(48.dp)
                         },
-                    text = "Continue"
+                    text = "Continue",
+                    onClick = {
+                        cryptoTransferViewModel.viewModelScope.let {
+                            it.launch {
+                                cryptoTransferViewModel.openModal()
+                                cryptoTransferViewModel.createQuote(cryptoTransferViewModel.currentAmountInput.value)
+                            }
+                        }
+                    }
                 )
             }
         }

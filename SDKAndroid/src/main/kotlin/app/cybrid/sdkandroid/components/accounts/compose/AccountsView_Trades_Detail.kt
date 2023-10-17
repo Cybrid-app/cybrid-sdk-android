@@ -22,7 +22,7 @@ import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
-import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
+import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog_
 import app.cybrid.sdkandroid.util.getAnnotatedStyle
 import app.cybrid.sdkandroid.util.getDateInFormat
 import app.cybrid.sdkandroid.util.getImageUrl
@@ -36,7 +36,7 @@ fun AccountsView_Trades_Detail(
 ) {
 
     // -- Content
-    BottomSheetDialog(
+    BottomSheetDialog_(
         onDismissRequest = {
             accountsViewModel.dismissTradeDetail()
         }

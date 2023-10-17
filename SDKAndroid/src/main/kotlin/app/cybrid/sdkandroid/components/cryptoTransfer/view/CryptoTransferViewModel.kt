@@ -65,7 +65,7 @@ class CryptoTransferViewModel: ViewModel() {
     // -- Init method
     fun initComponent() {
         this.viewModelScope.launch { fetchAccounts() }
-        pricesPolling = Polling { viewModelScope.launch { fetchPrices() } }
+        pricesPolling = Polling(initialDelay = 0L) { viewModelScope.launch { fetchPrices() } }
     }
 
     // -- Server methods
@@ -188,7 +188,7 @@ class CryptoTransferViewModel: ViewModel() {
         }
 
         val quotesService = AppModule.getClient().createService(QuotesApi::class.java)
-        this.uiState.value = CryptoTransferView.State.LOADING
+        this.modalUiState.value = CryptoTransferView.ModalState.LOADING
         if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
@@ -241,6 +241,7 @@ class CryptoTransferViewModel: ViewModel() {
                             Logger.log(LoggerEvents.DATA_FETCHED, "Crypto Transfer Component - TRANSFER")
                             currentTransfer.value = response.data
                             modalUiState.value = CryptoTransferView.ModalState.DONE
+                            fetchAccounts()
 
                         } else {
 

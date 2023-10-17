@@ -1,6 +1,5 @@
 package app.cybrid.sdkandroid.components.bankAccounts.compose
 
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,7 +13,7 @@ import app.cybrid.cybrid_api_bank.client.models.PatchExternalBankAccountBankMode
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.BankAccountsView
 import app.cybrid.sdkandroid.components.bankAccounts.view.BankAccountsViewModel
-import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
+import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog_
 import com.plaid.link.OpenPlaidLink
 import com.plaid.link.result.LinkExit
 import com.plaid.link.result.LinkSuccess
@@ -46,7 +45,7 @@ fun BankAccountsView_Modal(
     bankAccountsViewModel.getPlaidUpdateResult = getPlaidUpdateResult
 
     // -- Content
-    BottomSheetDialog(
+    BottomSheetDialog_(
         onDismissRequest = {
             bankAccountsViewModel.dismissExternalBankAccountDetail()
         }

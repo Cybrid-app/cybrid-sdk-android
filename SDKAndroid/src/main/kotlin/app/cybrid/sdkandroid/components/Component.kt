@@ -4,10 +4,12 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -84,6 +87,34 @@ open class Component @JvmOverloads constructor(
                         .padding(top = 16.dp)
                         .testTag(Constants.AccountsViewTestTags.Loading.id),
                     color = colorResource(id = R.color.primary_color)
+                )
+            }
+        }
+
+        @Composable
+        fun CreateSuccess(modifier: Modifier, message: String) {
+            Column(
+                modifier = modifier,
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    modifier = Modifier.size(40.dp),
+                    painter = painterResource(id = R.drawable.kyc_verified),
+                    contentDescription = "ic_success_desc")
+                Text(
+                    modifier = Modifier
+                        .padding(top = 16.dp),
+                    text = message,
+                    style = TextStyle(
+                        fontSize = 22.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.inter_regular)),
+                        fontWeight = FontWeight(400),
+                        color = colorResource(id = R.color.black),
+                        textAlign = TextAlign.Center,
+                        letterSpacing = 0.35.sp,
+                    )
                 )
             }
         }

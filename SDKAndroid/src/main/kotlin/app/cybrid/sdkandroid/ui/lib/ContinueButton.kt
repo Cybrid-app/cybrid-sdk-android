@@ -2,6 +2,7 @@ package app.cybrid.sdkandroid.ui.lib
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -28,12 +29,16 @@ import app.cybrid.sdkandroid.R
 @Composable
 fun ContinueButton(
     modifier: Modifier,
-    text: String
+    text: String,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = modifier
-            .background(color = colorResource(id = R.color.primary_color), shape = RoundedCornerShape(size = 10.dp)),
-            //.padding(start = 20.dp, top = 13.dp, end = 20.dp, bottom = 13.dp)
+            .background(
+                color = colorResource(id = R.color.primary_color),
+                shape = RoundedCornerShape(size = 10.dp)
+            )
+            .clickable(onClick = onClick),
         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,
     ) {

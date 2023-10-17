@@ -1,11 +1,16 @@
 package app.cybrid.sdkandroid.core
 
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
+import java.math.BigDecimal as JavaBigDecimal
 
 object AssetPipe {
 
     const val AssetPipeTrade: String = "trade"
     const val AssetPipeBase: String = "base"
+
+    fun transform(value: JavaBigDecimal, asset: AssetBankModel, unit: String) : BigDecimal {
+        return transformAny(value.toBigDecimal(), asset.decimals.toBigDecimal(), unit)
+    }
 
     fun transform(value:BigDecimal, asset: AssetBankModel, unit: String) : BigDecimal {
         return transformAny(value, asset.decimals.toBigDecimal(), unit)
@@ -21,6 +26,10 @@ object AssetPipe {
 
     fun transform(value:BigDecimal, decimals: BigDecimal, unit: String) : BigDecimal {
         return transformAny(value, decimals, unit)
+    }
+
+    fun transform(value: JavaBigDecimal, decimals: BigDecimal, unit: String) : BigDecimal {
+        return transformAny(value.toBigDecimal(), decimals, unit)
     }
 
     fun transform(value:String, decimals: BigDecimal, unit: String) : BigDecimal {

@@ -10,6 +10,7 @@ import app.cybrid.cybrid_api_bank.client.apis.*
 import app.cybrid.cybrid_api_bank.client.models.ExternalWalletBankModel
 import app.cybrid.cybrid_api_bank.client.models.PostExternalWalletBankModel
 import app.cybrid.cybrid_api_bank.client.models.TransferBankModel
+import app.cybrid.cybrid_api_bank.client.models.TransferDestinationAccountBankModel
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.components.ExternalWalletsView
 import app.cybrid.sdkandroid.util.Logger
@@ -17,6 +18,7 @@ import app.cybrid.sdkandroid.util.LoggerEvents
 import app.cybrid.sdkandroid.util.getResult
 import app.cybrid.sdkandroid.util.isSuccessful
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class ExternalWalletViewModel: ViewModel() {
 
@@ -24,7 +26,7 @@ class ExternalWalletViewModel: ViewModel() {
     internal var customerGuid = Cybrid.customerGuid
     internal var externalWallets: List<ExternalWalletBankModel> = listOf()
     internal var externalWalletsActive: List<ExternalWalletBankModel> = listOf()
-    internal var transfers: List<TransferBankModel> = listOf()
+    internal var transfers: MutableState<List<TransferBankModel>> = mutableStateOf(listOf())
 
     // -- Public properties
     var uiState: MutableState<ExternalWalletsView.State> = mutableStateOf(ExternalWalletsView.State.LOADING)
@@ -136,7 +138,8 @@ class ExternalWalletViewModel: ViewModel() {
 
         this.currentWallet = wallet
         this.uiState.value = ExternalWalletsView.State.WALLET
-        this.transfers = listOf()
+        this.viewModelScope.launch { fetchTransfers() }
+
     }
 
     internal suspend fun fetchTransfers() {
@@ -154,13 +157,13 @@ class ExternalWalletViewModel: ViewModel() {
                         if (isSuccessful(response.code ?: 500)) {
 
                             Logger.log(LoggerEvents.DATA_FETCHED, "Transfers")
-                            transfers = response.data?.objects ?: listOf()
-                            transfersUiState.value = ExternalWalletsView.TransfersState.EMPTY
+                            val transfers = response.data?.objects ?: listOf()
+                            getTransfersOfTheWallet(transfers)
 
                         } else {
 
                             Logger.log(LoggerEvents.DATA_ERROR, "Transfers")
-                            transfers = listOf()
+                            transfers.value = listOf()
                             transfersUiState.value = ExternalWalletsView.TransfersState.EMPTY
                         }
                     }
@@ -207,5 +210,29 @@ class ExternalWalletViewModel: ViewModel() {
             }
         }
         this.tagScannedValue.value = tagValue
+    }
+
+    // -- Transfer Method
+    internal fun getTransfersOfTheWallet(transfers: List<TransferBankModel>) {
+
+        if (this.currentWallet != null) {
+
+            var filteredTransfers = transfers.filter { it.transferType == TransferBankModel.TransferType.crypto }
+            filteredTransfers = filteredTransfers.filter {
+                it.destinationAccount?.type == TransferDestinationAccountBankModel.Type.externalWallet &&
+                it.destinationAccount?.guid == this.currentWallet?.guid!!
+            }
+            this.transfers.value = filteredTransfers
+            if (this.transfers.value.isEmpty()) {
+                this.transfersUiState.value = ExternalWalletsView.TransfersState.EMPTY
+            } else {
+                this.transfersUiState.value = ExternalWalletsView.TransfersState.TRANSFERS
+            }
+
+        } else {
+
+            this.transfers.value = listOf()
+            this.transfersUiState.value = ExternalWalletsView.TransfersState.EMPTY
+        }
     }
 }

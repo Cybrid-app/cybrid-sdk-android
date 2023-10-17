@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.activity.KYCActivity
 import app.cybrid.sdkandroid.ui.Theme.interFont
-import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
+import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog_
 
 @Composable
 fun KYCView_Modal_Warning(
@@ -29,7 +29,7 @@ fun KYCView_Modal_Warning(
 ) {
 
     // -- Compose Content
-    BottomSheetDialog(
+    BottomSheetDialog_(
         onDismissRequest = {
             showDialog.value = false
         }

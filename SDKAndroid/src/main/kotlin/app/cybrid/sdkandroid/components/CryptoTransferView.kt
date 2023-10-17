@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.testTag
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.cryptoTransfer.compose.CryptoTransferView_Content
 import app.cybrid.sdkandroid.components.cryptoTransfer.compose.CryptoTransferView_Loading
+import app.cybrid.sdkandroid.components.cryptoTransfer.modal.CryptoTransferModal
 import app.cybrid.sdkandroid.components.cryptoTransfer.view.CryptoTransferViewModel
 import app.cybrid.sdkandroid.components.wallets.compose.ExternalWalletsView_CreateWallet
 import app.cybrid.sdkandroid.components.wallets.compose.ExternalWalletsView_Loading
@@ -78,6 +79,11 @@ fun CryptoTransferView(
             else -> {
                 CryptoTransferView_Loading()
             }
+        }
+
+        // -- Modals
+        if (cryptoTransferViewModel.modalIsOpen.value) {
+            CryptoTransferModal(cryptoTransferViewModel = cryptoTransferViewModel)
         }
     }
 }
