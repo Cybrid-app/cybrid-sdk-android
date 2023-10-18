@@ -3,6 +3,9 @@
 
     <application>
         <activity
+            android:name=".components.activity.CryptoTransferActivity"
+            android:exported="false" />
+        <activity
             android:name=".components.activity.WalletsActivity"
             android:exported="false" />
         <activity

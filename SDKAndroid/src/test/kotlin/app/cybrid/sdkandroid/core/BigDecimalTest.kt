@@ -500,4 +500,17 @@ class BigDecimalTest {
         // -- Then
         Assert.assertEquals(zero, BigDecimal(0))
     }
+
+    @Test(expected = Exception::class)
+    fun test_init_With_Empty() {
+
+        // -- Given
+        val input = ""
+
+        // -- When
+        val bigDecimal = BigDecimal(input)
+
+        // -- Then
+        Assert.assertNotNull(bigDecimal)
+    }
 }

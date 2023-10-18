@@ -1,5 +1,6 @@
 package app.cybrid.sdkandroid.core
 
+import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.sdkandroid.tools.TestConstants
 import io.mockk.MockKAnnotations
 import org.junit.Assert
@@ -114,5 +115,27 @@ class AssetPipeTest {
         Assert.assertEquals(transformCAD2Int, result2)
 
         Assert.assertEquals(transformZero, result3)
+    }
+
+    @Test
+    fun test_preQuote() {
+
+        // -- Given
+        val btcPrice = BigDecimal(2738635)
+
+        // Case: Trade in crypto
+        val oneBTC = BigDecimal(1) // Direct from user_input
+        val tradeOfOneBTC = AssetPipe.preQuote(oneBTC, btcPrice, AssetBankModel.Type.crypto)
+        Assert.assertEquals(tradeOfOneBTC, BigDecimal(2738635))
+
+        // Case: Trade in fiat with price in zero
+        val oneUSD = BigDecimal(100) // In format of USD (convert from user_input)
+        val tradeOfOneUsdWithZeroPrice = AssetPipe.preQuote(oneUSD, BigDecimal.zero(), AssetBankModel.Type.fiat)
+        Assert.assertEquals(tradeOfOneUsdWithZeroPrice, BigDecimal(0))
+
+        // Case: Trade in fiat
+        val twoUSD = BigDecimal(200) // In format of USD (convert from user_input)
+        val tradeOfTwoUsd = AssetPipe.preQuote(twoUSD, btcPrice, AssetBankModel.Type.fiat, BigDecimal(8))
+        Assert.assertEquals(tradeOfTwoUsd, BigDecimal("0.00007302"))
     }
 }

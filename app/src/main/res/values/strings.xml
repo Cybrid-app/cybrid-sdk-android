@@ -20,6 +20,7 @@
     <string name="activity_list_components_kyc_component">KYC Component</string>
     <string name="activity_list_components_bank_accounts_component">Bank Accounts Component</string>
     <string name="activity_list_components_external_wallets_component">External Wallets Component</string>
+    <string name="activity_list_components_crypto_transfer_component">Crypto Transfer Component</string>
 
     <string name="activity_list_prices_assets_component_title">Crypto List Component</string>
     <string name="activity_list_prices_assets_component_sub_title">Crypto List Component - Custom Styles</string>

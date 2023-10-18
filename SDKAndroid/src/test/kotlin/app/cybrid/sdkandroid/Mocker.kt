@@ -1,4 +1,4 @@
-package app.cybrid.sdkandroid.mock
+package app.cybrid.sdkandroid
 
 import app.cybrid.sdkandroid.AppModule
 import io.mockk.mockkObject
