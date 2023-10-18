@@ -53,7 +53,7 @@ object AssetPipe {
     }
 
     /**
-     * Method to trade with buyPrice
+     * Method to calculate preQuote with buyPrice
      * If the price is zero always returns 0
      * The base types:
      * crypto:
@@ -65,7 +65,7 @@ object AssetPipe {
      *      ?     - input USD (formatted)
      *      (input USD * 1 BTC) / $n USD
      * **/
-    fun trade(input: BigDecimal, price: BigDecimal, base: AssetBankModel.Type, decimals: BigDecimal = BigDecimal(2)): BigDecimal {
+    fun preQuote(input: BigDecimal, price: BigDecimal, base: AssetBankModel.Type, decimals: BigDecimal = BigDecimal(2)): BigDecimal {
 
         var result = BigDecimal(0)
         if (base == AssetBankModel.Type.crypto) {

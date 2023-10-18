@@ -313,7 +313,7 @@ class CryptoTransferViewModel: ViewModel() {
                 amount
             }
 
-            val tradeValue = AssetPipe.trade(
+            val tradeValue = AssetPipe.preQuote(
                 input = amountFromInput,
                 price = sellPrice.toBigDecimal(),
                 base = if (isTransferInFiat.value) AssetBankModel.Type.fiat else AssetBankModel.Type.crypto,
