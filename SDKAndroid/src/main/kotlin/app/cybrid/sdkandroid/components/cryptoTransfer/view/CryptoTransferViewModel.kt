@@ -310,7 +310,6 @@ class CryptoTransferViewModel: ViewModel() {
 
         this.preQuoteValueHasErrorState.value = false
 
-        val assetCode = this.currentAccount.value?.asset
         val asset = this.currentAsset.value
         if (asset == null) {
             this.preQuoteValueState.value = "0"
@@ -325,7 +324,6 @@ class CryptoTransferViewModel: ViewModel() {
             val amount = BigDecimal(this.currentAmountInput.value)
 
             // -- Assets
-            val assetToUse = if (isTransferInFiat.value) counterAsset else asset
             val assetToConvert = if (isTransferInFiat.value) asset else counterAsset
 
             // -- Buy Price
@@ -383,7 +381,7 @@ class CryptoTransferViewModel: ViewModel() {
     internal fun createPostTransferBankModel(): PostTransferBankModel? {
 
         val currentQuote = this.currentQuote.value ?: return null
-        val currentWallet = this.currentWallet ?: return null
+        val currentWallet = this.currentWallet
         return PostTransferBankModel(
             quoteGuid = currentQuote.guid!!,
             transferType = PostTransferBankModel.TransferType.crypto,

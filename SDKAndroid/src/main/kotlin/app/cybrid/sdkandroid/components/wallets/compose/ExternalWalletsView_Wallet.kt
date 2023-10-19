@@ -1,6 +1,7 @@
 package app.cybrid.sdkandroid.components.wallets.compose
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
@@ -36,6 +39,7 @@ import app.cybrid.cybrid_api_bank.client.models.PostExternalWalletBankModel
 import app.cybrid.cybrid_api_bank.client.models.TransferBankModel
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.ExternalWalletsView
 import app.cybrid.sdkandroid.components.wallets.view.ExternalWalletViewModel
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.ui.Theme.robotoFont

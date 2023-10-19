@@ -36,7 +36,6 @@ class CryptoTransferViewModelTest: BaseTest() {
     fun test_fetchAccounts() = runTest {
 
         // -- Given
-        val customerGuid = Cybrid.customerGuid
         val accountsMockResponse = CryptoTransferApiMockModel.accountList()
         val accountsResponse = Response.success(accountsMockResponse)
 
@@ -46,10 +45,13 @@ class CryptoTransferViewModelTest: BaseTest() {
         // -- Mock
         val cryptoTransferViewModel = spyk(CryptoTransferViewModel())
         val mockAccountsApi = CryptoTransferApiMock.mock_listAccounts(accountsResponse)
-        val mockWalletsApi = ExternalWalletsApiMock.mock_listExternalWallets(walletsResponse, false)
+        ExternalWalletsApiMock.mock_listExternalWallets(walletsResponse, false)
 
         // -- When
         cryptoTransferViewModel.fetchAccounts()
+
+        // -- Verify
+        coVerify { mockAccountsApi.listAccounts(perPage = any(), customerGuid = any()) }
 
         // -- Then
         Assert.assertFalse(cryptoTransferViewModel.accounts.isEmpty())
@@ -90,7 +92,6 @@ class CryptoTransferViewModelTest: BaseTest() {
     fun test_fetchPrices() = runTest {
 
         // -- Given
-        val customerGuid = Cybrid.customerGuid
         val pricesMockResponse = CryptoTransferApiMockModel.pricesList()
         val pricesResponse = Response.success(pricesMockResponse)
 
@@ -113,7 +114,6 @@ class CryptoTransferViewModelTest: BaseTest() {
     fun test_createQuote() = runTest {
 
         // -- Given
-        val customerGuid = Cybrid.customerGuid
         val postQuoteBankModel = CryptoTransferApiMockModel.postQuote()
         val quoteMockResponse = CryptoTransferApiMockModel.quote()
         val quoteResponse = Response.success(quoteMockResponse)
@@ -143,24 +143,23 @@ class CryptoTransferViewModelTest: BaseTest() {
     fun test_createTransfer() = runTest {
 
         // -- Given
-        val customerGuid = Cybrid.customerGuid
         val transferMockResponse = CryptoTransferApiMockModel.transfer()
         val transferResponse = Response.success(transferMockResponse)
 
         // -- Mock
         val cryptoTransferViewModel = spyk<CryptoTransferViewModel>()
-        val mockTransfersApi = CryptoTransferApiMock.mock_createTransfer(transferResponse)
+        CryptoTransferApiMock.mock_createTransfer(transferResponse)
 
         // -- Case: PostTransferBAnkModel as null
         cryptoTransferViewModel.currentAccount.value = null
-        cryptoTransferViewModel.currentWallet = null
+        cryptoTransferViewModel.currentWallet.value = null
         cryptoTransferViewModel.createTransfer()
         Assert.assertEquals(cryptoTransferViewModel.modalUiState.value, CryptoTransferView.ModalState.ERROR)
         Assert.assertNull(cryptoTransferViewModel.currentTransfer.value)
 
         // -- Case: Good
         cryptoTransferViewModel.currentQuote.value = CryptoTransferApiMockModel.quote()
-        cryptoTransferViewModel.currentWallet = ExternalWalletBankModelMock.mock()
+        cryptoTransferViewModel.currentWallet.value = ExternalWalletBankModelMock.mock()
         cryptoTransferViewModel.createTransfer()
         Assert.assertNotNull(cryptoTransferViewModel.currentTransfer.value)
         Assert.assertEquals(cryptoTransferViewModel.modalUiState.value, CryptoTransferView.ModalState.DONE)
@@ -171,7 +170,6 @@ class CryptoTransferViewModelTest: BaseTest() {
     fun test_getMaxAmountOfAccount() {
 
         // -- Given
-        val customerGuid = Cybrid.customerGuid
         val cryptoTransferViewModel = CryptoTransferViewModel()
 
         // -- Case: Current account null
@@ -244,29 +242,29 @@ class CryptoTransferViewModelTest: BaseTest() {
         // -- Case: currentAccount as null
         cryptoTransferViewModel.modalErrorString = ""
         cryptoTransferViewModel.currentAccount.value = null
-        cryptoTransferViewModel.currentAmountInput = "1"
+        cryptoTransferViewModel.currentAmountInput.value = "1"
         cryptoTransferViewModel.calculatePreQuote()
-        Assert.assertFalse(cryptoTransferViewModel.amountWithPriceErrorObservable.value)
+        Assert.assertFalse(cryptoTransferViewModel.preQuoteValueHasErrorState.value)
         Assert.assertEquals(cryptoTransferViewModel.modalErrorString, CryptoTransferViewModelErrors.assetNotFoundError())
-        Assert.assertEquals(cryptoTransferViewModel.amountWithPriceObservable.value, "0")
+        Assert.assertEquals(cryptoTransferViewModel.preQuoteValueState.value, "0")
 
         // -- Case: currentAccount.asset as null
         cryptoTransferViewModel.modalErrorString = ""
         cryptoTransferViewModel.currentAccount.value = CryptoTransferApiMockModel.accountWithoutAsset()
-        cryptoTransferViewModel.currentAmountInput = "1"
+        cryptoTransferViewModel.currentAmountInput.value = "1"
         cryptoTransferViewModel.calculatePreQuote()
-        Assert.assertFalse(cryptoTransferViewModel.amountWithPriceErrorObservable.value)
+        Assert.assertFalse(cryptoTransferViewModel.preQuoteValueHasErrorState.value)
         Assert.assertEquals(cryptoTransferViewModel.modalErrorString, CryptoTransferViewModelErrors.assetNotFoundError())
-        Assert.assertEquals(cryptoTransferViewModel.amountWithPriceObservable.value, "0")
+        Assert.assertEquals(cryptoTransferViewModel.preQuoteValueState.value, "0")
 
         // -- Case: currentAccount.asset as MXN
         cryptoTransferViewModel.modalErrorString = ""
         cryptoTransferViewModel.currentAccount.value = CryptoTransferApiMockModel.accountMXN()
-        cryptoTransferViewModel.currentAmountInput = "1"
+        cryptoTransferViewModel.currentAmountInput.value = "1"
         cryptoTransferViewModel.calculatePreQuote()
-        Assert.assertFalse(cryptoTransferViewModel.amountWithPriceErrorObservable.value)
+        Assert.assertFalse(cryptoTransferViewModel.preQuoteValueHasErrorState.value)
         Assert.assertEquals(cryptoTransferViewModel.modalErrorString, CryptoTransferViewModelErrors.assetNotFoundError())
-        Assert.assertEquals(cryptoTransferViewModel.amountWithPriceObservable.value, "0")
+        Assert.assertEquals(cryptoTransferViewModel.preQuoteValueState.value, "0")
     }
 
     @Test
@@ -278,11 +276,11 @@ class CryptoTransferViewModelTest: BaseTest() {
         // -- Case: currentAmountInput as String (Hello)
         cryptoTransferViewModel.modalErrorString = ""
         cryptoTransferViewModel.currentAccount.value = CryptoTransferApiMockModel.accountBTC()
-        cryptoTransferViewModel.currentAmountInput = "Hello"
+        cryptoTransferViewModel.currentAmountInput.value = "Hello"
         cryptoTransferViewModel.calculatePreQuote()
-        Assert.assertFalse(cryptoTransferViewModel.amountWithPriceErrorObservable.value)
+        Assert.assertFalse(cryptoTransferViewModel.preQuoteValueHasErrorState.value)
         Assert.assertEquals(cryptoTransferViewModel.modalErrorString, CryptoTransferViewModelErrors.amountError())
-        Assert.assertEquals(cryptoTransferViewModel.amountWithPriceObservable.value, "0")
+        Assert.assertEquals(cryptoTransferViewModel.preQuoteValueState.value, "0")
     }
 
     @Test
@@ -294,12 +292,12 @@ class CryptoTransferViewModelTest: BaseTest() {
         // -- Case: currentAmountInput as String (Hello)
         cryptoTransferViewModel.modalErrorString = ""
         cryptoTransferViewModel.currentAccount.value = CryptoTransferApiMockModel.accountBTC()
-        cryptoTransferViewModel.currentAmountInput = "1"
+        cryptoTransferViewModel.currentAmountInput.value = "1"
         cryptoTransferViewModel.prices.value = CryptoTransferApiMockModel.pricesListWithoutPrices()
         cryptoTransferViewModel.calculatePreQuote()
-        Assert.assertFalse(cryptoTransferViewModel.amountWithPriceErrorObservable.value)
+        Assert.assertFalse(cryptoTransferViewModel.preQuoteValueHasErrorState.value)
         Assert.assertEquals(cryptoTransferViewModel.modalErrorString, CryptoTransferViewModelErrors.buyPriceError())
-        Assert.assertEquals(cryptoTransferViewModel.amountWithPriceObservable.value, "0")
+        Assert.assertEquals(cryptoTransferViewModel.preQuoteValueState.value, "0")
     }
 
     @Test
@@ -311,13 +309,13 @@ class CryptoTransferViewModelTest: BaseTest() {
         // -- Case: currentAmountInput as String (Hello)
         cryptoTransferViewModel.modalErrorString = ""
         cryptoTransferViewModel.currentAccount.value = CryptoTransferApiMockModel.accountBTC()
-        cryptoTransferViewModel.currentAmountInput = "999999"
+        cryptoTransferViewModel.currentAmountInput.value = "999999"
         cryptoTransferViewModel.prices.value = CryptoTransferApiMockModel.pricesList()
         cryptoTransferViewModel.isTransferInFiat.value = true
         cryptoTransferViewModel.calculatePreQuote()
-        Assert.assertTrue(cryptoTransferViewModel.amountWithPriceErrorObservable.value)
+        Assert.assertTrue(cryptoTransferViewModel.preQuoteValueHasErrorState.value)
         Assert.assertEquals(cryptoTransferViewModel.modalErrorString, "")
-        Assert.assertEquals(cryptoTransferViewModel.amountWithPriceObservable.value, "36.51450448")
+        Assert.assertEquals(cryptoTransferViewModel.preQuoteValueState.value, "36.51450448")
     }
 
     @Test
@@ -329,13 +327,13 @@ class CryptoTransferViewModelTest: BaseTest() {
         // -- Case: currentAmountInput as String (Hello)
         cryptoTransferViewModel.modalErrorString = ""
         cryptoTransferViewModel.currentAccount.value = CryptoTransferApiMockModel.accountBTC()
-        cryptoTransferViewModel.currentAmountInput = "1"
+        cryptoTransferViewModel.currentAmountInput.value = "1"
         cryptoTransferViewModel.prices.value = CryptoTransferApiMockModel.pricesList()
         cryptoTransferViewModel.isTransferInFiat.value = false
         cryptoTransferViewModel.calculatePreQuote()
-        Assert.assertTrue(cryptoTransferViewModel.amountWithPriceErrorObservable.value)
+        Assert.assertTrue(cryptoTransferViewModel.preQuoteValueHasErrorState.value)
         Assert.assertEquals(cryptoTransferViewModel.modalErrorString, "")
-        Assert.assertEquals(cryptoTransferViewModel.amountWithPriceObservable.value, "$27,386.35")
+        Assert.assertEquals(cryptoTransferViewModel.preQuoteValueState.value, "$27,386.35")
     }
 
     // -- Transfer Methods
@@ -352,13 +350,13 @@ class CryptoTransferViewModelTest: BaseTest() {
 
         // -- Case: Current wallet is null
         cryptoTransferViewModel.currentQuote.value = CryptoTransferApiMockModel.quote()
-        cryptoTransferViewModel.currentWallet = null
+        cryptoTransferViewModel.currentWallet.value = null
         val postTransferTwo = cryptoTransferViewModel.createPostTransferBankModel()
         Assert.assertNull(postTransferTwo)
 
         // -- Case: Good
         cryptoTransferViewModel.currentQuote.value = CryptoTransferApiMockModel.quote()
-        cryptoTransferViewModel.currentWallet = ExternalWalletBankModelMock.mock()
+        cryptoTransferViewModel.currentWallet.value = ExternalWalletBankModelMock.mock()
         val postTransferBankModel = cryptoTransferViewModel.createPostTransferBankModel()
         Assert.assertNotNull(postTransferBankModel)
         Assert.assertEquals(postTransferBankModel?.quoteGuid, "12345")
@@ -423,20 +421,6 @@ class CryptoTransferViewModelTest: BaseTest() {
     }
 
     @Test
-    fun test_switchActionHandler() {
-
-        // -- Given
-        val cryptoTransferViewModel = CryptoTransferViewModel()
-        cryptoTransferViewModel.isTransferInFiat.value = true
-
-        // -- When
-        cryptoTransferViewModel.switchActionHandler()
-
-        // -- Then
-        Assert.assertFalse(cryptoTransferViewModel.isTransferInFiat.value)
-    }
-
-    @Test
     fun test_maxButtonClickHandler() {
 
         // -- Given
@@ -447,7 +431,7 @@ class CryptoTransferViewModelTest: BaseTest() {
         cryptoTransferViewModel.maxButtonClickHandler()
 
         // -- Then
-        Assert.assertEquals(cryptoTransferViewModel.amountInputObservable.value, "10000000000000")
+        Assert.assertEquals(cryptoTransferViewModel.currentAmountInput.value, "10000000000000")
     }
 
     @Test
@@ -455,12 +439,12 @@ class CryptoTransferViewModelTest: BaseTest() {
 
         // -- Given
         val cryptoTransferViewModel = CryptoTransferViewModel()
-        cryptoTransferViewModel.amountInputObservable.value = "123"
+        cryptoTransferViewModel.currentAmountInput.value = "123"
 
         // -- When
         cryptoTransferViewModel.resetAmountInput("555")
 
         // -- Then
-        Assert.assertEquals(cryptoTransferViewModel.amountInputObservable.value, "555")
+        Assert.assertEquals(cryptoTransferViewModel.currentAmountInput.value, "555")
     }
 }

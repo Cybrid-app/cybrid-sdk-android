@@ -10,6 +10,7 @@ import app.cybrid.cybrid_api_bank.client.apis.*
 import app.cybrid.cybrid_api_bank.client.models.ExternalWalletBankModel
 import app.cybrid.cybrid_api_bank.client.models.PostExternalWalletBankModel
 import app.cybrid.cybrid_api_bank.client.models.TransferBankModel
+import app.cybrid.cybrid_api_bank.client.models.TransferDestinationAccountBankModel
 import app.cybrid.sdkandroid.AppModule
 import app.cybrid.sdkandroid.components.ExternalWalletsView
 import app.cybrid.sdkandroid.util.Logger
@@ -218,7 +219,7 @@ class ExternalWalletViewModel: ViewModel() {
             var filteredTransfers = transfers.filter { it.transferType == TransferBankModel.TransferType.crypto }
             filteredTransfers = filteredTransfers.filter {
                 it.destinationAccount?.type == TransferDestinationAccountBankModel.Type.externalWallet &&
-                        it.destinationAccount?.guid == this.currentWallet?.guid!!
+                it.destinationAccount?.guid == this.currentWallet?.guid!!
             }
             this.transfers.value = filteredTransfers
             if (this.transfers.value.isEmpty()) {

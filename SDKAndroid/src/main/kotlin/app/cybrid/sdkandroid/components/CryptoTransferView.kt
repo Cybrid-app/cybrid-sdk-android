@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.cryptoTransfer.compose.CryptoTransferView_Content
 import app.cybrid.sdkandroid.components.cryptoTransfer.compose.CryptoTransferView_Loading
+import app.cybrid.sdkandroid.components.cryptoTransfer.modal.CryptoTransferModal
 import app.cybrid.sdkandroid.components.cryptoTransfer.view.CryptoTransferViewModel
 import app.cybrid.sdkandroid.components.wallets.compose.ExternalWalletsView_CreateWallet
 import app.cybrid.sdkandroid.components.wallets.compose.ExternalWalletsView_Loading

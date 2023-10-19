@@ -168,7 +168,7 @@ class ExternalWalletViewModelTest: BaseTest() {
         Assert.assertNotNull(externalWalletViewModel.currentWallet)
         Assert.assertEquals(externalWalletViewModel.currentWallet, wallet)
         Assert.assertEquals(externalWalletViewModel.uiState.value, ExternalWalletsView.State.WALLET)
-        Assert.assertTrue(externalWalletViewModel.transfers.isEmpty())
+        Assert.assertTrue(externalWalletViewModel.transfers.value.isEmpty())
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -193,8 +193,8 @@ class ExternalWalletViewModelTest: BaseTest() {
         coVerify { mockTransfersApi.listTransfers(customerGuid = customerGuid) }
 
         // -- Then
-        Assert.assertTrue(externalWalletViewModel.transfers.isNotEmpty())
-        Assert.assertEquals(externalWalletViewModel.transfers.count(), 1)
+        Assert.assertTrue(externalWalletViewModel.transfers.value.isNotEmpty())
+        Assert.assertEquals(externalWalletViewModel.transfers.value.count(), 1)
         Assert.assertEquals(externalWalletViewModel.transfersUiState.value, ExternalWalletsView.TransfersState.EMPTY)
     }
 
