@@ -29,7 +29,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.util.*
 
 @Immutable
-class BottomSheetDialogProperties(
+class BottomSheetDialogProperties_(
     val dismissOnBackPress: Boolean = true,
     val dismissOnClickOutside: Boolean = true
 ) {
@@ -37,7 +37,7 @@ class BottomSheetDialogProperties(
     override fun equals(other: Any?): Boolean {
 
         if (this === other) return true
-        if (other !is BottomSheetDialogProperties) return false
+        if (other !is BottomSheetDialogProperties_) return false
 
         if (dismissOnBackPress != other.dismissOnBackPress) return false
         if (dismissOnClickOutside != other.dismissOnClickOutside) return false
@@ -54,9 +54,9 @@ class BottomSheetDialogProperties(
 }
 
 @Composable
-fun BottomSheetDialog(
+fun BottomSheetDialog_(
     onDismissRequest: () -> Unit,
-    properties: BottomSheetDialogProperties = BottomSheetDialogProperties(),
+    properties: BottomSheetDialogProperties_ = BottomSheetDialogProperties_(),
     content: @Composable () -> Unit
 ) {
 
@@ -68,7 +68,7 @@ fun BottomSheetDialog(
     val dialogId = rememberSaveable { UUID.randomUUID() }
 
     val bottomSheetDialog = remember {
-        BottomSheetDialogWrapper(
+        BottomSheetDialogWrapper_(
             onDismissRequest = onDismissRequest,
             properties = properties,
             composeView = view,
@@ -105,9 +105,9 @@ fun BottomSheetDialog(
     }
 }
 
-private class BottomSheetDialogWrapper(
+private class BottomSheetDialogWrapper_(
     var onDismissRequest: () -> Unit,
-    var properties: BottomSheetDialogProperties,
+    var properties: BottomSheetDialogProperties_,
     composeView: View,
     layoutDirection: LayoutDirection,
     density: Density,
@@ -172,7 +172,7 @@ private class BottomSheetDialogWrapper(
 
     fun updateParameters(
         onDismissRequest: () -> Unit,
-        properties: BottomSheetDialogProperties,
+        properties: BottomSheetDialogProperties_,
         layoutDirection: LayoutDirection,
     ) {
         this.onDismissRequest = onDismissRequest

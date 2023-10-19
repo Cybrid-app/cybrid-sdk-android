@@ -38,9 +38,7 @@ class CryptoTransferView @JvmOverloads constructor(
 
         this.cryptoTransferViewModel = cryptoTransferViewModel
         this.initComposeView()
-        /*this.externalWalletViewModel?.viewModelScope?.launch {
-            externalWalletViewModel.fetchExternalWallets()
-        }*/
+        this.cryptoTransferViewModel?.initComponent()
     }
 
     private fun initComposeView() {
@@ -70,9 +68,20 @@ fun CryptoTransferView(
                 CryptoTransferView_Loading()
             }
 
+            CryptoTransferView.State.CONTENT -> {
+                CryptoTransferView_Content(
+                    cryptoTransferViewModel = cryptoTransferViewModel
+                )
+            }
+
             else -> {
                 CryptoTransferView_Loading()
             }
+        }
+
+        // -- Modals
+        if (cryptoTransferViewModel.modalIsOpen.value) {
+            CryptoTransferModal(cryptoTransferViewModel = cryptoTransferViewModel)
         }
     }
 }

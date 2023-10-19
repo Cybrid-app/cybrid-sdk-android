@@ -3,6 +3,7 @@ package app.cybrid.sdkandroid.core
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import java.text.DecimalFormat
 import java.text.NumberFormat
+import java.math.BigDecimal as JavaBigDecimal
 
 object BigDecimalPipe {
 
@@ -10,6 +11,13 @@ object BigDecimalPipe {
 
         val divisor = BigDecimal(10).pow(asset.decimals.toBigDecimal())
         val baseUnit = value.div(divisor)
+        return transformAny(baseUnit, asset)
+    }
+
+    fun transform(value: JavaBigDecimal, asset:AssetBankModel): String {
+
+        val divisor = BigDecimal(10).pow(asset.decimals.toBigDecimal())
+        val baseUnit = value.toBigDecimal().div(divisor)
         return transformAny(baseUnit, asset)
     }
 

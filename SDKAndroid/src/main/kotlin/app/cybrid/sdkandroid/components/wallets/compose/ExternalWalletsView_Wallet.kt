@@ -1,16 +1,25 @@
 package app.cybrid.sdkandroid.components.wallets.compose
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -24,15 +33,22 @@ import androidx.constraintlayout.compose.Dimension
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.ExternalWalletBankModel
 import app.cybrid.cybrid_api_bank.client.models.PostExternalWalletBankModel
+import app.cybrid.cybrid_api_bank.client.models.TransferBankModel
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.wallets.view.ExternalWalletViewModel
+import app.cybrid.sdkandroid.core.AssetPipe
+import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.ui.lib.AssetLabelView
 import app.cybrid.sdkandroid.ui.lib.AssetView
 import app.cybrid.sdkandroid.ui.lib.RoundedButton
+import app.cybrid.sdkandroid.util.getDateInFormat
+import app.cybrid.sdkandroid.util.getSpannableStyle
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.time.OffsetDateTime
 
 @OptIn(DelicateCoroutinesApi::class)
 @Composable
@@ -155,14 +171,43 @@ fun ExternalWalletsView_Wallet(
                 textAlign = TextAlign.Left
             )
         )
-        ExternalWalletsView_Wallet_Empty_Transfers(
-            modifier = Modifier.constrainAs(recentTransfers) {
-                start.linkTo(parent.start, margin = 0.dp)
-                top.linkTo(recentTransfersTitle.bottom, margin = 25.dp)
-                end.linkTo(parent.end, margin = 0.dp)
-                width = Dimension.fillToConstraints
+
+        // -- Transfers
+        when(externalWalletViewModel.transfersUiState.value) {
+
+            ExternalWalletsView.TransfersState.EMPTY -> {
+
+                ExternalWalletsView_Wallet_Empty_Transfers(
+                    modifier = Modifier.constrainAs(recentTransfers) {
+                        start.linkTo(parent.start, margin = 0.dp)
+                        top.linkTo(recentTransfersTitle.bottom, margin = 25.dp)
+                        end.linkTo(parent.end, margin = 0.dp)
+                        width = Dimension.fillToConstraints
+                    }
+                )
             }
-        )
+
+            ExternalWalletsView.TransfersState.TRANSFERS -> {
+
+                LazyColumn(
+                    modifier = Modifier.constrainAs(recentTransfers) {
+                        start.linkTo(parent.start, margin = 0.dp)
+                        top.linkTo(recentTransfersTitle.bottom, margin = 25.dp)
+                        end.linkTo(parent.end, margin = 0.dp)
+                        width = Dimension.fillToConstraints
+                        height = Dimension.value(300.dp)
+                    }
+                ) {
+                    itemsIndexed(items = externalWalletViewModel.transfers.value) { _, item ->
+                        ExternalWalletsView_Wallet_Transfer_Item(
+                            transfer = item
+                        )
+                    }
+                }
+            }
+
+            else -> {}
+        }
 
         // -- Delete Button
         RoundedButton(
@@ -171,6 +216,7 @@ fun ExternalWalletsView_Wallet(
                     start.linkTo(parent.start, margin = 0.dp)
                     top.linkTo(recentTransfers.bottom, margin = 25.dp)
                     end.linkTo(parent.end, margin = 0.dp)
+                    bottom.linkTo(parent.bottom, margin = 20.dp)
                     width = Dimension.fillToConstraints
                     height = Dimension.value(50.dp)
                 },
@@ -274,5 +320,92 @@ fun ExternalWalletsView_Wallet_Empty_Transfers(
                 textAlign = TextAlign.Center
             )
         )
+    }
+}
+
+@Composable
+fun ExternalWalletsView_Wallet_Transfer_Item(
+    transfer: TransferBankModel
+) {
+
+    // -- Vars
+    val assetCode = transfer.asset ?: ""
+    val asset = Cybrid.assets.find { it.code == assetCode }
+    val amount = transfer.amount ?: BigDecimal.ZERO
+    val amountValue = AssetPipe.transform(
+        value = amount,
+        asset = asset!!,
+        unit = AssetPipe.AssetPipeTrade
+    ).toPlainString()
+    val amountValueFormatted = getSpannableStyle(
+        text = amountValue,
+        secondaryText = " $assetCode",
+        style = SpanStyle(
+            color = colorResource(id = R.color.list_prices_asset_component_code_color),
+            fontFamily = robotoFont,
+            fontWeight = FontWeight.Normal
+        )
+    )
+    val date = getDateInFormat(
+        date = transfer.createdAt ?: OffsetDateTime.now()
+    )
+
+    // -- Content
+    Surface(color = Color.Transparent) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(vertical = 0.dp)
+                .height(66.dp)
+                .fillMaxWidth()
+                .clickable {},
+        ) {
+
+            Image(
+                modifier = Modifier.size(30.dp),
+                painter = painterResource(id = R.drawable.ic_crypto_transfer),
+                contentDescription = ""
+            )
+
+            Column(
+                modifier = Modifier
+                    .padding(start = 12.dp)
+            ) {
+                Text(
+                    text = "Withdraw",
+                    modifier = Modifier,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 13.sp,
+                    lineHeight = 20.sp,
+                    color = Color.Black
+                )
+                Text(
+                    text = date,
+                    modifier = Modifier,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 15.sp,
+                    lineHeight = 20.sp,
+                    color = colorResource(id = R.color.list_prices_asset_component_code_color)
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = amountValueFormatted,
+                    modifier = Modifier.align(Alignment.End),
+                    textAlign = TextAlign.End,
+                    fontFamily = robotoFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    lineHeight = 20.sp,
+                    color = Color.Black
+                )
+            }
+
+        }
     }
 }

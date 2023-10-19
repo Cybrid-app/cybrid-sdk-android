@@ -12,7 +12,7 @@ import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.TradeView
 import app.cybrid.sdkandroid.components.trade.view.TradeViewModel
-import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
+import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog_
 
 @Composable
 fun TradeView_QuoteModal(
@@ -24,7 +24,7 @@ fun TradeView_QuoteModal(
 ) {
 
     // -- Content
-    BottomSheetDialog(
+    BottomSheetDialog_(
         onDismissRequest = {
 
             tradeViewModel.modalBeDismissed()

@@ -12,7 +12,7 @@ import app.cybrid.cybrid_api_bank.client.models.*
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.TransferView
 import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
-import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
+import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog_
 
 @Composable
 fun TransferView_Modal(
@@ -26,7 +26,7 @@ fun TransferView_Modal(
     val modalUiState: MutableState<TransferView.ModalViewState> = transferViewModel!!.modalUiState
 
     // -- Compose Content
-    BottomSheetDialog(
+    BottomSheetDialog_(
         onDismissRequest = {
 
             showDialog.value = false
