@@ -2,6 +2,7 @@ package app.cybrid.sdkandroid.core
 
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.sdkandroid.tools.TestConstants
+import java.math.BigDecimal as JavaBigDecimal
 import io.mockk.MockKAnnotations
 import org.junit.Assert
 import org.junit.Before
@@ -48,6 +49,7 @@ class AssetPipeTest {
         val valueString = "5"
         val valueInt = 5
         val valueBigDecimal = BigDecimal(5)
+        val valueJvaBigDecimal = JavaBigDecimal(5)
         val asset = TestConstants.CAD_ASSET
 
         val result1 = BigDecimal(500)
@@ -64,6 +66,9 @@ class AssetPipeTest {
         val transformCAD1Int = AssetPipe.transform(valueInt, asset, "base")
         val transformCAD2Int = AssetPipe.transform(valueInt, asset, "trade")
 
+        val transformCAD1JBD = AssetPipe.transform(valueJvaBigDecimal, asset, "base")
+        val transformCAD2JBD = AssetPipe.transform(valueJvaBigDecimal, asset, "trade")
+
         val transformZero = AssetPipe.transform(valueInt, asset, "")
 
         // -- Then
@@ -75,6 +80,9 @@ class AssetPipeTest {
 
         Assert.assertEquals(transformCAD1Int, result1)
         Assert.assertEquals(transformCAD2Int, result2)
+
+        Assert.assertEquals(transformCAD1JBD, result1)
+        Assert.assertEquals(transformCAD2JBD, result2)
 
         Assert.assertEquals(transformZero, result3)
     }

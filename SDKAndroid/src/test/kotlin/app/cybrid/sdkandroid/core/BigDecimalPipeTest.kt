@@ -1,6 +1,7 @@
 package app.cybrid.sdkandroid.core
 
 import app.cybrid.sdkandroid.tools.TestConstants
+import java.math.BigDecimal as JavaBigDecimal
 import org.junit.Assert
 import org.junit.Test
 
@@ -34,6 +35,8 @@ class BigDecimalPipeTest {
         // -- Given
         val zeroBigDecimal = BigDecimal(0)
         val oneBigDecimal = BigDecimal(1)
+        val zeroJavaBigDecimal = JavaBigDecimal.ZERO
+        val oneJavaBigDecimal = JavaBigDecimal.ONE
 
         // -- When
         val transformBTC1 = BigDecimalPipe.transform(0, TestConstants.BTC_ASSET)
@@ -60,6 +63,14 @@ class BigDecimalPipeTest {
         val transformETHBD2 = BigDecimalPipe.transform(oneBigDecimal, TestConstants.ETH_ASSET)
         val transformCADBD2 = BigDecimalPipe.transform(oneBigDecimal, TestConstants.CAD_ASSET)
 
+        val transformBTCJBD1 = BigDecimalPipe.transform(zeroJavaBigDecimal, TestConstants.BTC_ASSET)
+        val transformETHJBD1 = BigDecimalPipe.transform(zeroJavaBigDecimal, TestConstants.ETH_ASSET)
+        val transformCADJBD1 = BigDecimalPipe.transform(zeroJavaBigDecimal, TestConstants.CAD_ASSET)
+
+        val transformBTCJBD2 = BigDecimalPipe.transform(oneJavaBigDecimal, TestConstants.BTC_ASSET)
+        val transformETHJBD2 = BigDecimalPipe.transform(oneJavaBigDecimal, TestConstants.ETH_ASSET)
+        val transformCADJBD2 = BigDecimalPipe.transform(oneJavaBigDecimal, TestConstants.CAD_ASSET)
+
         // -- Then
         Assert.assertEquals(transformBTC1, "₿0.00000000")
         Assert.assertEquals(transformETH1, "Ξ0.000000000000000000")
@@ -84,6 +95,14 @@ class BigDecimalPipeTest {
         Assert.assertEquals(transformBTCBD2, "₿0.00000001")
         Assert.assertEquals(transformETHBD2, "Ξ0.000000000000000001")
         Assert.assertEquals(transformCADBD2, "$0.01")
+
+        Assert.assertEquals(transformBTCJBD1, "₿0.00000000")
+        Assert.assertEquals(transformETHJBD1, "Ξ0.000000000000000000")
+        Assert.assertEquals(transformCADJBD1, "$0.00")
+
+        Assert.assertEquals(transformBTCJBD2, "₿0.00000001")
+        Assert.assertEquals(transformETHJBD2, "Ξ0.000000000000000001")
+        Assert.assertEquals(transformCADJBD2, "$0.01")
     }
 
     @Test
