@@ -8,6 +8,8 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
@@ -20,8 +22,8 @@ import androidx.compose.ui.unit.sp
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.activity.KYCActivity
 import app.cybrid.sdkandroid.ui.Theme.interFont
-import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog_
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KYCView_Modal_Warning(
     showDialog: MutableState<Boolean>,
@@ -29,17 +31,14 @@ fun KYCView_Modal_Warning(
 ) {
 
     // -- Compose Content
-    BottomSheetDialog_(
-        onDismissRequest = {
-            showDialog.value = false
-        }
+    ModalBottomSheet(
+        onDismissRequest = { showDialog.value = false },
+        containerColor = Color.White,
+        windowInsets = WindowInsets(0)
     ) {
         Surface(
-            shape = RoundedCornerShape(28.dp),
-            color = colorResource(id = R.color.white),
             modifier = Modifier
         ) {
-
             Column(
                 modifier = Modifier
                     .padding(20.dp)

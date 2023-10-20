@@ -5,10 +5,14 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.setViewTreeOnBackPressedDispatcherOwner
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.semantics.dialog
@@ -29,7 +33,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.util.*
 
 @Immutable
-class BottomSheetDialogProperties_(
+class BottomSheetDialogProperties(
     val dismissOnBackPress: Boolean = true,
     val dismissOnClickOutside: Boolean = true
 ) {
@@ -37,7 +41,7 @@ class BottomSheetDialogProperties_(
     override fun equals(other: Any?): Boolean {
 
         if (this === other) return true
-        if (other !is BottomSheetDialogProperties_) return false
+        if (other !is BottomSheetDialogProperties) return false
 
         if (dismissOnBackPress != other.dismissOnBackPress) return false
         if (dismissOnClickOutside != other.dismissOnClickOutside) return false
@@ -54,9 +58,9 @@ class BottomSheetDialogProperties_(
 }
 
 @Composable
-fun BottomSheetDialog_(
+fun BottomSheetDialog(
     onDismissRequest: () -> Unit,
-    properties: BottomSheetDialogProperties_ = BottomSheetDialogProperties_(),
+    properties: BottomSheetDialogProperties = BottomSheetDialogProperties(),
     content: @Composable () -> Unit
 ) {
 
@@ -68,7 +72,7 @@ fun BottomSheetDialog_(
     val dialogId = rememberSaveable { UUID.randomUUID() }
 
     val bottomSheetDialog = remember {
-        BottomSheetDialogWrapper_(
+        BottomSheetDialogWrapper(
             onDismissRequest = onDismissRequest,
             properties = properties,
             composeView = view,
@@ -105,9 +109,9 @@ fun BottomSheetDialog_(
     }
 }
 
-private class BottomSheetDialogWrapper_(
+private class BottomSheetDialogWrapper(
     var onDismissRequest: () -> Unit,
-    var properties: BottomSheetDialogProperties_,
+    var properties: BottomSheetDialogProperties,
     composeView: View,
     layoutDirection: LayoutDirection,
     density: Density,
@@ -123,7 +127,7 @@ private class BottomSheetDialogWrapper_(
     init {
         val window = window ?: error("Dialog has no window")
         window.requestFeature(Window.FEATURE_NO_TITLE)
-        window.setBackgroundDrawableResource(android.R.color.transparent)
+        window.setBackgroundDrawableResource(android.R.color.background_dark)
         bottomSheetDialogLayout = BottomSheetDialogLayout(context, window).apply {
             tag = "BottomSheetDialog:$dialogId"
             clipChildren = false
@@ -154,6 +158,14 @@ private class BottomSheetDialogWrapper_(
         setCanceledOnTouchOutside(properties.dismissOnClickOutside)
 
         updateParameters(onDismissRequest, properties, layoutDirection)
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (properties.dismissOnBackPress) {
+                    onDismissRequest()
+                }
+            }
+        })
     }
 
     fun setContent(
@@ -172,7 +184,7 @@ private class BottomSheetDialogWrapper_(
 
     fun updateParameters(
         onDismissRequest: () -> Unit,
-        properties: BottomSheetDialogProperties_,
+        properties: BottomSheetDialogProperties,
         layoutDirection: LayoutDirection,
     ) {
         this.onDismissRequest = onDismissRequest
@@ -182,14 +194,6 @@ private class BottomSheetDialogWrapper_(
 
     fun disposeComposition() {
         bottomSheetDialogLayout.disposeComposition()
-    }
-
-    @SuppressLint("MissingSuperCall")
-    override fun onBackPressed() {
-
-        if (properties.dismissOnBackPress) {
-            onDismissRequest()
-        }
     }
 }
 
@@ -228,7 +232,7 @@ private fun BottomSheetDialogLayout(
 ) {
     Layout(
         content = content,
-        modifier = modifier
+        modifier = modifier.background(Color.Magenta, shape = RoundedCornerShape(28.dp))
     ) { measurables, constraints ->
         val placeables = measurables.fastMap { it.measure(constraints) }
         val width = placeables.fastMaxBy { it.width }?.width ?: constraints.minWidth

@@ -2,9 +2,7 @@ package app.cybrid.sdkandroid.components.cryptoTransfer.modal.compose
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -59,7 +57,7 @@ fun CryptoTransferModal_Quote(
             modifier = Modifier
                 .constrainAs(title) {
                     start.linkTo(parent.start, margin = horizontalMargin)
-                    top.linkTo(parent.top, margin = 27.dp)
+                    top.linkTo(parent.top, margin = 5.dp)
                     end.linkTo(parent.end, margin = horizontalMargin)
                     width = Dimension.fillToConstraints
                 },
@@ -77,7 +75,7 @@ fun CryptoTransferModal_Quote(
             modifier = Modifier
                 .constrainAs(subTitle) {
                     start.linkTo(parent.start, margin = horizontalMargin)
-                    top.linkTo(title.bottom, margin = 5.dp)
+                    top.linkTo(title.bottom, margin = 0.dp)
                     end.linkTo(parent.end, margin = horizontalMargin)
                     width = Dimension.fillToConstraints
                 },
@@ -183,7 +181,7 @@ fun CryptoTransferModal_Quote(
                     start.linkTo(parent.start, margin = horizontalMargin)
                     top.linkTo(networkFee.bottom, margin = 25.dp)
                     end.linkTo(parent.end, margin = horizontalMargin)
-                    bottom.linkTo(parent.bottom, margin = 20.dp)
+                    bottom.linkTo(parent.bottom, margin = 30.dp)
                     height = Dimension.value(48.dp)
                     width = Dimension.fillToConstraints
                 },

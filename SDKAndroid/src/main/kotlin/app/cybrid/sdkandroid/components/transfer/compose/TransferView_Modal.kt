@@ -1,19 +1,18 @@
 package app.cybrid.sdkandroid.components.transfer.compose
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import app.cybrid.cybrid_api_bank.client.models.*
-import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.TransferView
 import app.cybrid.sdkandroid.components.transfer.view.TransferViewModel
-import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog_
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransferView_Modal(
     transferViewModel: TransferViewModel?,
@@ -26,16 +25,15 @@ fun TransferView_Modal(
     val modalUiState: MutableState<TransferView.ModalViewState> = transferViewModel!!.modalUiState
 
     // -- Compose Content
-    BottomSheetDialog_(
+    ModalBottomSheet(
         onDismissRequest = {
-
             showDialog.value = false
             transferViewModel.modalUiState.value = TransferView.ModalViewState.LOADING
-        }
+        },
+        containerColor = Color.White,
+        windowInsets = WindowInsets(0)
     ) {
         Surface(
-            shape = RoundedCornerShape(28.dp),
-            color = colorResource(id = R.color.white),
             modifier = Modifier
                 .fillMaxWidth()
         ) {

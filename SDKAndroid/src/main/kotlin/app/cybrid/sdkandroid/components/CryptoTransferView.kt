@@ -13,6 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -98,27 +100,6 @@ fun CryptoTransferView(
         // -- Modals
         if (cryptoTransferViewModel.modalIsOpen.value) {
             CryptoTransferModal(cryptoTransferViewModel = cryptoTransferViewModel)
-        } else {
-            Dialog(
-                onDismissRequest = {},
-                properties = DialogProperties(decorFitsSystemWindows = true)
-            ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(16.dp),
-                    shape = RoundedCornerShape(16.dp),
-                ) {
-                    Text(
-                        text = "This is a minimal dialog",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .wrapContentSize(Alignment.Center),
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            }
         }
     }
 }
