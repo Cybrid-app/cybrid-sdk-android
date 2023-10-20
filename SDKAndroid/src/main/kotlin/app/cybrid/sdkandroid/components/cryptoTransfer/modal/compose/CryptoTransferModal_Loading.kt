@@ -1,6 +1,5 @@
 package app.cybrid.sdkandroid.components.cryptoTransfer.modal.compose
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -28,7 +27,7 @@ fun CryptoTransferModal_Loading() {
             centerHorizontallyTo(parent)
             centerVerticallyTo(parent)
         },
-            message = "Loading"
+            message = stringResource(id = R.string.crypto_transfer_view_modal_loading_title)
         )
     }
 }

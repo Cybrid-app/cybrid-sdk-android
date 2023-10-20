@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -61,7 +62,7 @@ fun CryptoTransferModal_Quote(
                     end.linkTo(parent.end, margin = horizontalMargin)
                     width = Dimension.fillToConstraints
                 },
-            text = "Confirm Withdraw",
+            text = stringResource(id = R.string.crypto_transfer_view_modal_quote_title),
             style = TextStyle(
                 fontSize = 22.sp,
                 lineHeight = 28.sp,
@@ -79,7 +80,7 @@ fun CryptoTransferModal_Quote(
                     end.linkTo(parent.end, margin = horizontalMargin)
                     width = Dimension.fillToConstraints
                 },
-            text = "Please confirm the withdrawal details are correct. ",
+            text = stringResource(id = R.string.crypto_transfer_view_modal_quote_subtitle),
             style = TextStyle(
                 fontSize = 13.sp,
                 lineHeight = 18.sp,
@@ -98,7 +99,7 @@ fun CryptoTransferModal_Quote(
                     end.linkTo(parent.end, margin = horizontalMargin)
                     width = Dimension.fillToConstraints
                 },
-            titleText = "From my account",
+            titleText = stringResource(id = R.string.crypto_transfer_view_modal_quote_account),
             account = cryptoTransferViewModel.currentAccount.value!!
         )
 
@@ -111,13 +112,13 @@ fun CryptoTransferModal_Quote(
                     end.linkTo(parent.end, margin = horizontalMargin)
                     width = Dimension.fillToConstraints
                 },
-            titleText = "To my wallet",
+            titleText = stringResource(id = R.string.crypto_transfer_view_modal_quote_wallet),
             wallet = cryptoTransferViewModel.currentWallet.value!!
         )
 
         // -- Amount
         var amountValue = AssetPipe.transform(
-            value = quoteAmount ?: java.math.BigDecimal.ZERO,
+            value = quoteAmount ?: BigDecimal.ZERO,
             asset = quoteAsset!!,
             unit = AssetPipe.AssetPipeTrade
         ).toPlainString()
@@ -130,7 +131,7 @@ fun CryptoTransferModal_Quote(
                     end.linkTo(parent.end, margin = horizontalMargin)
                     width = Dimension.fillToConstraints
                 },
-            titleText = "Amount",
+            titleText = stringResource(id = R.string.crypto_transfer_view_modal_quote_amount),
             valueText = amountValue
         )
 
@@ -151,7 +152,7 @@ fun CryptoTransferModal_Quote(
                     end.linkTo(parent.end, margin = horizontalMargin)
                     width = Dimension.fillToConstraints
                 },
-            titleText = "Transaction fee",
+            titleText = stringResource(id = R.string.crypto_transfer_view_modal_quote_fee),
             valueText = feeValue
         )
 
@@ -170,7 +171,7 @@ fun CryptoTransferModal_Quote(
                     end.linkTo(parent.end, margin = horizontalMargin)
                     width = Dimension.fillToConstraints
                 },
-            titleText = "Network fee",
+            titleText = stringResource(id = R.string.crypto_transfer_view_modal_quote_networkFee),
             valueText = networkFeeValue
         )
 
@@ -185,7 +186,7 @@ fun CryptoTransferModal_Quote(
                     height = Dimension.value(48.dp)
                     width = Dimension.fillToConstraints
                 },
-            text = "Confirm",
+            text = stringResource(id = R.string.crypto_transfer_view_modal_quote_confirm_button),
         ) {
             cryptoTransferViewModel.viewModelScope.let {
                 it.launch { cryptoTransferViewModel.createTransfer() }

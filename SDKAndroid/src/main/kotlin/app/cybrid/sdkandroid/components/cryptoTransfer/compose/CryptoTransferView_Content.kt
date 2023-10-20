@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -54,7 +55,7 @@ fun CryptoTransferView_Content(cryptoTransferViewModel: CryptoTransferViewModel)
                     start.linkTo(parent.start, margin = 0.dp)
                     top.linkTo(parent.top, margin = 15.dp)
                 },
-            text = "Crypto Transfer",
+            text = stringResource(id = R.string.crypto_transfer_view_content_title),
             style = TextStyle(
                 fontSize = 26.sp,
                 lineHeight = 32.sp,
@@ -76,7 +77,7 @@ fun CryptoTransferView_Content(cryptoTransferViewModel: CryptoTransferViewModel)
                 },
             selectExpandedMutableState = accountsExpandedMutableState,
             selectedAccountMutableState = cryptoTransferViewModel.currentAccount,
-            titleText = "From Account",
+            titleText = stringResource(id = R.string.crypto_transfer_view_content_account),
             items = cryptoTransferViewModel.accounts,
             onClick = { account ->
                 cryptoTransferViewModel.changeCurrentAccount(account)
@@ -94,7 +95,7 @@ fun CryptoTransferView_Content(cryptoTransferViewModel: CryptoTransferViewModel)
                 },
             selectExpandedMutableState = walletExpandedMutableState,
             selectedWalletMutableState = cryptoTransferViewModel.currentWallet,
-            titleText = "To Wallet",
+            titleText = stringResource(id = R.string.crypto_transfer_view_content_wallet),
             items = cryptoTransferViewModel.currentWallets,
             onClick = { wallet ->
                 cryptoTransferViewModel.currentWallet.value = wallet
@@ -116,7 +117,7 @@ fun CryptoTransferView_Content(cryptoTransferViewModel: CryptoTransferViewModel)
                 assetState = cryptoTransferViewModel.currentAsset,
                 counterAsset = cryptoTransferViewModel.fiat,
                 isAmountInFiat = cryptoTransferViewModel.isAmountInFiat,
-                titleText = "Amount"
+                titleText = stringResource(id = R.string.crypto_transfer_view_content_amount)
             )
 
             // -- PreQuote Value
@@ -144,7 +145,7 @@ fun CryptoTransferView_Content(cryptoTransferViewModel: CryptoTransferViewModel)
                             end.linkTo(parent.end, margin = 0.dp)
                             width = Dimension.fillToConstraints
                         },
-                    text = "Insufficient Funds",
+                    text = stringResource(id = R.string.crypto_transfer_view_content_error),
                     style = TextStyle(
                         fontSize = 13.sp,
                         lineHeight = 24.sp,
@@ -168,7 +169,7 @@ fun CryptoTransferView_Content(cryptoTransferViewModel: CryptoTransferViewModel)
                             width = Dimension.fillToConstraints
                             height = Dimension.value(48.dp)
                         },
-                    text = "Continue",
+                    text = stringResource(id = R.string.crypto_transfer_view_content_continue_button),
                     onClick = {
                         cryptoTransferViewModel.viewModelScope.let {
                             it.launch {
@@ -204,7 +205,7 @@ fun CryptoTransferView_Content__PreQuote(
         val imagePainter = rememberAsyncImagePainter(getImageUrl(assetCode?.lowercase() ?: ""))
         Image(
             painter = imagePainter,
-            contentDescription = "assetCodeDesc",
+            contentDescription = "",
             modifier = Modifier
                 .constrainAs(icon) {
                     start.linkTo(parent.start, margin = 0.dp)
@@ -244,7 +245,7 @@ fun CryptoTransferView_Content__PreQuote(
                     .clickable {
                         cryptoTransferViewModel.maxButtonClickHandler()
                     },
-                text = "MAX",
+                text = stringResource(id = R.string.crypto_transfer_view_content_max_button),
                 style = TextStyle(
                     fontSize = 13.sp,
                     lineHeight = 24.sp,
