@@ -115,7 +115,7 @@ fun CryptoTransferView_Content(cryptoTransferViewModel: CryptoTransferViewModel)
                 amountState = cryptoTransferViewModel.currentAmountInput,
                 assetState = cryptoTransferViewModel.currentAsset,
                 counterAsset = cryptoTransferViewModel.fiat,
-                isAmountInFiat = cryptoTransferViewModel.isTransferInFiat,
+                isAmountInFiat = cryptoTransferViewModel.isAmountInFiat,
                 titleText = "Amount"
             )
 
@@ -131,7 +131,7 @@ fun CryptoTransferView_Content(cryptoTransferViewModel: CryptoTransferViewModel)
                 cryptoTransferViewModel = cryptoTransferViewModel,
                 currentAsset = cryptoTransferViewModel.currentAsset,
                 currentCounterAsset = cryptoTransferViewModel.fiat,
-                isTransferInFiat = cryptoTransferViewModel.isTransferInFiat
+                isTransferInFiat = cryptoTransferViewModel.isAmountInFiat
             )
 
             // -- Error

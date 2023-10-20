@@ -48,7 +48,7 @@ class CryptoTransferViewModel: ViewModel() {
     internal val currentAsset: MutableState<AssetBankModel?> = mutableStateOf(null)
     internal var currentWallet: MutableState<ExternalWalletBankModel?> = mutableStateOf(null)
     internal var currentAmountInput: MutableState<String> = mutableStateOf("")
-    internal val isTransferInFiat: MutableState<Boolean> = mutableStateOf(false)
+    internal val isAmountInFiat: MutableState<Boolean> = mutableStateOf(false)
     internal val preQuoteValueState: MutableState<String> = mutableStateOf("")
     internal val preQuoteValueHasErrorState: MutableState<Boolean> = mutableStateOf(false)
 
@@ -241,7 +241,6 @@ class CryptoTransferViewModel: ViewModel() {
                             Logger.log(LoggerEvents.DATA_FETCHED, "Crypto Transfer Component - TRANSFER")
                             currentTransfer.value = response.data
                             modalUiState.value = CryptoTransferView.ModalState.DONE
-                            fetchAccounts()
 
                         } else {
 
@@ -271,7 +270,7 @@ class CryptoTransferViewModel: ViewModel() {
         this.currentAsset.value = Cybrid.assets.find { it.code == assetCode }
 
         // -- Setting as no fiat
-        this.isTransferInFiat.value = false
+        this.isAmountInFiat.value = false
     }
 
     internal fun getMaxAmountOfAccount(): String {
@@ -324,18 +323,18 @@ class CryptoTransferViewModel: ViewModel() {
             val amount = BigDecimal(this.currentAmountInput.value)
 
             // -- Assets
-            val assetToConvert = if (isTransferInFiat.value) asset else counterAsset
+            val assetToConvert = if (isAmountInFiat.value) asset else counterAsset
 
-            // -- Buy Price
+            // -- Sell Price
             val sellPrice = this.getPrice(symbol).sellPrice
             if (sellPrice == null) {
                 this.preQuoteValueState.value = "0"
-                this.modalErrorString = CryptoTransferViewModelErrors.buyPriceError()
+                this.modalErrorString = CryptoTransferViewModelErrors.priceError()
                 return
             }
 
             // -- Trade Value
-            val amountFromInput = if (isTransferInFiat.value) {
+            val amountFromInput = if (isAmountInFiat.value) {
                 AssetPipe.transform(amount, counterAsset, AssetPipe.AssetPipeBase)
             } else {
                 amount
@@ -344,13 +343,13 @@ class CryptoTransferViewModel: ViewModel() {
             val tradeValue = AssetPipe.preQuote(
                 input = amountFromInput,
                 price = sellPrice.toBigDecimal(),
-                base = if (isTransferInFiat.value) AssetBankModel.Type.fiat else AssetBankModel.Type.crypto,
+                base = if (isAmountInFiat.value) AssetBankModel.Type.fiat else AssetBankModel.Type.crypto,
                 decimals = assetToConvert.decimals.toBigDecimal()
             )
             val accountBalance = this.currentAccount.value?.platformBalance?.toBigDecimal() ?: BigDecimal.zero()
 
             // -- Validation of balance
-            if (this.isTransferInFiat.value) { // Input example: 1 USD
+            if (this.isAmountInFiat.value) { // Input example: 1 USD
 
                 this.preQuoteValueState.value = tradeValue.toPlainString()
 
@@ -381,11 +380,11 @@ class CryptoTransferViewModel: ViewModel() {
     internal fun createPostTransferBankModel(): PostTransferBankModel? {
 
         val currentQuote = this.currentQuote.value ?: return null
-        val currentWallet = this.currentWallet
+        val currentWallet = this.currentWallet.value ?: return null
         return PostTransferBankModel(
             quoteGuid = currentQuote.guid!!,
             transferType = PostTransferBankModel.TransferType.crypto,
-            externalWalletGuid = currentWallet.value?.guid!!
+            externalWalletGuid = currentWallet.guid!!
         )
     }
 
@@ -419,5 +418,5 @@ internal object CryptoTransferViewModelErrors {
 
     fun assetNotFoundError(): String { return "Asset not found" }
     fun amountError(): String { return "Amount has to be numeric" }
-    fun buyPriceError(): String { return "No price data at this moment" }
+    fun priceError(): String { return "No price data at this moment" }
 }
