@@ -3,10 +3,24 @@ package app.cybrid.sdkandroid.components
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.cryptoTransfer.compose.CryptoTransferView_Content
 import app.cybrid.sdkandroid.components.cryptoTransfer.compose.CryptoTransferView_Loading
@@ -84,6 +98,27 @@ fun CryptoTransferView(
         // -- Modals
         if (cryptoTransferViewModel.modalIsOpen.value) {
             CryptoTransferModal(cryptoTransferViewModel = cryptoTransferViewModel)
+        } else {
+            Dialog(
+                onDismissRequest = {},
+                properties = DialogProperties(decorFitsSystemWindows = true)
+            ) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                ) {
+                    Text(
+                        text = "This is a minimal dialog",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .wrapContentSize(Alignment.Center),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
         }
     }
 }
