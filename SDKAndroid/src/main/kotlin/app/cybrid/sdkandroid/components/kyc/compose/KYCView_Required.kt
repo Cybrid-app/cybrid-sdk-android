@@ -23,7 +23,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -181,13 +180,4 @@ fun KYCView_Required(
             }
         }
     }
-}
-
-@Preview(showBackground = true, widthDp = 200, heightDp = 300)
-@Composable
-fun KYCView_Required_Preview() {
-    KYCView_Required(
-        viewModel = IdentityVerificationViewModel(),
-        currentState = remember { mutableStateOf(KYCView.KYCViewState.REQUIRED) }
-    )
 }

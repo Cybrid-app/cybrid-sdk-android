@@ -1,8 +1,5 @@
 package app.cybrid.sdkandroid.core
 
-import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
-import java.math.BigDecimal
-
 class Constants {
 
     enum class QuoteConfirmation(val id: String) {

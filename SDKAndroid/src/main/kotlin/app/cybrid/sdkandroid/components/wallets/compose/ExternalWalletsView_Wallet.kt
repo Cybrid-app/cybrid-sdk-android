@@ -1,6 +1,7 @@
 package app.cybrid.sdkandroid.components.wallets.compose
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.compose.Visibility
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.cybrid_api_bank.client.models.ExternalWalletBankModel
 import app.cybrid.cybrid_api_bank.client.models.PostExternalWalletBankModel
@@ -68,6 +70,8 @@ fun ExternalWalletsView_Wallet(
         // -- Vars
         val assets = Cybrid.assets
         val wallet = externalWalletViewModel.currentWallet!!
+        val walletTagIsVisible = wallet.tag?.isNotEmpty() ?: false
+        val walletTagVisibility = if (walletTagIsVisible) Visibility.Visible else Visibility.Gone
 
         // -- Refs
         val (title, status, asset, name,
@@ -143,7 +147,7 @@ fun ExternalWalletsView_Wallet(
             labelText = wallet.address ?: ""
         )
 
-        // -- Address
+        // -- Tag
         ExternalWalletsView_Wallet_Item(
             modifier = Modifier
                 .constrainAs(tag) {
@@ -151,6 +155,7 @@ fun ExternalWalletsView_Wallet(
                     top.linkTo(address.bottom, margin = 25.dp)
                     end.linkTo(parent.end, margin = 0.dp)
                     width = Dimension.fillToConstraints
+                    visibility = walletTagVisibility
                 },
             titleText = stringResource(R.string.wallets_view_create_tag_title),
             labelText = wallet.tag ?: ""
@@ -162,7 +167,7 @@ fun ExternalWalletsView_Wallet(
             modifier = Modifier
                 .constrainAs(recentTransfersTitle) {
                     start.linkTo(parent.start, margin = 0.dp)
-                    top.linkTo(tag.bottom, margin = 25.dp)
+                    top.linkTo(tag.bottom, margin = 25.dp, goneMargin = 25.dp)
                     end.linkTo(parent.end, margin = 0.dp)
                     width = Dimension.fillToConstraints
                 },
@@ -176,7 +181,6 @@ fun ExternalWalletsView_Wallet(
             )
         )
 
-        // -- Transfers
         when(externalWalletViewModel.transfersUiState.value) {
 
             ExternalWalletsView.TransfersState.EMPTY -> {
@@ -187,7 +191,7 @@ fun ExternalWalletsView_Wallet(
                         top.linkTo(recentTransfersTitle.bottom, margin = 25.dp)
                         end.linkTo(parent.end, margin = 0.dp)
                         width = Dimension.fillToConstraints
-                    }
+                    }.background(Color.Magenta)
                 )
             }
 
@@ -199,8 +203,9 @@ fun ExternalWalletsView_Wallet(
                         top.linkTo(recentTransfersTitle.bottom, margin = 25.dp)
                         end.linkTo(parent.end, margin = 0.dp)
                         width = Dimension.fillToConstraints
-                        height = Dimension.value(300.dp)
-                    }
+                        height = Dimension.value( (66 * externalWalletViewModel.transfers.value.count()).dp )
+                    },
+                    userScrollEnabled = false,
                 ) {
                     itemsIndexed(items = externalWalletViewModel.transfers.value) { _, item ->
                         ExternalWalletsView_Wallet_Transfer_Item(
@@ -301,7 +306,7 @@ fun ExternalWalletsView_Wallet_Empty_Transfers(
             contentDescription = "iconDesc",
             modifier = Modifier.constrainAs(icon) {
                 centerHorizontallyTo(parent)
-                top.linkTo(parent.top, margin = 15.dp)
+                top.linkTo(parent.top, margin = 0.dp)
                 width = Dimension.value(45.dp)
                 height = Dimension.value(45.dp)
             }
