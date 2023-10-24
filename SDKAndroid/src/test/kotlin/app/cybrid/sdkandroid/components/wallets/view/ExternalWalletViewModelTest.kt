@@ -168,7 +168,6 @@ class ExternalWalletViewModelTest: BaseTest() {
         Assert.assertNotNull(externalWalletViewModel.currentWallet)
         Assert.assertEquals(externalWalletViewModel.currentWallet, wallet)
         Assert.assertEquals(externalWalletViewModel.uiState.value, ExternalWalletsView.State.WALLET)
-        Assert.assertTrue(externalWalletViewModel.transfers.isEmpty())
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -178,7 +177,8 @@ class ExternalWalletViewModelTest: BaseTest() {
         // -- Given
         val customerGuid = Cybrid.customerGuid
         val transfersResponse = TransferBankModelMock.list(listOf(
-            TransferBankModelMock.mock()
+            TransferBankModelMock.mock(),
+            TransferBankModelMock.mock_with_wallet()
         ))
         val response = Response.success(transfersResponse)
 
@@ -187,15 +187,15 @@ class ExternalWalletViewModelTest: BaseTest() {
         val mockTransfersApi = TransfersApiMock.mock_listTransfers(response)
 
         // -- When
+        externalWalletViewModel.currentWallet = ExternalWalletBankModelMock.mock()
         externalWalletViewModel.fetchTransfers()
 
         // -- Verify
         coVerify { mockTransfersApi.listTransfers(customerGuid = customerGuid) }
 
         // -- Then
-        Assert.assertTrue(externalWalletViewModel.transfers.isNotEmpty())
-        Assert.assertEquals(externalWalletViewModel.transfers.count(), 1)
-        Assert.assertEquals(externalWalletViewModel.transfersUiState.value, ExternalWalletsView.TransfersState.EMPTY)
+        Assert.assertTrue(externalWalletViewModel.transfers.value.isNotEmpty())
+        Assert.assertEquals(externalWalletViewModel.transfers.value.count(), 1)
     }
 
     @Test
@@ -228,5 +228,36 @@ class ExternalWalletViewModelTest: BaseTest() {
         externalWalletViewModel.handleQRScanned(codeTwo)
         Assert.assertEquals(externalWalletViewModel.addressScannedValue.value, "98765")
         Assert.assertEquals(externalWalletViewModel.tagScannedValue.value, "234")
+    }
+
+    @Test
+    fun test_getTransfersOfTheWallet() {
+
+        // -- Given
+        val externalWalletViewModel = ExternalWalletViewModel()
+        val transfersComplete = listOf(
+            TransferBankModelMock.mock(),
+            TransferBankModelMock.mock_with_wallet()
+        )
+        val transfersWithoutWallet = listOf( TransferBankModelMock.mock() )
+
+        // -- Case: currentWallet is null
+        externalWalletViewModel.currentWallet = null
+        externalWalletViewModel.getTransfersOfTheWallet(transfersComplete)
+        Assert.assertTrue(externalWalletViewModel.transfers.value.isEmpty())
+        Assert.assertEquals(externalWalletViewModel.transfersUiState.value, ExternalWalletsView.TransfersState.EMPTY)
+
+        // -- Case: Transfers without matching wallet
+        externalWalletViewModel.currentWallet = ExternalWalletBankModelMock.mock()
+        externalWalletViewModel.getTransfersOfTheWallet(transfersWithoutWallet)
+        Assert.assertTrue(externalWalletViewModel.transfers.value.isEmpty())
+        Assert.assertEquals(externalWalletViewModel.transfersUiState.value, ExternalWalletsView.TransfersState.EMPTY)
+
+        // -- Case: Transfers with matching wallet
+        externalWalletViewModel.currentWallet = ExternalWalletBankModelMock.mock()
+        externalWalletViewModel.getTransfersOfTheWallet(transfersComplete)
+        Assert.assertFalse(externalWalletViewModel.transfers.value.isEmpty())
+        Assert.assertEquals(externalWalletViewModel.transfers.value.count(), 1)
+        Assert.assertEquals(externalWalletViewModel.transfersUiState.value, ExternalWalletsView.TransfersState.TRANSFERS)
     }
 }

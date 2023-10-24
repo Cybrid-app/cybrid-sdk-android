@@ -143,4 +143,25 @@
     <string name="wallets_view_warning_title">Cybrid is not responsible for any loss</string>
     <string name="wallets_view_warning_label">You are solely responsible for correctly inputting your public wallet address and any associated memo or tag to properly deliver the on-chain crypto assets to your wallet.\n\nYou are solely responsible for implementing all reasonable and appropriate measures for securing access to your private key(s) and Wallet.\n\nTokens are stored on cryptographic wallets (“Wallets”). A private key (for example, a passphrase) is usually necessary to access, control and/or dispose of tokens that are stored in your Wallet. Losing access to the private key(s) associated with your Wallet may result in the permanent loss of your ability to access your tokens.\n\nWE DO NOT HOLD COPIES OF YOUR PRIVATE KEY(S). WE SHALL NOT BE RESPONSIBLE FOR ANY LOSS RESULTING FROM YOUR INABILITY TO ACCESS YOUR WALLET AND/OR PRIVATE KEYS. WE SHALL NOT BE RESPONSIBLE FOR ANY LOSS ONCE CRYPTO ASSETS ARE SENT ON-CHAIN TO THE WALLET YOU HAVE SPECIFIED.</string>
 
+    <!-- Crypto Transfer Component -->
+    <string name="crypto_transfer_view_loading_title">Loading accounts and wallets</string>
+    <string name="crypto_transfer_view_content_title">Crypto Transfer</string>
+    <string name="crypto_transfer_view_content_account">From Account</string>
+    <string name="crypto_transfer_view_content_wallet">To Wallet</string>
+    <string name="crypto_transfer_view_content_amount">Amount</string>
+    <string name="crypto_transfer_view_content_max_button">MAX</string>
+    <string name="crypto_transfer_view_content_error">Insufficient Funds</string>
+    <string name="crypto_transfer_view_content_continue_button">Continue</string>
+    <string name="crypto_transfer_view_modal_loading_title">Loading</string>
+    <string name="crypto_transfer_view_modal_quote_title">Confirm Withdraw</string>
+    <string name="crypto_transfer_view_modal_quote_subtitle">Please confirm the withdrawal details are correct.</string>
+    <string name="crypto_transfer_view_modal_quote_account">From my account</string>
+    <string name="crypto_transfer_view_modal_quote_wallet">To my wallet</string>
+    <string name="crypto_transfer_view_modal_quote_amount">Amount</string>
+    <string name="crypto_transfer_view_modal_quote_fee">Transaction fee</string>
+    <string name="crypto_transfer_view_modal_quote_networkFee">Network fee</string>
+    <string name="crypto_transfer_view_modal_quote_confirm_button">Confirm</string>
+    <string name="crypto_transfer_view_modal_success_title">Transfer done correctly</string>
+    <string name="crypto_transfer_view_modal_success_continue_button">Continue</string>
+
 </resources>

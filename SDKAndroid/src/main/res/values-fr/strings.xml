@@ -143,4 +143,25 @@
     <string name="wallets_view_warning_title">Cybrid n\'est pas responsable de toute perte</string>
     <string name="wallets_view_warning_label">Vous êtes seul responsable de la saisie correcte de l\'adresse de votre portefeuille public et de tout mémo ou tag associé pour transmettre correctement les actifs cryptographiques en chaîne à votre portefeuille.\n\nVous êtes seul responsable de la mise en uvre de toutes les mesures raisonnables et appropriées pour sécuriser l\'accès à votre portefeuille privé. clé(s) et portefeuille.\n\nLes jetons sont stockés sur des portefeuilles cryptographiques (Portefeuilles). Une clé privée (par exemple, une phrase secrète) est généralement nécessaire pour accéder, contrôler et/ou éliminer les jetons stockés dans votre portefeuille. La perte de l\'accès à la ou aux clés privées associées à votre portefeuille peut entraîner la perte permanente de votre capacité à accéder à vos jetons.\n\nNOUS NE TENONS PAS DE COPIES DE VOTRE OU DE VOS CLÉS PRIVÉES. NOUS NE SERONS PAS RESPONSABLES DE TOUTE PERTE RÉSULTANT DE VOTRE INCAPACITÉ D\'ACCÉDER À VOTRE PORTEFEUILLE ET/OU À VOTRE CLÉ PRIVÉE. NOUS NE SERONS PAS RESPONSABLES DE TOUTE PERTE UNE FOIS LES ACTIFS CRYPTO SONT ENVOYÉS EN CHAÎNE AU PORTEFEUILLE QUE VOUS AVEZ SPÉCIFIÉ.</string>
 
+    <!-- Crypto Transfer Component -->
+    <string name="crypto_transfer_view_loading_title">Chargement de comptes et de portefeuilles</string>
+    <string name="crypto_transfer_view_content_title">Transfert cryptographique</string>
+    <string name="crypto_transfer_view_content_account">Du compte</string>
+    <string name="crypto_transfer_view_content_wallet">Vers le portefeuille</string>
+    <string name="crypto_transfer_view_content_amount">Montante</string>
+    <string name="crypto_transfer_view_content_max_button">MAX</string>
+    <string name="crypto_transfer_view_content_error">Fonds insuffisants</string>
+    <string name="crypto_transfer_view_content_continue_button">Continuer</string>
+    <string name="crypto_transfer_view_modal_loading_title">Chargement</string>
+    <string name="crypto_transfer_view_modal_quote_title">Confirmer le retrait</string>
+    <string name="crypto_transfer_view_modal_quote_subtitle">Veuillez confirmer que les détails du retrait sont corrects.</string>
+    <string name="crypto_transfer_view_modal_quote_account">Depuis mon compte</string>
+    <string name="crypto_transfer_view_modal_quote_wallet">À mon portefeuille</string>
+    <string name="crypto_transfer_view_modal_quote_amount">Montante</string>
+    <string name="crypto_transfer_view_modal_quote_fee">Frais de transaction</string>
+    <string name="crypto_transfer_view_modal_quote_networkFee">Frais de réseau</string>
+    <string name="crypto_transfer_view_modal_quote_confirm_button">Confirmer</string>
+    <string name="crypto_transfer_view_modal_success_title">Transfert effectué correctement</string>
+    <string name="crypto_transfer_view_modal_success_continue_button">Continuer</string>
+
 </resources>

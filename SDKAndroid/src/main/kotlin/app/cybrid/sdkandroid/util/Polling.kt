@@ -6,7 +6,10 @@ import androidx.core.os.postDelayed
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
-class Polling(runner: () -> Unit) {
+class Polling(
+    initialDelay: Long = 4L,
+    runner: () -> Unit
+) {
 
     var updateInterval = 4L
     var handler: Handler = Handler(Looper.getMainLooper())
@@ -21,7 +24,7 @@ class Polling(runner: () -> Unit) {
         this.runner = runner
         this.runnable = Runnable { runner.invoke() }
         this.executor = ScheduledThreadPoolExecutor(1)
-        this.executor.scheduleWithFixedDelay(this.runnable, updateInterval, updateInterval, TimeUnit.SECONDS)
+        this.executor.scheduleWithFixedDelay(this.runnable, initialDelay, updateInterval, TimeUnit.SECONDS)
     }
 
     fun stop() {

@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,7 +24,6 @@ import app.cybrid.cybrid_api_bank.client.models.TradeBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
-import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
 import app.cybrid.sdkandroid.util.getAnnotatedStyle
 import app.cybrid.sdkandroid.util.getDateInFormat
 import app.cybrid.sdkandroid.util.getImageUrl
@@ -30,20 +31,19 @@ import app.cybrid.sdkandroid.util.getSpannableStyle
 import coil.compose.rememberAsyncImagePainter
 import java.time.OffsetDateTime
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountsView_Trades_Detail(
     accountsViewModel: AccountsViewModel
 ) {
 
     // -- Content
-    BottomSheetDialog(
-        onDismissRequest = {
-            accountsViewModel.dismissTradeDetail()
-        }
+    ModalBottomSheet(
+        onDismissRequest = {  accountsViewModel.dismissTradeDetail() },
+        containerColor = Color.White,
+        windowInsets = WindowInsets(0)
     ) {
         Surface(
-            shape = RoundedCornerShape(28.dp),
-            color = colorResource(id = R.color.white),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 5.dp, end = 5.dp)
@@ -99,7 +99,7 @@ fun AccountsView_Trades_Detail_Content(
         ) {
             Row(
                 modifier = Modifier
-                    .padding(top = 24.dp),
+                    .padding(top = 5.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(

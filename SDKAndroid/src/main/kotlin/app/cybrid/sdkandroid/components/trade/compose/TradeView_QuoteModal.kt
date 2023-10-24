@@ -1,19 +1,20 @@
 package app.cybrid.sdkandroid.components.trade.compose
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.TradeView
 import app.cybrid.sdkandroid.components.trade.view.TradeViewModel
-import app.cybrid.sdkandroid.ui.lib.BottomSheetDialog
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TradeView_QuoteModal(
     tradeViewModel: TradeViewModel,
@@ -24,15 +25,12 @@ fun TradeView_QuoteModal(
 ) {
 
     // -- Content
-    BottomSheetDialog(
-        onDismissRequest = {
-
-            tradeViewModel.modalBeDismissed()
-        }
+    ModalBottomSheet(
+        onDismissRequest = { tradeViewModel.modalBeDismissed() },
+        containerColor = Color.White,
+        windowInsets = WindowInsets(0)
     ) {
         Surface(
-            shape = RoundedCornerShape(28.dp),
-            color = colorResource(id = R.color.white),
             modifier = Modifier
                 .fillMaxWidth()
         ) {
