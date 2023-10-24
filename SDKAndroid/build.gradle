@@ -69,7 +69,6 @@ android {
         }
     }
     namespace 'app.cybrid.sdkandroid'
-    buildToolsVersion '31.0.0'
 }
 
 android.sourceSets.configureEach {
@@ -86,18 +85,7 @@ tasks.withType(KotlinCompile).configureEach {
     kotlinOptions.freeCompilerArgs = ["-Xjvm-default=all-compatibility"]
 }
 
-kover {
-
-    instrumentation {
-        excludeTasks.add "testReleaseUnitTest"
-    }
-    htmlReport {
-        onCheck.set(false)
-    }
-    xmlReport {
-        onCheck.set(false)
-    }
-}
+kover {}
 
 koverReport {
     defaults {
@@ -194,9 +182,9 @@ dependencies {
     implementation 'io.coil-kt:coil-compose:2.2.2'
 
     // -- Compose Testing
-    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.4.3'
-    testImplementation 'androidx.compose.ui:ui-test-junit4:1.4.3'
-    debugImplementation 'androidx.compose.ui:ui-test-manifest:1.4.3'
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.5.4'
+    testImplementation 'androidx.compose.ui:ui-test-junit4:1.5.4'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest:1.5.4'
     debugImplementation "androidx.customview:customview-poolingcontainer:1.0.0"
 
     // -- Lifecycle
