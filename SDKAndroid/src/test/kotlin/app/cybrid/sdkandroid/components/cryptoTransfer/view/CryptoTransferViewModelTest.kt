@@ -6,6 +6,7 @@ import app.cybrid.cybrid_api_bank.client.models.PostTransferBankModel
 import app.cybrid.sdkandroid.BaseTest
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.CryptoTransferView
+import app.cybrid.sdkandroid.core.BigDecimal
 import app.cybrid.sdkandroid.mock.AssetsApiMock
 import app.cybrid.sdkandroid.mock.CryptoTransferApiMock
 import app.cybrid.sdkandroid.mock.CryptoTransferApiMockModel
@@ -115,6 +116,21 @@ class CryptoTransferViewModelTest: BaseTest() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
+    fun `test_createQuote __ currentAmountInput as String (Hello)`() = runTest {
+
+        // -- Given
+        val cryptoTransferViewModel = CryptoTransferViewModel()
+        cryptoTransferViewModel.currentAmountInput.value = "Hello"
+
+        // -- Case: currentAmountInput as Hello
+        cryptoTransferViewModel.createQuote()
+        Assert.assertTrue(cryptoTransferViewModel.modalIsOpen.value)
+        Assert.assertEquals(cryptoTransferViewModel.modalUiState.value, CryptoTransferView.ModalState.ERROR)
+        Assert.assertNull(cryptoTransferViewModel.currentQuote.value)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
     fun test_createQuote() = runTest {
 
         // -- Given
@@ -129,7 +145,8 @@ class CryptoTransferViewModelTest: BaseTest() {
         // -- Case: Current Account is null
         cryptoTransferViewModel.currentQuote.value = null
         cryptoTransferViewModel.currentAccount.value = null
-        cryptoTransferViewModel.createQuote("2")
+        cryptoTransferViewModel.currentAmountInput.value = "2"
+        cryptoTransferViewModel.createQuote()
         Assert.assertTrue(cryptoTransferViewModel.modalIsOpen.value)
         Assert.assertEquals(cryptoTransferViewModel.modalUiState.value, CryptoTransferView.ModalState.ERROR)
         Assert.assertNull(cryptoTransferViewModel.currentQuote.value)
@@ -137,7 +154,8 @@ class CryptoTransferViewModelTest: BaseTest() {
         // -- Case: Current Account is not null
         cryptoTransferViewModel.currentQuote.value = null
         cryptoTransferViewModel.currentAccount.value = CryptoTransferApiMockModel.accountBTC()
-        cryptoTransferViewModel.createQuote("2")
+        cryptoTransferViewModel.currentAmountInput.value = "2"
+        cryptoTransferViewModel.createQuote()
         coVerify { mockQuotesApi.createQuote(postQuoteBankModel) }
         Assert.assertTrue(cryptoTransferViewModel.modalIsOpen.value)
         Assert.assertEquals(cryptoTransferViewModel.modalUiState.value, CryptoTransferView.ModalState.QUOTE)
@@ -255,26 +273,27 @@ class CryptoTransferViewModelTest: BaseTest() {
         // -- Given
         val customerGuid = Cybrid.customerGuid
         val cryptoTransferViewModel = CryptoTransferViewModel()
-        val inputAmount = "2"
+        cryptoTransferViewModel.currentAmountInput.value = "2"
+        val amount = BigDecimal(2)
 
         // -- Case: Current account is null
         cryptoTransferViewModel.currentAccount.value = null
-        val postQuoteBankModelOne = cryptoTransferViewModel.createPostQuoteBankModel(inputAmount)
+        val postQuoteBankModelOne = cryptoTransferViewModel.createPostQuoteBankModel(amount)
         Assert.assertNull(postQuoteBankModelOne)
 
         // -- Case: Current account is not null but doesn't have asset
         cryptoTransferViewModel.currentAccount.value = CryptoTransferApiMockModel.accountWithoutAsset()
-        val postQuoteBankModelTwo = cryptoTransferViewModel.createPostQuoteBankModel(inputAmount)
+        val postQuoteBankModelTwo = cryptoTransferViewModel.createPostQuoteBankModel(amount)
         Assert.assertNull(postQuoteBankModelTwo)
 
         // -- Case: Current account is MXN account (Account not supported supported)
         cryptoTransferViewModel.currentAccount.value = CryptoTransferApiMockModel.accountMXN()
-        val postQuoteBankModelThree = cryptoTransferViewModel.createPostQuoteBankModel(inputAmount)
+        val postQuoteBankModelThree = cryptoTransferViewModel.createPostQuoteBankModel(amount)
         Assert.assertNull(postQuoteBankModelThree)
 
         // -- Case: Everything is good
         cryptoTransferViewModel.currentAccount.value = CryptoTransferApiMockModel.accountBTC()
-        val postQuoteBankModel = cryptoTransferViewModel.createPostQuoteBankModel(inputAmount)
+        val postQuoteBankModel = cryptoTransferViewModel.createPostQuoteBankModel(amount)
         Assert.assertNotNull(postQuoteBankModel)
         Assert.assertEquals(postQuoteBankModel?.productType, PostQuoteBankModel.ProductType.cryptoTransfer)
         Assert.assertEquals(postQuoteBankModel?.customerGuid, customerGuid)

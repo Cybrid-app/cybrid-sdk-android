@@ -50,6 +50,7 @@ class CryptoTransferViewModel: ViewModel() {
     internal var currentAmountInput: MutableState<String> = mutableStateOf("")
     internal val isAmountInFiat: MutableState<Boolean> = mutableStateOf(false)
     internal val preQuoteValueState: MutableState<String> = mutableStateOf("")
+    internal val preQuoteBDValueState: MutableState<BigDecimal> = mutableStateOf(BigDecimal.zero())
     internal val preQuoteValueHasErrorState: MutableState<Boolean> = mutableStateOf(false)
 
     internal val currentQuote: MutableState<QuoteBankModel?> = mutableStateOf(null)
@@ -177,19 +178,21 @@ class CryptoTransferViewModel: ViewModel() {
         }
     }
 
-    suspend fun createQuote(amount: String) {
+    suspend fun createQuote() {
 
         this.openModal()
-        val postQuoteBankModel = this.createPostQuoteBankModel(amount)
-        if (postQuoteBankModel == null) {
-            Logger.log(LoggerEvents.DATA_ERROR, "Crypto Transfer Component - Create PostQuoteBankModel")
-            modalUiState.value = CryptoTransferView.ModalState.ERROR
-            return
-        }
+        try {
 
-        val quotesService = AppModule.getClient().createService(QuotesApi::class.java)
-        this.modalUiState.value = CryptoTransferView.ModalState.LOADING
-        if (!Cybrid.invalidToken) {
+            val amount = BigDecimal(this.currentAmountInput.value)
+            val postQuoteBankModel = this.createPostQuoteBankModel(amount)
+            if (postQuoteBankModel == null) {
+                Logger.log(LoggerEvents.DATA_ERROR, "Crypto Transfer Component - Create PostQuoteBankModel")
+                modalUiState.value = CryptoTransferView.ModalState.ERROR
+                return
+            }
+
+            val quotesService = AppModule.getClient().createService(QuotesApi::class.java)
+            this.modalUiState.value = CryptoTransferView.ModalState.LOADING
             this.viewModelScope.let { scope ->
                 val waitFor = scope.async {
 
@@ -213,6 +216,10 @@ class CryptoTransferViewModel: ViewModel() {
                 }
                 waitFor.await()
             }
+        } catch(e: Exception) {
+            this.currentQuote.value = null
+            this.modalErrorString = CryptoTransferViewModelErrors.amountError()
+            this.modalUiState.value = CryptoTransferView.ModalState.ERROR
         }
     }
 
@@ -285,17 +292,17 @@ class CryptoTransferViewModel: ViewModel() {
     }
 
     // -- Quote Methods
-    internal fun createPostQuoteBankModel(amount: String): PostQuoteBankModel? {
+    internal fun createPostQuoteBankModel(amount: BigDecimal): PostQuoteBankModel? {
 
         val currentAccount = currentAccount.value
         if (currentAccount?.asset == null) {
             return null
         }
-
         val assetCode = currentAccount.asset
         val asset = Cybrid.assets.find { it.code == assetCode } ?: return null
+        val amountToUse = if (isAmountInFiat.value) { preQuoteBDValueState.value } else { amount }
 
-        val amountReady = AssetPipe.transform(amount, asset, AssetPipe.AssetPipeBase)
+        val amountReady = AssetPipe.transform(amountToUse, asset, AssetPipe.AssetPipeBase)
         return PostQuoteBankModel(
             productType = PostQuoteBankModel.ProductType.cryptoTransfer,
             customerGuid = customerGuid,
@@ -351,6 +358,7 @@ class CryptoTransferViewModel: ViewModel() {
             // -- Validation of balance
             if (this.isAmountInFiat.value) { // Input example: 1 USD
 
+                this.preQuoteBDValueState.value = tradeValue
                 this.preQuoteValueState.value = tradeValue.toPlainString()
 
                 val accountBalanceInFormat = AssetPipe.transform(accountBalance, asset, AssetPipe.AssetPipeTrade)
@@ -362,6 +370,8 @@ class CryptoTransferViewModel: ViewModel() {
 
                 var tradeValueFormatted = BigDecimalPipe.transform(tradeValue, assetToConvert)
                 tradeValueFormatted += " ${assetToConvert.code}"
+
+                this.preQuoteBDValueState.value = BigDecimal.zero()
                 this.preQuoteValueState.value = tradeValueFormatted
 
                 val amountFromInputInFormat = AssetPipe.transform(amountFromInput, asset, AssetPipe.AssetPipeBase)

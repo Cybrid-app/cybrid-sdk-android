@@ -174,7 +174,7 @@ fun CryptoTransferView_Content(cryptoTransferViewModel: CryptoTransferViewModel)
                         cryptoTransferViewModel.viewModelScope.let {
                             it.launch {
                                 cryptoTransferViewModel.openModal()
-                                cryptoTransferViewModel.createQuote(cryptoTransferViewModel.currentAmountInput.value)
+                                cryptoTransferViewModel.createQuote()
                             }
                         }
                     }
