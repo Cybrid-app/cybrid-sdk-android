@@ -140,6 +140,7 @@
     <string name="wallets_view_wallet_delete_button">Delete</string>
     <string name="wallets_view_wallet_recent_transfers_title">Recent transfers</string>
     <string name="wallets_view_wallet_recent_transfers_empty_label">No transfers have been executed.</string>
+    <string name="wallets_view_wallet_recent_transfers_loading_label">Loading your transfers</string>
     <string name="wallets_view_warning_title">Cybrid is not responsible for any loss</string>
     <string name="wallets_view_warning_label">You are solely responsible for correctly inputting your public wallet address and any associated memo or tag to properly deliver the on-chain crypto assets to your wallet.\n\nYou are solely responsible for implementing all reasonable and appropriate measures for securing access to your private key(s) and Wallet.\n\nTokens are stored on cryptographic wallets (“Wallets”). A private key (for example, a passphrase) is usually necessary to access, control and/or dispose of tokens that are stored in your Wallet. Losing access to the private key(s) associated with your Wallet may result in the permanent loss of your ability to access your tokens.\n\nWE DO NOT HOLD COPIES OF YOUR PRIVATE KEY(S). WE SHALL NOT BE RESPONSIBLE FOR ANY LOSS RESULTING FROM YOUR INABILITY TO ACCESS YOUR WALLET AND/OR PRIVATE KEYS. WE SHALL NOT BE RESPONSIBLE FOR ANY LOSS ONCE CRYPTO ASSETS ARE SENT ON-CHAIN TO THE WALLET YOU HAVE SPECIFIED.</string>
 

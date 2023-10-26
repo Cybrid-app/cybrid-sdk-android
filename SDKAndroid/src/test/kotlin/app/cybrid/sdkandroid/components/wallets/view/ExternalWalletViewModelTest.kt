@@ -4,7 +4,6 @@ import app.cybrid.cybrid_api_bank.client.models.PostExternalWalletBankModel
 import app.cybrid.sdkandroid.BaseTest
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.components.ExternalWalletsView
-import app.cybrid.sdkandroid.mock.AssetsApiMock
 import app.cybrid.sdkandroid.mock.ExternalWalletBankModelMock
 import app.cybrid.sdkandroid.mock.ExternalWalletsApiMock
 import app.cybrid.sdkandroid.mock.TransferBankModelMock
