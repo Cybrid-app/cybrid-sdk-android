@@ -182,8 +182,8 @@ class IdentityVerificationViewModel: ViewModel() {
     }
 
     fun checkCustomerStatus(state: CustomerBankModel.State) {
-
-        when (state) {
+        val newState = CustomerBankModel.State.frozen
+        when (newState) {
 
             CustomerBankModel.State.storing -> {
 
@@ -217,7 +217,7 @@ class IdentityVerificationViewModel: ViewModel() {
 
                 customerJob?.stop()
                 customerJob = null
-                uiState?.value = KYCView.KYCViewState.ERROR
+                uiState?.value = KYCView.KYCViewState.FROZEN
             }
         }
     }
