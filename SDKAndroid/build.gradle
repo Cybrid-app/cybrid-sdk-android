@@ -155,7 +155,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
     // -- Cybrid API Bank
-    implementation('app.cybrid:cybrid-api-bank-kotlin:0.110.2') {
+    implementation('app.cybrid:cybrid-api-bank-kotlin:0.111.2') {
         exclude group:'org.apache.oltu.oauth2', module: 'org.apache.oltu.oauth2.common'
     }
 
@@ -175,7 +175,7 @@ dependencies {
     implementation 'androidx.compose.runtime:runtime-livedata:1.5.4'
     implementation 'androidx.compose.material3:material3:1.1.2'
     implementation 'androidx.compose.ui:ui-test-junit4:1.5.4'
-    implementation 'androidx.activity:activity-compose:1.8.0'
+    implementation 'androidx.activity:activity-compose:1.8.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
     implementation 'androidx.constraintlayout:constraintlayout-compose:1.0.1'
     implementation 'androidx.compose.material:material-icons-extended:1.5.4'
@@ -192,7 +192,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.2"
     implementation "androidx.lifecycle:lifecycle-common-java8:2.6.2"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.activity:activity-ktx:1.8.0'
+    implementation 'androidx.activity:activity-ktx:1.8.1'
     implementation 'androidx.fragment:fragment-ktx:1.6.2'
 
     // -- Coroutines
