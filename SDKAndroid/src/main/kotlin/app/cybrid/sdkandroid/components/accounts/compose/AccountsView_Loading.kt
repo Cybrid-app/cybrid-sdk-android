@@ -46,12 +46,3 @@ fun AccountsView_Loading() {
         }
     }
 }
-
-/**
- * Compose Previews
- * **/
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-fun AccountsViewLoadingPreview() {
-    AccountsView_Loading()
-}

@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Divider
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -23,7 +24,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
@@ -99,6 +103,7 @@ fun AccountsView_List(
                             accountsViewModel = accountsViewModel
                         )
                     }
+                    Divider()
                 }
             }
 
@@ -161,20 +166,25 @@ fun AccountsView_List_Item_Header(
             Column {
                 Text(
                     text = stringResource(id = R.string.accounts_view_list_header_asset),
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = styles.headerTextSize,
-                    lineHeight = 20.sp,
-                    color = priceColor
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                        fontWeight = FontWeight(700),
+                        color = Color.Black,
+                        textAlign = TextAlign.Left,
+                    )
                 )
                 Text(
                     text = stringResource(id = R.string.accounts_view_list_header_asset_sub),
-                    modifier = Modifier,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = styles.itemsCodeTextSize,
-                    lineHeight = 20.sp,
-                    color = colorResource(id = R.color.accounts_view_balance_title)
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                        fontWeight = FontWeight(400),
+                        color = colorResource(id = R.color.accounts_view_balance_title),
+                        textAlign = TextAlign.Left,
+                    )
                 )
             }
 
@@ -185,20 +195,26 @@ fun AccountsView_List_Item_Header(
                 Text(
                     text = stringResource(id = R.string.accounts_view_list_header_balance),
                     modifier = Modifier.align(Alignment.End),
-                    textAlign = TextAlign.End,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = styles.headerTextSize,
-                    color = priceColor
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                        fontWeight = FontWeight(700),
+                        color = Color.Black,
+                        textAlign = TextAlign.End,
+                    )
                 )
                 Text(
                     text = accountsViewModel.currentFiatCurrency,
                     modifier = Modifier.align(Alignment.End),
-                    textAlign = TextAlign.End,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = styles.itemsCodeTextSize,
-                    color = styles.itemsCodeTextColor
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                        fontWeight = FontWeight(400),
+                        color = colorResource(id = R.color.accounts_view_balance_title),
+                        textAlign = TextAlign.End,
+                    )
                 )
             }
         }
@@ -248,30 +264,34 @@ fun AccountsView_List_Trading_Item(balance: AccountAssetPriceModel,
                 modifier = Modifier
                     .padding(horizontal = 0.dp)
                     .padding(0.dp)
-                    .size(22.dp),
+                    .size(25.dp),
                 contentScale = ContentScale.Fit
             )
             Column(
                 modifier = Modifier
-                    .padding(start = 16.dp)
+                    .padding(start = 14.dp)
             ) {
                 Text(
                     text = assetNameCode,
-                    modifier = Modifier,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 13.5.sp,
-                    lineHeight = 20.sp,
-                    color = customStyles.itemsTextColor
+                    style = TextStyle(
+                        fontSize = 16.5.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                        fontWeight = FontWeight(700),
+                        color = Color.Black,
+                        textAlign = TextAlign.Left
+                    )
                 )
                 Text(
                     text = balance.buyPriceFormatted,
-                    modifier = Modifier,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 13.5.sp,
-                    lineHeight = 20.sp,
-                    color = customStyles.itemsCodeTextColor
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                        fontWeight = FontWeight(400),
+                        color = customStyles.itemsCodeTextColor,
+                        textAlign = TextAlign.End
+                    )
                 )
             }
             Column(
@@ -281,21 +301,26 @@ fun AccountsView_List_Trading_Item(balance: AccountAssetPriceModel,
                 Text(
                     text = balance.accountBalanceFormattedString,
                     modifier = Modifier.align(Alignment.End),
-                    textAlign = TextAlign.End,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    lineHeight = 20.sp,
-                    color = customStyles.itemsTextColor
+                    style = TextStyle(
+                        fontSize = 16.5.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                        fontWeight = FontWeight(700),
+                        color = Color.Black,
+                        textAlign = TextAlign.End
+                    )
                 )
                 Text(
                     text = balance.accountBalanceInFiatFormatted,
                     modifier = Modifier.align(Alignment.End),
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 15.sp,
-                    lineHeight = 20.sp,
-                    color = customStyles.itemsCodeTextColor
+                    style = TextStyle(
+                        fontSize = 16.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                        fontWeight = FontWeight(400),
+                        color = customStyles.itemsCodeTextColor,
+                        textAlign = TextAlign.End
+                    )
                 )
             }
 
@@ -351,21 +376,24 @@ fun AccountsView_List_Fiat_Item(balance: AccountAssetPriceModel,
                 modifier = Modifier
                     .padding(horizontal = 0.dp)
                     .padding(0.dp)
-                    .size(22.dp),
+                    .size(25.dp),
                 contentScale = ContentScale.Fit
             )
             Column(
                 modifier = Modifier
-                    .padding(start = 16.dp)
+                    .padding(start = 14.dp)
             ) {
                 Text(
                     text = assetNameCode,
-                    modifier = Modifier,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 13.5.sp,
-                    lineHeight = 20.sp,
-                    color = customStyles.itemsTextColor
+                    maxLines = 2,
+                    style = TextStyle(
+                        fontSize = 16.5.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                        fontWeight = FontWeight(700),
+                        color = Color.Black,
+                        textAlign = TextAlign.Left
+                    )
                 )
             }
             Column(
@@ -375,21 +403,26 @@ fun AccountsView_List_Fiat_Item(balance: AccountAssetPriceModel,
                 Text(
                     text = accountBalance,
                     modifier = Modifier.align(Alignment.End),
-                    textAlign = TextAlign.End,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    lineHeight = 20.sp,
-                    color = customStyles.itemsTextColor
+                    style = TextStyle(
+                        fontSize = 16.5.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                        fontWeight = FontWeight(700),
+                        color = Color.Black,
+                        textAlign = TextAlign.End,
+                    )
                 )
                 Text(
                     text = accountPendingBalanceString,
                     modifier = Modifier.align(Alignment.End),
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp,
-                    lineHeight = 20.sp,
-                    color = colorResource(id = R.color.accounts_pending_deposit_color)
+                    style = TextStyle(
+                        fontSize = 15.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                        fontWeight = FontWeight(400),
+                        color = colorResource(id = R.color.accounts_pending_deposit_color),
+                        textAlign = TextAlign.End
+                    )
                 )
             }
 

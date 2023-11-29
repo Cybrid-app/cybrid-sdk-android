@@ -253,6 +253,7 @@ class CryptoTransferViewModel: ViewModel() {
 
                             Logger.log(LoggerEvents.DATA_ERROR, "Crypto Transfer Component - TRANSFER")
                             currentQuote.value = null
+                            currentTransfer.value = null
                             modalUiState.value = CryptoTransferView.ModalState.ERROR
                         }
                     }
@@ -403,7 +404,7 @@ class CryptoTransferViewModel: ViewModel() {
         return this.prices.value.find { it.symbol == symbol } ?: SymbolPriceBankModel()
     }
 
-    // -- View Methods
+    // -- View Helper Methods
     fun openModal() {
         this.modalIsOpen.value = true
         this.modalUiState.value = CryptoTransferView.ModalState.LOADING

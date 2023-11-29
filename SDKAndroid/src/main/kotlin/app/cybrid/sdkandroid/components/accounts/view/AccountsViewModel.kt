@@ -193,8 +193,13 @@ class AccountsViewModel : ViewModel() {
                 accountsList.add(account)
             }
         }
-        accountsList.sortByDescending { it.accountType }
-        this.accountsAssetPrice = accountsList
+
+        val fiatAccounts = accountsList.filter { it.accountType == AccountBankModel.Type.fiat }
+        val tradingAccounts = accountsList.filter {
+            it.accountType == AccountBankModel.Type.trading
+        }.sortedBy { it.assetName }
+
+        this.accountsAssetPrice = fiatAccounts + tradingAccounts
         this.getCalculatedBalance()
     }
 

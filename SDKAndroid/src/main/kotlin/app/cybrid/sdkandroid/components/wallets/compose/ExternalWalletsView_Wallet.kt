@@ -1,6 +1,7 @@
 package app.cybrid.sdkandroid.components.wallets.compose
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,23 +29,21 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import app.cybrid.cybrid_api_bank.client.models.AssetBankModel
+import androidx.constraintlayout.compose.Visibility
 import app.cybrid.cybrid_api_bank.client.models.ExternalWalletBankModel
-import app.cybrid.cybrid_api_bank.client.models.PostExternalWalletBankModel
 import app.cybrid.cybrid_api_bank.client.models.TransferBankModel
 import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.R
+import app.cybrid.sdkandroid.components.Component
 import app.cybrid.sdkandroid.components.ExternalWalletsView
 import app.cybrid.sdkandroid.components.wallets.view.ExternalWalletViewModel
 import app.cybrid.sdkandroid.core.AssetPipe
 import app.cybrid.sdkandroid.ui.Theme.robotoFont
 import app.cybrid.sdkandroid.ui.lib.AssetLabelView
-import app.cybrid.sdkandroid.ui.lib.AssetView
 import app.cybrid.sdkandroid.ui.lib.RoundedButton
 import app.cybrid.sdkandroid.util.getDateInFormat
 import app.cybrid.sdkandroid.util.getSpannableStyle
@@ -68,6 +67,8 @@ fun ExternalWalletsView_Wallet(
         // -- Vars
         val assets = Cybrid.assets
         val wallet = externalWalletViewModel.currentWallet!!
+        val walletTagIsVisible = wallet.tag?.isNotEmpty() ?: false
+        val walletTagVisibility = if (walletTagIsVisible) Visibility.Visible else Visibility.Gone
 
         // -- Refs
         val (title, status, asset, name,
@@ -118,7 +119,7 @@ fun ExternalWalletsView_Wallet(
         )
 
         // -- Name
-        ExternalWalletsView_Wallet_Item(
+        ExternalWalletsView_Wallet_TextItem(
             modifier = Modifier
                 .constrainAs(name) {
                     start.linkTo(parent.start, margin = 0.dp)
@@ -131,7 +132,7 @@ fun ExternalWalletsView_Wallet(
         )
 
         // -- Address
-        ExternalWalletsView_Wallet_Item(
+        ExternalWalletsView_Wallet_TextItem(
             modifier = Modifier
                 .constrainAs(address) {
                     start.linkTo(parent.start, margin = 0.dp)
@@ -143,14 +144,15 @@ fun ExternalWalletsView_Wallet(
             labelText = wallet.address ?: ""
         )
 
-        // -- Address
-        ExternalWalletsView_Wallet_Item(
+        // -- Tag
+        ExternalWalletsView_Wallet_TextItem(
             modifier = Modifier
                 .constrainAs(tag) {
                     start.linkTo(parent.start, margin = 0.dp)
                     top.linkTo(address.bottom, margin = 25.dp)
                     end.linkTo(parent.end, margin = 0.dp)
                     width = Dimension.fillToConstraints
+                    visibility = walletTagVisibility
                 },
             titleText = stringResource(R.string.wallets_view_create_tag_title),
             labelText = wallet.tag ?: ""
@@ -162,7 +164,7 @@ fun ExternalWalletsView_Wallet(
             modifier = Modifier
                 .constrainAs(recentTransfersTitle) {
                     start.linkTo(parent.start, margin = 0.dp)
-                    top.linkTo(tag.bottom, margin = 25.dp)
+                    top.linkTo(tag.bottom, margin = 25.dp, goneMargin = 25.dp)
                     end.linkTo(parent.end, margin = 0.dp)
                     width = Dimension.fillToConstraints
                 },
@@ -176,8 +178,18 @@ fun ExternalWalletsView_Wallet(
             )
         )
 
-        // -- Transfers
         when(externalWalletViewModel.transfersUiState.value) {
+
+            ExternalWalletsView.TransfersState.LOADING -> {
+                ExternalWalletsView_Wallet_Loading_Transfers(
+                    modifier = Modifier.constrainAs(recentTransfers) {
+                        start.linkTo(parent.start, margin = 0.dp)
+                        top.linkTo(recentTransfersTitle.bottom, margin = 25.dp)
+                        end.linkTo(parent.end, margin = 0.dp)
+                        width = Dimension.fillToConstraints
+                    }
+                )
+            }
 
             ExternalWalletsView.TransfersState.EMPTY -> {
 
@@ -196,11 +208,12 @@ fun ExternalWalletsView_Wallet(
                 LazyColumn(
                     modifier = Modifier.constrainAs(recentTransfers) {
                         start.linkTo(parent.start, margin = 0.dp)
-                        top.linkTo(recentTransfersTitle.bottom, margin = 25.dp)
+                        top.linkTo(recentTransfersTitle.bottom, margin = 7.5.dp)
                         end.linkTo(parent.end, margin = 0.dp)
                         width = Dimension.fillToConstraints
-                        height = Dimension.value(300.dp)
-                    }
+                        height = Dimension.value( (66 * externalWalletViewModel.transfers.value.count()).dp )
+                    },
+                    userScrollEnabled = false,
                 ) {
                     itemsIndexed(items = externalWalletViewModel.transfers.value) { _, item ->
                         ExternalWalletsView_Wallet_Transfer_Item(
@@ -209,8 +222,6 @@ fun ExternalWalletsView_Wallet(
                     }
                 }
             }
-
-            else -> {}
         }
 
         // -- Delete Button
@@ -234,7 +245,7 @@ fun ExternalWalletsView_Wallet(
 }
 
 @Composable
-fun ExternalWalletsView_Wallet_Item(
+fun ExternalWalletsView_Wallet_TextItem(
     modifier: Modifier,
     titleText: String,
     labelText: String
@@ -285,6 +296,28 @@ fun ExternalWalletsView_Wallet_Item(
 }
 
 @Composable
+fun ExternalWalletsView_Wallet_Loading_Transfers(
+    modifier: Modifier
+) {
+    ConstraintLayout(
+        modifier = modifier
+    ) {
+
+        // -- Vars
+        val (loader) = createRefs()
+
+        // -- Content
+        Component.CreateLoader(modifier =
+        Modifier.constrainAs(loader) {
+            centerHorizontallyTo(parent)
+            centerVerticallyTo(parent)
+        },
+            message = stringResource(id = R.string.wallets_view_wallet_recent_transfers_loading_label)
+        )
+    }
+}
+
+@Composable
 fun ExternalWalletsView_Wallet_Empty_Transfers(
     modifier: Modifier
 ) {
@@ -301,7 +334,7 @@ fun ExternalWalletsView_Wallet_Empty_Transfers(
             contentDescription = "iconDesc",
             modifier = Modifier.constrainAs(icon) {
                 centerHorizontallyTo(parent)
-                top.linkTo(parent.top, margin = 15.dp)
+                top.linkTo(parent.top, margin = 0.dp)
                 width = Dimension.value(45.dp)
                 height = Dimension.value(45.dp)
             }
@@ -359,14 +392,12 @@ fun ExternalWalletsView_Wallet_Transfer_Item(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(vertical = 0.dp)
                 .height(66.dp)
-                .fillMaxWidth()
-                .clickable {},
+                .fillMaxWidth(),
         ) {
 
             Image(
-                modifier = Modifier.size(30.dp),
+                modifier = Modifier.size(32.dp),
                 painter = painterResource(id = R.drawable.ic_crypto_transfer),
                 contentDescription = ""
             )
@@ -377,39 +408,39 @@ fun ExternalWalletsView_Wallet_Transfer_Item(
             ) {
                 Text(
                     text = "Withdraw",
-                    modifier = Modifier,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 13.sp,
-                    lineHeight = 20.sp,
-                    color = Color.Black
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        lineHeight = 28.sp,
+                        fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                        fontWeight = FontWeight(400),
+                        color = Color.Black,
+                        textAlign = TextAlign.Left,
+                    )
                 )
                 Text(
                     text = date,
-                    modifier = Modifier,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 15.sp,
-                    lineHeight = 20.sp,
-                    color = colorResource(id = R.color.list_prices_asset_component_code_color)
+                    style = TextStyle(
+                        fontSize = 14.sp,
+                        lineHeight = 24.sp,
+                        fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                        fontWeight = FontWeight(500),
+                        color = colorResource(id = R.color.external_wallets_view_wallets_item_asset_color),
+                        textAlign = TextAlign.Left,
+                    )
                 )
             }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = amountValueFormatted,
-                    modifier = Modifier.align(Alignment.End),
+            Text(
+                text = amountValueFormatted,
+                modifier = Modifier.fillMaxWidth(),
+                style = TextStyle(
+                    fontSize = 17.5.sp,
+                    lineHeight = 28.sp,
+                    fontFamily = FontFamily(Font(R.font.roboto_regular)),
+                    fontWeight = FontWeight(600),
+                    color = Color.Black,
                     textAlign = TextAlign.End,
-                    fontFamily = robotoFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    lineHeight = 20.sp,
-                    color = Color.Black
                 )
-            }
-
+            )
         }
     }
 }

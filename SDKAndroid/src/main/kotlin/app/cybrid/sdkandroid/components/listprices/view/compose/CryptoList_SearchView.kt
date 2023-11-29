@@ -21,7 +21,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.cybrid.sdkandroid.R
@@ -87,15 +86,4 @@ fun CryptoList_SearchView(state: MutableState<TextFieldValue>) {
             disabledIndicatorColor = Color.Transparent
         )
     )
-}
-
-/**
- * ListPricesView Composable Preview Functions
- * **/
-@Preview(showBackground = true)
-@Composable
-fun CryptoList_SearchView_Preview() {
-
-    val textState = remember { mutableStateOf(TextFieldValue("")) }
-    CryptoList_SearchView(textState)
 }
