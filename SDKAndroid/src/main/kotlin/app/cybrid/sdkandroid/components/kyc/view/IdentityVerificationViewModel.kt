@@ -182,8 +182,8 @@ class IdentityVerificationViewModel: ViewModel() {
     }
 
     fun checkCustomerStatus(state: CustomerBankModel.State) {
-        val newState = CustomerBankModel.State.frozen
-        when (newState) {
+
+        when (state) {
 
             CustomerBankModel.State.storing -> {
 

@@ -6,7 +6,6 @@ import android.os.Looper
 import android.util.AttributeSet
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintLayout
+import app.cybrid.cybrid_api_bank.client.models.CustomerBankModel
+import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.core.Constants
 
@@ -71,9 +72,8 @@ open class Component @JvmOverloads constructor(
     }
 
     fun canRenderUI(): Boolean {
-        //if (Cybrid.customer == null) { return true }
-        // return Cybrid.customer?.state != CustomerBankModel.State.frozen
-        return false
+        if (Cybrid.customer == null) { return true }
+        return Cybrid.customer?.state != CustomerBankModel.State.frozen
     }
 
     companion object {
