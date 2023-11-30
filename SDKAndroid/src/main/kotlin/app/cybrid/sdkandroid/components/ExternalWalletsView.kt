@@ -51,7 +51,11 @@ class ExternalWalletsView @JvmOverloads constructor(
 
         this.composeView?.let { compose ->
             compose.setContent {
-                ExternalWalletsView(this.externalWalletViewModel!!)
+                if (this.canRenderUI()) {
+                    ExternalWalletsView(this.externalWalletViewModel!!)
+                } else {
+                    FrozenCustomerUI()
+                }
             }
         }
     }

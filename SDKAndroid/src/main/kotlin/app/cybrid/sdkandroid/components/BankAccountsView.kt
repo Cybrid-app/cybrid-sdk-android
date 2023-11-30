@@ -54,10 +54,14 @@ Component(context, attrs, defStyle) {
 
         this.composeView?.let { compose ->
             compose.setContent {
-                BankAccountsView(
-                    currentState = this.currentState,
-                    viewModel = bankAccountsViewModel,
-                )
+                if (this.canRenderUI()) {
+                    BankAccountsView(
+                        currentState = this.currentState,
+                        viewModel = bankAccountsViewModel,
+                    )
+                } else {
+                    FrozenCustomerUI()
+                }
             }
         }
     }
