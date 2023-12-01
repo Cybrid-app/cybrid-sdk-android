@@ -55,10 +55,15 @@ Component(context, attrs, defStyle) {
 
         this.composeView?.let { compose ->
             compose.setContent {
-                BankTransferView(
-                    currentState = currentState,
-                    transferViewModel = transferViewModel,
-                )
+
+                if (this.canRenderUI()) {
+                    BankTransferView(
+                        currentState = currentState,
+                        transferViewModel = transferViewModel,
+                    )
+                } else {
+                    FrozenCustomerUI()
+                }
 
                 if (transferViewModel?.viewDismiss?.value == true && canDismissView) {
                     (context as AppCompatActivity).finish()

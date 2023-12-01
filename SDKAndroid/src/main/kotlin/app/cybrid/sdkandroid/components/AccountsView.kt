@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
+import app.cybrid.sdkandroid.Cybrid
 import app.cybrid.sdkandroid.R
 import app.cybrid.sdkandroid.components.accounts.compose.*
 import app.cybrid.sdkandroid.components.accounts.view.AccountsViewModel
@@ -58,14 +59,17 @@ Component(context, attrs, defStyle) {
     }
 
     private fun initComposeView() {
-
         this.composeView?.let { compose ->
             compose.setContent {
-                AccountsView(
-                    currentState = this.currentState,
-                    accountsViewModel = this.accountsViewModel,
-                    transferViewModel = this.transferViewModel
-                )
+                if (this.canRenderUI()) {
+                    AccountsView(
+                        currentState = this.currentState,
+                        accountsViewModel = this.accountsViewModel,
+                        transferViewModel = this.transferViewModel
+                    )
+                } else {
+                    FrozenCustomerUI()
+                }
             }
         }
     }

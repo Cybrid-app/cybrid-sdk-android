@@ -212,6 +212,13 @@ class IdentityVerificationViewModel: ViewModel() {
                 customerJob = null
                 uiState?.value = KYCView.KYCViewState.ERROR
             }
+
+            CustomerBankModel.State.frozen -> {
+
+                customerJob?.stop()
+                customerJob = null
+                uiState?.value = KYCView.KYCViewState.FROZEN
+            }
         }
     }
 

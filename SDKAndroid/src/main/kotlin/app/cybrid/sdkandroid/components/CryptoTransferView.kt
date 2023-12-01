@@ -63,7 +63,11 @@ class CryptoTransferView @JvmOverloads constructor(
 
         this.composeView?.let { compose ->
             compose.setContent {
-                CryptoTransferView(cryptoTransferViewModel = cryptoTransferViewModel!!)
+                if (this.canRenderUI()) {
+                    CryptoTransferView(cryptoTransferViewModel = cryptoTransferViewModel!!)
+                } else {
+                    FrozenCustomerUI()
+                }
             }
         }
     }

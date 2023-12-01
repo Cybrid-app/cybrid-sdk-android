@@ -52,11 +52,15 @@ Component(context, attrs, defStyle) {
     private fun initComposeView() {
         this.composeView?.let { compose ->
             compose.setContent {
-                TradeView(
-                    currentState = currentState,
-                    tradeViewModel = tradeViewModel!!,
-                    context = context
-                )
+                if (this.canRenderUI()) {
+                    TradeView(
+                        currentState = currentState,
+                        tradeViewModel = tradeViewModel!!,
+                        context = context
+                    )
+                } else {
+                    FrozenCustomerUI()
+                }
             }
         }
     }

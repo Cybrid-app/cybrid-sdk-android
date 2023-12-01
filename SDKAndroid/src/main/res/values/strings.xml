@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    
+    <!-- Generals -->
+    <string name="customer_frozen">Your account has been frozen.</string>
+    <string name="customer_frozen_details">Please contact customer support.</string>
+    <string name="customer_frozen_button">Continue</string>
 
     <string name="list_prices_asset_component_search">Search</string>
     <string name="list_prices_asset_component_header_currency">Currency</string>
