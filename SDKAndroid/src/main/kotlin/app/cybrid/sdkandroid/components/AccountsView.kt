@@ -59,7 +59,6 @@ Component(context, attrs, defStyle) {
     }
 
     private fun initComposeView() {
-        Cybrid.assets
         this.composeView?.let { compose ->
             compose.setContent {
                 if (this.canRenderUI()) {
