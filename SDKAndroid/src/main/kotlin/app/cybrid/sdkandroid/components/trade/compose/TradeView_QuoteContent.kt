@@ -67,10 +67,10 @@ fun TradeView_QuoteContent(
     val currencyInputWidth = remember { mutableStateOf(Size.Zero) }
 
     // -- Amount Input
-    val typeOfAmountState = remember { mutableStateOf(AssetBankModel.Type.fiat) }
+    val typeOfAmountState = remember { mutableStateOf("fiat") }
     val amountState = remember { mutableStateOf("") }
     val amountAsset = remember { mutableStateOf(
-        if (typeOfAmountState.value == AssetBankModel.Type.fiat)
+        if (typeOfAmountState.value == "fiat")
             tradeViewModel.currentPairAsset.value else tradeViewModel.currentAsset.value
         )
     }
@@ -338,7 +338,7 @@ private fun TradeView_QuoteContent__CurrencyDropDown(
 fun TradeView_QuoteContent__AmountInput(
     amountState: MutableState<String>,
     amountAsset: MutableState<AssetBankModel?>,
-    typeOfAmountState: MutableState<AssetBankModel.Type>
+    typeOfAmountState: MutableState<String>
 ) {
 
     // -- Focus Manger
@@ -439,10 +439,10 @@ fun TradeView_QuoteContent__AmountInput(
                 .padding(end = 14.dp)
                 .weight(0.12f)
                 .clickable {
-                    if (typeOfAmountState.value == AssetBankModel.Type.fiat) {
-                        typeOfAmountState.value = AssetBankModel.Type.crypto
+                    if (typeOfAmountState.value == "fiat") {
+                        typeOfAmountState.value = "crypto"
                     } else {
-                        typeOfAmountState.value = AssetBankModel.Type.fiat
+                        typeOfAmountState.value = "fiat"
                     }
                 }
         )
@@ -456,7 +456,7 @@ private fun TradeView_QuoteContent__CurrencyValueResult(
     amountState: MutableState<String>,
     amountAsset: MutableState<AssetBankModel?>,
     pairAsset: AssetBankModel,
-    typeOfAmountState: MutableState<AssetBankModel.Type>,
+    typeOfAmountState: MutableState<String>,
 ) {
 
     val currencyCode = currencyState.value?.code ?: ""
@@ -473,7 +473,7 @@ private fun TradeView_QuoteContent__CurrencyValueResult(
 
     when(typeOfAmountState.value) {
 
-        AssetBankModel.Type.crypto -> {
+        "crypto" -> {
 
             amountAsset.value = currencyState.value
             codeAssetToUse = pairAsset
@@ -481,7 +481,7 @@ private fun TradeView_QuoteContent__CurrencyValueResult(
             amount =  BigDecimalPipe.transform(value, pairAsset)
         }
 
-        AssetBankModel.Type.fiat -> {
+        "fiat" -> {
 
             amountAsset.value = pairAsset
             codeAssetToUse = currencyState.value
@@ -513,7 +513,7 @@ private fun TradeView_QuoteContent__CurrencyValueResult(
             .padding(horizontal = 3.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (typeOfAmountState.value == AssetBankModel.Type.crypto) {
+        if (typeOfAmountState.value == "crypto") {
             Image(
                 painter = painterResource(id = R.drawable.ic_usd),
                 contentDescription = "",
@@ -539,21 +539,21 @@ private fun TradeView_QuoteContent__ActionButton(
     currencyState: MutableState<AssetBankModel?>,
     amountState: MutableState<String>,
     pairAsset: AssetBankModel?,
-    typeOfAmountState: MutableState<AssetBankModel.Type>,
+    typeOfAmountState: MutableState<String>,
     selectedTabIndex: MutableState<Int>
 ) {
 
     // -- Side logic
-    val side = remember { mutableStateOf(PostQuoteBankModel.Side.buy) }
+    val side = remember { mutableStateOf("buy") }
     var textButton = ""
     when(selectedTabIndex.value) {
 
         0 ->  {
-            side.value = PostQuoteBankModel.Side.buy
+            side.value = "buy"
             textButton = stringResource(id = R.string.trade_flow_buy_action_button)
         }
         1 -> {
-            side.value = PostQuoteBankModel.Side.sell
+            side.value = "sell"
             textButton = stringResource(id = R.string.trade_flow_sell_action_button)
         }
     }

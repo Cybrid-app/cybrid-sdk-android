@@ -234,8 +234,8 @@ class AccountsViewModelTest {
             customerGuid = "1234",
             quoteGuid = "1234",
             symbol = "BTC-USD",
-            side = TradeBankModel.Side.sell,
-            state = TradeBankModel.State.completed,
+            side = "sell",
+            state = "completed",
             receiveAmount = BigDecimal(12345),
             deliverAmount = BigDecimal(67891)
         )
@@ -261,8 +261,8 @@ class AccountsViewModelTest {
             customerGuid = "1234",
             quoteGuid = "1234",
             symbol = "BTC-USD",
-            side = TradeBankModel.Side.buy,
-            state = TradeBankModel.State.completed,
+            side = "buy",
+            state = "completed",
             receiveAmount = BigDecimal(12345),
             deliverAmount = BigDecimal(67891)
         )
@@ -288,8 +288,8 @@ class AccountsViewModelTest {
             customerGuid = "1234",
             quoteGuid = "1234",
             symbol = "BTC-USD",
-            side = TradeBankModel.Side.sell,
-            state = TradeBankModel.State.completed,
+            side = "sell",
+            state = "completed",
             receiveAmount = BigDecimal(12345),
             deliverAmount = BigDecimal(67891)
         )
@@ -315,8 +315,8 @@ class AccountsViewModelTest {
             customerGuid = "1234",
             quoteGuid = "1234",
             symbol = "BTC-USD",
-            side = TradeBankModel.Side.buy,
-            state = TradeBankModel.State.completed,
+            side = "buy",
+            state = "completed",
             receiveAmount = BigDecimal(12345),
             deliverAmount = BigDecimal(67891)
         )
@@ -397,12 +397,12 @@ class AccountsViewModelTest {
 
         val transfer = TransferBankModel(
             guid = "1234",
-            transferType = TransferBankModel.TransferType.funding,
+            transferType = "funding",
             customerGuid = "1234",
             quoteGuid = "1234",
             asset = "USD",
-            side = TransferBankModel.Side.deposit,
-            state = TransferBankModel.State.completed,
+            side = "deposit",
+            state = "completed",
             amount = BigDecimal(123456),
         )
 

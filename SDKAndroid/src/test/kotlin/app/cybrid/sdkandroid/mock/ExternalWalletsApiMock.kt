@@ -67,13 +67,13 @@ object ExternalWalletBankModelMock {
             guid = "1234",
             name = "Test",
             asset = "BTC",
-            environment = ExternalWalletBankModel.Environment.sandbox,
+            environment = "sandbox",
             bankGuid = "1234",
             customerGuid = "1234",
             address = "0x1234",
             tag = "1234",
             createdAt = java.time.OffsetDateTime.now(),
-            state = ExternalWalletBankModel.State.completed,
+            state = "completed",
             failureCode = null
         )
     }
@@ -83,13 +83,13 @@ object ExternalWalletBankModelMock {
             guid = "1234",
             name = "Test Wallet Deleted",
             asset = "BTC",
-            environment = ExternalWalletBankModel.Environment.sandbox,
+            environment = "sandbox",
             bankGuid = "1234",
             customerGuid = "1234",
             address = "0x1234",
             tag = "1234",
             createdAt = java.time.OffsetDateTime.now(),
-            state = ExternalWalletBankModel.State.deleted,
+            state = "deleted",
             failureCode = null
         )
     }
@@ -99,13 +99,13 @@ object ExternalWalletBankModelMock {
             guid = "1234",
             name = "Test Wallet Deleting",
             asset = "BTC",
-            environment = ExternalWalletBankModel.Environment.sandbox,
+            environment = "sandbox",
             bankGuid = "1234",
             customerGuid = "1234",
             address = "0x1234",
             tag = "1234",
             createdAt = java.time.OffsetDateTime.now(),
-            state = ExternalWalletBankModel.State.deleting,
+            state = "deleting",
             failureCode = null
         )
     }

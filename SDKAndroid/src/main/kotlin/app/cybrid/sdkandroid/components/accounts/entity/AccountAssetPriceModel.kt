@@ -17,12 +17,12 @@ data class AccountAssetPriceModel (
     var accountAvailableFormattedString: String,
 
     var accountGuid:String,
-    var accountType: AccountBankModel.Type,
+    var accountType: String,
     var accountCreated:java.time.OffsetDateTime,
 
     var assetName:String,
     var assetSymbol:String,
-    var assetType: AssetBankModel.Type,
+    var assetType: String,
     var assetDecimals:JavaBigDecimal,
     var pairAsset:AssetBankModel,
 

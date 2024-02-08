@@ -84,8 +84,8 @@ class BankAccountsViewModel: ViewModel() {
 
                             val accountsList = it.data?.objects ?: listOf()
                             val accountsFiltered = accountsList.filter { account ->
-                                account.state != ExternalBankAccountBankModel.State.deleted &&
-                                account.state != ExternalBankAccountBankModel.State.deleting
+                                account.state != "deleted" &&
+                                account.state != "deleting"
                             }
                             accounts = accountsFiltered
                             uiState.value = BankAccountsView.State.CONTENT
@@ -324,7 +324,7 @@ class BankAccountsViewModel: ViewModel() {
 
     internal fun checkExternalBankAccountStatus(account: ExternalBankAccountBankModel) {
 
-        if (account.state != ExternalBankAccountBankModel.State.storing) {
+        if (account.state != "storing") {
 
             this.externalAccountJob?.stop()
             this.externalAccountJob = null

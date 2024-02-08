@@ -73,8 +73,8 @@ class TradeViewModel: ViewModel() {
 
     fun createPostQuote(
         amountState: MutableState<String>,
-        typeOfAmountState: MutableState<AssetBankModel.Type>,
-        side: PostQuoteBankModel.Side,
+        typeOfAmountState: MutableState<String>,
+        side: String,
         asset: AssetBankModel,
         pairAsset: AssetBankModel,
     ) {
@@ -85,9 +85,9 @@ class TradeViewModel: ViewModel() {
         // -- Check side
         when(side) {
 
-            PostQuoteBankModel.Side.buy -> {
+            "buy" -> {
 
-                if (typeOfAmountState.value == AssetBankModel.Type.crypto) {
+                if (typeOfAmountState.value == "crypto") {
                     postQuoteBankModel = PostQuoteBankModel(
                         customerGuid = customerGuid,
                         symbol = symbol,
@@ -112,9 +112,9 @@ class TradeViewModel: ViewModel() {
                 }
             }
 
-            PostQuoteBankModel.Side.sell -> {
+            "sell" -> {
 
-                if (typeOfAmountState.value == AssetBankModel.Type.fiat) {
+                if (typeOfAmountState.value == "fiat") {
                     postQuoteBankModel = PostQuoteBankModel(
                         customerGuid = customerGuid,
                         symbol = symbol,

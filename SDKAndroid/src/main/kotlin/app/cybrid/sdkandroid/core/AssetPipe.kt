@@ -70,10 +70,10 @@ object AssetPipe {
      *      ?     - input USD (formatted)
      *      (input USD * 1 BTC) / $n USD
      * **/
-    fun preQuote(input: BigDecimal, price: BigDecimal, base: AssetBankModel.Type, decimals: BigDecimal = BigDecimal(2)): BigDecimal {
+    fun preQuote(input: BigDecimal, price: BigDecimal, base: String, decimals: BigDecimal = BigDecimal(2)): BigDecimal {
 
         var result = BigDecimal(0)
-        if (base == AssetBankModel.Type.crypto) {
+        if (base == "crypto") {
             result = input.times(price)
         } else {
             if (price != BigDecimal.zero()) {

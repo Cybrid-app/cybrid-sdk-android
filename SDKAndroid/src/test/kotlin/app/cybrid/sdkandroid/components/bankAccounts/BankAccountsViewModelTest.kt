@@ -304,7 +304,7 @@ class BankAccountsViewModelTest {
     fun test_checkExternalBankAccountStatus() {
 
         // -- Given
-        val account = ExternalBankAccountBankModel(state = ExternalBankAccountBankModel.State.completed)
+        val account = ExternalBankAccountBankModel(state = "completed")
         val viewModel = createViewModel()
         viewModel.uiState.value = BankAccountsView.State.LOADING
         viewModel.externalAccountJob = Polling {}
@@ -322,7 +322,7 @@ class BankAccountsViewModelTest {
     fun test_checkExternalBankAccountStatus_ContinuePolling() {
 
         // -- Given
-        val account = ExternalBankAccountBankModel(state = ExternalBankAccountBankModel.State.storing)
+        val account = ExternalBankAccountBankModel(state = "storing")
         val viewModel = createViewModel()
         viewModel.uiState.value = BankAccountsView.State.LOADING
         viewModel.externalAccountJob = Polling {}

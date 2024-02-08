@@ -78,6 +78,7 @@ class TradeViewModelTest {
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
         viewModel.listPricesViewModel?.setDataProvider(dataProvider)
+        viewModel.listPricesViewModel?.assets = TestConstants.assets
 
         // -- When
         viewModel.getPricesList()
@@ -125,7 +126,7 @@ class TradeViewModelTest {
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
         viewModel.listPricesViewModel?.setDataProvider(dataProvider)
-        viewModel.postQuoteBankModel = PostQuoteBankModel(side = PostQuoteBankModel.Side.sell)
+        viewModel.postQuoteBankModel = PostQuoteBankModel(side = "sell")
 
         // -- When
         viewModel.createQuote()
@@ -146,7 +147,7 @@ class TradeViewModelTest {
         val viewModel = createViewModel()
         viewModel.setDataProvider(dataProvider)
         viewModel.listPricesViewModel?.setDataProvider(dataProvider)
-        viewModel.postQuoteBankModel = PostQuoteBankModel(side = PostQuoteBankModel.Side.sell)
+        viewModel.postQuoteBankModel = PostQuoteBankModel(side = "sell")
         viewModel.quotePolling = Polling {}
 
         // -- When

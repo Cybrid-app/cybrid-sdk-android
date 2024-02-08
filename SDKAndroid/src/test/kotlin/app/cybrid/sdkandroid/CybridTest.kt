@@ -55,7 +55,7 @@ class CybridTest {
             guid = "34567890",
             organizationGuid = "133",
             name = "Test",
-            type = BankBankModel.Type.sandbox,
+            type = "sandbox",
             features = listOf(),
             createdAt = OffsetDateTime.now()
         )

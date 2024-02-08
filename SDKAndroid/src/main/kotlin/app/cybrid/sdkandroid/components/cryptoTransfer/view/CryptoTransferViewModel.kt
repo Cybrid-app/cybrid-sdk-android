@@ -89,7 +89,7 @@ class CryptoTransferViewModel: ViewModel() {
 
                             // -- Set accounts (Only trading accounts)
                             accounts = response.data?.objects ?: listOf()
-                            accounts = accounts.filter { it.type == AccountBankModel.Type.trading }
+                            accounts = accounts.filter { it.type == "trading" }
                                 .sortedBy { it.asset }
 
                             // -- Choosing first account
@@ -131,8 +131,7 @@ class CryptoTransferViewModel: ViewModel() {
                             // -- Wallets set (Only active wallets)
                             val allWallets = response.data?.objects ?: listOf()
                             wallets = allWallets.filter {
-                                it.state != ExternalWalletBankModel.State.deleting &&
-                                        it.state != ExternalWalletBankModel.State.deleted
+                                it.state != "deleting" && it.state != "deleted"
                             }.sortedBy { it.name }
                             if (currentAccount.value != null) { changeCurrentAccount(currentAccount.value!!) }
                             uiState.value = CryptoTransferView.State.CONTENT
@@ -308,7 +307,7 @@ class CryptoTransferViewModel: ViewModel() {
             productType = PostQuoteBankModel.ProductType.cryptoTransfer,
             customerGuid = customerGuid,
             asset = asset.code,
-            side = PostQuoteBankModel.Side.withdrawal,
+            side = "withdrawal",
             deliverAmount = amountReady.toJavaBigDecimal()
         )
     }
@@ -351,7 +350,7 @@ class CryptoTransferViewModel: ViewModel() {
             val tradeValue = AssetPipe.preQuote(
                 input = amountFromInput,
                 price = sellPrice.toBigDecimal(),
-                base = if (isAmountInFiat.value) AssetBankModel.Type.fiat else AssetBankModel.Type.crypto,
+                base = if (isAmountInFiat.value) "fiat" else "crypto",
                 decimals = assetToConvert.decimals.toBigDecimal()
             )
             val accountBalance = this.currentAccount.value?.platformBalance?.toBigDecimal() ?: BigDecimal.zero()

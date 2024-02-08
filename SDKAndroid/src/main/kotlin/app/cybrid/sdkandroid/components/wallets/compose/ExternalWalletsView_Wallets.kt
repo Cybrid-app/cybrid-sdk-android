@@ -116,7 +116,7 @@ fun ExternalWalletsView_Wallets_Item(
     val walletAsset = wallet.asset ?: ""
     val walletAssetImage = rememberAsyncImagePainter(getImageUrl(walletAsset.lowercase()))
     val walletName = wallet.name ?: ""
-    val walletStatus = wallet.state ?: ExternalWalletBankModel.State.pending
+    val walletStatus = wallet.state ?: "pending"
 
     // -- Content
     Surface(
@@ -192,7 +192,7 @@ fun ExternalWalletsView_Wallets_Item(
 
 @Composable
 fun ExternalWalletsView_Wallets_Item_Chip(
-    state: ExternalWalletBankModel.State,
+    state: String,
     modifier: Modifier
 ) {
 
@@ -203,28 +203,28 @@ fun ExternalWalletsView_Wallets_Item_Chip(
 
     when (state) {
 
-        ExternalWalletBankModel.State.pending -> {
+        "pending" -> {
 
             backgroundColor = colorResource(id = R.color.external_wallets_view_wallets_item_chip_pending)
             textColor = Color.Black
             text = "Pending"
         }
 
-        ExternalWalletBankModel.State.storing -> {
+        "storing" -> {
 
             backgroundColor = colorResource(id = R.color.external_wallets_view_wallets_item_chip_pending)
             textColor = Color.Black
             text = "Pending"
         }
 
-        ExternalWalletBankModel.State.failed -> {
+        "failed" -> {
 
             backgroundColor = colorResource(id = R.color.external_wallets_view_wallets_item_chip_failed)
             textColor = Color.White
             text = "Failed"
         }
 
-        ExternalWalletBankModel.State.completed -> {
+        "completed" -> {
 
             backgroundColor = colorResource(id = R.color.external_wallets_view_wallets_item_chip_completed)
             textColor = Color.White

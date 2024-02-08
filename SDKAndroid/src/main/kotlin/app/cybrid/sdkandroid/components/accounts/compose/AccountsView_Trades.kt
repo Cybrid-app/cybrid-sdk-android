@@ -254,7 +254,7 @@ fun AccountsView_Trades_List_Item(
         )
     )
     // -- Side Logic
-    if (trade.side == TradeBankModel.Side.sell) {
+    if (trade.side == "sell") {
 
         side = stringResource(id = R.string.accounts_view_trades_list_sell)
         icon = Icons.Outlined.Outbound
@@ -299,7 +299,7 @@ fun AccountsView_Trades_List_Item(
                         color = Color.Black
                     )
                     AccountsView_Trades_List_Item_Chip(
-                        state = trade.state ?: TradeBankModel.State.pending
+                        state = trade.state ?: "pending"
                     )
                 }
                 Text(
@@ -343,23 +343,21 @@ fun AccountsView_Trades_List_Item(
 
 @Composable
 fun AccountsView_Trades_List_Item_Chip(
-    state: TradeBankModel.State
+    state: String
 ) {
 
     var text = stringResource(id = R.string.accounts_view_list_item_failed)
     var backgroundColor = colorResource(id = R.color.accounts_view_list_item_chip_failed)
     var textColor = Color.White
 
-    if (state == TradeBankModel.State.pending || state == TradeBankModel.State.storing) {
+    if (state == "pending" || state == "storing") {
 
         backgroundColor = colorResource(id = R.color.accounts_view_list_item_chip_pending)
         textColor = Color.Black
         text = stringResource(id = R.string.accounts_view_list_item_pending)
     }
 
-    if (state == TradeBankModel.State.pending ||
-        state == TradeBankModel.State.storing ||
-        state == TradeBankModel.State.failed) {
+    if (state == "pending" || state == "storing" || state == "failed") {
 
         Text(
             text = text,

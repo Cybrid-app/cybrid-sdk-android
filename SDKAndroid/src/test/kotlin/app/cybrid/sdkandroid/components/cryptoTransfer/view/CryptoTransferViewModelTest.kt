@@ -58,7 +58,7 @@ class CryptoTransferViewModelTest: BaseTest() {
         // -- Then
         Assert.assertFalse(cryptoTransferViewModel.accounts.isEmpty())
         Assert.assertEquals(cryptoTransferViewModel.accounts.count(), 1)
-        Assert.assertEquals(cryptoTransferViewModel.accounts.first().type, AccountBankModel.Type.trading)
+        Assert.assertEquals(cryptoTransferViewModel.accounts.first().type, "trading")
         Assert.assertNotNull(cryptoTransferViewModel.currentAccount.value)
         Assert.assertEquals(cryptoTransferViewModel.currentAccount.value, cryptoTransferViewModel.accounts.first())
     }
@@ -298,7 +298,7 @@ class CryptoTransferViewModelTest: BaseTest() {
         Assert.assertEquals(postQuoteBankModel?.productType, PostQuoteBankModel.ProductType.cryptoTransfer)
         Assert.assertEquals(postQuoteBankModel?.customerGuid, customerGuid)
         Assert.assertEquals(postQuoteBankModel?.asset, "BTC")
-        Assert.assertEquals(postQuoteBankModel?.side, PostQuoteBankModel.Side.withdrawal)
+        Assert.assertEquals(postQuoteBankModel?.side, "withdrawal")
         Assert.assertEquals(postQuoteBankModel?.deliverAmount, JavaBigDecimal(200000000))
     }
 

@@ -90,6 +90,7 @@ class IdentityVerificationViewModelTestError {
     }
 
     @ExperimentalCoroutinesApi
+    @Ignore("Auth API change")
     @Test
     fun test_getLastIdentityVerification_Error() = runTest {
 

@@ -57,7 +57,7 @@ fun BankAccountsView_Modal_Content(
             BankAccountsView_Modal_Content_Item(
                 titleLabel = stringResource(
                     id = R.string.bank_accounts_modal_content_account_status),
-                subTitleLabel = bankAccountsViewModel.currentAccount.state?.value ?: "",
+                subTitleLabel = bankAccountsViewModel.currentAccount.state ?: "",
                 subTitleTestTag = "PurchaseQuantityId"
             )
             // -- Transaction Fee
@@ -180,7 +180,7 @@ private fun BankAccountsView_Modal_Content_Buttons(
         }
 
         // -- Refresh Button
-        if (bankAccountsViewModel.currentAccount.state == ExternalBankAccountBankModel.State.refreshRequired) {
+        if (bankAccountsViewModel.currentAccount.state == "refreshRequired") {
 
             Button(
                 onClick = {

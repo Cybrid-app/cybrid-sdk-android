@@ -59,7 +59,7 @@ fun ExternalWalletsView_CreateWallet(
         val context = LocalContext.current
         val assets: List<AssetBankModel> =
             Cybrid.assets
-                .filter { it.type == AssetBankModel.Type.crypto }
+                .filter { it.type == "crypto" }
                 .sortedBy { it.name }
         val selectExpandedMutableState = remember { mutableStateOf(false) }
         val selectedAssetMutableState: MutableState<AssetBankModel?> = remember {
