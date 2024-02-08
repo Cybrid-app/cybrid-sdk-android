@@ -123,7 +123,7 @@ class TransferViewModelTestError {
         viewModel.setDataProvider(dataProvider)
 
         // -- When
-        viewModel.createQuote(PostQuoteBankModel.Side.deposit, BigDecimal(0))
+        viewModel.createQuote("deposit", BigDecimal(0))
 
         // -- Then
         Assert.assertNotNull(viewModel)
@@ -140,7 +140,7 @@ class TransferViewModelTestError {
         viewModel.setDataProvider(dataProvider)
 
         // -- When
-        viewModel.createQuote(PostQuoteBankModel.Side.deposit, BigDecimal(0))
+        viewModel.createQuote("deposit", BigDecimal(0))
         viewModel.createTransfer(TestConstants.externalBankAccount)
 
         // -- Then

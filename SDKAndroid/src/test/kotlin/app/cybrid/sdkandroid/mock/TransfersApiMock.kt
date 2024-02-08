@@ -38,14 +38,14 @@ object TransferBankModelMock {
     fun mock(): TransferBankModel {
         return TransferBankModel(
             guid = "1234",
-            transferType = TransferBankModel.TransferType.funding,
+            transferType = "funding",
             bankGuid = "1234",
             customerGuid = "1234",
             quoteGuid = "1234",
             externalBankAccountGuid = "1234",
             asset = "USD",
-            side = TransferBankModel.Side.deposit,
-            state = TransferBankModel.State.completed,
+            side = "deposit",
+            state = "completed",
             failureCode = null,
             amount = JavaBigDecimal(100),
             estimatedAmount = JavaBigDecimal(100),
@@ -56,21 +56,21 @@ object TransferBankModelMock {
     fun mock_with_wallet(): TransferBankModel {
         return TransferBankModel(
             guid = "1234",
-            transferType = TransferBankModel.TransferType.crypto,
+            transferType = "crypto",
             bankGuid = "1234",
             customerGuid = "1234",
             quoteGuid = "1234",
             externalBankAccountGuid = "1234",
             asset = "USD",
-            side = TransferBankModel.Side.deposit,
-            state = TransferBankModel.State.completed,
+            side = "deposit",
+            state = "completed",
             failureCode = null,
             amount = JavaBigDecimal(100),
             estimatedAmount = JavaBigDecimal(100),
             networkFee = JavaBigDecimal(0),
             destinationAccount = TransferDestinationAccountBankModel(
                 guid = "1234",
-                type = TransferDestinationAccountBankModel.Type.externalWallet
+                type = "externalWallet"
             )
         )
     }

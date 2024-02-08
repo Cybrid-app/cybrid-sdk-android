@@ -14,7 +14,7 @@ object TestConstants {
         decimals = BigDecimal(8),
         name = "Bitcoin",
         symbol = "₿",
-        type= AssetBankModel.Type.crypto,
+        type= "crypto",
     )
 
     val ETH_ASSET: AssetBankModel = AssetBankModel(
@@ -22,7 +22,7 @@ object TestConstants {
         decimals = BigDecimal(18),
         name = "Ethereum",
         symbol = "Ξ",
-        type= AssetBankModel.Type.crypto,
+        type= "crypto",
     )
 
     val CAD_ASSET: AssetBankModel = AssetBankModel(
@@ -30,7 +30,7 @@ object TestConstants {
         decimals = BigDecimal(2),
         name = "Canadian Dollar",
         symbol = "$",
-        type= AssetBankModel.Type.fiat,
+        type= "fiat",
     )
 
     val USD_ASSET: AssetBankModel = AssetBankModel(
@@ -38,7 +38,7 @@ object TestConstants {
         decimals = BigDecimal(2),
         name = "American Dollar",
         symbol = "$",
-        type= AssetBankModel.Type.fiat,
+        type= "fiat",
     )
 
     val prices:List<SymbolPriceBankModel> = listOf(
@@ -60,10 +60,10 @@ object TestConstants {
 
     val buyQuote = QuoteBankModel(
         guid = "cb18e7d490c08da003c1afe5c31b8a6d",
-        productType = QuoteBankModel.ProductType.trading,
+        productType = "trading",
         customerGuid = "bf10305829337d106b82c521bb6c8fd2",
         symbol = "BTC-USD",
-        side = QuoteBankModel.Side.buy,
+        side = "buy",
         receiveAmount = java.math.BigDecimal("1321413"),
         deliverAmount = java.math.BigDecimal("25000"),
         fee = BigDecimal("0"),
@@ -73,10 +73,10 @@ object TestConstants {
 
     val sellQuote = QuoteBankModel(
         guid = "cb18e7d490c08da003c1afe5c31b8a6d",
-        productType = QuoteBankModel.ProductType.trading,
+        productType = "trading",
         customerGuid = "bf10305829337d106b82c521bb6c8fd2",
         symbol = "BTC-USD",
-        side = QuoteBankModel.Side.sell,
+        side = "sell",
         receiveAmount = java.math.BigDecimal("25000"),
         deliverAmount = java.math.BigDecimal("1321413"),
         fee = BigDecimal("0"),
@@ -86,7 +86,7 @@ object TestConstants {
 
     val accounts:List<AccountBankModel> = listOf(
         AccountBankModel(
-            type = AccountBankModel.Type.trading,
+            type = "trading",
             guid = "5b13ffda9fc47c322af321434818709a",
             asset = "ETH",
             name = "ETH-USD",
@@ -94,7 +94,7 @@ object TestConstants {
             platformBalance = BigDecimal(2500000000000000000)
         ),
         AccountBankModel(
-            type = AccountBankModel.Type.trading,
+            type = "trading",
             guid = "15d755452f76634df53a88efc06248ec",
             asset = "BTC",
             name = "BTC-USD",
@@ -107,7 +107,7 @@ object TestConstants {
         TradeBankModel(
             guid = "3c0af815210ca8ce21294a6e81979d7b",
             symbol = "ETH-USD",
-            side = TradeBankModel.Side.sell,
+            side = "sell",
             receiveAmount = BigDecimal(14278),
             deliverAmount = BigDecimal(100000000000000000),
             fee = BigDecimal(0)
@@ -115,7 +115,7 @@ object TestConstants {
         TradeBankModel(
             guid = "7b19efae72f928ff378898de3484acac",
             symbol = "ETH-USD",
-            side = TradeBankModel.Side.buy,
+            side = "buy",
             receiveAmount = BigDecimal(100000000000000000),
             deliverAmount = BigDecimal(14286),
             fee = BigDecimal(0)
@@ -133,11 +133,11 @@ object TestConstants {
             accountAvailable = app.cybrid.sdkandroid.core.BigDecimal(1000),
             accountAvailableFormattedString = "10.00",
             accountGuid = "5b13ffda9fc47c322af321434818709a",
-            accountType = AccountBankModel.Type.trading,
+            accountType = "trading",
             accountCreated = OffsetDateTime.parse("2022-08-02T10:55:34.039847-05:00"),
             assetName = "Ethereum",
             assetSymbol = "Ξ",
-            assetType = AssetBankModel.Type.crypto,
+            assetType = "crypto",
             assetDecimals = BigDecimal(18),
             pairAsset = USD_ASSET,
             buyPrice = app.cybrid.sdkandroid.core.BigDecimal(168230),
@@ -154,11 +154,11 @@ object TestConstants {
             accountAvailable = app.cybrid.sdkandroid.core.BigDecimal(1000),
             accountAvailableFormattedString = "10.00",
             accountGuid = "15d755452f76634df53a88efc06248ec",
-            accountType = AccountBankModel.Type.trading,
+            accountType = "trading",
             accountCreated = OffsetDateTime.parse("2022-08-02T10:55:34.039847-05:00"),
             assetName = "Bitcoin",
             assetSymbol = "₿",
-            assetType = AssetBankModel.Type.crypto,
+            assetType = "crypto",
             assetDecimals = BigDecimal(8),
             pairAsset = USD_ASSET,
             buyPrice = app.cybrid.sdkandroid.core.BigDecimal(2374100),

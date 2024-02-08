@@ -63,7 +63,7 @@ object CryptoTransferApiMockModel {
     // -- Assets
     fun btc(): AssetBankModel {
         return AssetBankModel(
-            type = AssetBankModel.Type.crypto,
+            type = "crypto",
             code = "BTC",
             name = "Bitcoin",
             symbol = "BTC",
@@ -75,65 +75,65 @@ object CryptoTransferApiMockModel {
     fun accountUSD(): AccountBankModel {
         return AccountBankModel(
             guid = "12345",
-            type = AccountBankModel.Type.fiat,
+            type = "fiat",
             asset = "USD",
             name = "USD Test",
             customerGuid = "12345",
             platformBalance = java.math.BigDecimal(100000),
             platformAvailable = java.math.BigDecimal(30000),
-            state = AccountBankModel.State.created
+            state = "created"
         )
     }
 
     fun accountBTC(): AccountBankModel {
         return AccountBankModel(
             guid = "12345",
-            type = AccountBankModel.Type.trading,
+            type = "trading",
             asset = "BTC",
             name = "BTC Test",
             customerGuid = "12345",
             platformBalance = java.math.BigDecimal(100000),
             platformAvailable = java.math.BigDecimal(40000),
-            state = AccountBankModel.State.created
+            state = "created"
         )
     }
 
     fun accountBTCWithoutBalance(): AccountBankModel {
         return AccountBankModel(
             guid = "12345",
-            type = AccountBankModel.Type.trading,
+            type = "trading",
             asset = "BTC",
             name = "BTC Test",
             customerGuid = "12345",
             platformBalance = null,
             platformAvailable = null,
-            state = AccountBankModel.State.created
+            state = "created"
         )
     }
 
     fun accountMXN(): AccountBankModel {
         return AccountBankModel(
             guid = "12345",
-            type = AccountBankModel.Type.fiat,
+            type = "fiat",
             asset = "MXN",
             name = "MXN Test",
             customerGuid = "12345",
             platformBalance = java.math.BigDecimal(100000),
             platformAvailable = java.math.BigDecimal(40000),
-            state = AccountBankModel.State.created
+            state = "created"
         )
     }
 
     fun accountWithoutAsset(): AccountBankModel {
         return AccountBankModel(
             guid = "12345",
-            type = AccountBankModel.Type.trading,
+            type = "trading",
             asset = null,
             name = "No Asset",
             customerGuid = "12345",
             platformBalance = java.math.BigDecimal(100000),
             platformAvailable = java.math.BigDecimal(40000),
-            state = AccountBankModel.State.created
+            state = "created"
         )
     }
 
@@ -190,7 +190,7 @@ object CryptoTransferApiMockModel {
             productType = PostQuoteBankModel.ProductType.cryptoTransfer,
             customerGuid = "12345",
             asset = "BTC",
-            side = PostQuoteBankModel.Side.withdrawal,
+            side = "withdrawal",
             deliverAmount = JavaBigDecimal(200000000)
         )
     }
@@ -206,11 +206,11 @@ object CryptoTransferApiMockModel {
     fun transfer(): TransferBankModel {
         return TransferBankModel(
             guid = "12345",
-            transferType = TransferBankModel.TransferType.crypto,
+            transferType = "crypto",
             customerGuid = "12345",
             quoteGuid = "12345",
             asset = "BTC",
-            side = TransferBankModel.Side.withdrawal,
+            side = "withdrawal",
             amount = JavaBigDecimal(3000000)
         )
     }

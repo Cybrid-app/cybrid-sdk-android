@@ -45,42 +45,42 @@ object AssetsApiMock: Mocker {
         fun mock(): List<AssetBankModel> {
             return listOf(
                 AssetBankModel(
-                    type = AssetBankModel.Type.fiat,
+                    type = "fiat",
                     code = "USD",
                     name = "United States Dollar",
                     symbol = "$",
                     decimals = BigDecimal(2)
                 ),
                 AssetBankModel(
-                    type = AssetBankModel.Type.fiat,
+                    type = "fiat",
                     code = "CAD",
                     name = "Canadian Dollar",
                     symbol = "$",
                     decimals = BigDecimal(2)
                 ),
                 AssetBankModel(
-                    type = AssetBankModel.Type.crypto,
+                    type = "crypto",
                     code = "BTC",
                     name = "Bitcoin",
                     symbol = "₿",
                     decimals = BigDecimal(8)
                 ),
                 AssetBankModel(
-                    type = AssetBankModel.Type.crypto,
+                    type = "crypto",
                     code = "ETH",
                     name = "Ethereum",
                     symbol = "Ξ",
                     decimals = BigDecimal(18)
                 ),
                 AssetBankModel(
-                    type = AssetBankModel.Type.crypto,
+                    type = "crypto",
                     code = "USDC",
                     name = "USDC (ERC-20)",
                     symbol = "$",
                     decimals = BigDecimal(6)
                 ),
                 AssetBankModel(
-                    type = AssetBankModel.Type.crypto,
+                    type = "crypto",
                     code = "SOL",
                     name = "Solana",
                     symbol = "◎",

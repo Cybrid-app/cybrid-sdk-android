@@ -133,17 +133,17 @@ class AssetPipeTest {
 
         // Case: Trade in crypto
         val oneBTC = BigDecimal(1) // Direct from user_input
-        val tradeOfOneBTC = AssetPipe.preQuote(oneBTC, btcPrice, AssetBankModel.Type.crypto)
+        val tradeOfOneBTC = AssetPipe.preQuote(oneBTC, btcPrice, "crypto")
         Assert.assertEquals(tradeOfOneBTC, BigDecimal(2738635))
 
         // Case: Trade in fiat with price in zero
         val oneUSD = BigDecimal(100) // In format of USD (convert from user_input)
-        val tradeOfOneUsdWithZeroPrice = AssetPipe.preQuote(oneUSD, BigDecimal.zero(), AssetBankModel.Type.fiat)
+        val tradeOfOneUsdWithZeroPrice = AssetPipe.preQuote(oneUSD, BigDecimal.zero(), "fiat")
         Assert.assertEquals(tradeOfOneUsdWithZeroPrice, BigDecimal(0))
 
         // Case: Trade in fiat
         val twoUSD = BigDecimal(200) // In format of USD (convert from user_input)
-        val tradeOfTwoUsd = AssetPipe.preQuote(twoUSD, btcPrice, AssetBankModel.Type.fiat, BigDecimal(8))
+        val tradeOfTwoUsd = AssetPipe.preQuote(twoUSD, btcPrice, "fiat", BigDecimal(8))
         Assert.assertEquals(tradeOfTwoUsd, BigDecimal("0.00007302"))
     }
 }

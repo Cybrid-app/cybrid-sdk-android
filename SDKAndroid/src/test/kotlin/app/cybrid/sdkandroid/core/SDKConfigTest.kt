@@ -33,7 +33,7 @@ class SDKConfigTest {
             guid = "34567890",
             organizationGuid = "133",
             name = "Test",
-            type = BankBankModel.Type.sandbox,
+            type = "sandbox",
             features = listOf(),
             createdAt = OffsetDateTime.now()
         )
@@ -61,7 +61,7 @@ class SDKConfigTest {
         Assert.assertEquals(sdkConfig.bank?.guid, "34567890")
         Assert.assertEquals(sdkConfig.bank?.organizationGuid, "133")
         Assert.assertEquals(sdkConfig.bank?.name, "Test")
-        Assert.assertEquals(sdkConfig.bank?.type, BankBankModel.Type.sandbox)
+        Assert.assertEquals(sdkConfig.bank?.type, "sandbox")
         Assert.assertTrue(sdkConfig.bank?.features?.isEmpty() ?: false)
         Assert.assertEquals(sdkConfig.logTag, "cybrid-log-tag")
     }

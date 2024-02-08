@@ -150,12 +150,6 @@ fun AccountsView_List_Item_Header(
     accountsViewModel: AccountsViewModel
 ) {
 
-    val priceColor = if (styles.headerTextColor != Color(R.color.list_prices_asset_component_header_color)) {
-        styles.headerTextColor
-    } else {
-        Color.Black
-    }
-
     Surface(color = Color.White) {
 
         Row(
@@ -330,8 +324,7 @@ fun AccountsView_List_Trading_Item(balance: AccountAssetPriceModel,
 
 @Composable
 fun AccountsView_List_Fiat_Item(balance: AccountAssetPriceModel,
-    accountsViewModel: AccountsViewModel,
-    customStyles: AccountsViewStyles = AccountsViewStyles()
+    accountsViewModel: AccountsViewModel
 ) {
 
     // -- Vars
