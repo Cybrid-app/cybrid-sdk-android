@@ -55,8 +55,7 @@ class ExternalWalletViewModel: ViewModel() {
                             Logger.log(LoggerEvents.DATA_FETCHED, "External Wallets")
                             externalWallets = response.data?.objects ?: listOf()
                             externalWalletsActive = externalWallets.filter { wallet ->
-                                wallet.state != ExternalWalletBankModel.State.deleting &&
-                                        wallet.state != ExternalWalletBankModel.State.deleted
+                                wallet.state != "deleting" && wallet.state != "deleted"
                             }
                             uiState.value = ExternalWalletsView.State.WALLETS
 
@@ -216,9 +215,9 @@ class ExternalWalletViewModel: ViewModel() {
 
         if (this.currentWallet != null) {
 
-            var filteredTransfers = transfers.filter { it.transferType == TransferBankModel.TransferType.crypto }
+            var filteredTransfers = transfers.filter { it.transferType == "crypto" }
             filteredTransfers = filteredTransfers.filter {
-                it.destinationAccount?.type == TransferDestinationAccountBankModel.Type.externalWallet &&
+                it.destinationAccount?.type == "externalWallet" &&
                 it.destinationAccount?.guid == this.currentWallet?.guid!!
             }
             this.transfers.value = filteredTransfers

@@ -159,7 +159,7 @@ class AccountsViewModel : ViewModel() {
                 val buyPrice = BigDecimal(price?.buyPrice ?: JavaBigDecimal(0))
                 val buyPriceFormatted = BigDecimalPipe.transform(buyPrice, counterAsset)
 
-                val accountBalanceInFiat = if (balance.type == AccountBankModel.Type.fiat) {
+                val accountBalanceInFiat = if (balance.type == "fiat") {
                     balanceAvailable.setScale(2)
                 } else {
                     balanceValueFormatted.times(buyPrice).setScale(2)
@@ -179,11 +179,11 @@ class AccountsViewModel : ViewModel() {
                     accountAvailableFormattedString = balanceAvailableFormattedString,
 
                     accountGuid = balance.guid ?: "",
-                    accountType = balance.type ?: AccountBankModel.Type.trading,
+                    accountType = balance.type ?: "trading",
                     accountCreated = balance.createdAt ?: java.time.OffsetDateTime.now(),
                     assetName = asset?.name ?: "",
                     assetSymbol = asset?.symbol ?: "",
-                    assetType = asset?.type ?: AssetBankModel.Type.fiat,
+                    assetType = asset?.type ?: "fiat",
                     assetDecimals = asset?.decimals ?: JavaBigDecimal(0),
                     pairAsset = counterAsset,
                     buyPrice = buyPrice,
@@ -194,9 +194,9 @@ class AccountsViewModel : ViewModel() {
             }
         }
 
-        val fiatAccounts = accountsList.filter { it.accountType == AccountBankModel.Type.fiat }
+        val fiatAccounts = accountsList.filter { it.accountType == "fiat" }
         val tradingAccounts = accountsList.filter {
-            it.accountType == AccountBankModel.Type.trading
+            it.accountType == "trading"
         }.sortedBy { it.assetName }
 
         this.accountsAssetPrice = fiatAccounts + tradingAccounts
@@ -249,7 +249,7 @@ class AccountsViewModel : ViewModel() {
         val assetsParts = tradeSymbol?.split("-")
         val assetString = assetsParts!![0]
         val asset = listPricesViewModel?.assets?.find { it.code == assetString }
-        val returnValue = if (trade.side == TradeBankModel.Side.sell) {
+        val returnValue = if (trade.side == "sell") {
             AssetPipe.transform(BigDecimal(trade.deliverAmount!!), asset!!, AssetPipeTrade)
         } else {
             AssetPipe.transform(BigDecimal(trade.receiveAmount!!), asset!!, AssetPipeTrade)
@@ -263,7 +263,7 @@ class AccountsViewModel : ViewModel() {
         val assetsParts = tradeSymbol?.split("-")
         val assetString = assetsParts!![1]
         val asset = listPricesViewModel?.assets?.find { it.code == assetString }
-        val returnValue = if (trade.side == TradeBankModel.Side.sell) {
+        val returnValue = if (trade.side == "sell") {
             BigDecimalPipe.transform(BigDecimal(trade.receiveAmount!!), asset!!)
         } else {
             BigDecimalPipe.transform(BigDecimal(trade.deliverAmount!!), asset!!)
@@ -315,7 +315,7 @@ class AccountsViewModel : ViewModel() {
 
         val tradeSymbol = transfer.asset
         val asset = listPricesViewModel?.assets?.find { it.code == tradeSymbol }
-        val amount = if (transfer.state == TransferBankModel.State.completed) {
+        val amount = if (transfer.state == "completed") {
             transfer.amount?.toBigDecimal() ?: BigDecimal.zero()
         } else {
             transfer.estimatedAmount?.toBigDecimal() ?: BigDecimal.zero()

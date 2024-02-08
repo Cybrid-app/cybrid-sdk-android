@@ -242,7 +242,7 @@ fun AccountsView_Transfers_List_Item(
         }
     }
     // -- Side Logic
-    if (transfer.side == TransferBankModel.Side.withdrawal) {
+    if (transfer.side == "withdrawal") {
 
         side = stringResource(id = R.string.accounts_view_transfers_withdraw)
         icon = Icons.Outlined.Outbound
@@ -287,7 +287,7 @@ fun AccountsView_Transfers_List_Item(
                         color = Color.Black
                     )
                     AccountsView_Transfers_List_Item_Chip(
-                        state = transfer.state ?: TransferBankModel.State.pending
+                        state = transfer.state ?: "pending"
                     )
                 }
                 Text(
@@ -322,24 +322,21 @@ fun AccountsView_Transfers_List_Item(
 
 @Composable
 fun AccountsView_Transfers_List_Item_Chip(
-    state: TransferBankModel.State
+    state: String
 ) {
 
     var text = stringResource(id = R.string.accounts_view_list_item_failed)
     var backgroundColor = colorResource(id = R.color.accounts_view_list_item_chip_failed)
     var textColor = Color.White
 
-    if (state == TransferBankModel.State.pending ||
-        state == TransferBankModel.State.storing) {
+    if (state == "pending" || state == "storing") {
 
         backgroundColor = colorResource(id = R.color.accounts_view_list_item_chip_pending)
         textColor = Color.Black
         text = stringResource(id = R.string.accounts_view_list_item_pending)
     }
 
-    if (state == TransferBankModel.State.pending ||
-        state == TransferBankModel.State.storing ||
-        state == TransferBankModel.State.failed) {
+    if (state == "pending" || state == "storing" || state == "failed") {
 
         Text(
             text = text,

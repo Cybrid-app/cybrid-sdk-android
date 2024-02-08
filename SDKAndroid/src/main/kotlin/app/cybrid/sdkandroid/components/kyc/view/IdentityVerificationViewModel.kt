@@ -68,7 +68,7 @@ class IdentityVerificationViewModel: ViewModel() {
                             customerGuid = customerGuid)
                     }
                     Logger.log(LoggerEvents.DATA_FETCHED, "Fetch - Customer Status")
-                    checkCustomerStatus(customerResult.data?.state ?: CustomerBankModel.State.storing)
+                    checkCustomerStatus(customerResult.data?.state ?: "storing")
                 }
             }
         }
@@ -82,7 +82,7 @@ class IdentityVerificationViewModel: ViewModel() {
 
                     var lastVerification = identityWrapper?.identityVerification ?: getLastIdentityVerification()
                     if (lastVerification == null ||
-                        lastVerification.state == IdentityVerificationBankModel.State.expired) {
+                        lastVerification.state == "expired") {
                         lastVerification = createIdentityVerification()
                     }
 
@@ -181,39 +181,39 @@ class IdentityVerificationViewModel: ViewModel() {
         return verification
     }
 
-    fun checkCustomerStatus(state: CustomerBankModel.State) {
+    fun checkCustomerStatus(state: String) {
 
         when (state) {
 
-            CustomerBankModel.State.storing -> {
+            "storing" -> {
 
                 if (customerJob == null) {
                     customerJob = Polling { getCustomerStatus() }
                 }
             }
 
-            CustomerBankModel.State.verified -> {
+            "verified" -> {
 
                 customerJob?.stop()
                 customerJob = null
                 uiState?.value = KYCView.KYCViewState.VERIFIED
             }
 
-            CustomerBankModel.State.unverified -> {
+            "unverified" -> {
 
                 customerJob?.stop()
                 customerJob = null
                 getIdentityVerificationStatus()
             }
 
-            CustomerBankModel.State.rejected -> {
+            "rejected" -> {
 
                 customerJob?.stop()
                 customerJob = null
                 uiState?.value = KYCView.KYCViewState.ERROR
             }
 
-            CustomerBankModel.State.frozen -> {
+            "frozen" -> {
 
                 customerJob?.stop()
                 customerJob = null
@@ -226,17 +226,17 @@ class IdentityVerificationViewModel: ViewModel() {
 
         when(identityWrapper?.identityVerificationDetails?.state) {
 
-            IdentityVerificationWithDetailsBankModel.State.storing -> {
+            "storing" -> {
 
                 if (identityJob == null) {
                     identityJob = Polling { getIdentityVerificationStatus(identityWrapper = identityWrapper) }
                 }
             }
 
-            IdentityVerificationWithDetailsBankModel.State.waiting -> {
+            "waiting" -> {
 
-                if (identityWrapper.identityVerificationDetails?.personaState == IdentityVerificationWithDetailsBankModel.PersonaState.completed ||
-                    identityWrapper.identityVerificationDetails?.personaState == IdentityVerificationWithDetailsBankModel.PersonaState.processing) {
+                if (identityWrapper.identityVerificationDetails?.personaState == "completed" ||
+                    identityWrapper.identityVerificationDetails?.personaState == "processing") {
 
                     if (identityJob == null) {
                         identityJob = Polling { getIdentityVerificationStatus(identityWrapper = identityWrapper) }
@@ -250,14 +250,14 @@ class IdentityVerificationViewModel: ViewModel() {
                 }
             }
 
-            IdentityVerificationWithDetailsBankModel.State.expired -> {
+            "expired" -> {
 
                 identityJob?.stop()
                 identityJob = null
                 getIdentityVerificationStatus(null)
             }
 
-            IdentityVerificationWithDetailsBankModel.State.completed -> {
+            "completed" -> {
 
                 identityJob?.stop()
                 identityJob = null
@@ -277,22 +277,22 @@ class IdentityVerificationViewModel: ViewModel() {
         this.latestIdentityVerification = identityWrapper
         when(identityWrapper?.identityVerificationDetails?.personaState) {
 
-            IdentityVerificationWithDetailsBankModel.PersonaState.waiting -> {
+            "waiting" -> {
 
                 uiState?.value = KYCView.KYCViewState.REQUIRED
             }
 
-            IdentityVerificationWithDetailsBankModel.PersonaState.pending -> {
+            "pending" -> {
 
                 uiState?.value = KYCView.KYCViewState.REQUIRED
             }
 
-            IdentityVerificationWithDetailsBankModel.PersonaState.reviewing -> {
+            "reviewing" -> {
 
                 uiState?.value = KYCView.KYCViewState.REVIEWING
             }
 
-            IdentityVerificationWithDetailsBankModel.PersonaState.expired -> {
+            "expired" -> {
                 getIdentityVerificationStatus(null)
             }
 

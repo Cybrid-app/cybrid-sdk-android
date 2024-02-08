@@ -206,7 +206,7 @@ fun BankAccountsView_Content_List_Item(
 ) {
 
     // -- Vars
-    val imageName = if (account.state == ExternalBankAccountBankModel.State.refreshRequired) { "kyc_error" } else { "test_bank" }
+    val imageName = if (account.state == "refreshRequired") { "kyc_error" } else { "test_bank" }
     val imageID = getTestImage(LocalContext.current, imageName)
     val accountMask = account.plaidAccountMask
     val accountName = account.plaidAccountName

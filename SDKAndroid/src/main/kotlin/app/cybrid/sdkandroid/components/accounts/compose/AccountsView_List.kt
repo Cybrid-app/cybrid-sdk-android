@@ -92,7 +92,7 @@ fun AccountsView_List(
                 }
                 itemsIndexed(items = accountsViewModel.accountsAssetPrice) { _, item ->
 
-                    if (item.accountType == AccountBankModel.Type.trading) {
+                    if (item.accountType == "trading") {
                         AccountsView_List_Trading_Item(
                             balance = item,
                             accountsViewModel = accountsViewModel

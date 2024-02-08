@@ -144,7 +144,7 @@ fun TransferView_Accounts(
             }
 
             if (amountMutableState.value != "" &&
-                externalBankAccount.value?.state != ExternalBankAccountBankModel.State.refreshRequired) {
+                externalBankAccount.value?.state != "refreshRequired") {
 
                 TransferView_Accounts_Button(
                     transferViewModel = transferViewModel,
@@ -316,7 +316,7 @@ fun TransferView_Accounts_Select__Input(
     val accountName = externalBankAccount.value?.plaidAccountName ?: ""
     val accountID = externalBankAccount.value?.plaidInstitutionId ?: ""
     val accountNameToDisplay = "$accountID - $accountName ($accountMask)"
-    val resource = if (externalBankAccount.value?.state == ExternalBankAccountBankModel.State.refreshRequired) {
+    val resource = if (externalBankAccount.value?.state == "refreshRequired") {
         painterResource(id = R.drawable.kyc_error)
     } else {
         painterResource(id = R.drawable.test_bank)
@@ -394,7 +394,7 @@ fun TransferView_Accounts_Select__DropDown(
             val accountName = account.plaidAccountName
             val accountID = account.plaidInstitutionId
             val accountNameToDisplay = "$accountID - $accountName ($accountMask)"
-            val resource = if (account.state == ExternalBankAccountBankModel.State.refreshRequired) {
+            val resource = if (account.state == "refreshRequired") {
                 painterResource(id = R.drawable.kyc_error)
             } else {
                 painterResource(id = R.drawable.test_bank)
@@ -541,9 +541,9 @@ fun TransferView_Accounts_Button(
 ) {
 
     val quoteSide = if (selectedTabIndex.value == 0) {
-        PostQuoteBankModel.Side.deposit
+        "deposit"
     } else {
-        PostQuoteBankModel.Side.withdrawal
+        "withdrawal"
     }
 
     val amount = transferViewModel!!.transformAmountInBaseBigDecimal(amountMutableState.value)

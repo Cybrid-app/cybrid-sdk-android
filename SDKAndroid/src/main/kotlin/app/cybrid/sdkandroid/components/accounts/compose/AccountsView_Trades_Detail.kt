@@ -68,7 +68,7 @@ fun AccountsView_Trades_Detail_Content(
     val fiatValue = accountsViewModel.getTradeFiatAmount(currentTrade)
     val imagePainter = rememberAsyncImagePainter(getImageUrl(assetCode.lowercase()))
 
-    val titleType = if (currentTrade.side == TradeBankModel.Side.sell) {
+    val titleType = if (currentTrade.side == "sell") {
         stringResource(id = R.string.accounts_view_trade_detail_sold)
     } else {
         stringResource(id = R.string.accounts_view_trade_detail_bought)
@@ -135,7 +135,7 @@ fun AccountsView_Trades_Detail_Content(
             // -- Elements
             AccountsView_Trades_Detail_Item(
                 titleLabel = stringResource(id = R.string.accounts_view_trade_detail_status),
-                subTitleLabel = AnnotatedString(currentTrade.state?.value ?: "")
+                subTitleLabel = AnnotatedString(currentTrade.state ?: "")
             )
             AccountsView_Trades_Detail_Item(
                 titleLabel = stringResource(id = R.string.accounts_view_trade_detail_order_placed),

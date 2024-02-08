@@ -73,7 +73,7 @@ open class Component @JvmOverloads constructor(
 
     fun canRenderUI(): Boolean {
         if (Cybrid.customer == null) { return true }
-        return Cybrid.customer?.state != CustomerBankModel.State.frozen
+        return Cybrid.customer?.state != "frozen"
     }
 
     companion object {

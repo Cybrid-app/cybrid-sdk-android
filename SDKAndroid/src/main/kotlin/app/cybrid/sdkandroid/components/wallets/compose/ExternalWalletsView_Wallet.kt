@@ -96,7 +96,7 @@ fun ExternalWalletsView_Wallet(
 
         // -- Wallet Chip
         ExternalWalletsView_Wallets_Item_Chip(
-            state = wallet.state ?: ExternalWalletBankModel.State.pending,
+            state = wallet.state ?: "pending",
             modifier = Modifier
                 .constrainAs(status) {
                     top.linkTo(parent.top, margin = 25.dp)

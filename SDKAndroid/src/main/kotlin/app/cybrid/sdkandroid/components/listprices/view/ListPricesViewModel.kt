@@ -81,7 +81,7 @@ class ListPricesViewModel : ViewModel() {
     fun getCryptoListAsset() : List<AssetBankModel> {
 
         return ArrayList(this.assets.filter {
-            it.type == AssetBankModel.Type.crypto
+            it.type == "crypto"
         })
     }
 

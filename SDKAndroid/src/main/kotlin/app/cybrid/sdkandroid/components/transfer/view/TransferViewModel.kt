@@ -137,12 +137,12 @@ class TransferViewModel: ViewModel() {
     private fun checkAccounts(accounts: List<ExternalBankAccountBankModel>) {
 
         this.externalBankAccounts = accounts.filter {
-                account -> account.state != ExternalBankAccountBankModel.State.deleted &&
-                account.state != ExternalBankAccountBankModel.State.deleting
+                account -> account.state != "deleted" &&
+                account.state != "deleting"
         }
 
         val accountWithRefreshRequired = this.externalBankAccounts.firstOrNull {
-            it.state == ExternalBankAccountBankModel.State.refreshRequired
+            it.state == "refreshRequired"
         }
         if (accountWithRefreshRequired != null) {
             this.uiWarning.value = true
@@ -157,8 +157,8 @@ class TransferViewModel: ViewModel() {
         val counterAsset = assets?.find { it.code == currentFiatCurrency }
         var total = BigDecimal(0)
         this.accounts.forEach { account ->
-            if (account.type == AccountBankModel.Type.fiat &&
-                account.state == AccountBankModel.State.created) {
+            if (account.type == "fiat" &&
+                account.state == "created") {
                 val balance = BigDecimal(account.platformAvailable ?: JavaBigDecimal(0))
                 total = total.plus(balance)
             }
@@ -168,7 +168,7 @@ class TransferViewModel: ViewModel() {
         } else { "" }
     }
 
-    suspend fun createQuote(side: PostQuoteBankModel.Side, amount: BigDecimal) {
+    suspend fun createQuote(side: String, amount: BigDecimal) {
 
         if (!Cybrid.invalidToken) {
             this.viewModelScope.let { scope ->
