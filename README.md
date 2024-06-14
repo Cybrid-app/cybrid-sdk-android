@@ -1,4 +1,4 @@
-![CircleCI](https://circleci.com/gh/Cybrid-app/cybrid-sdk-web.svg?style=svg)
+![CircleCI](https://circleci.com/gh/Cybrid-app/cybrid-sdk-android.svg?style=svg)
 [![codecov](https://codecov.io/gh/Cybrid-app/cybrid-sdk-android/branch/main/graph/badge.svg?token=LTJJFQJWEA)](https://codecov.io/gh/Cybrid-app/cybrid-sdk-android)
 
 # cybrid-android-sdk
@@ -23,7 +23,7 @@ Add `cybrid-android-sdk` to your `build.gradle` dependencies.
 
 ``` 
 dependencies {
-  implementation 'app.cybrid:cybrid-android-sdk:0.0.3'
+  implementation 'app.cybrid:cybrid-android-sdk:last_release'
 }
 ```
 
@@ -41,7 +41,9 @@ class App : Application(), CybridSDKEvents {
   }
 
   fun setupCybridSDK() {
+
     Cybrid.instance.listener = this
+    Cybrid.instance.customerGuid = "Dynamic CUSTOMER GUID"
   }
 }
 ```
@@ -107,6 +109,32 @@ cryptoList.setViewModel(viewModel)
 cryptoList.updateInterval = 2000L
 ```
 
+#### TradeFlow
+
+The TradeFlow it's the simplest way to buy/sell crypto.
+To integrate you need to add into your view the component:
+
+```
+<app.cybrid.sdkandroid.flow.TradeFlow
+  android:id="@+id/tradeFlow"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"/>
+```
+
+Into your `Activity` of `Fragment` you have to set the `ViewModels`
+
+```
+val listViewModel: ListPricesViewModel by viewModels()
+val quoteViewModel: QuoteViewModel by viewModels()
+```
+
+And then add to the component:
+
+```
+tradeFlow.setListPricesViewModel(viewModel)
+tradeFlow.quoteViewModel = quoteViewModel
+```
+
 ## Demo App
 
 To run the demo app it's necessary add to enviroment vars into the system
@@ -114,6 +142,7 @@ To run the demo app it's necessary add to enviroment vars into the system
 ```
 export CybridAPI_ID = 'XXXX'
 export CybridAPI_Secret = 'XXXX'
+export CybridAPI_Customer_GUID = 'XXXX'
 ```
 
 Then `Clean Project` and then `Rebuild Project`.
