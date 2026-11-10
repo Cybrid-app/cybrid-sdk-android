@@ -1,3 +1,8 @@
+> [!WARNING]
+> **This SDK is deprecated and no longer maintained.** It's built on outdated Cybrid API clients and won't get further updates or security fixes. This repository will be archived.
+>
+> To integrate with Cybrid, use the API reference at https://docs.cybrid.xyz and one of the supported clients for Python, Ruby, TypeScript, Angular or Swift.
+
 ![CircleCI](https://circleci.com/gh/Cybrid-app/cybrid-sdk-web.svg?style=svg)
 [![codecov](https://codecov.io/gh/Cybrid-app/cybrid-sdk-android/branch/main/graph/badge.svg?token=LTJJFQJWEA)](https://codecov.io/gh/Cybrid-app/cybrid-sdk-android)
 
